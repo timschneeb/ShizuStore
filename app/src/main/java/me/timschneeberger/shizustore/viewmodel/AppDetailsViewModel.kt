@@ -1,0 +1,277 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+package me.timschneeberger.shizustore.viewmodel
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import me.timschneeberger.shizustore.data.helper.DownloadHelper
+import me.timschneeberger.shizustore.data.helper.InstallDispatcher
+import me.timschneeberger.shizustore.data.installer.AppInstaller
+import me.timschneeberger.shizustore.data.model.AppDetails
+import me.timschneeberger.shizustore.data.model.AppSource
+import me.timschneeberger.shizustore.data.model.CertFingerprint
+import me.timschneeberger.shizustore.data.model.DownloadStatus
+import me.timschneeberger.shizustore.data.model.InstallDispatch
+import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.model.preferredForThisDevice
+import me.timschneeberger.shizustore.data.repository.AppRepository
+import me.timschneeberger.shizustore.data.repository.BlacklistRepository
+import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
+import me.timschneeberger.shizustore.data.repository.DetailedAppRepository
+import me.timschneeberger.shizustore.data.repository.DetailedAppResult
+import me.timschneeberger.shizustore.data.repository.FavouriteRepository
+import me.timschneeberger.shizustore.data.repository.IgnoredUpdateRepository
+import me.timschneeberger.shizustore.data.repository.InstalledRepository
+import me.timschneeberger.shizustore.data.room.entity.Download
+import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
+import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
+
+sealed interface AppDetailsUiState {
+    data object Loading : AppDetailsUiState
+    data object NotFound : AppDetailsUiState
+    data class Error(val failure: CatalogSyncFailure) : AppDetailsUiState
+
+    data class Loaded(
+        val details: AppDetails,
+        val sources: List<AppSource>,
+        val download: Download? = null
+    ) : AppDetailsUiState {
+        val resolved: ResolvedApp? get() = sources.preferredForThisDevice()?.app
+
+        val downloadStatus: DownloadStatus? get() = download?.status
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@HiltViewModel
+class AppDetailsViewModel @Inject constructor(
+    private val appRepository: AppRepository,
+    private val detailedAppRepository: DetailedAppRepository,
+    private val downloadHelper: DownloadHelper,
+    private val appInstaller: AppInstaller,
+    private val mapper: CatalogUiMapper,
+    private val favouriteRepository: FavouriteRepository,
+    private val blacklistRepository: BlacklistRepository,
+    private val ignoredUpdateRepository: IgnoredUpdateRepository,
+    private val installedRepository: InstalledRepository
+) : ViewModel() {
+    private val installDispatcher = InstallDispatcher(downloadHelper, appInstaller)
+
+    /** The navigation key: a real package name when known, otherwise the catalog slug. */
+    private val identity = MutableStateFlow<String?>(null)
+    private val slug = MutableStateFlow<String?>(null)
+
+    /** Last detail-fetch failure, surfaced instead of silently showing stale data. */
+    private val _detailError = MutableStateFlow<CatalogSyncFailure?>(null)
+    val detailError: StateFlow<CatalogSyncFailure?> = _detailError.asStateFlow()
+
+    /** User-triggered reload in progress; the pull wrapper keeps feedback visible briefly. */
+    private val _refreshing = MutableStateFlow(false)
+    val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
+
+    private val _refusals = Channel<InstallDispatch.Refused>(Channel.BUFFERED)
+    val refusals: Flow<InstallDispatch.Refused> = _refusals.receiveAsFlow()
+
+    val uiState: StateFlow<AppDetailsUiState> = slug
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { slug -> detailsFor(slug).onStart { emit(AppDetailsUiState.Loading) } }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            AppDetailsUiState.Loading
+        )
+
+    val isFavourite: StateFlow<Boolean> = identity
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { favouriteRepository.isFavourite(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
+
+    val isBlacklisted: StateFlow<Boolean> = identity
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { blacklistRepository.isBlacklisted(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
+
+    val ignoredUpdate: StateFlow<IgnoredUpdateEntity?> = identity
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { ignoredUpdateRepository.observeIgnore(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
+    // The server catalog has no author/category recommendation data; the sections stay empty.
+    val moreFromAuthor: StateFlow<List<ResolvedApp>> =
+        flowOf(emptyList<ResolvedApp>()).stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            emptyList()
+        )
+
+    fun load(packageName: String) {
+        identity.value = packageName
+        viewModelScope.launch {
+            val resolvedSlug = appRepository.getByPackage(packageName)?.slug ?: packageName
+            slug.value = resolvedSlug
+            fetchDetail(resolvedSlug)
+        }
+    }
+
+    fun retry() {
+        val resolvedSlug = slug.value ?: return
+        viewModelScope.launch {
+            _refreshing.value = true
+            try {
+                fetchDetail(resolvedSlug)
+            } finally {
+                _refreshing.value = false
+            }
+        }
+    }
+
+    private suspend fun fetchDetail(resolvedSlug: String) {
+        when (val result = detailedAppRepository.fetchAndPersist(resolvedSlug)) {
+            is DetailedAppResult.Success -> _detailError.value = null
+            DetailedAppResult.NotFound -> _detailError.value = null
+            is DetailedAppResult.Failed -> {
+                Log.w(TAG, "Detail fetch failed for $resolvedSlug: ${result.failure}")
+                _detailError.value = result.failure
+            }
+        }
+    }
+
+    fun toggleFavourite() {
+        val identity = identity.value ?: return
+        viewModelScope.launch { favouriteRepository.toggle(identity) }
+    }
+
+    fun toggleBlacklist() {
+        val identity = identity.value ?: return
+        viewModelScope.launch { blacklistRepository.toggle(identity) }
+    }
+
+    fun ignoreAllUpdates() {
+        val identity = identity.value ?: return
+        viewModelScope.launch { ignoredUpdateRepository.ignoreAll(identity) }
+    }
+
+    fun ignoreThisVersion() {
+        val app = resolvedApp() ?: return
+        viewModelScope.launch {
+            ignoredUpdateRepository.ignoreVersion(app.packageName, app.versionCode)
+        }
+    }
+
+    fun stopIgnoringUpdates() {
+        val identity = identity.value ?: return
+        viewModelScope.launch { ignoredUpdateRepository.stopIgnoring(identity) }
+    }
+
+    fun install() {
+        val loaded = uiState.value as? AppDetailsUiState.Loaded ?: return
+        val source = loaded.sources.firstOrNull { it.signerMatch }
+            ?: loaded.sources.firstOrNull { it.app.candidateId != null }
+            ?: return
+        val app = source.app
+
+        viewModelScope.launch {
+            val stored = downloadHelper.getDownload(app.packageName)
+
+            if (stored != null &&
+                stored.versionCode == app.versionCode &&
+                installDispatcher.canInstallFromDisk(stored)
+            ) {
+                dispatch(stored)
+                return@launch
+            }
+
+            val entity = appRepository.get(app.slug) ?: return@launch
+            val candidate = app.candidateId?.let { appRepository.candidate(it) } ?: return@launch
+            downloadHelper.enqueueAndInstall(entity, candidate)
+        }
+    }
+
+    fun cancel() {
+        val identity = identity.value ?: return
+        viewModelScope.launch { downloadHelper.cancel(identity) }
+    }
+
+    fun installFrom(source: ResolvedApp) {
+        viewModelScope.launch {
+            val entity = appRepository.get(source.slug) ?: return@launch
+            val candidate = source.candidateId?.let { appRepository.candidate(it) } ?: return@launch
+            downloadHelper.enqueueAndInstall(entity, candidate)
+        }
+    }
+
+    private suspend fun dispatch(download: Download) {
+        when (val result = installDispatcher.dispatch(download.packageName)) {
+            InstallDispatch.Started -> Unit
+            is InstallDispatch.Refused -> {
+                Log.w(TAG, "Install of ${download.packageName} refused at ${result.status}")
+                _refusals.send(result)
+            }
+        }
+    }
+
+    private fun resolvedApp(): ResolvedApp? = (uiState.value as? AppDetailsUiState.Loaded)?.resolved
+
+    private fun detailsFor(slug: String): Flow<AppDetailsUiState> {
+        val identity = identity.value.orEmpty()
+
+        val catalog = combine(
+            appRepository.observeDetail(slug),
+            installedRepository.observe(identity)
+        ) { detailed, installed -> detailed to installed }
+
+        val row = downloadHelper.downloads
+            .map { rows -> rows.firstOrNull { it.packageName == identity } }
+            .distinctUntilChanged()
+
+        return combine(catalog, row, _detailError) { (detailed, installed), download, error ->
+            when {
+                detailed != null -> {
+                    val fingerprint = installed?.let { CertFingerprint.of(it.signer, it.signerMd5) }
+                    AppDetailsUiState.Loaded(
+                        details = mapper.toAppDetails(detailed),
+                        sources = mapper.toSources(detailed, fingerprint),
+                        download = download
+                    )
+                }
+
+                // Nothing cached and the fetch failed: show the failure, not "not found".
+                error != null -> AppDetailsUiState.Error(error)
+
+                else -> AppDetailsUiState.NotFound
+            }
+        }
+    }
+
+    private companion object {
+        const val TAG = "AppDetailsViewModel"
+        const val STOP_TIMEOUT_MS = 5_000L
+    }
+}

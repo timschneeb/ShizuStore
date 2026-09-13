@@ -1,0 +1,29 @@
+Aurora Droid is another FOSS client for F-Droid.
+
+It works with the same repositories as the official client and presents them through a Material 3 interface. Enable as many repositories as you like, and everything available to you appears in a single searchable catalogue. Downloads are handled by a proper download manager, installs can run silently through root or Shizuku, and updates can be checked and applied on their own.
+
+Features:
+
+* One catalogue across every repository. Apps from all enabled repositories appear in a single list, organised by category, with recently added and recently updated sections. Search covers all of them at once.
+
+* Repository management. Add any F-Droid repository by pasting its link, then enable, disable, reorder or remove it at any time. Where two repositories carry the same app, the one placed higher in the list takes precedence. F-Droid is enabled by default; IzzyOnDroid and microG are included but switched off.
+
+* Four install methods. The default session installer, the system installer, root, and Shizuku. Root and Shizuku install without a confirmation dialog for each app.
+
+* Scheduled update checks. Repositories are checked on an interval of your choosing, from every 6 hours to weekly, or not at all. On devices that support silent installs, updates can be downloaded and applied automatically. All background activity can be restricted to Wi-Fi.
+
+* Compatible updates only. Versions built for a different CPU architecture, or requiring a newer Android release than the device runs, are not offered as updates.
+
+* A full download manager. Progress, cancellation, retries and queue management, with automatic fallback to a repository's mirrors when its primary server is unavailable.
+
+* Grouped notifications. A batch of updates produces a single summary rather than one notification per app.
+
+* Favourites, blacklist and ignored updates. Mark the apps you follow, hide packages you never want to see, and skip a specific version of an individual app.
+
+* No tracking. No analytics, no accounts, no third-party services. Every APK is verified against the checksum published by its repository before installation, and repositories are pinned to their signing key, so a substituted server cannot serve different content.
+
+* Free software. GPLv3, developed in the open, with no proprietary components in the build.
+
+Version 2.x is a full rewrite: new interface, new database, and new sync, download and install paths. Nothing carries over from 1.x, so repositories, favourites and blacklists have to be set up again.
+
+Aurora Droid is not affiliated with or endorsed by F-Droid.

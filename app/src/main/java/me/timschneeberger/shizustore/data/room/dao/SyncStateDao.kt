@@ -1,0 +1,25 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+package me.timschneeberger.shizustore.data.room.dao
+
+import androidx.room.Dao
+import androidx.room.Query
+import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
+import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
+
+@Dao
+interface SyncStateDao {
+
+    @Query("SELECT * FROM sync_state WHERE id = ${SyncStateEntity.SINGLETON_ID}")
+    suspend fun get(): SyncStateEntity?
+
+    @Query("SELECT * FROM sync_state WHERE id = ${SyncStateEntity.SINGLETON_ID}")
+    fun observe(): Flow<SyncStateEntity?>
+
+    @Upsert
+    suspend fun upsert(state: SyncStateEntity)
+}

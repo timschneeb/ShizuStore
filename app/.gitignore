@@ -1,0 +1,5 @@
+/build
+
+# AGP copies the release APK and its baseline profiles here, beside the module rather than under
+# `build/`, so the rule above does not reach them. Signed binaries: keep them out.
+/release

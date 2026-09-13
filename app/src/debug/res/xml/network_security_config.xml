@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+      ~ Debug only: trust user-installed CAs so an HTTP proxy can intercept traffic.
+      ~ Cleartext stays allowed because the debug API base URL is plain http.
+      -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

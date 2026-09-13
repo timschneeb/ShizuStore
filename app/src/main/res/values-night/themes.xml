@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2026 Aurora OSS
+  ~ SPDX-License-Identifier: GPL-3.0-or-later
+  -->
+<resources>
+    <style name="Theme.ShizuStore" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>

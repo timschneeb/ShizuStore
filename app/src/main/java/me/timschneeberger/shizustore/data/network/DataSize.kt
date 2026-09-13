@@ -1,0 +1,42 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Adapted from Droid-ify (GPL-3.0-or-later).
+ */
+
+package me.timschneeberger.shizustore.data.network
+
+import java.util.Locale
+
+@JvmInline
+value class DataSize(val value: Long) {
+
+    companion object {
+        private const val BYTE_SIZE = 1024L
+        private val sizeFormats = listOf("%.0f B", "%.0f kB", "%.1f MB", "%.2f GB")
+    }
+
+    override fun toString(): String {
+        val (size, index) = generateSequence(Pair(value.toFloat(), 0)) { (size, index) ->
+            if (size >= BYTE_SIZE) {
+                Pair(size / BYTE_SIZE, index + 1)
+            } else {
+                null
+            }
+        }.take(sizeFormats.size).last()
+        return sizeFormats[index].format(Locale.US, size)
+    }
+}
+
+infix fun DataSize.percentBy(denominator: DataSize?): Int = value percentBy denominator?.value
+
+infix fun Int.percentBy(denominator: Int?): Int {
+    if (denominator == null || denominator < 1) return -1
+    return (this * 100 / denominator)
+}
+
+infix fun Long.percentBy(denominator: Long?): Int {
+    if (denominator == null || denominator < 1) return -1
+    return (this * 100 / denominator).toInt()
+}

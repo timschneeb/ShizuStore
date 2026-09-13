@@ -1,0 +1,24 @@
+*.iml
+.DS_Store
+.gradle
+/.claude
+/.idea
+/.superpowers
+/build
+/captures
+/docs
+.externalNativeBuild
+.cxx
+local.properties
+.kotlin
+*.hprof
+*.apk
+*.aab
+
+# Exclude signing configurations & keystores. `app/testkey.jks` is deliberately tracked: it is the
+# public AOSP test key, and debug builds need it to be the same everywhere.
+signing.properties
+keystore.properties
+*.keystore
+*.jks
+!app/testkey.jks

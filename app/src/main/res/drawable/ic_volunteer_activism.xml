@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2026 Aurora OSS
+  ~ SPDX-License-Identifier: GPL-3.0-or-later
+  ~
+  ~ Path data from Google's Material Icons ("volunteer_activism").
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?android:attr/colorControlNormal"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M2,20h2c0.55,0 1,-0.45 1,-1v-9c0,-0.55 -0.45,-1 -1,-1L2,9v11zM21.16,10.73C20.79,10.29 20.24,10 19.62,10H14l0.96,-3.63 0.03,-0.32c0,-0.41 -0.17,-0.79 -0.44,-1.06L13.5,4l-4.6,4.6C8.32,9.19 8,9.98 8,10.83v6.68c0,1.1 0.9,1.99 2,1.99h7.61c0.83,0 1.54,-0.5 1.84,-1.22l2.47,-5.77c0.09,-0.23 0.14,-0.47 0.14,-0.72v-0.28l-0.9,-0.78z" />
+</vector>

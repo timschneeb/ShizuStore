@@ -1,0 +1,181 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * Adapted from Aurora Store's InstallerBase (GPL-3.0-or-later).
+ */
+
+package me.timschneeberger.shizustore.data.installer.base
+
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.annotation.VisibleForTesting
+import androidx.core.content.FileProvider
+import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import me.timschneeberger.shizustore.compose.stringRes
+import me.timschneeberger.shizustore.data.model.DownloadFailure
+import me.timschneeberger.shizustore.data.model.DownloadStatus
+import me.timschneeberger.shizustore.data.model.InstallError
+import me.timschneeberger.shizustore.data.model.signaturesMatch
+import me.timschneeberger.shizustore.data.room.dao.DownloadDao
+import me.timschneeberger.shizustore.data.room.entity.Download
+import me.timschneeberger.shizustore.util.CertUtil
+import me.timschneeberger.shizustore.util.NotificationUtil
+import me.timschneeberger.shizustore.util.PathUtil
+import me.timschneeberger.shizustore.util.isolate
+import me.timschneeberger.shizustore.util.isolatedIoScope
+
+abstract class InstallerBase(
+    protected val context: Context,
+    private val downloadDao: DownloadDao
+) : IInstaller {
+    final override fun install(download: Download) {
+        synchronized(queue) { queue.add(download.packageName) }
+        synchronized(dispatched) { dispatched.add(download.packageName) }
+        scope.launch {
+            val packageName = download.packageName
+
+            if (refuseOnSignerMismatch(download)) return@launch
+
+            val status = runCatching { downloadDao.getDownload(packageName)?.status }.getOrNull()
+            if (status == DownloadStatus.CANCELLED) {
+                Log.i(TAG, "$packageName was cancelled before its install began; standing down")
+                removeFromInstallQueue(packageName)
+                return@launch
+            }
+
+            val flipped = isolate(TAG, "flip $packageName to INSTALLING") {
+                downloadDao.updateStatusAndError(packageName, DownloadStatus.INSTALLING, null)
+            }
+
+            if (!flipped) {
+                removeFromInstallQueue(packageName)
+                return@launch
+            }
+
+            if (!isolate(TAG, "install $packageName") { beginInstall(download) }) {
+                postError(packageName, InstallError.SessionFailure(packageName, "unexpected error"))
+            }
+        }
+    }
+
+    private fun refuseOnSignerMismatch(download: Download): Boolean {
+        val installed = CertUtil.getSigningFingerprints(context, download.packageName)
+        if (installed.isEmpty()) return false
+
+        if (signaturesMatch(installed, download.signer, download.sigMd5)) return false
+
+        Log.e(
+            TAG,
+            "Refusing to install ${download.packageName}: its signing set is not the " +
+                "installed copy's"
+        )
+        postError(download.packageName, InstallError.SignerMismatch(download.packageName))
+        return true
+    }
+
+    protected abstract suspend fun beginInstall(download: Download)
+
+    override fun clearQueue() {
+        synchronized(queue) { queue.clear() }
+    }
+
+    override fun isAlreadyQueued(packageName: String): Boolean =
+        synchronized(queue) { queue.contains(packageName) }
+
+    override fun removeFromInstallQueue(packageName: String) {
+        synchronized(queue) { queue.remove(packageName) }
+    }
+
+    protected fun getApkFile(download: Download): File =
+        PathUtil.getApkFile(context, download.packageName, download.versionCode)
+
+    protected fun getUri(file: File): Uri =
+        FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", file)
+
+    fun onInstallationSuccess(packageName: String) {
+        scope.launch {
+            val displayName = downloadDao.getDownload(packageName)?.displayName ?: packageName
+            downloadDao.updateStatusAndError(packageName, DownloadStatus.INSTALLED, null)
+
+            NotificationUtil.notifyApp(
+                context,
+                packageName,
+                NotificationUtil.installedNotification(context, packageName, displayName)
+            )
+
+            isolate(TAG, "reclaim $packageName's installed apk") { reclaimApk(packageName) }
+        }
+    }
+
+    private suspend fun reclaimApk(packageName: String) {
+        val row = downloadDao.getDownload(packageName) ?: return
+        if (row.status != DownloadStatus.INSTALLED) {
+            Log.i(TAG, "Not reclaiming $packageName's apk: the row is ${row.status}")
+            return
+        }
+
+        val apk = getApkFile(row)
+        if (!apk.exists()) return
+
+        val bytes = apk.length()
+        if (apk.delete()) {
+            Log.i(TAG, "Reclaimed $bytes bytes from ${apk.name}")
+        } else {
+            Log.w(TAG, "Could not delete ${apk.name} after installing $packageName")
+        }
+    }
+
+    fun postError(packageName: String, error: InstallError) {
+        Log.e(TAG, "Install failed for $packageName: $error")
+        scope.launch {
+            val status = runCatching { downloadDao.getDownload(packageName)?.status }.getOrNull()
+            if (status == DownloadStatus.CANCELLED) {
+                Log.i(TAG, "$packageName is CANCELLED; not relabelling it FAILED ($error)")
+                return@launch
+            }
+
+            downloadDao.updateStatusAndError(
+                packageName,
+                DownloadStatus.FAILED,
+                DownloadFailure.of(error)
+            )
+
+            val displayName = downloadDao.getDownload(packageName)?.displayName ?: packageName
+            NotificationUtil.notifyApp(
+                context,
+                packageName,
+                NotificationUtil.installFailedNotification(
+                    context = context,
+                    packageName = packageName,
+                    displayName = displayName,
+                    reason = context.getString(error.stringRes())
+                )
+            )
+        }
+        onInstallFailed(packageName, error)
+    }
+
+    protected open fun onInstallFailed(packageName: String, error: InstallError) {}
+
+    companion object {
+        private const val TAG = "InstallerBase"
+
+        private val queue: MutableSet<String> = mutableSetOf()
+
+        private val dispatched: MutableSet<String> = mutableSetOf()
+
+        fun wasDispatchedInThisProcess(packageName: String): Boolean =
+            synchronized(dispatched) { dispatched.contains(packageName) }
+
+        @VisibleForTesting
+        fun forgetDispatchedInThisProcess() {
+            synchronized(dispatched) { dispatched.clear() }
+        }
+
+        private val scope: CoroutineScope = isolatedIoScope(TAG)
+    }
+}

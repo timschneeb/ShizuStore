@@ -1,0 +1,20 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+package me.timschneeberger.shizustore.data.model
+
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+@Serializable
+@Parcelize
+data class ProxyInfo(
+    var protocol: String,
+    var host: String,
+    var port: Int,
+    var proxyUser: String?,
+    var proxyPassword: String?
+) : Parcelable

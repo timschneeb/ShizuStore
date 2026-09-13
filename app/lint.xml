@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2026 Aurora OSS
+  ~ SPDX-License-Identifier: GPL-3.0-or-later
+  ~
+  ~ Adapted from Aurora Store's lint.xml (GPL-3.0-or-later).
+  -->
+<lint>
+    <issue id="MissingTranslation" severity="ignore" />
+
+    <!--
+      ~ The launcher icon has no monochrome layer on purpose, as ic_launcher.xml records: the
+      ~ layer is tinted flat, so it needs silhouette artwork that does not exist. Without it a
+      ~ themed launcher falls back to the full-colour icon, which is the better of the two.
+      -->
+    <issue id="MonochromeLauncherIcon" severity="ignore" />
+
+    <!--
+      ~ getAllocatableBytes only reports more space than usableSpace because it counts cache the
+      ~ system would evict, and it is only honest if allocateBytes then reserves it. Reporting
+      ~ the larger figure without reserving would let a download start that cannot finish.
+      -->
+    <issue id="UsableSpace" severity="ignore" />
+</lint>

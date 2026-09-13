@@ -1,0 +1,140 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+package me.timschneeberger.shizustore.compose.composable
+
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Terminal
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import me.timschneeberger.shizustore.R
+import me.timschneeberger.shizustore.data.installer.ShizukuInstaller
+import me.timschneeberger.shizustore.data.installer.ShizukuPrompt
+import me.timschneeberger.shizustore.data.installer.probeShizukuPrompt
+import me.timschneeberger.shizustore.extensions.viewExternal
+
+/**
+ * Home card that walks the user through the Shizuku installer: install Shizuku when it is
+ * absent, otherwise ask it for the install permission. Re-probes on every resume so coming
+ * back from Play or the permission dialog updates (or hides) the card.
+ */
+@Composable
+fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val prompt by produceState<ShizukuPrompt?>(initialValue = null, context, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            value = withContext(Dispatchers.IO) { probeShizukuPrompt(context) }
+        }
+    }
+
+    val current = prompt ?: return
+    if (current == ShizukuPrompt.READY) return
+
+    val isInstall = current == ShizukuPrompt.INSTALL
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = dimensionResource(R.dimen.spacing_large),
+                vertical = dimensionResource(R.dimen.spacing_small)
+            )
+    ) {
+        Column(modifier = Modifier.padding(dimensionResource(R.dimen.spacing_large))) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_medium)
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Terminal,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.shizuku_card_title),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = stringResource(
+                            if (isInstall) {
+                                R.string.shizuku_card_install_body
+                            } else {
+                                R.string.shizuku_card_grant_body
+                            }
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = onDismiss) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = stringResource(R.string.shizuku_card_dismiss)
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
+                    onClick = {
+                        if (isInstall) {
+                            openShizukuOnPlay(context)
+                        } else {
+                            ShizukuInstaller.requestPermissionIfNeeded()
+                        }
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            if (isInstall) {
+                                R.string.shizuku_card_install_action
+                            } else {
+                                R.string.shizuku_card_grant_action
+                            }
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** Play first, browser fallback; devices without Play still reach the listing. */
+private fun openShizukuOnPlay(context: Context) {
+    val packageName = ShizukuInstaller.SHIZUKU_PACKAGE_NAME
+    if (!context.viewExternal("market://details?id=$packageName")) {
+        context.viewExternal("https://play.google.com/store/apps/details?id=$packageName")
+    }
+}

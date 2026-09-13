@@ -1,0 +1,5 @@
+• Rewritten from scratch, the UI is now Jetpack Compose and Material 3
+• New install methods: session, native, root and Shizuku
+• Repository sync, downloads and updates
+• Reworked notifications, with grouped summaries for batch updates
+• Better build detection & app channel support
