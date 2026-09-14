@@ -54,7 +54,7 @@ class CatalogMappersTest {
                 authorUrl = "https://github.com/papergray",
                 sourceName = "GitHub",
                 permissions = listOf("android.permission.INTERNET"),
-                fullDescription = "<p>Readme</p>"
+                fullDescription = "# Readme"
             ),
             fetchedAt = 9L
         )

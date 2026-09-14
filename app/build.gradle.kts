@@ -183,6 +183,12 @@ dependencies {
     implementation(libs.coil.kt)
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
+    implementation(libs.coil.svg)
+
+    implementation(libs.markdown.renderer)
+    implementation(libs.markdown.renderer.m3)
+    implementation(libs.markdown.renderer.coil3)
+    implementation(libs.markdown.renderer.code)
 
     implementation(libs.hilt.android.core)
     implementation(libs.androidx.hilt.viewmodel)

@@ -82,8 +82,11 @@ fun MoreAboutScreen(
                     ?: state.details.description
 
                 if (body.isNotBlank()) {
-                    DescriptionBody(
-                        html = body,
+                    MarkdownDescription(
+                        content = body,
+                        repoBaseUrl = githubRawBase(
+                            state.details.sourceUrl ?: state.details.url
+                        ),
                         modifier = Modifier.padding(
                             horizontal = dimensionResource(R.dimen.spacing_large),
                             vertical = dimensionResource(R.dimen.spacing_small)

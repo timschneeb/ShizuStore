@@ -17,6 +17,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import coil3.svg.SvgDecoder
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
@@ -47,6 +48,8 @@ class ShizuApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
                         cacheStrategy = { SuccessOnlyImageCacheStrategy() }
                     )
                 )
+                // README badges and wordmarks are frequently SVG.
+                add(SvgDecoder.Factory())
             }
             .build()
 

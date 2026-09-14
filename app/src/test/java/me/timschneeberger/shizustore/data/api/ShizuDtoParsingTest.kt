@@ -156,7 +156,7 @@ class ShizuDtoParsingTest {
               "sourceName": "GitHub",
               "authorUrl": "https://github.com/papergray",
               "permissions": ["android.permission.INTERNET", "android.permission.CAMERA"],
-              "fullDescription": "<p>Readme</p>"
+              "fullDescription": "# Readme"
             }
             """.trimIndent()
         )
@@ -179,7 +179,7 @@ class ShizuDtoParsingTest {
             listOf("android.permission.INTERNET", "android.permission.CAMERA"),
             detail.permissions
         )
-        assertEquals("<p>Readme</p>", detail.fullDescription)
+        assertEquals("# Readme", detail.fullDescription)
     }
 
     @Test
