@@ -5,10 +5,13 @@
 
 package me.timschneeberger.shizustore.data.repository
 
+import androidx.room.immediateTransaction
+import androidx.room.useWriterConnection
 import javax.inject.Inject
 import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.CertFingerprint
+import me.timschneeberger.shizustore.data.room.AuroraDatabase
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
 import me.timschneeberger.shizustore.data.room.dao.InstalledDao
@@ -22,22 +25,32 @@ import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
  */
 @Singleton
 class UpdateStateRepository @Inject constructor(
+    private val database: AuroraDatabase,
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao,
     private val installedDao: InstalledDao
 ) {
-    suspend fun recomputeAll() {
-        appDao.clearUpdateState()
-        val installedByPackage = installedDao.getAll().associateBy { it.packageName }
-        appDao.getAll().forEach { app ->
-            val installed = app.packageName?.let { installedByPackage[it] }
-            applyState(app.slug, installed)
+    /**
+     * One transaction keeps the cleared state invisible to observers, so badges do not flicker.
+     * Uses the driver transaction API because `withTransaction` needs a
+     * `SupportSQLiteOpenHelper`, which a `BundledSQLiteDriver` database does not have.
+     */
+    suspend fun recomputeAll() = database.useWriterConnection { transactor ->
+        transactor.immediateTransaction {
+            appDao.clearUpdateState()
+            val installedByPackage = installedDao.getAll().associateBy { it.packageName }
+            appDao.getAll().forEach { app ->
+                val installed = app.packageName?.let { installedByPackage[it] }
+                applyState(app.slug, installed)
+            }
         }
     }
 
-    suspend fun recompute(packageName: String) {
-        val app = appDao.getByPackage(packageName) ?: return
-        applyState(app.slug, installedDao.getByPackage(packageName))
+    suspend fun recompute(packageName: String) = database.useWriterConnection { transactor ->
+        transactor.immediateTransaction {
+            val app = appDao.getByPackage(packageName) ?: return@immediateTransaction
+            applyState(app.slug, installedDao.getByPackage(packageName))
+        }
     }
 
     private suspend fun applyState(slug: String, installed: InstalledEntity?) {

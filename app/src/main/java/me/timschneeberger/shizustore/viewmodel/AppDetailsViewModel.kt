@@ -92,6 +92,9 @@ class AppDetailsViewModel @Inject constructor(
     private val _refreshing = MutableStateFlow(false)
     val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
 
+    /** Detail request in progress; the screen stays blank until it settles. */
+    private val detailFetching = MutableStateFlow(false)
+
     private val _refusals = Channel<InstallDispatch.Refused>(Channel.BUFFERED)
     val refusals: Flow<InstallDispatch.Refused> = _refusals.receiveAsFlow()
 
@@ -123,9 +126,24 @@ class AppDetailsViewModel @Inject constructor(
         .flatMapLatest { ignoredUpdateRepository.observeIgnore(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
-    // The server catalog has no author/category recommendation data; the sections stay empty.
-    val moreFromAuthor: StateFlow<List<ResolvedApp>> =
-        flowOf(emptyList<ResolvedApp>()).stateIn(
+    // Other apps by the same stable developer key; empty until a profile is known.
+    val moreFromAuthor: StateFlow<List<ResolvedApp>> = slug
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { currentSlug ->
+            appRepository.observeDetail(currentSlug)
+                .map { it?.app?.authorKey }
+                .distinctUntilChanged()
+                .flatMapLatest { authorKey ->
+                    if (authorKey.isNullOrBlank()) {
+                        flowOf(emptyList())
+                    } else {
+                        appRepository.observeByAuthor(authorKey, currentSlug)
+                            .map { rows -> rows.map(mapper::toResolvedApp) }
+                    }
+                }
+        }
+        .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
             emptyList()
@@ -135,6 +153,7 @@ class AppDetailsViewModel @Inject constructor(
         identity.value = packageName
         viewModelScope.launch {
             val resolvedSlug = appRepository.getByPackage(packageName)?.slug ?: packageName
+            detailFetching.value = true
             slug.value = resolvedSlug
             fetchDetail(resolvedSlug)
         }
@@ -153,13 +172,18 @@ class AppDetailsViewModel @Inject constructor(
     }
 
     private suspend fun fetchDetail(resolvedSlug: String) {
-        when (val result = detailedAppRepository.fetchAndPersist(resolvedSlug)) {
-            is DetailedAppResult.Success -> _detailError.value = null
-            DetailedAppResult.NotFound -> _detailError.value = null
-            is DetailedAppResult.Failed -> {
-                Log.w(TAG, "Detail fetch failed for $resolvedSlug: ${result.failure}")
-                _detailError.value = result.failure
+        detailFetching.value = true
+        try {
+            when (val result = detailedAppRepository.fetchAndPersist(resolvedSlug)) {
+                is DetailedAppResult.Success -> _detailError.value = null
+                DetailedAppResult.NotFound -> _detailError.value = null
+                is DetailedAppResult.Failed -> {
+                    Log.w(TAG, "Detail fetch failed for $resolvedSlug: ${result.failure}")
+                    _detailError.value = result.failure
+                }
             }
+        } finally {
+            detailFetching.value = false
         }
     }
 
@@ -251,12 +275,23 @@ class AppDetailsViewModel @Inject constructor(
             .map { rows -> rows.firstOrNull { it.packageName == identity } }
             .distinctUntilChanged()
 
-        return combine(catalog, row, _detailError) { (detailed, installed), download, error ->
+        return combine(
+            catalog,
+            row,
+            _detailError,
+            detailFetching
+        ) { catalogPair, download, error, fetching ->
+            val (detailed, installed) = catalogPair
             when {
+                // Blank the screen until the request settles so the install row
+                // does not pop in late; failures fall back to cached data.
+                fetching -> AppDetailsUiState.Loading
+
                 detailed != null -> {
                     val fingerprint = installed?.let { CertFingerprint.of(it.signer, it.signerMd5) }
                     AppDetailsUiState.Loaded(
-                        details = mapper.toAppDetails(detailed),
+                        details = mapper.toAppDetails(detailed)
+                            .copy(fullDescription = detailedAppRepository.fullDescription(slug)),
                         sources = mapper.toSources(detailed, fingerprint),
                         download = download
                     )

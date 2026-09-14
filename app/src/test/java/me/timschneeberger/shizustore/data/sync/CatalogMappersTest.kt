@@ -23,13 +23,19 @@ class CatalogMappersTest {
             stars = 10137,
             downloadTotal = 2500000000L,
             versionUpdatedAt = "2026-08-20T12:00:00+00:00",
-            listUpdatedAt = "2026-08-19T12:00:00+00:00"
+            listUpdatedAt = "2026-08-19T12:00:00+00:00",
+            authorKey = "github:papergray",
+            authorName = "papergray",
+            sourceName = "GitHub"
         ).toEntity(syncedAt = 7L)
 
         assertEquals(10137, entity.stars)
         assertEquals(2500000000L, entity.downloadTotal)
         assertEquals("2026-08-20T12:00:00+00:00", entity.versionUpdatedAt)
         assertEquals("2026-08-19T12:00:00+00:00", entity.listUpdatedAt)
+        assertEquals("github:papergray", entity.authorKey)
+        assertEquals("papergray", entity.authorName)
+        assertEquals("GitHub", entity.sourceName)
         assertEquals(7L, entity.syncedAt)
     }
 
@@ -43,7 +49,12 @@ class CatalogMappersTest {
                 stars = 42,
                 downloadTotal = 1234L,
                 versionUpdatedAt = "2026-08-21T12:00:00+00:00",
-                listUpdatedAt = "2026-08-18T12:00:00+00:00"
+                listUpdatedAt = "2026-08-18T12:00:00+00:00",
+                authorName = "papergray",
+                authorUrl = "https://github.com/papergray",
+                sourceName = "GitHub",
+                permissions = listOf("android.permission.INTERNET"),
+                fullDescription = "<p>Readme</p>"
             ),
             fetchedAt = 9L
         )
@@ -52,6 +63,10 @@ class CatalogMappersTest {
         assertEquals(1234L, entity.downloadTotal)
         assertEquals("2026-08-21T12:00:00+00:00", entity.versionUpdatedAt)
         assertEquals("2026-08-18T12:00:00+00:00", entity.listUpdatedAt)
+        assertEquals("papergray", entity.authorName)
+        assertEquals("https://github.com/papergray", entity.authorUrl)
+        assertEquals("GitHub", entity.sourceName)
+        assertEquals(listOf("android.permission.INTERNET"), entity.permissions)
         assertEquals(9L, entity.detailsFetchedAt)
     }
 

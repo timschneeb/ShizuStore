@@ -212,6 +212,22 @@ class CatalogDaoTest {
     }
 
     @Test
+    fun authorQueryExcludesCurrentAppAndOrdersByName() = runTest {
+        val appDao = db.appDao()
+        appDao.upsert(app("a", "Alpha").copy(authorKey = "github:papergray"))
+        appDao.upsert(app("d", "Delta").copy(authorKey = "github:papergray"))
+        appDao.upsert(app("b", "Beta").copy(authorKey = "github:papergray"))
+        appDao.upsert(app("c", "Gamma").copy(authorKey = "github:other"))
+
+        val rows = appDao
+            .observeByAuthor(authorKey = "github:papergray", excludeSlug = "a", limit = 10)
+            .first()
+            .map { it.name }
+
+        assertEquals(listOf("Beta", "Delta"), rows)
+    }
+
+    @Test
     fun syncStateRoundTrips() = runTest {
         val dao = db.syncStateDao()
         assertNull(dao.get())

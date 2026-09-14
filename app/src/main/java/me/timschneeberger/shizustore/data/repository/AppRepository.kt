@@ -42,6 +42,12 @@ class AppRepository @Inject constructor(
 
     fun observeRecommendedPool(): Flow<List<AppEntity>> = appDao.observeRecommendedPool()
 
+    fun observeByAuthor(
+        authorKey: String,
+        excludeSlug: String,
+        limit: Int = CAROUSEL_LIMIT
+    ): Flow<List<AppEntity>> = appDao.observeByAuthor(authorKey, excludeSlug, limit)
+
     fun observeRecentlyUpdated(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
         appDao.observeRecentlyUpdated(limit)
 

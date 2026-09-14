@@ -55,11 +55,14 @@ fun AppUpdateItem(
             ?: app.versionName
     }
 
+    val sizeLabel = CommonUtil.sizeLabel(app.size)
+    val tertiaryText = if (sizeLabel != null) "$sizeLabel  •  $versionChange" else versionChange
+
     AuroraListItem(
         modifier = modifier,
         headline = app.name.ifBlank { app.packageName },
         supporting = releasedAt,
-        tertiary = "${CommonUtil.addSiPrefix(app.size)}  •  $versionChange",
+        tertiary = tertiaryText,
         headlineStyle = MaterialTheme.typography.bodyMedium,
         minHeight = R.dimen.list_item_height_three_line,
         onClick = onClick,

@@ -81,6 +81,7 @@
     <string name="details_developer_email">Email</string>
     <string name="details_developer_name">Name</string>
     <string name="details_developer_phone">Phone</string>
+    <string name="details_developer_profile">Profile</string>
     <string name="details_developer_website">Website</string>
     <string name="details_donate">Donate</string>
     <string name="details_donate_bitcoin" translatable="false">Bitcoin</string>
@@ -104,7 +105,10 @@
     <string name="details_permissions_none">No permissions requested</string>
     <string name="details_similar_apps">Similar apps</string>
     <string name="details_source_code">Source code</string>
+    <string name="details_store">Store</string>
+    <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
     <string name="details_translation">Translations</string>
+    <string name="details_incompatible_notice">This app needs Android API %1$d or newer. This device runs API %2$d.</string>
     <string name="details_version_incompatible">Incompatible</string>
     <string name="details_version_installed">Installed</string>
     <string name="details_version_repo_other_signer"><xliff:g id="repository">%1$s</xliff:g> · Different signing key</string>
@@ -292,6 +296,8 @@
     <string name="filter_title_sort">Sort by</string>
     <string name="app_badge_paid">Paid</string>
     <string name="app_badge_iap">IAP</string>
+    <string name="app_indicator_installed">Installed</string>
+    <string name="app_indicator_update">Update available</string>
     <string name="details_billing_paid">This is a paid app.</string>    <string name="details_billing_iap">This app offers in-app purchases.</string>
     <string name="details_billing_paid_iap">This is a paid app with in-app purchases.</string>
 

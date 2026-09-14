@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
-import me.timschneeberger.shizustore.compose.composable.SectionHeader
+import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.extensions.viewExternal
 
@@ -22,24 +22,37 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
 
     val websiteLabel = stringResource(R.string.details_website)
     val sourceCodeLabel = stringResource(R.string.details_source_code)
+    val storeLabel = stringResource(R.string.details_store)
     val issueTrackerLabel = stringResource(R.string.details_issue_tracker)
     val changelogLabel = stringResource(R.string.details_changelog)
     val translationLabel = stringResource(R.string.details_translation)
     val donateLabel = stringResource(R.string.details_donate)
 
     val links = buildList {
-        details.webSite?.takeIf { it.isNotBlank() }?.let { add(websiteLabel to it) }
-        details.sourceCode?.takeIf { it.isNotBlank() }?.let { add(sourceCodeLabel to it) }
-        details.issueTracker?.takeIf { it.isNotBlank() }?.let { add(issueTrackerLabel to it) }
-        details.changelog?.takeIf { it.isNotBlank() }?.let { add(changelogLabel to it) }
-        details.translation?.takeIf { it.isNotBlank() }?.let { add(translationLabel to it) }
-        details.donate.filter { it.isNotBlank() }.forEach { add(donateLabel to it) }
+        val seen = mutableSetOf<String>()
+
+        fun addOnce(label: String, url: String) {
+            if (url.isNotBlank() && seen.add(url)) add(label to url)
+        }
+
+        details.sourceCode?.let { addOnce(sourceCodeLabel, it) }
+
+        // Play-only apps link to the store through the notice card above,
+        // so a Website/Store row would just repeat that link.
+        if (details.availability != Availability.PLAY_REDIRECT) {
+            details.webSite?.let { addOnce(websiteLabel, it) }
+            details.storeUrl?.let { addOnce(storeLabel, it) }
+        }
+
+        details.issueTracker?.let { addOnce(issueTrackerLabel, it) }
+        details.changelog?.let { addOnce(changelogLabel, it) }
+        details.translation?.let { addOnce(translationLabel, it) }
+        details.donate.forEach { addOnce(donateLabel, it) }
     }
 
     if (links.isEmpty()) return
 
     Column(modifier = modifier) {
-        SectionHeader(title = stringResource(R.string.details_links))
         links.forEach { (label, url) ->
             AuroraListItem(
                 headline = label,

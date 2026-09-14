@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +26,6 @@ import me.timschneeberger.shizustore.compose.composable.ContainedLoadingIndicato
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
-import me.timschneeberger.shizustore.compose.ui.details.composable.LinkList
 import me.timschneeberger.shizustore.viewmodel.AppDetailsUiState
 import me.timschneeberger.shizustore.viewmodel.AppDetailsViewModel
 
@@ -80,18 +77,19 @@ fun MoreAboutScreen(
                     dimensionResource(R.dimen.spacing_medium)
                 )
             ) {
-                if (state.details.description.isNotBlank()) {
-                    Text(
-                        text = rememberDescription(state.details.description),
-                        style = MaterialTheme.typography.bodyMedium,
+                val body = state.details.fullDescription
+                    ?.takeIf { it.isNotBlank() }
+                    ?: state.details.description
+
+                if (body.isNotBlank()) {
+                    DescriptionBody(
+                        html = body,
                         modifier = Modifier.padding(
                             horizontal = dimensionResource(R.dimen.spacing_large),
                             vertical = dimensionResource(R.dimen.spacing_small)
                         )
                     )
                 }
-
-                LinkList(details = state.details)
             }
         }
     }

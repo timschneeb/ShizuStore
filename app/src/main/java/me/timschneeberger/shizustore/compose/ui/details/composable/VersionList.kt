@@ -94,7 +94,7 @@ fun VersionList(
                 .clickable { expanded = !expanded }
                 .padding(
                     horizontal = dimensionResource(R.dimen.spacing_large),
-                    vertical = dimensionResource(R.dimen.spacing_xsmall)
+                    vertical = dimensionResource(R.dimen.spacing_small)
                 ),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -124,6 +124,7 @@ fun VersionList(
                 contentDescription = stringResource(
                     if (expanded) R.string.action_collapse else R.string.action_expand
                 ),
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .requiredSize(dimensionResource(R.dimen.icon_size_default))
                     .rotate(rotation)
@@ -183,31 +184,6 @@ private fun VersionChips(row: VersionRow) {
                 content = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-
-        val (container, content) = when (row.channel) {
-            ReleaseChannel.STABLE ->
-                MaterialTheme.colorScheme.secondaryContainer to
-                    MaterialTheme.colorScheme.onSecondaryContainer
-
-            ReleaseChannel.BETA ->
-                MaterialTheme.colorScheme.tertiaryContainer to
-                    MaterialTheme.colorScheme.onTertiaryContainer
-
-            ReleaseChannel.ALPHA ->
-                MaterialTheme.colorScheme.errorContainer to
-                    MaterialTheme.colorScheme.onErrorContainer
-        }
-        LabelChip(
-            text = stringResource(
-                when (row.channel) {
-                    ReleaseChannel.STABLE -> R.string.details_channel_stable
-                    ReleaseChannel.BETA -> R.string.details_channel_beta
-                    ReleaseChannel.ALPHA -> R.string.details_channel_alpha
-                }
-            ),
-            container = container,
-            content = content
-        )
 
         if (!row.runsHere) {
             LabelChip(

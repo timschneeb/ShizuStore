@@ -44,6 +44,9 @@ object CommonUtil {
         return tempValue.toString() + siPrefixes[order]
     }
 
+    /** Null when the size is unknown, so callers can hide the placeholder. */
+    fun sizeLabel(value: Long): String? = if (value <= 1L) null else addSiPrefix(value)
+
     fun addDiPrefix(value: Long): String? {
         if (value <= 1L) return null
         var tempValue = value

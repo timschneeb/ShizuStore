@@ -5,6 +5,8 @@
 
 package me.timschneeberger.shizustore.data.repository
 
+import java.util.Collections
+import java.util.LinkedHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.api.ApiError
@@ -45,6 +47,21 @@ class DetailedAppRepository @Inject constructor(
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao
 ) {
+    /**
+     * The full description (README) is server-only: it never enters Room, it is
+     * only carried for the app currently being viewed. A small LRU keeps it
+     * available when the description subscreen is opened right after details.
+     */
+    private val fullDescriptions = Collections.synchronizedMap(
+        object : LinkedHashMap<String, String>(CACHE_SIZE, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>) =
+                size > MAX_CACHED_DESCRIPTIONS
+        }
+    )
+
+    /** Full description captured by the last detail fetch for [slug], if any. */
+    fun fullDescription(slug: String): String? = fullDescriptions[slug]
+
     suspend fun fetchAndPersist(slug: String): DetailedAppResult =
         when (val result = api.app(slug)) {
             is ApiResult.Failure -> result.error.toFailure()
@@ -68,6 +85,8 @@ class DetailedAppRepository @Inject constructor(
         val updated = existing.applyDetail(detail, System.currentTimeMillis())
         appDao.upsert(updated)
 
+        detail.fullDescription?.takeIf { it.isNotBlank() }?.let { fullDescriptions[slug] = it }
+
         val downloads = detail.downloads.map { it.toEntity(slug) }
         appDownloadDao.replaceForApp(slug, downloads)
         return DetailedAppResult.Success(updated, downloads)
@@ -83,4 +102,9 @@ class DetailedAppRepository @Inject constructor(
         },
         message = message
     )
+
+    private companion object {
+        const val CACHE_SIZE = 4
+        const val MAX_CACHED_DESCRIPTIONS = 3
+    }
 }

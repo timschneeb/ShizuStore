@@ -46,7 +46,10 @@ data class AppSummaryDto(
     val stars: Int? = null,
     val downloadTotal: Long? = null,
     val versionUpdatedAt: String? = null,
-    val listUpdatedAt: String? = null
+    val listUpdatedAt: String? = null,
+    val authorKey: String? = null,
+    val authorName: String? = null,
+    val sourceName: String? = null
 )
 
 @Serializable
@@ -106,7 +109,12 @@ data class AppDetailDto(
     val stars: Int? = null,
     val downloadTotal: Long? = null,
     val versionUpdatedAt: String? = null,
-    val listUpdatedAt: String? = null
+    val listUpdatedAt: String? = null,
+    val authorName: String? = null,
+    val authorUrl: String? = null,
+    val permissions: List<String> = emptyList(),
+    val fullDescription: String? = null,
+    val sourceName: String? = null
 )
 
 @Serializable

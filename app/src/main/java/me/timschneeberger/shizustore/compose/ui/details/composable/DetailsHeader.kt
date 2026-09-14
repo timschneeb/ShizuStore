@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,12 +22,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.app.AnimatedAppIcon
 import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.data.model.AppDetails
+import me.timschneeberger.shizustore.extensions.viewExternal
 
 @Composable
 fun DetailsHeader(
@@ -38,6 +41,8 @@ fun DetailsHeader(
     statusIsError: Boolean = false,
     statusKey: Any? = null
 ) {
+    val context = LocalContext.current
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -56,7 +61,7 @@ fun DetailsHeader(
         )
         Column(
             modifier = Modifier.padding(start = dimensionResource(R.dimen.spacing_medium)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall))
         ) {
             Text(
                 text = details.name.ifBlank { details.packageName },
@@ -64,12 +69,23 @@ fun DetailsHeader(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            details.authorName?.takeIf { it.isNotBlank() }?.let {
+            details.authorName?.takeIf { it.isNotBlank() }?.let { author ->
+                val authorUrl = details.authorUrl?.takeIf { it.isNotBlank() }
                 Text(
-                    text = it,
+                    text = author,
                     style = MaterialTheme.typography.bodyMedium,
+                    color = if (authorUrl != null) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        Color.Unspecified
+                    },
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = if (authorUrl != null) {
+                        Modifier.clickable { context.viewExternal(authorUrl) }
+                    } else {
+                        Modifier
+                    }
                 )
             }
             AnimatedContent(
@@ -77,7 +93,10 @@ fun DetailsHeader(
                 transitionSpec = { fadeIn() togetherWith fadeOut() },
                 label = "DetailsHeaderStatus"
             ) { key ->
-                val versionLine = "${details.versionName} · ${details.repoName}"
+                val versionLine = listOfNotNull(
+                    details.versionName.takeIf { it.isNotBlank() },
+                    details.repoName.takeIf { it.isNotBlank() }
+                ).joinToString(" · ")
 
                 val line = when (key) {
                     null -> versionLine

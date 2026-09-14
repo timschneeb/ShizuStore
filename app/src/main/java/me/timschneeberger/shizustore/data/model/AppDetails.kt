@@ -55,5 +55,7 @@ data class AppDetails(
     @Ignore val iconAdaptive: Boolean = false,
     val hasPaid: Boolean = false,
     val hasIap: Boolean = false,
-    val stars: Int? = null
+    val stars: Int? = null,
+    val authorUrl: String? = null,
+    @Ignore val fullDescription: String? = null
 )

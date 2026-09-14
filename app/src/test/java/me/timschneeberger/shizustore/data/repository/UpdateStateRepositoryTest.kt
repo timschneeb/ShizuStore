@@ -36,7 +36,7 @@ class UpdateStateRepositoryTest {
             RuntimeEnvironment.getApplication(),
             AuroraDatabase::class.java
         ).allowMainThreadQueries().build()
-        repository = UpdateStateRepository(db.appDao(), db.appDownloadDao(), db.installedDao())
+        repository = UpdateStateRepository(db, db.appDao(), db.appDownloadDao(), db.installedDao())
     }
 
     @After

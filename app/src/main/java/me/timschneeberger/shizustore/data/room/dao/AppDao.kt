@@ -104,6 +104,13 @@ interface AppDao {
     @Query("SELECT * FROM app WHERE isRecommended = 1 ORDER BY slug ASC")
     fun observeRecommendedPool(): Flow<List<AppEntity>>
 
+    /** Other apps sharing a stable developer key, for the "more from this dev" row. */
+    @Query(
+        "SELECT * FROM app WHERE authorKey = :authorKey AND slug != :excludeSlug" +
+            " ORDER BY name COLLATE NOCASE ASC LIMIT :limit"
+    )
+    fun observeByAuthor(authorKey: String, excludeSlug: String, limit: Int): Flow<List<AppEntity>>
+
     @Query(
         "SELECT * FROM app ORDER BY versionUpdatedAt IS NULL, versionUpdatedAt DESC," +
             " name COLLATE NOCASE ASC LIMIT :limit"

@@ -29,3 +29,20 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         connection.execSQL("ALTER TABLE app ADD COLUMN listUpdatedAt TEXT")
     }
 }
+
+/** Developer identity and the APK permission list shown on the details screen. */
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE app ADD COLUMN authorKey TEXT")
+        connection.execSQL("ALTER TABLE app ADD COLUMN authorName TEXT")
+        connection.execSQL("ALTER TABLE app ADD COLUMN authorUrl TEXT")
+        connection.execSQL("ALTER TABLE app ADD COLUMN permissions TEXT NOT NULL DEFAULT ''")
+    }
+}
+
+/** Friendly source labels ("GitHub", "Play Store") sent by the server. */
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE app ADD COLUMN sourceName TEXT")
+    }
+}

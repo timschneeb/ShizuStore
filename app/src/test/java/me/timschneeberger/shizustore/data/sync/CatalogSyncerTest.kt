@@ -65,6 +65,7 @@ class CatalogSyncerTest {
             categoryDao = db.categoryDao(),
             syncStateDao = db.syncStateDao(),
             updateStateRepository = UpdateStateRepository(
+                db,
                 db.appDao(),
                 db.appDownloadDao(),
                 db.installedDao()

@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.compose.ui.details.composable
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +45,7 @@ fun DetailsTags(details: AppDetails, modifier: Modifier = Modifier) {
     if (tags.isEmpty()) return
 
     LazyRow(
-        modifier = modifier,
+        modifier = modifier.padding(vertical = dimensionResource(R.dimen.spacing_small)),
         contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.spacing_large)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {

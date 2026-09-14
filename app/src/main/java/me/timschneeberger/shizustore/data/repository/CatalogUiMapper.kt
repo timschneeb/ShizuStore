@@ -7,7 +7,9 @@ package me.timschneeberger.shizustore.data.repository
 
 import javax.inject.Inject
 import javax.inject.Singleton
+import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.ShizuUrls
+import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.data.model.AppSource
@@ -25,10 +27,31 @@ import me.timschneeberger.shizustore.util.ServerConfig
 @Singleton
 class CatalogUiMapper @Inject constructor() {
 
+    /** Prefers the server's friendly source label; falls back to the raw kind. */
+    private fun displayRepoName(app: AppEntity): String {
+        app.sourceName?.takeIf { it.isNotBlank() }?.let { return it }
+        return if (app.availability == Availability.PLAY_REDIRECT) {
+            "play"
+        } else {
+            app.sourceKind?.name?.lowercase() ?: "Shizu Store"
+        }
+    }
+
+    /** Friendly labels for version rows, matching the server's app-level sourceName. */
+    private fun SourceKind.displayName(): String = when (this) {
+        SourceKind.GITHUB -> "GitHub"
+        SourceKind.GITLAB -> "GitLab"
+        SourceKind.CODEBERG -> "Codeberg"
+        SourceKind.FDROID -> "F-Droid"
+        SourceKind.IZZY -> "IzzyOnDroid"
+        SourceKind.PLAY -> "Play Store"
+        SourceKind.OTHER -> "Website"
+    }
+
     fun toResolvedApp(app: AppEntity): ResolvedApp = ResolvedApp(
         packageName = app.packageName ?: app.slug,
         repoId = 0,
-        repoName = app.sourceKind?.name?.lowercase() ?: "Shizu Store",
+        repoName = displayRepoName(app),
         repoAddress = "",
         name = app.name,
         summary = app.description,
@@ -64,14 +87,14 @@ class CatalogUiMapper @Inject constructor() {
         return AppDetails(
             packageName = app.packageName ?: app.slug,
             repoId = 0,
-            repoName = app.sourceKind?.name?.lowercase() ?: "Shizu Store",
+            repoName = displayRepoName(app),
             repoAddress = "",
             name = app.name,
             summary = app.description,
             description = app.description,
             iconUrl = ShizuUrls.icon(ServerConfig.baseUrl, app.iconHash),
             license = app.license.orEmpty(),
-            authorName = null,
+            authorName = app.authorName,
             authorEmail = null,
             authorPhone = null,
             authorWebSite = null,
@@ -99,7 +122,7 @@ class CatalogUiMapper @Inject constructor() {
             size = primary?.size ?: 0L,
             minSdk = app.minSdk ?: 0,
             whatsNew = "",
-            permissions = emptyList(),
+            permissions = app.permissions,
             installedVersionCode = app.installedVersionCode,
             installedSigner = null,
             slug = app.slug,
@@ -108,6 +131,7 @@ class CatalogUiMapper @Inject constructor() {
             storeUrl = app.storeUrl,
             url = app.url,
             sourceUrl = app.sourceUrl,
+            authorUrl = app.authorUrl,
             iconAdaptive = app.iconAdaptive,
             hasPaid = app.hasPaid,
             hasIap = app.hasIap,
@@ -134,8 +158,8 @@ class CatalogUiMapper @Inject constructor() {
         repoId = 0,
         // The candidate's own origin, not the app's: one app can ship both a forge
         // build and an F-Droid build signed by different keys.
-        repoName = candidate.source?.name?.lowercase()
-            ?: app.sourceKind?.name?.lowercase()
+        repoName = candidate.source?.displayName()
+            ?: app.sourceName?.takeIf { it.isNotBlank() }
             ?: "Shizu Store",
         repoAddress = "",
         name = app.name,

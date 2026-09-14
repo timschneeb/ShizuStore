@@ -54,6 +54,9 @@ fun AppSummaryDto.toEntity(syncedAt: Long): AppEntity = AppEntity(
     downloadTotal = downloadTotal,
     versionUpdatedAt = versionUpdatedAt,
     listUpdatedAt = listUpdatedAt,
+    authorKey = authorKey,
+    authorName = authorName,
+    sourceName = sourceName,
     syncedAt = syncedAt
 )
 
@@ -94,7 +97,11 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         url = detail.url,
         sourceUrl = detail.sourceUrl,
         sourceKind = SourceKind.fromWire(detail.sourceKind),
+        sourceName = detail.sourceName,
         storeUrl = detail.storeUrl,
+        authorName = detail.authorName,
+        authorUrl = detail.authorUrl,
+        permissions = detail.permissions,
         excludedReason = detail.excludedReason,
         parentSlug = detail.parentSlug,
         categoryPath = detail.categoryPath.map { CategoryPath(it.slug, it.name) },

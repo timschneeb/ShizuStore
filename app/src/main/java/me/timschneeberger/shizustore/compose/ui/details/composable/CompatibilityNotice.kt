@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2026 Tim Schneeberger
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,20 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
+import me.timschneeberger.shizustore.data.model.DeviceProfile
 
-/** Muted notice that the app is paid and/or offers in-app purchases. */
+/** Warns when the served APK requires a newer Android than this device runs. */
 @Composable
-fun BillingNotice(hasPaid: Boolean, hasIap: Boolean, modifier: Modifier = Modifier) {
-    if (!hasPaid && !hasIap) return
-
-    val message = when {
-        hasPaid && hasIap -> stringResource(R.string.details_billing_paid_iap)
-        hasPaid -> stringResource(R.string.details_billing_paid)
-        else -> stringResource(R.string.details_billing_iap)
-    }
+fun CompatibilityNotice(minSdk: Int, modifier: Modifier = Modifier) {
+    if (!DeviceProfile.isIncompatible(minSdk)) return
 
     Surface(
-        color = MaterialTheme.colorScheme.tertiaryContainer,
+        color = MaterialTheme.colorScheme.errorContainer,
         shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
         modifier = modifier
             .fillMaxWidth()
@@ -53,13 +48,17 @@ fun BillingNotice(hasPaid: Boolean, hasIap: Boolean, modifier: Modifier = Modifi
             )
         ) {
             Icon(
-                imageVector = Icons.Rounded.Info,
+                imageVector = Icons.Rounded.Warning,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                tint = MaterialTheme.colorScheme.onErrorContainer
             )
             Text(
-                text = message,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                text = stringResource(
+                    R.string.details_incompatible_notice,
+                    minSdk,
+                    DeviceProfile.sdkInt
+                ),
+                color = MaterialTheme.colorScheme.onErrorContainer,
                 style = MaterialTheme.typography.bodyMedium
             )
         }

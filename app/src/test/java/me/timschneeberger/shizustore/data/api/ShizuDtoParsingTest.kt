@@ -50,6 +50,9 @@ class ShizuDtoParsingTest {
                   "downloadTotal": 2500000000,
                   "versionUpdatedAt": "2026-08-20T12:00:00+00:00",
                   "listUpdatedAt": "2026-08-19T12:00:00+00:00",
+                  "authorKey": "github:papergray",
+                  "authorName": "papergray",
+                  "sourceName": "GitHub",
                   "unknownField": {"ignored": true}
                 }
               ],
@@ -74,6 +77,9 @@ class ShizuDtoParsingTest {
         assertEquals(2500000000L, item.downloadTotal)
         assertEquals("2026-08-20T12:00:00+00:00", item.versionUpdatedAt)
         assertEquals("2026-08-19T12:00:00+00:00", item.listUpdatedAt)
+        assertEquals("github:papergray", item.authorKey)
+        assertEquals("papergray", item.authorName)
+        assertEquals("GitHub", item.sourceName)
     }
 
     @Test
@@ -145,7 +151,12 @@ class ShizuDtoParsingTest {
               "stars": 42,
               "downloadTotal": 1234,
               "versionUpdatedAt": "2026-08-20T12:00:00+00:00",
-              "listUpdatedAt": "2026-08-19T12:00:00+00:00"
+              "listUpdatedAt": "2026-08-19T12:00:00+00:00",
+              "authorName": "papergray",
+              "sourceName": "GitHub",
+              "authorUrl": "https://github.com/papergray",
+              "permissions": ["android.permission.INTERNET", "android.permission.CAMERA"],
+              "fullDescription": "<p>Readme</p>"
             }
             """.trimIndent()
         )
@@ -161,6 +172,14 @@ class ShizuDtoParsingTest {
         assertEquals(1234L, detail.downloadTotal)
         assertEquals("2026-08-20T12:00:00+00:00", detail.versionUpdatedAt)
         assertEquals("2026-08-19T12:00:00+00:00", detail.listUpdatedAt)
+        assertEquals("papergray", detail.authorName)
+        assertEquals("https://github.com/papergray", detail.authorUrl)
+        assertEquals("GitHub", detail.sourceName)
+        assertEquals(
+            listOf("android.permission.INTERNET", "android.permission.CAMERA"),
+            detail.permissions
+        )
+        assertEquals("<p>Readme</p>", detail.fullDescription)
     }
 
     @Test

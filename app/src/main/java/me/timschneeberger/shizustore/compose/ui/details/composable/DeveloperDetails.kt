@@ -34,6 +34,10 @@ fun DeveloperDetails(
         details.authorName.entry(R.string.details_developer_name, R.drawable.ic_person)
             ?.let(::add)
 
+        details.authorUrl.entry(R.string.details_developer_profile, R.drawable.ic_person) {
+            context.viewExternal(it)
+        }?.let(::add)
+
         details.authorEmail.entry(R.string.details_developer_email, R.drawable.ic_mail) {
             context.viewExternal("mailto:$it")
         }?.let(::add)

@@ -15,7 +15,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,12 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.fromHtml
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
@@ -46,7 +42,6 @@ import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.ContainedLoadingIndicator
 import me.timschneeberger.shizustore.compose.composable.ExpressivePullToRefreshBox
-import me.timschneeberger.shizustore.compose.composable.Info
 import me.timschneeberger.shizustore.compose.composable.OfflineBanner
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.SectionHeader
@@ -54,14 +49,20 @@ import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.ui.details.composable.AppExclusionMenu
 import me.timschneeberger.shizustore.compose.ui.details.composable.BillingNotice
+import me.timschneeberger.shizustore.compose.ui.details.composable.CompatibilityNotice
+import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsCarousel
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsHeader
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsTags
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallAction
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallActions
+import me.timschneeberger.shizustore.compose.ui.details.composable.LinkList
+import me.timschneeberger.shizustore.compose.ui.details.composable.StoreNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.VersionList
 import me.timschneeberger.shizustore.compose.ui.details.composable.installButtonState
 import me.timschneeberger.shizustore.compose.ui.details.composable.installRefusalText
+import me.timschneeberger.shizustore.compose.ui.details.composable.linkButtonState
 import me.timschneeberger.shizustore.compose.ui.details.composable.requiresUnknownSourcesSettings
+import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.helper.SourceLauncher
 import me.timschneeberger.shizustore.data.installer.AppInstaller
 import me.timschneeberger.shizustore.data.model.DownloadStatus
@@ -86,6 +87,7 @@ fun AppDetailsScreen(
     val isFavourite by viewModel.isFavourite.collectAsStateWithLifecycle()
     val isBlacklisted by viewModel.isBlacklisted.collectAsStateWithLifecycle()
     val ignoredUpdate by viewModel.ignoredUpdate.collectAsStateWithLifecycle()
+    val moreFromAuthor by viewModel.moreFromAuthor.collectAsStateWithLifecycle()
     val canAddToHome = rememberCanOpen(
         packageName,
         (uiState as? AppDetailsUiState.Loaded)?.downloadStatus
@@ -203,19 +205,22 @@ fun AppDetailsScreen(
                         )
 
                         is AppDetailsUiState.Loaded -> Column(
-                            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(
-                                dimensionResource(R.dimen.spacing_medium)
-                            )
+                            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
                         ) {
+                            val canOpen = rememberCanOpen(packageName, state.downloadStatus)
                             val actions = state.resolved?.let { app ->
                                 installButtonState(
                                     context = context,
                                     app = app,
                                     download = state.download,
-                                    canOpen = rememberCanOpen(app.packageName, state.downloadStatus)
+                                    canOpen = canOpen
                                 )
-                            }
+                            } ?: linkButtonState(
+                                context = context,
+                                availability = state.details.availability,
+                                installed = state.details.installedVersionCode != null,
+                                canOpen = canOpen
+                            )
 
                             DetailsHeader(
                                 details = state.details,
@@ -225,6 +230,18 @@ fun AppDetailsScreen(
                                 statusIsError = actions?.captionIsError == true,
                                 statusKey = state.downloadStatus
                             )
+
+                            // Play-only apps show the store card above the action
+                            // row so the install button pair stays the primary action.
+                            if (state.details.availability == Availability.PLAY_REDIRECT) {
+                                StoreNotice(
+                                    onOpen = {
+                                        state.details.storeUrl?.let { storeUrl ->
+                                            SourceLauncher.open(context, storeUrl)
+                                        }
+                                    }
+                                )
+                            }
 
                             if (actions != null) {
                                 InstallActions(
@@ -253,6 +270,8 @@ fun AppDetailsScreen(
                                 )
                             }
 
+                            CompatibilityNotice(minSdk = state.details.minSdk)
+
                             DetailsTags(details = state.details)
 
                             BillingNotice(
@@ -266,23 +285,38 @@ fun AppDetailsScreen(
                                 onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
                             )
 
-                            VersionList(
-                                sources = state.sources,
-                                onSelect = { viewModel.installFrom(it.app) }
-                            )
-                            if (state.details.permissions.isNotEmpty()) {
-                                Info(
+                            LinkList(details = state.details)
+
+                            if (state.sources.isNotEmpty()) {
+                                SectionHeader(
                                     title = stringResource(R.string.details_permissions),
-                                    description = pluralStringResource(
-                                        R.plurals.details_permissions_count,
-                                        state.details.permissions.size,
-                                        state.details.permissions.size
-                                    ),
+                                    subtitle = if (state.details.permissions.isEmpty()) {
+                                        stringResource(R.string.details_permissions_none)
+                                    } else {
+                                        pluralStringResource(
+                                            R.plurals.details_permissions_count,
+                                            state.details.permissions.size,
+                                            state.details.permissions.size
+                                        )
+                                    },
                                     onClick = {
                                         onNavigateTo(Destination.Permissions(packageName))
                                     }
                                 )
                             }
+
+                            VersionList(
+                                sources = state.sources,
+                                onSelect = { viewModel.installFrom(it.app) }
+                            )
+
+                            DetailsCarousel(
+                                title = stringResource(R.string.details_more_from_author),
+                                apps = moreFromAuthor,
+                                onAppClick = {
+                                    onNavigateTo(Destination.AppDetails(it.packageName))
+                                }
+                            )
                         }
                     }
                 }
@@ -329,11 +363,3 @@ private fun openUnknownAppSourcesSettings(context: Context) {
     runCatching { context.startActivity(intent) }
         .onFailure { Log.w("AppDetailsScreen", "Could not open unknown sources settings", it) }
 }
-
-private val htmlTagRegex = Regex("<[a-zA-Z/][^>]*>")
-
-private fun isPlainText(text: String): Boolean = !htmlTagRegex.containsMatchIn(text)
-
-@Composable
-internal fun rememberDescription(raw: String): AnnotatedString =
-    remember(raw) { if (isPlainText(raw)) AnnotatedString(raw) else AnnotatedString.fromHtml(raw) }

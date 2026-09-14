@@ -1,17 +1,18 @@
 /*
- * SPDX-FileCopyrightText: 2026 Tim Schneeberger
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 package me.timschneeberger.shizustore.compose.ui.details.composable
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Storefront
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,26 +24,20 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 
-/** Muted notice that the app is paid and/or offers in-app purchases. */
+/** Notice that the app is only distributed on Google Play; tapping it links out to the listing. */
 @Composable
-fun BillingNotice(hasPaid: Boolean, hasIap: Boolean, modifier: Modifier = Modifier) {
-    if (!hasPaid && !hasIap) return
-
-    val message = when {
-        hasPaid && hasIap -> stringResource(R.string.details_billing_paid_iap)
-        hasPaid -> stringResource(R.string.details_billing_paid)
-        else -> stringResource(R.string.details_billing_iap)
-    }
-
+fun StoreNotice(onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Surface(
-        color = MaterialTheme.colorScheme.tertiaryContainer,
+        color = MaterialTheme.colorScheme.secondaryContainer,
         shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = dimensionResource(R.dimen.spacing_large),
-                vertical = dimensionResource(R.dimen.spacing_small)
+                start = dimensionResource(R.dimen.spacing_large),
+                top = dimensionResource(R.dimen.spacing_medium),
+                end = dimensionResource(R.dimen.spacing_large)
             )
+            .clickable(onClick = onOpen)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -53,13 +48,13 @@ fun BillingNotice(hasPaid: Boolean, hasIap: Boolean, modifier: Modifier = Modifi
             )
         ) {
             Icon(
-                imageVector = Icons.Rounded.Info,
+                imageVector = Icons.Rounded.Storefront,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onTertiaryContainer
+                tint = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Text(
-                text = message,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                text = stringResource(R.string.details_play_store_notice),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 style = MaterialTheme.typography.bodyMedium
             )
         }

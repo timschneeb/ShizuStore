@@ -212,6 +212,54 @@ private fun idleButtonState(
     )
 }
 
+/** Link-only and Play-redirect apps ship no download candidates, so the
+ * details screen falls back to this instead of a resolved candidate. Installed
+ * Play-only apps still get the Open and Uninstall actions. */
+internal fun linkButtonState(
+    context: Context,
+    availability: Availability,
+    installed: Boolean = false,
+    canOpen: Boolean = false
+): InstallButtonState? = when (availability) {
+    Availability.LINK_ONLY -> InstallButtonState(
+        primary = ActionButton(
+            context.getString(R.string.action_open_link),
+            InstallAction.OPEN_LINK
+        ),
+        secondary = null,
+        caption = null,
+        bar = ProgressBar.None
+    )
+
+    Availability.PLAY_REDIRECT -> if (installed) {
+        InstallButtonState(
+            primary = ActionButton(
+                context.getString(R.string.action_open),
+                InstallAction.OPEN,
+                enabled = canOpen
+            ),
+            secondary = ActionButton(
+                context.getString(R.string.action_uninstall),
+                InstallAction.UNINSTALL
+            ),
+            caption = null,
+            bar = ProgressBar.None
+        )
+    } else {
+        InstallButtonState(
+            primary = ActionButton(
+                context.getString(R.string.action_open_play),
+                InstallAction.OPEN_STORE
+            ),
+            secondary = null,
+            caption = null,
+            bar = ProgressBar.None
+        )
+    }
+
+    else -> null
+}
+
 private fun openButtonState(context: Context, canOpen: Boolean) = InstallButtonState(
     primary = ActionButton(
         context.getString(R.string.action_open),
@@ -254,7 +302,12 @@ internal fun InstallActions(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(R.dimen.spacing_large)),
+                .padding(
+                    start = dimensionResource(R.dimen.spacing_large),
+                    top = dimensionResource(R.dimen.spacing_medium),
+                    end = dimensionResource(R.dimen.spacing_large),
+                    bottom = dimensionResource(R.dimen.spacing_small)
+                ),
             horizontalArrangement = Arrangement.spacedBy(
                 dimensionResource(R.dimen.spacing_medium)
             )

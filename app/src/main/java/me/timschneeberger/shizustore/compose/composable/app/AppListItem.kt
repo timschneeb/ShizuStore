@@ -8,8 +8,13 @@ package me.timschneeberger.shizustore.compose.composable.app
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Update
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -38,12 +43,19 @@ fun AppListItem(
     } else {
         null
     }
-    val versionText = stringResource(
-        R.string.app_version_size,
-        app.versionName,
-        CommonUtil.addSiPrefix(app.size)
-    )
+    val sizeLabel = CommonUtil.sizeLabel(app.size)
+    val versionText = if (sizeLabel != null) {
+        stringResource(R.string.app_version_size, app.versionName, sizeLabel)
+    } else {
+        app.versionName
+    }
     val tertiaryText = if (starLabel != null) "$starLabel · $versionText" else versionText
+    val installedIcon = when {
+        app.hasUpdate -> Icons.Rounded.Update
+        app.isInstalled -> Icons.Rounded.CheckCircle
+        else -> null
+    }
+    val showBadges = installedIcon != null || app.hasPaid || app.hasIap
 
     AuroraListItem(
         modifier = modifier,
@@ -53,13 +65,25 @@ fun AppListItem(
         headlineStyle = MaterialTheme.typography.bodyMedium,
         onClick = onClick,
         trailing = trailing,
-        badges = if (app.hasPaid || app.hasIap) {
+        badges = if (showBadges) {
             {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(
                         dimensionResource(R.dimen.spacing_xsmall)
-                    )
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    if (installedIcon != null) {
+                        Icon(
+                            imageVector = installedIcon,
+                            contentDescription = if (app.hasUpdate) {
+                                stringResource(R.string.app_indicator_update)
+                            } else {
+                                stringResource(R.string.app_indicator_installed)
+                            },
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     if (app.hasIap) {
                         LabelChip(
                             text = stringResource(R.string.app_badge_iap),

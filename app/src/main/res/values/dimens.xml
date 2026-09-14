@@ -13,6 +13,8 @@
     <dimen name="icon_size_default">24dp</dimen>
     <dimen name="icon_size_hint">32dp</dimen>
     <dimen name="icon_size_chip">18dp</dimen>
+    <dimen name="app_badge_size">20dp</dimen>
+    <dimen name="app_badge_icon">14dp</dimen>
     <dimen name="icon_size_small">48dp</dimen>
     <dimen name="icon_size_medium">56dp</dimen>
     <dimen name="icon_size_large">72dp</dimen>
