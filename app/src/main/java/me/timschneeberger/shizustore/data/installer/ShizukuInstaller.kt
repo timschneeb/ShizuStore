@@ -28,6 +28,7 @@ import dev.rikka.tools.refine.Refine
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
+import me.timschneeberger.shizustore.data.helper.InstallReporter
 import me.timschneeberger.shizustore.data.installer.base.InstallerBase
 import me.timschneeberger.shizustore.data.model.InstallError
 import me.timschneeberger.shizustore.data.model.Installer
@@ -44,8 +45,9 @@ import rikka.sui.Sui
 @Singleton
 open class ShizukuInstaller @Inject constructor(
     @ApplicationContext context: Context,
-    downloadDao: DownloadDao
-) : InstallerBase(context, downloadDao) {
+    downloadDao: DownloadDao,
+    installReporter: InstallReporter
+) : InstallerBase(context, downloadDao, installReporter) {
     private val stagedSessions = ConcurrentHashMap<String, Int>()
 
     private val packageInstaller: PackageInstaller? by lazy {

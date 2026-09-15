@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -112,17 +111,28 @@ fun AppListScreen(
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val syncFailure by viewModel.syncFailure.collectAsStateWithLifecycle()
     val atSearchHome by viewModel.atSearchHome.collectAsStateWithLifecycle()
+    val useInstallCounts by viewModel.useInstallCountsForPopularity.collectAsStateWithLifecycle()
     val apps = viewModel.apps.collectAsLazyPagingItems()
 
     var searchExpanded by rememberSaveable { mutableStateOf(searchHome) }
 
     val searchFieldState = rememberTextFieldState(args.query)
-    val listState = rememberLazyListState()
+    // Saveable (not plain remember): the list entry leaves composition while a
+    // detail screen is on top, and only rememberSaveable survives the return.
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val searchFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     // Filtering and sorting happen in Room, so the old scroll position is meaningless.
-    LaunchedEffect(currentArgs) { listState.scrollToItem(0) }
+    // Guarded by the previously applied args: LaunchedEffect also fires when the
+    // screen re-enters composition (back from details), which must keep position.
+    var appliedArgs by remember { mutableStateOf<AppListArgs?>(null) }
+    LaunchedEffect(currentArgs) {
+        if (appliedArgs != null && appliedArgs != currentArgs) {
+            listState.scrollToItem(0)
+        }
+        appliedArgs = currentArgs
+    }
 
     LaunchedEffect(searchFocusRequest) {
         if (searchFocusRequest > 0) {
@@ -232,6 +242,7 @@ fun AppListScreen(
                         apps = apps,
                         listState = listState,
                         showStars = currentArgs.sort == AppSort.STARS,
+                        showInstalls = currentArgs.sort == AppSort.DOWNLOADS && useInstallCounts,
                         syncing = syncing,
                         syncFailure = syncFailure,
                         onRetry = viewModel::retrySync,
@@ -440,6 +451,7 @@ private fun AppRows(
     apps: LazyPagingItems<ResolvedApp>,
     listState: LazyListState,
     showStars: Boolean,
+    showInstalls: Boolean,
     syncing: Boolean,
     syncFailure: CatalogSyncFailure?,
     onRetry: () -> Unit,
@@ -496,7 +508,8 @@ private fun AppRows(
                             AppListItem(
                                 app = app,
                                 onClick = { onAppClick(app) },
-                                showStars = showStars
+                                showStars = showStars,
+                                showInstalls = showInstalls
                             )
                         }
                     }
@@ -517,6 +530,7 @@ private fun sortLabel(sort: AppSort): Int = when (sort) {
     AppSort.RECENTLY_UPDATED -> R.string.apps_recently_updated
     AppSort.STARS -> R.string.search_sort_stars
     AppSort.DOWNLOADS -> R.string.search_sort_popularity
+    AppSort.SIZE_DESC -> R.string.search_sort_size
 }
 
 @Composable

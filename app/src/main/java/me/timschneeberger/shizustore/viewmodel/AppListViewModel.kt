@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -77,13 +78,25 @@ class AppListViewModel @Inject constructor(
     val history: StateFlow<List<String>> = searchHistory.history
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
-    val apps: Flow<PagingData<ResolvedApp>> = _args
-        .flatMapLatest { args ->
+    val apps: Flow<PagingData<ResolvedApp>> = combine(
+        _args,
+        appRepository.observePopularityFlag()
+    ) { args, flag -> args to flag }
+        .flatMapLatest { (args, flag) ->
             Pager(PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false)) {
-                appRepository.pagedApps(args)
+                appRepository.pagedApps(args, flag)
             }.flow.map { paging -> paging.map(mapper::toResolvedApp) }
         }
         .cachedIn(viewModelScope)
+
+    /**
+     * Server feature flag for the popularity sort: when true the DOWNLOADS
+     * sort orders by client-reported install counts and the list subtitle
+     * shows them instead of the upstream download totals.
+     */
+    val useInstallCountsForPopularity: StateFlow<Boolean> =
+        appRepository.observePopularityFlag()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 
     /**
      * Applies the navigation preset once. Re-entering composition (back from a

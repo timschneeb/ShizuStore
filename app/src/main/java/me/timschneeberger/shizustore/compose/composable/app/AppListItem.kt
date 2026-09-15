@@ -5,9 +5,12 @@
 
 package me.timschneeberger.shizustore.compose.composable.app
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Update
@@ -17,9 +20,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
@@ -36,12 +46,19 @@ fun AppListItem(
     trailing: (@Composable () -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
     showStars: Boolean = false,
+    showInstalls: Boolean = false,
     supporting: String? = app.authorName?.takeIf { it.isNotBlank() } ?: app.summary
 ) {
-    val starLabel = if (showStars) {
-        app.stars?.let { stringResource(R.string.app_stars, CommonUtil.formatCount(it.toLong())) }
-    } else {
-        null
+    val countPart: AnnotatedString? = when {
+        showInstalls -> buildAnnotatedString {
+            appendInlineContent(INSTALLS_ICON_ID, "[downloads]")
+            append(" ")
+            append(stringResource(R.string.app_installs, CommonUtil.formatCount(app.installCount)))
+        }
+        showStars -> app.stars?.let {
+            AnnotatedString(stringResource(R.string.app_stars, CommonUtil.formatCount(it.toLong())))
+        }
+        else -> null
     }
     val sizeLabel = CommonUtil.sizeLabel(app.size)
     val versionText = if (sizeLabel != null) {
@@ -49,7 +66,30 @@ fun AppListItem(
     } else {
         app.versionName
     }
-    val tertiaryText = if (starLabel != null) "$starLabel · $versionText" else versionText
+    val tertiaryText = countPart?.let {
+        buildAnnotatedString {
+            append(it)
+            append("  ·  ")
+            append(versionText)
+        }
+    } ?: AnnotatedString(versionText)
+    // The installs glyph is the download drawable, tinted to match the
+    // tertiary text: InlineTextContent children do not inherit it.
+    val tertiaryInlineContent = if (showInstalls) {
+        mapOf(
+            INSTALLS_ICON_ID to InlineTextContent(
+                Placeholder(TERTIARY_ICON_SIZE, TERTIARY_ICON_SIZE, PlaceholderVerticalAlign.Center)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_download_manager),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                )
+            }
+        )
+    } else {
+        emptyMap()
+    }
     val installedIcon = when {
         app.hasUpdate -> Icons.Rounded.Update
         app.isInstalled -> Icons.Rounded.CheckCircle
@@ -62,6 +102,7 @@ fun AppListItem(
         headline = app.name.ifBlank { app.packageName },
         supporting = supporting?.takeIf { it.isNotBlank() },
         tertiary = tertiaryText,
+        tertiaryInlineContent = tertiaryInlineContent,
         headlineStyle = MaterialTheme.typography.bodyMedium,
         onClick = onClick,
         trailing = trailing,
@@ -115,3 +156,7 @@ fun AppListItem(
         }
     )
 }
+
+private const val INSTALLS_ICON_ID = "installs"
+
+private val TERTIARY_ICON_SIZE = 14.sp

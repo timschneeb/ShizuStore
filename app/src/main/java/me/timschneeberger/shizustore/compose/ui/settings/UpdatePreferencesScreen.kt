@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -104,7 +105,8 @@ fun UpdatePreferencesScreen(
                 headline = stringResource(R.string.settings_unattended_title),
                 supporting = stringResource(R.string.settings_unattended_subtitle),
                 supportingMaxLines = 2,
-                tertiary = unattendedPausedReason?.let { stringResource(it.stringRes()) },
+                tertiary = unattendedPausedReason?.let { stringResource(it.stringRes()) }
+                    ?.let { AnnotatedString(it) },
                 trailing = {
                     Switch(
                         checked = unattendedUpdatesEnabled,

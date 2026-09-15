@@ -21,7 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
@@ -46,7 +48,8 @@ fun AuroraListItem(
     modifier: Modifier = Modifier,
     headline: String,
     supporting: String? = null,
-    tertiary: String? = null,
+    tertiary: AnnotatedString? = null,
+    tertiaryInlineContent: Map<String, InlineTextContent> = emptyMap(),
     onClick: (() -> Unit)? = null,
     selection: ItemSelection? = null,
     enabled: Boolean = true,
@@ -60,7 +63,7 @@ fun AuroraListItem(
     @DimenRes minHeight: Int? = null
 ) {
     val hasSupporting = !supporting.isNullOrBlank()
-    val hasTertiary = !tertiary.isNullOrBlank()
+    val hasTertiary = !tertiary.isNullOrEmpty()
 
     val height = minHeight ?: when {
         hasSupporting && hasTertiary -> R.dimen.list_item_height_three_line
@@ -99,7 +102,8 @@ fun AuroraListItem(
             }
             if (hasTertiary) {
                 Text(
-                    text = tertiary.orEmpty(),
+                    text = tertiary ?: AnnotatedString(""),
+                    inlineContent = tertiaryInlineContent,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = tertiaryMaxLines,

@@ -94,12 +94,14 @@ class AppsViewModel @Inject constructor(
         recommendedPicks,
         appRepository.observeRecentlyAdded().map { it.map(mapper::toResolvedApp) },
         appRepository.observeRecentlyUpdated().map { it.map(mapper::toResolvedApp) },
+        appRepository.observeMostStarred().map { it.map(mapper::toResolvedApp) },
         randomPicks
-    ) { recommended, recentlyAdded, recentlyUpdated, picks ->
+    ) { recommended, recentlyAdded, recentlyUpdated, mostStarred, picks ->
         listOf(
             AppGroup(AppGroupKind.RECOMMENDED, recommended),
             AppGroup(AppGroupKind.RECENTLY_ADDED, recentlyAdded),
             AppGroup(AppGroupKind.RECENTLY_UPDATED, recentlyUpdated),
+            AppGroup(AppGroupKind.MOST_STARRED, mostStarred),
             AppGroup(AppGroupKind.RANDOM_PICKS, picks)
         ).filter { it.apps.isNotEmpty() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)

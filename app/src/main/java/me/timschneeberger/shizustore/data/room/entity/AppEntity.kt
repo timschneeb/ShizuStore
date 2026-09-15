@@ -58,6 +58,8 @@ data class AppEntity(
     val sigMd5: String? = null,
     val stars: Int? = null,
     val downloadTotal: Long? = null,
+    /** Successful installs via this app, reported by clients and served by /v1/meta flag. */
+    val installCount: Long = 0,
     val url: String? = null,
     val sourceUrl: String? = null,
     val sourceKind: SourceKind? = null,

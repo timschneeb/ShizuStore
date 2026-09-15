@@ -46,3 +46,16 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
         connection.execSQL("ALTER TABLE app ADD COLUMN sourceName TEXT")
     }
 }
+
+/**
+ * Popularity flag: per-app install counts plus the server mode switch that
+ * selects installCount over downloadTotal for the popularity sort.
+ */
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE app ADD COLUMN installCount INTEGER NOT NULL DEFAULT 0")
+        connection.execSQL(
+            "ALTER TABLE sync_state ADD COLUMN useInstallCountsForPopularity INTEGER NOT NULL DEFAULT 0"
+        )
+    }
+}

@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import me.timschneeberger.shizustore.BuildConfig
+import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.model.ProxyInfo
 import me.timschneeberger.shizustore.util.Preferences
 import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_PROXY_INFO
@@ -36,6 +38,13 @@ import okhttp3.brotli.BrotliInterceptor
 
 internal fun proxyTypeFor(protocol: String): Proxy.Type =
     if (protocol.removeSuffix("5") == "SOCKS") Proxy.Type.SOCKS else Proxy.Type.HTTP
+
+/**
+ * Value for the `User-Agent` header sent on every request of the shared
+ * client (API, APK downloads, icons). Identifies the app and its version to
+ * upstream hosts; spaces are legal inside a header value.
+ */
+internal fun userAgent(appName: String, versionName: String): String = "$appName/$versionName"
 
 internal class PreferenceProxySelector(
     private val rawProxyInfo: suspend () -> String
@@ -107,11 +116,26 @@ object OkHttpClientModule {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient(proxySelector: ProxySelector, cache: Cache): OkHttpClient =
+    fun providesOkHttpClient(
+        @ApplicationContext context: Context,
+        proxySelector: ProxySelector,
+        cache: Cache
+    ): OkHttpClient =
         OkHttpClient.Builder()
             .cache(cache)
             // Negotiates br (falling back to gzip) for the catalog JSON.
             .addInterceptor(BrotliInterceptor)
+            // Single choke point: this client serves the API, APK downloads
+            // and Coil, so one header covers every request the app makes.
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .header(
+                        "User-Agent",
+                        userAgent(context.getString(R.string.app_name), BuildConfig.VERSION_NAME)
+                    )
+                    .build()
+                chain.proceed(request)
+            }
             .proxySelector(proxySelector)
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

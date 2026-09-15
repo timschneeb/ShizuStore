@@ -16,6 +16,7 @@ fun appGroupTitle(kind: AppGroupKind, category: String? = null): String = when (
     AppGroupKind.RECOMMENDED -> stringResource(R.string.apps_recommended)
     AppGroupKind.RECENTLY_ADDED -> stringResource(R.string.apps_recently_added)
     AppGroupKind.RECENTLY_UPDATED -> stringResource(R.string.apps_recently_updated)
+    AppGroupKind.MOST_STARRED -> stringResource(R.string.apps_most_starred)
     AppGroupKind.RANDOM_PICKS -> stringResource(R.string.apps_random_picks)
     AppGroupKind.CATEGORY -> category.orEmpty()
 }

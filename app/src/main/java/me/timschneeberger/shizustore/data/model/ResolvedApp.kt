@@ -42,7 +42,8 @@ data class ResolvedApp(
     val candidateId: Long? = null,
     val hasPaid: Boolean = false,
     val hasIap: Boolean = false,
-    val stars: Int? = null
+    val stars: Int? = null,
+    val installCount: Long = 0
 ) {
     val isInstalled: Boolean get() = installedVersionCode != null
 

@@ -22,7 +22,7 @@ import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.data.sync.CatalogSyncOutcome
 import me.timschneeberger.shizustore.data.sync.CatalogSyncer
 
-/** Single-flight catalog sync into Room. Retries on transient server failures. */
+/** Single-flight catalog sync into Room. Fails fast on connection loss, retries rate limits. */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
     @Assisted context: Context,
@@ -41,7 +41,12 @@ class SyncWorker @AssistedInject constructor(
         CatalogSyncOutcome.AlreadyRunning -> Result.success()
 
         is CatalogSyncOutcome.Failed -> when (outcome.failure) {
-            CatalogSyncFailure.NETWORK, CatalogSyncFailure.RATE_LIMITED -> Result.retry()
+            // Fail fast on connection loss: the attempt already surfaced the
+            // error, and retry() would flap the spinner forever. The user
+            // retries manually (pull-to-refresh / retry button). Rate limits
+            // stay retried: they are transient and server-driven.
+            CatalogSyncFailure.NETWORK -> Result.failure(workDataOf(KEY_ERROR to outcome.failure.name))
+            CatalogSyncFailure.RATE_LIMITED -> Result.retry()
             else -> Result.failure(workDataOf(KEY_ERROR to outcome.failure.name))
         }
     }

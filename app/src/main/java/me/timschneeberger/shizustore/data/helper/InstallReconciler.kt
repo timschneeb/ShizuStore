@@ -27,7 +27,8 @@ import me.timschneeberger.shizustore.util.isolate
 open class InstallReconciler @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val downloadDao: DownloadDao,
-    private val sessionInstaller: SessionInstaller
+    private val sessionInstaller: SessionInstaller,
+    private val installReporter: InstallReporter
 ) {
     open suspend fun reconcileOnLaunch() {
         isolate(TAG, "reconcile stranded installs") { reconcileStrandedInstalls() }
@@ -42,7 +43,7 @@ open class InstallReconciler @Inject constructor(
         val installed = installedVersionCode(packageName)
         if (installed == download.versionCode) {
             Log.i(TAG, "$packageName installed at $installed; settling the row as INSTALLED")
-            settle(packageName, DownloadStatus.INSTALLED, null, download.status)
+            settle(packageName, DownloadStatus.INSTALLED, null, download.status, download.versionCode)
         } else {
             Log.i(
                 TAG,
@@ -78,7 +79,8 @@ open class InstallReconciler @Inject constructor(
                 packageName = download.packageName,
                 status = settled,
                 error = if (landed) null else DownloadFailure.INSTALL_INTERRUPTED,
-                expected = download.status
+                expected = download.status,
+                versionCode = download.versionCode
             )
         }
     }
@@ -118,7 +120,8 @@ open class InstallReconciler @Inject constructor(
         packageName: String,
         status: DownloadStatus,
         error: DownloadFailure?,
-        expected: DownloadStatus
+        expected: DownloadStatus,
+        versionCode: Long
     ) {
         val updated = downloadDao.updateStatusAndErrorIf(
             packageName = packageName,
@@ -130,6 +133,13 @@ open class InstallReconciler @Inject constructor(
         if (updated == 0) {
             Log.i(TAG, "$packageName left $expected before it could be settled as $status")
             return
+        }
+
+        // Native installs land outside the installer callbacks, and stranded
+        // rows only settle here, so report success from this path too. The
+        // reporter's once-guard dedupes against onInstallationSuccess.
+        if (status == DownloadStatus.INSTALLED) {
+            installReporter.reportInstalled(packageName, versionCode)
         }
 
         NotificationUtil.clearAppNotification(context, packageName)

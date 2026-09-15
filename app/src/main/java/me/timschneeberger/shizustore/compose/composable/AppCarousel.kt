@@ -59,7 +59,11 @@ fun AppCarousel(
                 if (group.kind.isTileStrip) {
                     AppTileStrip(apps = group.apps, onAppClick = onAppClick)
                 } else {
-                    AppCarouselStrip(apps = group.apps, onAppClick = onAppClick)
+                    AppCarouselStrip(
+                        apps = group.apps,
+                        showStars = group.kind == AppGroupKind.MOST_STARRED,
+                        onAppClick = onAppClick
+                    )
                 }
             }
         }
@@ -87,10 +91,15 @@ fun AppTileStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit) {
 }
 
 @Composable
-fun AppCarouselStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit) {
+fun AppCarouselStrip(
+    apps: List<ResolvedApp>,
+    onAppClick: (ResolvedApp) -> Unit,
+    modifier: Modifier = Modifier,
+    showStars: Boolean = false
+) {
     LazyHorizontalGrid(
         rows = GridCells.Fixed(CAROUSEL_GRID_ROWS),
-        modifier = Modifier.height(carouselGridHeight()),
+        modifier = modifier.height(carouselGridHeight()),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
     ) {
@@ -101,7 +110,8 @@ fun AppCarouselStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit)
             AppListItem(
                 app = app,
                 onClick = { onAppClick(app) },
-                modifier = Modifier.width(carouselItemWidth())
+                modifier = Modifier.width(carouselItemWidth()),
+                showStars = showStars
             )
         }
     }

@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
 import me.timschneeberger.shizustore.compose.indexUrl
@@ -62,7 +63,7 @@ fun AppUpdateItem(
         modifier = modifier,
         headline = app.name.ifBlank { app.packageName },
         supporting = releasedAt,
-        tertiary = tertiaryText,
+        tertiary = AnnotatedString(tertiaryText),
         headlineStyle = MaterialTheme.typography.bodyMedium,
         minHeight = R.dimen.list_item_height_three_line,
         onClick = onClick,

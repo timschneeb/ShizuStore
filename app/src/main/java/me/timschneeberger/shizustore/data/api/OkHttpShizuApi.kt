@@ -18,6 +18,7 @@ import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
 /**
@@ -81,6 +82,11 @@ class OkHttpShizuApi @Inject constructor(
         json.decodeFromString(HealthDto.serializer(), body)
     }
 
+    override suspend fun reportInstall(slug: String): ApiResult<InstallRecordedDto> =
+        decode(post("/v1/apps/$slug/installs")) { body ->
+            json.decodeFromString(InstallRecordedDto.serializer(), body)
+        }
+
     private suspend fun execute(
         path: String,
         params: List<Pair<String, String>> = emptyList(),
@@ -100,7 +106,28 @@ class OkHttpShizuApi @Inject constructor(
             .apply { if (!etag.isNullOrBlank()) header("If-None-Match", etag) }
             .build()
 
-        return withContext(Dispatchers.IO) {
+        return perform(request)
+    }
+
+    private suspend fun post(path: String): ApiResult<RawResponse> {
+        val base = baseUrlProvider.current()
+        val url = base.takeIf { it.isNotBlank() }?.let { buildUrl(it, path, emptyList()) }
+            ?: return ApiResult.Failure(ApiError.NotConfigured)
+
+        // Reports are fire-and-forget writes: never cache them, and the empty
+        // body keeps the request small (the slug rides in the path).
+        val request = Request.Builder()
+            .url(url)
+            .cacheControl(CacheControl.FORCE_NETWORK)
+            .header("Accept", "application/json")
+            .post(ByteArray(0).toRequestBody())
+            .build()
+
+        return perform(request)
+    }
+
+    private suspend fun perform(request: Request): ApiResult<RawResponse> =
+        withContext(Dispatchers.IO) {
             try {
                 throttle.acquire()
                 client.newCall(request).execute().use { response ->
@@ -141,7 +168,6 @@ class OkHttpShizuApi @Inject constructor(
                 ApiResult.Failure(ApiError.Network(e.message, e))
             }
         }
-    }
 
     private inline fun <T> decode(
         result: ApiResult<RawResponse>,

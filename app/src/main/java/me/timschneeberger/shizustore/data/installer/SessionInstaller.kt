@@ -29,6 +29,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.timschneeberger.shizustore.data.helper.InstallReporter
 import me.timschneeberger.shizustore.data.installer.base.InstallerBase
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallError
@@ -48,8 +49,9 @@ import me.timschneeberger.shizustore.util.isolatedIoScope
 @Singleton
 open class SessionInstaller @Inject constructor(
     @ApplicationContext context: Context,
-    private val downloadDao: DownloadDao
-) : InstallerBase(context, downloadDao) {
+    private val downloadDao: DownloadDao,
+    installReporter: InstallReporter
+) : InstallerBase(context, downloadDao, installReporter) {
     private val packageInstaller = context.packageManager.packageInstaller
 
     private val enqueuedSessions = ConcurrentHashMap<Int, SessionInfo>()

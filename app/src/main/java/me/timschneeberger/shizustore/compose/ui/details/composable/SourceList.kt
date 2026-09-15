@@ -33,6 +33,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
@@ -43,7 +44,7 @@ import me.timschneeberger.shizustore.data.model.ReleaseChannel
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.util.CommonUtil
 
-internal data class VersionRow(
+internal data class SourceRow(
     val source: AppSource,
     val isSelected: Boolean,
     val signerDiffers: Boolean
@@ -59,10 +60,10 @@ internal data class VersionRow(
     val selectable: Boolean get() = !signerDiffers && runsHere
 }
 
-internal fun versionRows(sources: List<AppSource>): List<VersionRow> {
+internal fun sourceRows(sources: List<AppSource>): List<SourceRow> {
     val preselected = sources.indexOf(sources.preferredForThisDevice())
     return sources.mapIndexed { index, source ->
-        VersionRow(
+        SourceRow(
             source = source,
             isSelected = index == preselected,
             signerDiffers = source.app.signerDiffersFromInstalled
@@ -71,19 +72,20 @@ internal fun versionRows(sources: List<AppSource>): List<VersionRow> {
 }
 
 @Composable
-fun VersionList(
+fun SourceList(
     sources: List<AppSource>,
     modifier: Modifier = Modifier,
     onSelect: (AppSource) -> Unit = {}
 ) {
-    if (sources.isEmpty()) return
+    // A single source needs no selection UI.
+    if (sources.size <= 1) return
 
     var expanded by remember { mutableStateOf(false) }
-    val rows = remember(sources) { versionRows(sources) }
+    val rows = remember(sources) { sourceRows(sources) }
 
     val rotation by animateFloatAsState(
         targetValue = if (expanded) CHEVRON_EXPANDED_DEGREES else 0f,
-        label = "versionsChevron"
+        label = "sourcesChevron"
     )
 
     Column(modifier = modifier) {
@@ -101,14 +103,14 @@ fun VersionList(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = stringResource(R.string.details_versions),
+                    text = stringResource(R.string.details_sources),
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = pluralStringResource(
-                        R.plurals.details_versions_count,
+                        R.plurals.details_sources_count,
                         rows.size,
                         rows.size
                     ),
@@ -151,12 +153,12 @@ fun VersionList(
                         headline = row.source.app.versionName,
                         supporting = listOfNotNull(releasedOn(row.source.added), origin)
                             .joinToString(SEPARATOR),
-                        tertiary = row.abiLabel,
+                        tertiary = row.abiLabel?.let { AnnotatedString(it) },
                         tertiaryMaxLines = 2,
                         onClick = { onSelect(row.source) },
                         enabled = row.selectable,
                         headlineStyle = MaterialTheme.typography.bodyLarge,
-                        trailing = { VersionChips(row) }
+                        trailing = { SourceChips(row) }
                     )
                 }
             }
@@ -165,7 +167,7 @@ fun VersionList(
 }
 
 @Composable
-private fun VersionChips(row: VersionRow) {
+private fun SourceChips(row: SourceRow) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall)),
         verticalAlignment = Alignment.CenterVertically

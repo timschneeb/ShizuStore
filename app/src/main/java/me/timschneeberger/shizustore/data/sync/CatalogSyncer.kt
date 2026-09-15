@@ -94,7 +94,8 @@ class CatalogSyncer @Inject constructor(
                 cursor = meta.generatedAt,
                 categoriesEtag = categoriesEtag,
                 listCommit = meta.listCommit,
-                syncedAt = System.currentTimeMillis()
+                syncedAt = System.currentTimeMillis(),
+                useInstallCountsForPopularity = meta.useInstallCountsForPopularity
             )
         )
         updateStateRepository.recomputeAll()
@@ -146,6 +147,9 @@ class CatalogSyncer @Inject constructor(
         val upserts = (changes.added + changes.updated).map { it.toEntity(now) }
         if (upserts.isNotEmpty()) appDao.upsertSummaries(upserts)
         if (changes.removed.isNotEmpty()) appDao.deleteBySlugs(changes.removed.map { it.slug })
+        // Install-count deltas land last and bypass the summary path: they
+        // touch one column, so a hot counter never marks rows for refetch.
+        if (changes.installsUpdated.isNotEmpty()) appDao.setInstallCounts(changes.installsUpdated)
 
         return StepResult.Ok(
             Counts(

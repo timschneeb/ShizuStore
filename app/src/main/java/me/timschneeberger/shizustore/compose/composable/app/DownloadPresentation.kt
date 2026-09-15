@@ -10,9 +10,12 @@ package me.timschneeberger.shizustore.compose.composable.app
 import android.content.Context
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.stringRes
+import me.timschneeberger.shizustore.compose.indexUrl
+import me.timschneeberger.shizustore.data.api.ShizuUrls
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.util.CommonUtil
+import me.timschneeberger.shizustore.util.ServerConfig
 
 /**
  * The two lines under a download's name: what it is doing, and how it is going.
@@ -93,6 +96,15 @@ internal fun barFor(progress: Int) =
 
 internal fun iconBaseUrl(download: Download): String =
     download.apkUrl.removeSuffix(download.apkName.trimStart('/')).trimEnd('/')
+
+/**
+ * Catalog downloads carry the server icon hash but no repo icon URL, and their
+ * apkUrl points upstream, so the legacy repo-relative base cannot resolve them.
+ * Prefer the immutable server icon URL and keep the legacy path as fallback.
+ */
+internal fun downloadIconUrl(download: Download): String =
+    ShizuUrls.icon(ServerConfig.baseUrl, download.iconHash)
+        ?: indexUrl(iconBaseUrl(download), download.iconUrl).orEmpty()
 
 internal fun progressPercent(progress: Int): Float = progress.coerceIn(0, PERCENT.toInt()).toFloat()
 

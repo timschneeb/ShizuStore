@@ -78,7 +78,8 @@ class CatalogUiMapper @Inject constructor() {
         updateCandidateId = app.updateCandidateId,
         hasPaid = app.hasPaid,
         hasIap = app.hasIap,
-        stars = app.stars
+        stars = app.stars,
+        installCount = app.installCount
     )
 
     fun toAppDetails(detailed: DetailedApp): AppDetails {
@@ -122,7 +123,7 @@ class CatalogUiMapper @Inject constructor() {
             size = primary?.size ?: 0L,
             minSdk = app.minSdk ?: 0,
             whatsNew = "",
-            permissions = app.permissions,
+            permissions = app.permissions.filterNot { it.endsWith(DYNAMIC_RECEIVER_SUFFIX) },
             installedVersionCode = app.installedVersionCode,
             installedSigner = null,
             slug = app.slug,
@@ -195,3 +196,6 @@ class CatalogUiMapper @Inject constructor() {
     fun fromEntities(downloads: List<AppDownloadEntity>): List<AppCandidate> =
         downloads.map { AppCandidate.from(it, null) }
 }
+
+/** AndroidX's ContextCompat declares this per-app permission; it is not a user grant. */
+private const val DYNAMIC_RECEIVER_SUFFIX = ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"

@@ -149,13 +149,56 @@ class AppDetailsViewModel @Inject constructor(
             emptyList()
         )
 
+    // Leaf category of the current app; drives the category shelf and its links.
+    val categorySlug: StateFlow<String?> = slug
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { currentSlug -> observeCategorySlug(currentSlug) }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            null
+        )
+
+    // Other apps in the same category; empty until a profile is known.
+    val moreFromCategory: StateFlow<List<ResolvedApp>> = slug
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { currentSlug ->
+            observeCategorySlug(currentSlug)
+                .flatMapLatest { category ->
+                    if (category.isNullOrBlank()) {
+                        flowOf(emptyList())
+                    } else {
+                        appRepository.observeByCategory(category, currentSlug)
+                            .map { rows -> rows.map(mapper::toResolvedApp) }
+                    }
+                }
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            emptyList()
+        )
+
+    private fun observeCategorySlug(currentSlug: String) =
+        appRepository.observeDetail(currentSlug)
+            .map { it?.app?.categorySlug }
+            .distinctUntilChanged()
+
     fun load(packageName: String) {
         identity.value = packageName
         viewModelScope.launch {
             val resolvedSlug = appRepository.getByPackage(packageName)?.slug ?: packageName
             detailFetching.value = true
             slug.value = resolvedSlug
-            fetchDetail(resolvedSlug)
+            if (detailedAppRepository.fullDescription(resolvedSlug).isNullOrBlank()) {
+                fetchDetail(resolvedSlug)
+            } else {
+                // A fresh ViewModel (e.g. the full-description screen) already
+                // holding the markdown must not refetch it over the network.
+                detailFetching.value = false
+            }
         }
     }
 

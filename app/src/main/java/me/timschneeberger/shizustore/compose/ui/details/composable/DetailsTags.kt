@@ -6,6 +6,7 @@
 package me.timschneeberger.shizustore.compose.ui.details.composable
 
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -38,9 +39,14 @@ internal fun detailTags(context: Context, details: AppDetails): List<String> = b
 }
 
 @Composable
-fun DetailsTags(details: AppDetails, modifier: Modifier = Modifier) {
+fun DetailsTags(
+    details: AppDetails,
+    modifier: Modifier = Modifier,
+    onCategoryClick: (() -> Unit)? = null
+) {
     val context = LocalContext.current
     val tags = detailTags(context, details)
+    val category = details.categories.firstOrNull()?.takeIf { it.isNotBlank() }
 
     if (tags.isEmpty()) return
 
@@ -53,7 +59,12 @@ fun DetailsTags(details: AppDetails, modifier: Modifier = Modifier) {
             LabelChip(
                 text = tag,
                 container = MaterialTheme.colorScheme.secondaryContainer,
-                content = MaterialTheme.colorScheme.onSecondaryContainer
+                content = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = if (tag == category && onCategoryClick != null) {
+                    Modifier.clickable(onClick = onCategoryClick)
+                } else {
+                    Modifier
+                }
             )
         }
     }

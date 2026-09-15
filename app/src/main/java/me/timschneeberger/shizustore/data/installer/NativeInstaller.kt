@@ -13,6 +13,7 @@ import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import me.timschneeberger.shizustore.data.helper.InstallReporter
 import me.timschneeberger.shizustore.data.installer.base.InstallerBase
 import me.timschneeberger.shizustore.data.model.InstallError
 import me.timschneeberger.shizustore.data.model.Installer
@@ -22,8 +23,9 @@ import me.timschneeberger.shizustore.data.room.entity.Download
 @Singleton
 open class NativeInstaller @Inject constructor(
     @ApplicationContext context: Context,
-    downloadDao: DownloadDao
-) : InstallerBase(context, downloadDao) {
+    downloadDao: DownloadDao,
+    installReporter: InstallReporter
+) : InstallerBase(context, downloadDao, installReporter) {
     override suspend fun beginInstall(download: Download) {
         val packageName = download.packageName
 

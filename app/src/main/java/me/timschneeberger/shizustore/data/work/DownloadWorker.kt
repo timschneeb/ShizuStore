@@ -244,7 +244,7 @@ class DownloadWorker @AssistedInject constructor(
     private suspend fun onSuccess(packageName: String): Result = withContext(NonCancellable) {
         downloadDao.updateProgress(packageName, 100, 0L, 0L)
         downloadDao.updateStatus(packageName, DownloadStatus.COMPLETED)
-        cancelNotification()
+        cancelNotification(packageName)
         postTerminalNotification { NotificationUtil.completedNotification(applicationContext, it) }
         Result.success()
     }
@@ -268,7 +268,7 @@ class DownloadWorker @AssistedInject constructor(
             DownloadStatus.FAILED,
             DownloadFailure.of(error)
         )
-        cancelNotification()
+        cancelNotification(packageName)
         postTerminalNotification { NotificationUtil.failedNotification(applicationContext, it) }
 
         Result.success(failureData(error))
@@ -289,7 +289,7 @@ class DownloadWorker @AssistedInject constructor(
             cleanup(download, target)
             downloadDao.updateStatusAndError(packageName, DownloadStatus.CANCELLED, null)
             downloadDao.updateProgress(packageName, 0, 0L, 0L)
-            cancelNotification()
+            cancelNotification(packageName)
 
             Result.success()
         }
@@ -421,24 +421,42 @@ class DownloadWorker @AssistedInject constructor(
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notification = NotificationUtil.downloadNotification(applicationContext, current)
+        val notification = NotificationUtil.downloadNotification(
+            applicationContext,
+            current,
+            grouped = isGrouped()
+        )
+        // Per-download id: workers sharing one id overwrote the same row,
+        // so parallel downloads jumped between progresses.
+        val id = NotificationUtil.notificationId(
+            inputData.getString(KEY_PACKAGE_NAME).orEmpty()
+        )
         return if (isQAndAbove) {
-            ForegroundInfo(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE)
+            ForegroundInfo(id, notification, FOREGROUND_SERVICE_TYPE)
         } else {
-            ForegroundInfo(NOTIFICATION_ID, notification)
+            ForegroundInfo(id, notification)
         }
     }
 
-    private fun updateNotification(download: Download) {
-        NotificationUtil.notify(
+    private suspend fun updateNotification(download: Download) {
+        NotificationUtil.notifyApp(
             applicationContext,
-            NOTIFICATION_ID,
-            NotificationUtil.downloadNotification(applicationContext, download)
+            download.packageName,
+            NotificationUtil.downloadNotification(
+                applicationContext,
+                download,
+                grouped = isGrouped()
+            )
         )
     }
 
-    private fun cancelNotification() {
-        NotificationUtil.cancel(applicationContext, NOTIFICATION_ID)
+    /** Groups only while two or more downloads are visibly progressing. */
+    private suspend fun isGrouped(): Boolean = downloadDao.countByStatus(
+        listOf(DownloadStatus.DOWNLOADING, DownloadStatus.VERIFYING)
+    ) > 1
+
+    private fun cancelNotification(packageName: String) {
+        NotificationUtil.clearAppNotification(applicationContext, packageName)
     }
 
     private fun postTerminalNotification(build: (Download) -> Notification) {
@@ -462,8 +480,6 @@ class DownloadWorker @AssistedInject constructor(
         private const val TAG = "DownloadWorker"
         private const val HASH_PREFIX_CHARS = 16
         private const val MAX_CAUSE_CHARS = 200
-
-        private const val NOTIFICATION_ID = NotificationUtil.DOWNLOAD_NOTIFICATION_ID
 
         @SuppressLint("InlinedApi")
         const val FOREGROUND_SERVICE_TYPE = FOREGROUND_SERVICE_TYPE_DATA_SYNC

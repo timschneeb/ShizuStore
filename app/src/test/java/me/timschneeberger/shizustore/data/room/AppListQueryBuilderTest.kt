@@ -48,6 +48,20 @@ class AppListQueryBuilderTest {
                     "ORDER BY downloadTotal IS NULL, downloadTotal DESC, name COLLATE NOCASE ASC"
                 )
         )
+        assertTrue(
+            AppListQueryBuilder.build(AppListArgs(sort = AppSort.SIZE_DESC)).sql
+                .endsWith("ORDER BY size IS NULL, size DESC, name COLLATE NOCASE ASC")
+        )
+    }
+
+    @Test
+    fun downloadsSortUsesInstallCountsWhenFlagged() {
+        assertTrue(
+            AppListQueryBuilder.build(
+                AppListArgs(sort = AppSort.DOWNLOADS),
+                useInstallCountsForPopularity = true
+            ).sql.endsWith("ORDER BY installCount DESC, name COLLATE NOCASE ASC")
+        )
     }
 
     @Test

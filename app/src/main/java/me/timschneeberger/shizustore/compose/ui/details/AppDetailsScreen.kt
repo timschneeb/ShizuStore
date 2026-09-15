@@ -56,8 +56,8 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsTags
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallAction
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallActions
 import me.timschneeberger.shizustore.compose.ui.details.composable.LinkList
+import me.timschneeberger.shizustore.compose.ui.details.composable.SourceList
 import me.timschneeberger.shizustore.compose.ui.details.composable.StoreNotice
-import me.timschneeberger.shizustore.compose.ui.details.composable.VersionList
 import me.timschneeberger.shizustore.compose.ui.details.composable.installButtonState
 import me.timschneeberger.shizustore.compose.ui.details.composable.installRefusalText
 import me.timschneeberger.shizustore.compose.ui.details.composable.linkButtonState
@@ -88,6 +88,8 @@ fun AppDetailsScreen(
     val isBlacklisted by viewModel.isBlacklisted.collectAsStateWithLifecycle()
     val ignoredUpdate by viewModel.ignoredUpdate.collectAsStateWithLifecycle()
     val moreFromAuthor by viewModel.moreFromAuthor.collectAsStateWithLifecycle()
+    val moreFromCategory by viewModel.moreFromCategory.collectAsStateWithLifecycle()
+    val categorySlug by viewModel.categorySlug.collectAsStateWithLifecycle()
     val canAddToHome = rememberCanOpen(
         packageName,
         (uiState as? AppDetailsUiState.Loaded)?.downloadStatus
@@ -272,7 +274,12 @@ fun AppDetailsScreen(
 
                             CompatibilityNotice(minSdk = state.details.minSdk)
 
-                            DetailsTags(details = state.details)
+                            DetailsTags(
+                                details = state.details,
+                                onCategoryClick = categorySlug?.takeIf { it.isNotBlank() }?.let { slug ->
+                                    { onNavigateTo(Destination.AppList(categorySlug = slug)) }
+                                }
+                            )
 
                             BillingNotice(
                                 hasPaid = state.details.hasPaid,
@@ -305,7 +312,7 @@ fun AppDetailsScreen(
                                 )
                             }
 
-                            VersionList(
+                            SourceList(
                                 sources = state.sources,
                                 onSelect = { viewModel.installFrom(it.app) }
                             )
@@ -313,6 +320,17 @@ fun AppDetailsScreen(
                             DetailsCarousel(
                                 title = stringResource(R.string.details_more_from_author),
                                 apps = moreFromAuthor,
+                                onAppClick = {
+                                    onNavigateTo(Destination.AppDetails(it.packageName))
+                                }
+                            )
+
+                            DetailsCarousel(
+                                title = stringResource(R.string.details_more_from_category),
+                                apps = moreFromCategory,
+                                onHeaderClick = categorySlug?.takeIf { it.isNotBlank() }?.let { slug ->
+                                    { onNavigateTo(Destination.AppList(categorySlug = slug)) }
+                                },
                                 onAppClick = {
                                     onNavigateTo(Destination.AppDetails(it.packageName))
                                 }

@@ -17,6 +17,7 @@ import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.CacheControl
 import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -54,7 +55,11 @@ class OkHttpDownloader @Inject constructor(
             val request = request(url) {
                 if (fileSize > 0) inRange(fileSize)
                 headers()
-            }.build()
+            }
+                // APK bodies must never land in the shared HTTP cache: they are
+                // already stored in the downloads dir and would evict icons.
+                .cacheControl(CacheControl.FORCE_NETWORK)
+                .build()
             client.newCall(request).execute().use { response ->
                 val networkResponse = response.asNetworkResponse()
                 if (networkResponse !is NetworkResponse.Success) return@use networkResponse

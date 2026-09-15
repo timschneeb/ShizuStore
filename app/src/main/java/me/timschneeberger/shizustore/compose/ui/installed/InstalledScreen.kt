@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -45,6 +47,10 @@ fun InstalledScreen(
     val isEmpty = apps.loadState.refresh is LoadState.NotLoading && apps.itemCount == 0
 
     val listPadding = PaddingValues(bottom = dimensionResource(R.dimen.spacing_large))
+
+    // Saveable (not plain remember): the entry leaves composition while a
+    // detail screen is on top, and only rememberSaveable survives the return.
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
     val contentPhase = when {
         isInitialLoad -> ContentPhase.Loading
@@ -81,6 +87,7 @@ fun InstalledScreen(
 
                     ContentPhase.Loaded -> LazyColumn(
                         modifier = Modifier.fillMaxSize(),
+                        state = listState,
                         contentPadding = listPadding
                     ) {
                         items(

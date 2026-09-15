@@ -124,6 +124,7 @@ private fun AppGroup.moreDestination(): Destination? = when (kind) {
     AppGroupKind.RECOMMENDED -> Destination.AppList(recommended = true)
     AppGroupKind.RECENTLY_ADDED -> Destination.AppList(sort = AppSort.RECENTLY_ADDED)
     AppGroupKind.RECENTLY_UPDATED -> Destination.AppList(sort = AppSort.RECENTLY_UPDATED)
+    AppGroupKind.MOST_STARRED -> Destination.AppList(sort = AppSort.STARS)
     AppGroupKind.RANDOM_PICKS -> null
     AppGroupKind.CATEGORY -> Destination.AppList(categorySlug = category)
 }

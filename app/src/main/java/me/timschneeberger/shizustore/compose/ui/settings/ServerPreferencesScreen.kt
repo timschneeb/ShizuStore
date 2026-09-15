@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,7 +80,7 @@ fun ServerPreferencesScreen(
                 supporting = baseUrl.ifBlank {
                     stringResource(R.string.settings_server_not_configured)
                 },
-                tertiary = stringResource(statusTextRes(status)),
+                tertiary = AnnotatedString(stringResource(statusTextRes(status))),
                 supportingMaxLines = 2,
                 onClick = { showServerDialog = true }
             )

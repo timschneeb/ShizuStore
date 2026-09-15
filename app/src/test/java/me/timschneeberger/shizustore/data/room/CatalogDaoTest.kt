@@ -228,6 +228,22 @@ class CatalogDaoTest {
     }
 
     @Test
+    fun categoryQueryExcludesCurrentAppAndOrdersByName() = runTest {
+        val appDao = db.appDao()
+        appDao.upsert(app("a", "Alpha").copy(categorySlug = "audio"))
+        appDao.upsert(app("d", "Delta").copy(categorySlug = "audio"))
+        appDao.upsert(app("b", "Beta").copy(categorySlug = "audio"))
+        appDao.upsert(app("c", "Gamma").copy(categorySlug = "video"))
+
+        val rows = appDao
+            .observeByCategory(categorySlug = "audio", excludeSlug = "a", limit = 10)
+            .first()
+            .map { it.name }
+
+        assertEquals(listOf("Beta", "Delta"), rows)
+    }
+
+    @Test
     fun syncStateRoundTrips() = runTest {
         val dao = db.syncStateDao()
         assertNull(dao.get())

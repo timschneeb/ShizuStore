@@ -21,8 +21,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,11 +37,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.installer.ShizukuInstaller
 import me.timschneeberger.shizustore.data.installer.ShizukuPrompt
 import me.timschneeberger.shizustore.data.installer.probeShizukuPrompt
+import me.timschneeberger.shizustore.data.model.Installer
+import me.timschneeberger.shizustore.util.Preferences
 import me.timschneeberger.shizustore.extensions.viewExternal
 
 /**
@@ -54,7 +62,28 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
         }
     }
 
-    val current = prompt ?: return
+    val current = prompt
+    val scope = rememberCoroutineScope()
+
+    // Granting through this card means the user wants the Shizuku installer:
+    // once the resume re-probe reports READY, store it as the installer. Only
+    // then, since availability (package present) does not imply the grant and
+    // installs would fail without it.
+    var grantRequested by remember { mutableStateOf(false) }
+    LaunchedEffect(current) {
+        if (grantRequested && current == ShizukuPrompt.READY) {
+            grantRequested = false
+            scope.launch {
+                Preferences.putInteger(
+                    context,
+                    Preferences.PREFERENCE_INSTALLER_ID,
+                    Installer.SHIZUKU.ordinal
+                )
+            }
+        }
+    }
+
+    current ?: return
     if (current == ShizukuPrompt.READY) return
 
     val isInstall = current == ShizukuPrompt.INSTALL
@@ -112,6 +141,7 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
                         if (isInstall) {
                             openShizukuOnPlay(context)
                         } else {
+                            grantRequested = true
                             ShizukuInstaller.requestPermissionIfNeeded()
                         }
                     }

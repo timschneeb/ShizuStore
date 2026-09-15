@@ -15,7 +15,9 @@ data class SyncStateEntity(
     val cursor: String? = null,
     val categoriesEtag: String? = null,
     val listCommit: String? = null,
-    val syncedAt: Long = 0L
+    val syncedAt: Long = 0L,
+    /** Server popularity mode from /v1/meta: sort by installCount, not downloadTotal. */
+    val useInstallCountsForPopularity: Boolean = false
 ) {
     companion object {
         const val SINGLETON_ID = 0

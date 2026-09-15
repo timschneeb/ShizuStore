@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,6 +33,7 @@ fun Info(
     modifier: Modifier = Modifier,
     description: String? = null,
     painter: Painter? = null,
+    tint: Color = LocalContentColor.current,
     onClick: (() -> Unit)? = null
 ) {
     Row(
@@ -51,7 +55,14 @@ fun Info(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (painter != null) Icon(painter = painter, contentDescription = null)
+        if (painter != null) {
+            Icon(
+                painter = painter,
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier.size(dimensionResource(R.dimen.icon_size_default))
+            )
+        }
         Column(modifier = Modifier.weight(1F)) {
             Text(
                 text = title,

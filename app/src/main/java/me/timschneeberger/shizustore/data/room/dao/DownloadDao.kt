@@ -21,6 +21,9 @@ interface DownloadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(download: Download)
 
+    @Query("SELECT COUNT(*) FROM download WHERE status IN (:statuses)")
+    suspend fun countByStatus(statuses: List<DownloadStatus>): Int
+
     @Query("UPDATE download SET status = :status WHERE packageName = :packageName")
     suspend fun updateStatus(packageName: String, status: DownloadStatus)
 

@@ -68,6 +68,15 @@ interface AppDao {
         }
     }
 
+    @Query("UPDATE app SET installCount = :count WHERE slug = :slug")
+    suspend fun setInstallCount(slug: String, count: Long)
+
+    /** Delta install counts from `installsUpdated`: one narrow column write per row. */
+    @Transaction
+    suspend fun setInstallCounts(counts: Map<String, Long>) {
+        counts.forEach { (slug, count) -> setInstallCount(slug, count) }
+    }
+
     @Query(
         "UPDATE app SET installedVersionCode = :installedVersionCode," +
             " updateAvailable = :updateAvailable, updateCandidateId = :updateCandidateId" +
@@ -111,11 +120,25 @@ interface AppDao {
     )
     fun observeByAuthor(authorKey: String, excludeSlug: String, limit: Int): Flow<List<AppEntity>>
 
+    /** Other apps in the same category, for the trailing details shelf. */
+    @Query(
+        "SELECT * FROM app WHERE categorySlug = :categorySlug AND slug != :excludeSlug" +
+            " ORDER BY name COLLATE NOCASE ASC LIMIT :limit"
+    )
+    fun observeByCategory(categorySlug: String, excludeSlug: String, limit: Int): Flow<List<AppEntity>>
+
     @Query(
         "SELECT * FROM app ORDER BY versionUpdatedAt IS NULL, versionUpdatedAt DESC," +
             " name COLLATE NOCASE ASC LIMIT :limit"
     )
     fun observeRecentlyUpdated(limit: Int): Flow<List<AppEntity>>
+
+    /** Null stars (unknown popularity) excluded so the row hides without data. */
+    @Query(
+        "SELECT * FROM app WHERE stars IS NOT NULL ORDER BY stars DESC," +
+            " name COLLATE NOCASE ASC LIMIT :limit"
+    )
+    fun observeMostStarred(limit: Int): Flow<List<AppEntity>>
 
     @Query("SELECT * FROM app ORDER BY slug ASC")
     fun observeAll(): Flow<List<AppEntity>>

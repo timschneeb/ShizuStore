@@ -132,6 +132,44 @@ class CatalogSyncerTest {
     }
 
     @Test
+    fun syncPersistsPopularityFlagFromMeta() = runTest {
+        server.dispatcher = routes(
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META_FLAGGED),
+            "/v1/categories" to json(CATEGORIES)
+        )
+
+        val outcome = syncer.sync()
+
+        assertTrue(outcome is CatalogSyncOutcome.Success)
+        assertTrue(db.syncStateDao().get()!!.useInstallCountsForPopularity)
+    }
+
+    @Test
+    fun incrementalAppliesInstallCountDeltasWithoutTouchingRows() = runTest {
+        db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
+        db.appDao().upsert(
+            AppEntity(slug = "alpha", name = "Alpha", installCount = 2)
+        )
+
+        server.dispatcher = routes(
+            "/v1/changes" to json(CHANGES_WITH_INSTALLS),
+            "/v1/meta" to json(META),
+            "/v1/categories" to MockResponse().setResponseCode(304)
+        )
+
+        val outcome = syncer.sync() as CatalogSyncOutcome.Success
+
+        assertEquals(0, outcome.added)
+        assertEquals(0, outcome.updated)
+        assertEquals(0, outcome.removed)
+        val alpha = db.appDao().get("alpha")!!
+        assertEquals(9, alpha.installCount)
+        assertEquals("Alpha", alpha.name)
+        assertNull(db.appDao().get("ghost"))
+    }
+
+    @Test
     fun rateLimitedResponseFailsWithoutAdvancingCursor() = runTest {
         db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
         server.dispatcher = routes(
@@ -238,6 +276,24 @@ class CatalogSyncerTest {
               "generatedAt": "$GENERATED_AT",
               "listCommit": "abc",
               "counts": { "apps": 2, "categories": 1 }
+            }
+        """.trimIndent()
+
+        val META_FLAGGED = """
+            {
+              "generatedAt": "$GENERATED_AT",
+              "listCommit": "abc",
+              "counts": { "apps": 2, "categories": 1 },
+              "useInstallCountsForPopularity": true
+            }
+        """.trimIndent()
+
+        val CHANGES_WITH_INSTALLS = """
+            {
+              "added": [],
+              "updated": [],
+              "removed": [],
+              "installsUpdated": { "alpha": 9, "ghost": 3 }
             }
         """.trimIndent()
 

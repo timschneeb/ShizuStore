@@ -93,7 +93,9 @@ internal fun installButtonState(
             context = context,
             canCancel = false,
             caption = statusCaption(context, download.status, download.progress),
-            bar = barFor(download.progress)
+            // No install-phase progress exists (the fraction is the stale
+            // download value), so spin instead of showing a stuck ring.
+            bar = ProgressBar.Indeterminate
         )
 
         DownloadStatus.AWAITING_CONFIRMATION -> inFlight(

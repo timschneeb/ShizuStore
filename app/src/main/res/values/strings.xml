@@ -34,6 +34,7 @@
     <string name="action_installing">Installing</string>
     <string name="action_more">More</string>
     <string name="action_open">Open</string>
+    <string name="action_open_external">Open externally</string>
     <string name="action_open_play">View on Play</string>
     <string name="action_open_link">View source</string>
     <string name="action_remove">Remove</string>
@@ -54,16 +55,20 @@
 
 
     <string name="app_name" translatable="false">Shizu Store</string>
-    <string name="app_version_size" translatable="false">%1$s · %2$s</string>
+    <!-- Double spaces are \u0020 escapes: aapt collapses literal
+        repeated whitespace in string resources into one. -->
+    <string name="app_version_size" translatable="false">%1$s\u0020\u0020·\u0020\u0020%2$s</string>
     <string name="app_stars" translatable="false">★ %1$s</string>
+    <string name="app_installs" translatable="false">%1$s</string>
     <string name="apps_empty">No apps yet</string>
     <string name="apps_empty_detail">The catalog syncs automatically</string>
     <string name="apps_empty_syncing">Syncing catalog…</string>
-    <string name="apps_sync_failed">Could not reach the server. Check your connection and try again.</string>
+    <string name="apps_sync_failed">Couldn\'t connect to the server. Browsing the local cache. Check your connection and retry.</string>
     <string name="apps_random_picks">Random picks</string>
     <string name="apps_recommended">Recommended</string>
     <string name="apps_recently_added">Recently added</string>
     <string name="apps_recently_updated">Recently updated</string>
+    <string name="apps_most_starred">Most starred on GitHub</string>
 
     <string name="blacklist_empty">Nothing is blacklisted</string>
     <string name="blacklist_empty_detail">Blacklist an app from its menu to list it here</string>
@@ -92,7 +97,8 @@
     <string name="details_links">Links</string>
     <string name="details_min_sdk" translatable="false">API %1$d+</string>
     <string name="details_more_about">More about this app</string>
-    <string name="details_more_from_author">More apps from developer</string>
+    <string name="details_more_from_author">More apps from this developer</string>
+    <string name="details_more_from_category">More from this category</string>
     <string name="details_not_found">App no longer available</string>
     <string name="details_load_failed">Could not reach the server. Check your connection and try again.</string>
     <string name="details_permissions">Permissions</string>
@@ -101,7 +107,8 @@
         <item quantity="other">%1$d permissions requested</item>
     </plurals>
     <string name="details_permissions_custom">Custom permissions</string>
-    <string name="details_permissions_known">Known permissions</string>
+    <string name="details_permissions_dangerous">Dangerous permissions</string>
+    <string name="details_permissions_known">Other permissions</string>
     <string name="details_permissions_none">No permissions requested</string>
     <string name="details_similar_apps">Similar apps</string>
     <string name="details_source_code">Source code</string>
@@ -113,12 +120,13 @@
     <string name="details_version_installed">Installed</string>
     <string name="details_version_repo_other_signer"><xliff:g id="repository">%1$s</xliff:g> · Different signing key</string>
     <string name="details_version_selected">Selected</string>
-    <string name="details_versions">Versions</string>
-    <plurals name="details_versions_count">
-        <item quantity="one">%1$d release</item>
-        <item quantity="other">%1$d releases</item>
+    <string name="details_sources">Sources</string>
+    <plurals name="details_sources_count">
+        <item quantity="one">%1$d source</item>
+        <item quantity="other">%1$d sources</item>
     </plurals>
     <string name="details_website">Website</string>
+    <string name="details_fdroid">F-Droid</string>
     <string name="details_whats_new">What\'s new</string>
 
     <string name="download_cancel_all">Cancel all</string>
@@ -231,6 +239,7 @@
     <string name="notification_fingerprint_mismatch_text">Syncing stopped and nothing was updated. Open Shizu Store to check this repository.</string>
     <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
     <string name="notification_install_failed">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_installing">Installing <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_install_refused">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
     <plurals name="notification_failed_summary">
@@ -240,6 +249,10 @@
     <plurals name="notification_installed_summary">
         <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app installed</item>
         <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
+    </plurals>
+    <plurals name="notification_download_summary">
+        <item quantity="one">Downloading <xliff:g id="count">%1$d</xliff:g> app</item>
+        <item quantity="other">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
     </plurals>
     <plurals name="notification_updates_available">
         <item quantity="one">%1$d update available</item>
@@ -282,6 +295,7 @@
     <string name="search_sort_name">Name</string>
     <string name="search_sort_stars">Most starred</string>
     <string name="search_sort_popularity">Popularity</string>
+    <string name="search_sort_size">Largest first</string>
     <string name="filter_all">All</string>
     <string name="filter_category">Category</string>
     <string name="filter_price">Price</string>

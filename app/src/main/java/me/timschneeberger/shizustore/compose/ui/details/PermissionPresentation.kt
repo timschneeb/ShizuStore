@@ -5,12 +5,20 @@
 
 package me.timschneeberger.shizustore.compose.ui.details
 
-import android.content.pm.PackageManager
+import android.content.Context
+import android.content.pm.PermissionInfo
+import android.graphics.drawable.Drawable
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.drawable.toBitmap
+
+internal enum class PermissionCategory { DANGEROUS, KNOWN, CUSTOM }
 
 internal data class PermissionEntry(
     val label: String,
     val description: String?,
-    val isKnown: Boolean
+    val category: PermissionCategory,
+    val icon: ImageBitmap? = null
 )
 
 private val MINOR_WORDS = setOf(
@@ -37,17 +45,58 @@ internal fun titleCase(text: String): String = text
 internal fun customPermissionName(permission: String): String =
     titleCase(permission.substringAfterLast('.').replace('_', ' ').lowercase())
 
-internal fun resolvePermission(pm: PackageManager, permission: String): PermissionEntry {
+internal fun resolvePermission(context: Context, permission: String): PermissionEntry {
+    val pm = context.packageManager
     val info = runCatching { pm.getPermissionInfo(permission, 0) }.getOrNull()
         ?: return PermissionEntry(
             label = customPermissionName(permission),
             description = permission,
-            isKnown = false
+            category = PermissionCategory.CUSTOM
         )
 
     return PermissionEntry(
         label = titleCase(info.loadLabel(pm).toString()),
         description = info.loadDescription(pm)?.toString()?.takeIf { it.isNotBlank() },
-        isKnown = true
+        category = if (isDangerousProtection(info.protectionLevel)) {
+            PermissionCategory.DANGEROUS
+        } else {
+            PermissionCategory.KNOWN
+        },
+        icon = iconToImageBitmap(loadPermissionIcon(context, info))
     )
 }
+
+/**
+ * Mirrors PermissionController's KotlinUtils.getPermInfoIcon: use the permission's
+ * own icon first, then fall back to the icon of the permission group it belongs to.
+ *
+ * The icon resource id must be checked before loading: loadIcon() falls back to
+ * the declaring app's icon when the permission sets none, and loadLogo() is
+ * almost always unset, which is why both are wrong here. Group drawables are
+ * inflated with the app theme so their theme attribute tints resolve, matching
+ * the system's themed load plus applyTint(colorControlNormal).
+ */
+internal fun loadPermissionIcon(context: Context, info: PermissionInfo): Drawable? {
+    val pm = context.packageManager
+    if (info.icon != 0) {
+        runCatching { info.loadUnbadgedIcon(pm) }.getOrNull()?.let { return it }
+    }
+    // Platform permissions declare group UNDEFINED in the framework manifest,
+    // so info.group alone never resolves them; the platform table comes first.
+    val groupName = PermissionGroups.groupOfPlatformPermission(info.name)
+        ?: info.group?.takeUnless { it.endsWith(".UNDEFINED") }
+        ?: return null
+    val groupInfo = runCatching { pm.getPermissionGroupInfo(groupName, 0) }.getOrNull()
+        ?: return null
+    if (groupInfo.icon == 0) return null
+    val resources = runCatching { pm.getResourcesForApplication(groupInfo.packageName) }
+        .getOrNull() ?: return null
+    return runCatching { resources.getDrawable(groupInfo.icon, context.theme) }.getOrNull()
+        ?: runCatching { resources.getDrawable(groupInfo.icon, null) }.getOrNull()
+}
+
+internal fun isDangerousProtection(protectionLevel: Int): Boolean =
+    (protectionLevel and PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS
+
+private fun iconToImageBitmap(icon: Drawable?): ImageBitmap? =
+    runCatching { icon?.toBitmap()?.asImageBitmap() }.getOrNull()

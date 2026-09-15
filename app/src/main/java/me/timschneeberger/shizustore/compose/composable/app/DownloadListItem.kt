@@ -16,9 +16,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
-import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.compose.theme.successColor
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.room.entity.Download
@@ -31,13 +31,13 @@ fun DownloadListItem(download: Download, onClick: () -> Unit, modifier: Modifier
         modifier = modifier,
         headline = download.displayName,
         supporting = row.status,
-        tertiary = row.detail,
+        tertiary = row.detail?.let { AnnotatedString(it) },
         headlineStyle = MaterialTheme.typography.bodyMedium,
         onClick = onClick,
         leading = {
             AnimatedAppIcon(
                 modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium)),
-                iconUrl = indexUrl(iconBaseUrl(download), download.iconUrl).orEmpty(),
+                iconUrl = downloadIconUrl(download),
                 inProgress = download.isActive,
                 progress = progressPercent(download.progress)
             )

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AttachMoney
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.rounded.MoneyOff
 import androidx.compose.material.icons.rounded.Paid
 import androidx.compose.material.icons.rounded.Redeem
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material.icons.rounded.SortByAlpha
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Update
@@ -35,6 +37,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -174,7 +177,14 @@ private fun FilterSheet(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
-        LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
+        // The sheet is a fresh composition on every open, so bring the
+        // current selection into view instead of always starting at the top.
+        val listState = rememberLazyListState()
+        val selectedIndex = options.indexOfFirst { !it.isHeader && it.id == selectedId }
+        LaunchedEffect(selectedIndex) {
+            if (selectedIndex > 0) listState.scrollToItem(selectedIndex)
+        }
+        LazyColumn(state = listState, contentPadding = PaddingValues(bottom = 24.dp)) {
             items(options) { option ->
                 if (option.isHeader) {
                     Text(
@@ -289,6 +299,11 @@ private fun sortOptions(): List<FilterOption> = listOf(
         id = AppSort.DOWNLOADS.name,
         label = stringResource(R.string.search_sort_popularity),
         icon = Icons.Rounded.Download
+    ),
+    FilterOption(
+        id = AppSort.SIZE_DESC.name,
+        label = stringResource(R.string.search_sort_size),
+        icon = Icons.Rounded.SdStorage
     )
 )
 
@@ -312,6 +327,7 @@ private fun sortLabel(sort: AppSort): Int = when (sort) {
     AppSort.RECENTLY_UPDATED -> R.string.apps_recently_updated
     AppSort.STARS -> R.string.search_sort_stars
     AppSort.DOWNLOADS -> R.string.search_sort_popularity
+    AppSort.SIZE_DESC -> R.string.search_sort_size
 }
 
 private fun sortIcon(sort: AppSort): ImageVector = when (sort) {
@@ -320,6 +336,7 @@ private fun sortIcon(sort: AppSort): ImageVector = when (sort) {
     AppSort.RECENTLY_UPDATED -> Icons.Rounded.Update
     AppSort.STARS -> Icons.Rounded.Star
     AppSort.DOWNLOADS -> Icons.Rounded.Download
+    AppSort.SIZE_DESC -> Icons.Rounded.SdStorage
 }
 
 private data class FilterOption(

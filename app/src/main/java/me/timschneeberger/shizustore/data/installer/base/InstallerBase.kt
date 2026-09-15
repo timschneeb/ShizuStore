@@ -16,6 +16,7 @@ import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.compose.stringRes
+import me.timschneeberger.shizustore.data.helper.InstallReporter
 import me.timschneeberger.shizustore.data.model.DownloadFailure
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallError
@@ -30,7 +31,8 @@ import me.timschneeberger.shizustore.util.isolatedIoScope
 
 abstract class InstallerBase(
     protected val context: Context,
-    private val downloadDao: DownloadDao
+    private val downloadDao: DownloadDao,
+    private val installReporter: InstallReporter
 ) : IInstaller {
     final override fun install(download: Download) {
         synchronized(queue) { queue.add(download.packageName) }
@@ -54,6 +56,16 @@ abstract class InstallerBase(
             if (!flipped) {
                 removeFromInstallQueue(packageName)
                 return@launch
+            }
+
+            // The download worker's terminal "downloaded" row is still showing;
+            // swap it for an installing row until the install settles.
+            isolate(TAG, "notify installing $packageName") {
+                NotificationUtil.notifyApp(
+                    context,
+                    packageName,
+                    NotificationUtil.installingNotification(context, packageName, download.displayName)
+                )
             }
 
             if (!isolate(TAG, "install $packageName") { beginInstall(download) }) {
@@ -98,8 +110,11 @@ abstract class InstallerBase(
 
     fun onInstallationSuccess(packageName: String) {
         scope.launch {
-            val displayName = downloadDao.getDownload(packageName)?.displayName ?: packageName
+            val row = downloadDao.getDownload(packageName)
+            val displayName = row?.displayName ?: packageName
             downloadDao.updateStatusAndError(packageName, DownloadStatus.INSTALLED, null)
+
+            row?.let { installReporter.reportInstalled(packageName, it.versionCode) }
 
             NotificationUtil.notifyApp(
                 context,

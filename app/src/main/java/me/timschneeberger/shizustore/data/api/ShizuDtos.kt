@@ -45,6 +45,7 @@ data class AppSummaryDto(
     val sigMd5: String? = null,
     val stars: Int? = null,
     val downloadTotal: Long? = null,
+    val installCount: Long = 0,
     val versionUpdatedAt: String? = null,
     val listUpdatedAt: String? = null,
     val authorKey: String? = null,
@@ -108,6 +109,7 @@ data class AppDetailDto(
     val lastCheckedAt: String? = null,
     val stars: Int? = null,
     val downloadTotal: Long? = null,
+    val installCount: Long = 0,
     val versionUpdatedAt: String? = null,
     val listUpdatedAt: String? = null,
     val authorName: String? = null,
@@ -145,7 +147,11 @@ data class RemovedAppDto(
 data class ChangesDto(
     val added: List<AppSummaryDto> = emptyList(),
     val updated: List<AppSummaryDto> = emptyList(),
-    val removed: List<RemovedAppDto> = emptyList()
+    val removed: List<RemovedAppDto> = emptyList(),
+    // Delta install counts (slug -> total) for rows whose count moved since
+    // the cursor. Applied directly onto stored rows, never as summaries, so
+    // a popular app cannot force a detail refetch or a re-download.
+    val installsUpdated: Map<String, Long> = emptyMap()
 )
 
 @Serializable
@@ -158,10 +164,18 @@ data class CountsDto(
 data class MetaDto(
     val generatedAt: String = "",
     val listCommit: String? = null,
-    val counts: CountsDto = CountsDto()
+    val counts: CountsDto = CountsDto(),
+    val useInstallCountsForPopularity: Boolean = false
 )
 
 @Serializable
 data class HealthDto(
     val status: String = ""
+)
+
+/** Result of `POST /v1/apps/{slug}/installs`: the new server-side total. */
+@Serializable
+data class InstallRecordedDto(
+    val slug: String = "",
+    val installCount: Long = 0
 )

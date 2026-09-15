@@ -48,7 +48,10 @@ class UpdateWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result = when (val outcome = syncer.sync()) {
         is CatalogSyncOutcome.Failed -> when (outcome.failure) {
-            CatalogSyncFailure.NETWORK, CatalogSyncFailure.RATE_LIMITED -> Result.retry()
+            // Same fail-fast policy as SyncWorker: connection loss settles as
+            // a finished failure so the error UI sticks; only rate limits retry.
+            CatalogSyncFailure.NETWORK -> Result.failure()
+            CatalogSyncFailure.RATE_LIMITED -> Result.retry()
             else -> Result.failure()
         }
 

@@ -23,12 +23,13 @@ fun DetailsCarousel(
     title: String,
     apps: List<ResolvedApp>,
     modifier: Modifier = Modifier,
+    onHeaderClick: (() -> Unit)? = null,
     onAppClick: (ResolvedApp) -> Unit = {}
 ) {
     if (apps.isEmpty()) return
 
     Column(modifier = modifier) {
-        SectionHeader(title = title)
+        SectionHeader(title = title, onClick = onHeaderClick)
         LazyRow(
             contentPadding = PaddingValues(
                 horizontal = dimensionResource(R.dimen.spacing_large)

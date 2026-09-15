@@ -11,11 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CloudOff
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ fun OfflineBanner(onRetry: () -> Unit, modifier: Modifier = Modifier) {
             modifier = Modifier.padding(
                 start = dimensionResource(R.dimen.spacing_large),
                 top = dimensionResource(R.dimen.spacing_xsmall),
+                end = dimensionResource(R.dimen.spacing_medium),
                 bottom = dimensionResource(R.dimen.spacing_xsmall)
             )
         ) {
@@ -48,8 +50,13 @@ fun OfflineBanner(onRetry: () -> Unit, modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f)
             )
-            TextButton(onClick = onRetry) {
-                Text(stringResource(R.string.action_retry))
+            // Plain image button: just the glyph, tinted by the surface content
+            // color. No elevation, border, or label.
+            IconButton(onClick = onRetry) {
+                Icon(
+                    imageVector = Icons.Rounded.Refresh,
+                    contentDescription = stringResource(R.string.action_retry)
+                )
             }
         }
     }

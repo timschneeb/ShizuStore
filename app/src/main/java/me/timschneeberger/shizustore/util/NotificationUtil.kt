@@ -54,9 +54,11 @@ object NotificationUtil {
 
     private const val GROUP_INSTALLED = "me.timschneeberger.shizustore.INSTALLED"
     private const val GROUP_FAILED = "me.timschneeberger.shizustore.FAILED"
+    private const val GROUP_DOWNLOADS = "me.timschneeberger.shizustore.DOWNLOADS"
 
     private const val SUMMARY_ID_INSTALLED = 900_001
     private const val SUMMARY_ID_FAILED = 900_002
+    private const val SUMMARY_ID_DOWNLOADS = 900_003
 
     private const val SUMMARY_SEPARATOR = ", "
 
@@ -64,7 +66,6 @@ object NotificationUtil {
 
     private val INSTALLED_TIMEOUT_MS = TimeUnit.HOURS.toMillis(6)
 
-    const val DOWNLOAD_NOTIFICATION_ID = 200
     const val UPDATES_NOTIFICATION_ID = 300
 
     fun notificationId(packageName: String): Int = packageName.hashCode()
@@ -142,7 +143,11 @@ object NotificationUtil {
         if (group == GROUP_CHANNELS_ACTIVITY) setSound(null, null)
     }
 
-    fun downloadNotification(context: Context, download: Download?): Notification {
+    fun downloadNotification(
+        context: Context,
+        download: Download?,
+        grouped: Boolean = false
+    ): Notification {
         val builder = NotificationCompat.Builder(context, CHANNEL_DOWNLOAD)
             .setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle(
@@ -155,6 +160,15 @@ object NotificationUtil {
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setContentIntent(openAppIntent(context))
+            .apply {
+                // A lone download stays a plain notification so its progress bar
+                // stays visible; two or more collapse into the group summary,
+                // which also keeps the status bar icon from jumping between rows.
+                if (grouped) {
+                    setGroup(GROUP_DOWNLOADS)
+                    setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
+                }
+            }
 
         if (download == null) return builder.setProgress(100, 0, true).build()
 
@@ -200,12 +214,34 @@ object NotificationUtil {
             .addAction(retryAction(context, download.packageName))
             .build()
 
+    /**
+     * Ongoing "Installing..." row. Posted when the installer takes over so the
+     * stale "downloaded" notification does not linger through the install;
+     * the installed/failed terminal notifications replace it on settle.
+     */
+    fun installingNotification(
+        context: Context,
+        packageName: String,
+        displayName: String
+    ): Notification = NotificationCompat.Builder(context, CHANNEL_INSTALL)
+        .setSmallIcon(R.drawable.ic_install_done)
+        .setContentTitle(
+            context.getString(R.string.notification_installing, displayName)
+        )
+        .setPriority(NotificationCompat.PRIORITY_LOW)
+        .setCategory(NotificationCompat.CATEGORY_PROGRESS)
+        .setProgress(100, 0, true)
+        .setOngoing(true)
+        .setOnlyAlertOnce(true)
+        .setContentIntent(appDetailsIntent(context, packageName))
+        .build()
+
     fun installedNotification(
         context: Context,
         packageName: String,
         displayName: String
     ): Notification = NotificationCompat.Builder(context, CHANNEL_INSTALL)
-        .setSmallIcon(R.drawable.ic_installed)
+        .setSmallIcon(R.drawable.ic_install_done)
         .setLargeIcon(appIcon(context, packageName))
         .setContentTitle(
             context.getString(R.string.notification_install_complete, displayName)
@@ -275,7 +311,7 @@ object NotificationUtil {
                 summaryId = SUMMARY_ID_INSTALLED,
                 group = GROUP_INSTALLED,
                 channelId = CHANNEL_INSTALL,
-                smallIcon = R.drawable.ic_installed,
+                smallIcon = R.drawable.ic_install_done,
                 titleRes = R.plurals.notification_installed_summary,
                 timeoutMs = INSTALLED_TIMEOUT_MS
             )
@@ -288,6 +324,18 @@ object NotificationUtil {
                 smallIcon = R.drawable.ic_cancel,
                 titleRes = R.plurals.notification_failed_summary,
                 timeoutMs = null
+            )
+            refreshSummary(
+                context = context,
+                children = childrenOf(manager, GROUP_DOWNLOADS, SUMMARY_ID_DOWNLOADS, change),
+                summaryId = SUMMARY_ID_DOWNLOADS,
+                group = GROUP_DOWNLOADS,
+                channelId = CHANNEL_DOWNLOAD,
+                smallIcon = android.R.drawable.stat_sys_download,
+                titleRes = R.plurals.notification_download_summary,
+                timeoutMs = null,
+                ongoing = true,
+                initialTab = MainActivity.TAB_APPS
             )
         }.onFailure { Log.w(TAG, "Could not refresh the notification summaries", it) }
     }
@@ -316,7 +364,9 @@ object NotificationUtil {
         channelId: String,
         @DrawableRes smallIcon: Int,
         @PluralsRes titleRes: Int,
-        timeoutMs: Long?
+        timeoutMs: Long?,
+        ongoing: Boolean = false,
+        initialTab: Int = MainActivity.TAB_UPDATES
     ) {
         if (children.isEmpty()) {
             cancel(context, summaryId)
@@ -339,7 +389,8 @@ object NotificationUtil {
             .setGroupSummary(true)
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
             .setAutoCancel(true)
-            .setContentIntent(openAppIntent(context, MainActivity.TAB_UPDATES))
+            .setOngoing(ongoing)
+            .setContentIntent(openAppIntent(context, initialTab))
             .apply { timeoutMs?.let { setTimeoutAfter(it) } }
             .build()
 
@@ -412,7 +463,7 @@ object NotificationUtil {
         displayName: String,
         confirmIntent: Intent
     ): Notification = NotificationCompat.Builder(context, CHANNEL_ALERTS)
-        .setSmallIcon(R.drawable.ic_installed)
+        .setSmallIcon(R.drawable.ic_install_done)
         .setContentTitle(
             context.getString(R.string.notification_confirm_install, displayName)
         )

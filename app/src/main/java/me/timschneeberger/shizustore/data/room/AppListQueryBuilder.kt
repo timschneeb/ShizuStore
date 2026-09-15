@@ -18,7 +18,7 @@ import me.timschneeberger.shizustore.data.model.AppSort
  */
 object AppListQueryBuilder {
 
-    fun build(args: AppListArgs): SupportSQLiteQuery {
+    fun build(args: AppListArgs, useInstallCountsForPopularity: Boolean = false): SupportSQLiteQuery {
         val binds = mutableListOf<Any?>()
         val where = mutableListOf<String>()
         val head = StringBuilder()
@@ -68,13 +68,13 @@ object AppListQueryBuilder {
                 append(where.joinToString(" AND "))
             }
             append(" ORDER BY ")
-            append(orderBy(args.sort))
+            append(orderBy(args.sort, useInstallCountsForPopularity))
         }
 
         return SimpleSQLiteQuery(sql, binds.toTypedArray())
     }
 
-    private fun orderBy(sort: AppSort): String = when (sort) {
+    private fun orderBy(sort: AppSort, useInstallCountsForPopularity: Boolean): String = when (sort) {
         AppSort.NAME -> "name COLLATE NOCASE ASC"
         AppSort.RECENTLY_ADDED ->
             "listUpdatedAt IS NULL, listUpdatedAt DESC," +
@@ -84,7 +84,14 @@ object AppListQueryBuilder {
                 " name COLLATE NOCASE ASC"
         // `IS NULL` sorts first so unknown popularity lands last in the DESC list.
         AppSort.STARS -> "stars IS NULL, stars DESC, name COLLATE NOCASE ASC"
-        AppSort.DOWNLOADS -> "downloadTotal IS NULL, downloadTotal DESC, name COLLATE NOCASE ASC"
+        // Server flag: rank by client-reported installs instead of forge downloads.
+        // installCount is NOT NULL, so a plain DESC keeps the name tiebreak only.
+        AppSort.DOWNLOADS -> if (useInstallCountsForPopularity) {
+            "installCount DESC, name COLLATE NOCASE ASC"
+        } else {
+            "downloadTotal IS NULL, downloadTotal DESC, name COLLATE NOCASE ASC"
+        }
+        AppSort.SIZE_DESC -> "size IS NULL, size DESC, name COLLATE NOCASE ASC"
     }
 
     internal fun escapeLikePattern(raw: String): String = raw

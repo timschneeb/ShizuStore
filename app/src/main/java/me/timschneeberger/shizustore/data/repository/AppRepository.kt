@@ -10,6 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.DetailedApp
@@ -17,6 +18,7 @@ import me.timschneeberger.shizustore.data.room.AppListQueryBuilder
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
+import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 
@@ -25,11 +27,23 @@ import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 class AppRepository @Inject constructor(
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao,
-    private val categoryDao: CategoryDao
+    private val categoryDao: CategoryDao,
+    private val syncStateDao: SyncStateDao
 ) {
     /** The shared list: one parameterized query for every [AppListArgs] combination. */
-    fun pagedApps(args: AppListArgs): PagingSource<Int, AppEntity> =
-        appDao.pagedFiltered(AppListQueryBuilder.build(args))
+    fun pagedApps(
+        args: AppListArgs,
+        useInstallCountsForPopularity: Boolean = false
+    ): PagingSource<Int, AppEntity> =
+        appDao.pagedFiltered(AppListQueryBuilder.build(args, useInstallCountsForPopularity))
+
+    /**
+     * Server feature flag for the popularity sort, persisted by the sync.
+     * False until the first sync after the flag ships, so the legacy
+     * download-count ordering stays the default.
+     */
+    fun observePopularityFlag(): Flow<Boolean> =
+        syncStateDao.observe().map { it?.useInstallCountsForPopularity == true }
 
     fun pagedInstalled(): PagingSource<Int, AppEntity> = appDao.pagedInstalled()
 
@@ -48,8 +62,17 @@ class AppRepository @Inject constructor(
         limit: Int = CAROUSEL_LIMIT
     ): Flow<List<AppEntity>> = appDao.observeByAuthor(authorKey, excludeSlug, limit)
 
+    fun observeByCategory(
+        categorySlug: String,
+        excludeSlug: String,
+        limit: Int = CAROUSEL_LIMIT
+    ): Flow<List<AppEntity>> = appDao.observeByCategory(categorySlug, excludeSlug, limit)
+
     fun observeRecentlyUpdated(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
         appDao.observeRecentlyUpdated(limit)
+
+    fun observeMostStarred(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
+        appDao.observeMostStarred(limit)
 
     fun observeRandomPool(): Flow<List<AppEntity>> = appDao.observeAll()
 

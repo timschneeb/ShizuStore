@@ -35,4 +35,11 @@ interface ShizuApi {
     suspend fun meta(): ApiResult<MetaDto>
 
     suspend fun health(): ApiResult<HealthDto>
+
+    /**
+     * Records one successful install of [slug] (`POST
+     * /v1/apps/{slug}/installs`). 404 (unknown slug) surfaces as
+     * [ApiError.Http]; callers treat every outcome as best-effort.
+     */
+    suspend fun reportInstall(slug: String): ApiResult<InstallRecordedDto>
 }

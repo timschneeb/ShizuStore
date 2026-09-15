@@ -33,10 +33,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.SheetActionItem
 import me.timschneeberger.shizustore.compose.composable.app.AnimatedAppIcon
-import me.timschneeberger.shizustore.compose.composable.app.iconBaseUrl
+import me.timschneeberger.shizustore.compose.composable.app.downloadIconUrl
 import me.timschneeberger.shizustore.compose.composable.app.progressPercent
 import me.timschneeberger.shizustore.compose.composable.app.statusCaption
-import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.util.CommonUtil
 
@@ -128,7 +127,7 @@ private fun DownloadHeader(download: Download, onShowDetails: () -> Unit) {
     ) {
         AnimatedAppIcon(
             modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium)),
-            iconUrl = indexUrl(iconBaseUrl(download), download.iconUrl).orEmpty(),
+            iconUrl = downloadIconUrl(download),
             inProgress = download.isActive,
             progress = progressPercent(download.progress)
         )
