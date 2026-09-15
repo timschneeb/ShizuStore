@@ -30,9 +30,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 
 /**
- * What a row's [leading] or [trailing] control stands for. Passing one moves the control's state
- * and role onto the row itself, so the row is a single target that reads as "selected" or "on"
- * rather than a plain click sitting next to a second, separately focusable control.
+ * Passing one moves the control's state and role onto the row itself, so the row is a single
+ * focusable target rather than a plain click next to a second control.
  */
 sealed interface ItemSelection {
     val active: Boolean
@@ -103,7 +102,7 @@ fun AuroraListItem(
             }
             if (hasTertiary) {
                 Text(
-                    text = tertiary ?: AnnotatedString(""),
+                    text = tertiary,
                     inlineContent = tertiaryInlineContent,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

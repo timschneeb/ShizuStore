@@ -123,9 +123,8 @@ fun AppListScreen(
     val searchFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Filtering and sorting happen in Room, so the old scroll position is meaningless.
-    // Guarded by the previously applied args: LaunchedEffect also fires when the
-    // screen re-enters composition (back from details), which must keep position.
+    // Guarded by appliedArgs: LaunchedEffect also fires when the screen re-enters
+    // composition (back from details), which must keep position.
     var appliedArgs by remember { mutableStateOf<AppListArgs?>(null) }
     LaunchedEffect(currentArgs) {
         if (appliedArgs != null && appliedArgs != currentArgs) {

@@ -142,9 +142,8 @@ open class InstallReconciler @Inject constructor(
             return
         }
 
-        // Native installs land outside the installer callbacks, and stranded
-        // rows only settle here, so report success from this path too. The
-        // reporter's once-guard dedupes against onInstallationSuccess.
+        // Native installs bypass the installer callbacks, so report success here too;
+        // the reporter's once-guard dedupes this against onInstallationSuccess.
         if (status == DownloadStatus.INSTALLED) {
             installReporter.reportInstalled(packageName, versionCode)
         }

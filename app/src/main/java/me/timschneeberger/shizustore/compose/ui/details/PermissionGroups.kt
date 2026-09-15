@@ -21,13 +21,6 @@ package me.timschneeberger.shizustore.compose.ui.details
 
 import android.os.Build
 
-/**
- * Platform permission to permission group map, mirroring PermissionController's
- * PermissionMapping. Platform permissions declare permissionGroup UNDEFINED in
- * the framework manifest, so PermissionInfo.group cannot resolve them; only
- * this table knows that e.g. location permissions belong to the LOCATION group
- * whose icon the permission rows fall back to.
- */
 internal object PermissionGroups {
     private val platformPermissions: Map<String, String> by lazy {
         val map = mutableMapOf<String, String>()

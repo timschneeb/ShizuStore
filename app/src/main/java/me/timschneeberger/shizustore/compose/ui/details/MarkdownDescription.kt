@@ -37,8 +37,8 @@ import java.net.URI
 import me.timschneeberger.shizustore.extensions.viewExternal
 
 /**
- * Renders the upstream README. Rows that carry GitHub rendered HTML instead of
- * markdown fall back to the platform HTML renderer.
+ * Rows that carry GitHub rendered HTML instead of markdown fall back to the
+ * platform HTML renderer.
  */
 @Composable
 internal fun MarkdownDescription(

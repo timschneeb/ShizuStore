@@ -14,11 +14,8 @@ import me.timschneeberger.shizustore.data.api.ShizuApi
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 
 /**
- * Reports successful installs to the server (`POST
- * /v1/apps/{slug}/installs`), which keeps a per-app install counter. Fire
- * and forget: failures only log, and each (package, versionCode) pair
- * reports at most once per process so the installer success path and the
- * reconciler settle path cannot double-count.
+ * Reports successful installs; once-guarded per (package, versionCode) so the
+ * installer and reconciler paths cannot double-count.
  */
 @Singleton
 class InstallReporter @Inject constructor(

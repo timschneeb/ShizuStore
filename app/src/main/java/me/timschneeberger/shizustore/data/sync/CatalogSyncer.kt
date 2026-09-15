@@ -40,12 +40,7 @@ sealed interface CatalogSyncOutcome {
     ) : CatalogSyncOutcome
 }
 
-/**
- * Owns the catalog: a one-time bootstrap paging `/v1/apps`, then incremental
- * `/v1/changes` from the persisted cursor, a category tree refresh, and a
- * cursor advance from `/v1/meta`. Runs single-flight; a second caller gets
- * [CatalogSyncOutcome.AlreadyRunning].
- */
+/** Runs single-flight; a second caller gets [CatalogSyncOutcome.AlreadyRunning]. */
 @Singleton
 class CatalogSyncer @Inject constructor(
     private val api: ShizuApi,
@@ -159,10 +154,7 @@ class CatalogSyncer @Inject constructor(
         )
     }
 
-    /**
-     * Category failures are non-fatal: the catalog is still usable with the
-     * previous tree, and the next pass retries. Returns the ETag to persist.
-     */
+    /** Category failures are non-fatal: the catalog stays usable with the previous tree. */
     private suspend fun refreshCategories(etag: String?): String? =
         when (val result = api.categories(etag)) {
             is ApiResult.Failure -> etag

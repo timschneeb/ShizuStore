@@ -8,10 +8,6 @@ package me.timschneeberger.shizustore.data.model
 import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 
-/**
- * One installable artifact for an app. Replaces the F-Droid `AppSource`/`ResolvedApp`
- * version pair: a candidate carries its own signing set, version, and archive entry.
- */
 data class AppCandidate(
     val id: Long,
     val appSlug: String,

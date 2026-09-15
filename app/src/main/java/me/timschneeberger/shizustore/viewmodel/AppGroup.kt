@@ -11,7 +11,6 @@ import me.timschneeberger.shizustore.data.model.ResolvedApp
 enum class AppGroupKind(
     val isCarousel: Boolean,
     val hasMorePage: Boolean,
-    /** Icon tiles for what is worth a glance; full rows where the detail is the point. */
     val isTileStrip: Boolean = false
 ) {
     RECOMMENDED(isCarousel = true, hasMorePage = true, isTileStrip = true),

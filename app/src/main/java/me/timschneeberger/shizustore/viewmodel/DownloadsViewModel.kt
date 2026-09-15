@@ -17,6 +17,7 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
@@ -50,31 +51,30 @@ class DownloadsViewModel @Inject constructor(
     private val _exports = Channel<Boolean>(Channel.BUFFERED)
     val exports: Flow<Boolean> = _exports.receiveAsFlow()
 
-    /** Whether the APK is still on disk, which is what installing and exporting both need. */
     fun canInstall(download: Download): Boolean = installDispatcher.canInstallFromDisk(download)
 
     fun cancel(packageName: String) {
-        viewModelScope.launch(NonCancellable) { downloadHelper.cancel(packageName) }
+        launchDetached { downloadHelper.cancel(packageName) }
     }
 
     fun cancelAll() {
-        viewModelScope.launch(NonCancellable) { downloadHelper.cancelAll() }
+        launchDetached { downloadHelper.cancelAll() }
     }
 
     fun clear(packageName: String) {
-        viewModelScope.launch(NonCancellable) { downloadHelper.remove(packageName) }
+        launchDetached { downloadHelper.remove(packageName) }
     }
 
     fun clearFinished() {
-        viewModelScope.launch(NonCancellable) { downloadHelper.clearFinished() }
+        launchDetached { downloadHelper.clearFinished() }
     }
 
     fun clearAll() {
-        viewModelScope.launch(NonCancellable) { downloadHelper.clearAll() }
+        launchDetached { downloadHelper.clearAll() }
     }
 
     fun install(packageName: String) {
-        viewModelScope.launch(NonCancellable) {
+        launchDetached {
             when (val dispatch = installDispatcher.dispatch(packageName)) {
                 InstallDispatch.Started -> Unit
                 is InstallDispatch.Refused -> _refusals.send(dispatch)
@@ -83,12 +83,12 @@ class DownloadsViewModel @Inject constructor(
     }
 
     fun export(packageName: String, target: Uri) {
-        viewModelScope.launch(NonCancellable) {
+        launchDetached {
             val download = downloadHelper.getDownload(packageName)
             if (download == null) {
                 Log.w(TAG, "Not exporting $packageName; it has no download row")
                 _exports.send(false)
-                return@launch
+                return@launchDetached
             }
 
             val exported = withContext(Dispatchers.IO) {
@@ -107,6 +107,11 @@ class DownloadsViewModel @Inject constructor(
             }
             _exports.send(exported)
         }
+    }
+
+    /** Runs the mutation to completion even if the screen is left. */
+    private fun launchDetached(block: suspend CoroutineScope.() -> Unit) {
+        viewModelScope.launch { withContext(NonCancellable, block) }
     }
 
     private companion object {

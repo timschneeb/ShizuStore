@@ -11,11 +11,7 @@ sealed interface ApiResult<out T> {
     data class Failure(val error: ApiError) : ApiResult<Nothing>
 }
 
-/**
- * Failure modes the client can act on. [ApiError.RateLimited] carries the
- * server `Retry-After` when present even though the fixed window usually omits
- * it.
- */
+/** Failure modes the client can act on; [ApiError.RateLimited] carries `Retry-After` when present. */
 sealed interface ApiError {
     val message: String?
 

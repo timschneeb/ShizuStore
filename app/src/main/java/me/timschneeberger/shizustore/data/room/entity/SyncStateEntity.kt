@@ -8,7 +8,6 @@ package me.timschneeberger.shizustore.data.room.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/** Singleton row holding the incremental sync cursor and category ETag. */
 @Entity(tableName = "sync_state")
 data class SyncStateEntity(
     @PrimaryKey val id: Int = SINGLETON_ID,

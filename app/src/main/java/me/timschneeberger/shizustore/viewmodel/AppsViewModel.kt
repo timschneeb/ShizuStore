@@ -52,7 +52,6 @@ class AppsViewModel @Inject constructor(
 
     fun retrySync() = syncHelper.refresh()
 
-    /** The Shizuku setup card shows until the user dismisses it once. */
     val shizukuCardDismissed: StateFlow<Boolean> =
         Preferences.booleanFlow(context, Preferences.PREFERENCE_SHIZUKU_CARD_DISMISSED)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
@@ -63,7 +62,6 @@ class AppsViewModel @Inject constructor(
         }
     }
 
-    // The single catalog backend has no per-repo overview; kept empty for the shared UI.
     val repos: StateFlow<List<RepoSummary>> =
         flowOf(emptyList<RepoSummary>())
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())

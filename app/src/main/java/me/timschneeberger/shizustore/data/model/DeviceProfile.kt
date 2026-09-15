@@ -20,7 +20,6 @@ object DeviceProfile {
     fun runs(minSdk: Int, maxSdk: Int?): Boolean =
         minSdk <= sdkInt && (maxSdk == null || maxSdk == 0 || maxSdk >= sdkInt)
 
-    /** True when the app's minimum SDK is higher than the device's, so it cannot install. */
     fun isIncompatible(minSdk: Int, deviceSdk: Int = sdkInt): Boolean =
         minSdk > 0 && minSdk > deviceSdk
 

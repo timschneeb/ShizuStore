@@ -26,8 +26,6 @@ import me.timschneeberger.shizustore.util.Preferences
 private const val TAG = "DozeExemption"
 
 /**
- * Asks to be left out of battery optimisation, once.
- *
  * A foreground service is enough on stock devices, but several vendors freeze a
  * backgrounded app and stop the transfer mid-way, so the ask belongs at the start
  * of a download.
@@ -49,7 +47,6 @@ fun rememberDozeExemptionRequest(): () -> Unit {
                         .onFailure { Log.w(TAG, "No screen to grant the exemption on", it) }
                 }
             }
-            Unit
         }
     }
 }

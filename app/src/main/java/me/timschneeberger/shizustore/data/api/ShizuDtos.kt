@@ -8,12 +8,8 @@ package me.timschneeberger.shizustore.data.api
 import kotlinx.serialization.Serializable
 
 /**
- * Wire models mirroring the server camelCase JSON exactly. Field names and
- * nullability follow `ShizuAppStoreServer/src/ShizuAppStoreServer/Api/Dtos.cs`.
- *
- * Dates stay as raw ISO-8601 strings: the `since` cursor and `generatedAt` are
- * passed back to the server verbatim, so parsing them would only add a
- * desugaring dependency for nothing.
+ * Wire models mirroring `Api/Dtos.cs`. Dates stay as raw ISO-8601 strings
+ * because the `since` cursor is passed back to the server verbatim.
  */
 
 @Serializable
@@ -147,9 +143,8 @@ data class ChangesDto(
     val added: List<AppSummaryDto> = emptyList(),
     val updated: List<AppSummaryDto> = emptyList(),
     val removed: List<RemovedAppDto> = emptyList(),
-    // Delta install counts (slug -> total) for rows whose count moved since
-    // the cursor. Applied directly onto stored rows, never as summaries, so
-    // a popular app cannot force a detail refetch or a re-download.
+    // Delta counts applied directly onto stored rows, never as summaries, so a
+    // popular app cannot force a detail refetch.
     val installsUpdated: Map<String, Long> = emptyMap()
 )
 
@@ -172,7 +167,6 @@ data class HealthDto(
     val status: String = ""
 )
 
-/** Result of `POST /v1/apps/{slug}/installs`: the new server-side total. */
 @Serializable
 data class InstallRecordedDto(
     val slug: String = "",

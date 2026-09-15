@@ -75,7 +75,6 @@ fun AppCarousel(
     }
 }
 
-/** A shelf of icons, for a group worth glancing along rather than reading. */
 @Composable
 fun AppTileStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit) {
     LazyRow(

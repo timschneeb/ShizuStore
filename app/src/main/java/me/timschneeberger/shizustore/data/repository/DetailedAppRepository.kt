@@ -36,9 +36,8 @@ sealed interface DetailedAppResult {
 }
 
 /**
- * Fetches `/v1/apps/{slug}` and persists its detail columns and candidate list.
  * Summaries always exist first (the catalog sync writes them), so an unknown
- * slug is treated as [DetailedAppResult.NotFound] rather than created.
+ * slug is [DetailedAppResult.NotFound] rather than created.
  */
 @Singleton
 class DetailedAppRepository @Inject constructor(
@@ -46,11 +45,7 @@ class DetailedAppRepository @Inject constructor(
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao
 ) {
-    /**
-     * The full description (README) is server-only: it never enters Room, it is
-     * only carried for the app currently being viewed. A small LRU keeps it
-     * available when the description subscreen is opened right after details.
-     */
+    /** Server-only, never in Room: a small LRU keeps the README until its subscreen opens. */
     private val fullDescriptions = Collections.synchronizedMap(
         object : LinkedHashMap<String, String>(CACHE_SIZE, 0.75f, true) {
             override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>) =
@@ -58,7 +53,6 @@ class DetailedAppRepository @Inject constructor(
         }
     )
 
-    /** Full description captured by the last detail fetch for [slug], if any. */
     fun fullDescription(slug: String): String? = fullDescriptions[slug]
 
     suspend fun fetchAndPersist(slug: String): DetailedAppResult =

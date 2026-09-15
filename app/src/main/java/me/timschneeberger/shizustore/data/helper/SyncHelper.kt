@@ -45,9 +45,8 @@ open class SyncHelper @Inject constructor(
     }
 
     /**
-     * True while a catalog sync is actually running. Work that is only queued
-     * for a retry backoff is not counted, otherwise a scheduled retry would keep
-     * the pull-to-refresh spinner on forever after the manual attempt failed.
+     * True while a sync is actually running; work queued for a retry backoff is not
+     * counted so a scheduled retry does not keep the pull-to-refresh spinner on.
      */
     open val syncing: Flow<Boolean> = WorkManager.getInstance(context)
         .getWorkInfosByTagFlow(SyncWorker.TAG)
@@ -75,10 +74,7 @@ open class SyncHelper @Inject constructor(
         SyncWorker.enqueue(context, expedited = true)
     }
 
-    /**
-     * A user-initiated refresh (pull to refresh, retry, empty-state action). Same
-     * sync as [sync], but the UI shows the pull-to-refresh feedback until it ends.
-     */
+    /** User-initiated refresh; shows the pull-to-refresh feedback until it ends. */
     open fun refresh() {
         if (!isOnline()) {
             syncStatus.set(CatalogSyncFailure.NETWORK)

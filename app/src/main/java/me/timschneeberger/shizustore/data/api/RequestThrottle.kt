@@ -10,12 +10,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 /**
- * Serializes API calls with a minimum spacing and exponential backoff for 429s.
- * The server is a fixed-window 100 req/min per IP with no queue, so a client
- * that bursts gets rejected; spacing stays under the window and 429s back off
- * further.
- *
- * Clock and sleep are injectable so tests never touch wall time.
+ * The server is a fixed-window 100 req/min per IP with no queue, so calls are
+ * spaced and 429s back off exponentially.
  */
 class RequestThrottle(
     private val minSpacingMillis: Long = DEFAULT_MIN_SPACING_MILLIS,
@@ -29,7 +25,6 @@ class RequestThrottle(
     private var blockedUntil = 0L
     private var backoffMillis = 0L
 
-    /** Waits for the next allowed slot, then reserves it. */
     suspend fun acquire() {
         mutex.withLock {
             val current = now()

@@ -7,11 +7,7 @@ package me.timschneeberger.shizustore.data.api
 
 import kotlinx.serialization.json.Json
 
-/**
- * Shared JSON configuration for the server API. `explicitNulls = false` keeps
- * encoded requests free of null fields; decoding tolerates unknown keys and
- * coerces explicit nulls for non-null fields to their defaults.
- */
+/** `explicitNulls = false` keeps encoded requests free of null fields. */
 val ShizuJson: Json = Json {
     ignoreUnknownKeys = true
     coerceInputValues = true

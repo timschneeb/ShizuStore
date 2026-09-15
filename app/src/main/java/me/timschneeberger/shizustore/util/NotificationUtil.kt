@@ -162,9 +162,7 @@ object NotificationUtil {
             .setOnlyAlertOnce(true)
             .setContentIntent(openAppIntent(context))
             .apply {
-                // A lone download stays a plain notification so its progress bar
-                // stays visible; two or more collapse into the group summary,
-                // which also keeps the status bar icon from jumping between rows.
+                // A lone download stays ungrouped so its progress bar stays visible.
                 if (grouped) {
                     setGroup(GROUP_DOWNLOADS)
                     setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
@@ -215,11 +213,7 @@ object NotificationUtil {
             .addAction(retryAction(context, download.packageName))
             .build()
 
-    /**
-     * Ongoing "Installing..." row. Posted when the installer takes over so the
-     * stale "downloaded" notification does not linger through the install;
-     * the installed/failed terminal notifications replace it on settle.
-     */
+    /** Replaces the stale "downloaded" notification while the installer runs. */
     fun installingNotification(
         context: Context,
         packageName: String,

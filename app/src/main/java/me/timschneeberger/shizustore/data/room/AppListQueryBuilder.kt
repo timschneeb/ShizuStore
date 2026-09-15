@@ -12,9 +12,8 @@ import me.timschneeberger.shizustore.data.model.AppPrice
 import me.timschneeberger.shizustore.data.model.AppSort
 
 /**
- * Builds one parameterized SELECT for the shared list. A raw query keeps every filter
- * combination on a single Room path instead of a combinatorial set of static queries.
- * Values are always bound, never interpolated, so user input cannot alter the statement.
+ * One raw query keeps every filter combination on a single Room path; values are always
+ * bound, so user input cannot alter the statement.
  */
 object AppListQueryBuilder {
 
@@ -88,8 +87,7 @@ object AppListQueryBuilder {
                     " name COLLATE NOCASE ASC"
             // `IS NULL` sorts first so unknown popularity lands last in the DESC list.
             AppSort.STARS -> "stars IS NULL, stars DESC, name COLLATE NOCASE ASC"
-            // Server flag: rank by client-reported installs instead of forge downloads.
-            // installCount is NOT NULL, so a plain DESC keeps the name tiebreak only.
+            // Server flag: rank by installCount; NOT NULL, so plain DESC keeps only the name tiebreak.
             AppSort.DOWNLOADS -> if (useInstallCountsForPopularity) {
                 "installCount DESC, name COLLATE NOCASE ASC"
             } else {

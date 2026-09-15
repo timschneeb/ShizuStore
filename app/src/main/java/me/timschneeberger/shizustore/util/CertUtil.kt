@@ -59,15 +59,14 @@ object CertUtil {
     fun getSigningCertificateSha256(context: Context, packageName: String): String? =
         getCurrentSigningCertificate(context, packageName)?.let { Hashing.sha256Hex(it.encoded) }
 
-    /** Lowercase hex MD5 of the current signing certificate. */
     fun getSigningCertificateMd5(context: Context, packageName: String): String? =
         getCurrentSigningCertificate(context, packageName)?.let {
             Hashing.md5Hex(it.encoded)
         }
 
     /**
-     * SHA-256 and MD5 of every current signing certificate. Multiple signers are returned as
-     * separate fingerprints so callers can match against a candidate's signing set.
+     * Every current signing certificate as its own fingerprint, so callers can match
+     * a candidate's signing set.
      */
     fun getSigningFingerprints(context: Context, packageName: String): List<CertFingerprint> =
         getCurrentSigningCertificates(context, packageName).map {

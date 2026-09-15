@@ -20,11 +20,9 @@ import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.util.ServerConfig
 
-/** Adapts catalog Room entities into the presentation models the inherited AuroraDroid UI consumes. */
 @Singleton
 class CatalogUiMapper @Inject constructor() {
 
-    /** Prefers the server's friendly source label; falls back to the raw kind. */
     private fun displayRepoName(app: AppEntity): String {
         app.sourceName?.takeIf { it.isNotBlank() }?.let { return it }
         return if (app.availability == Availability.PLAY_REDIRECT) {
@@ -34,7 +32,6 @@ class CatalogUiMapper @Inject constructor() {
         }
     }
 
-    /** Friendly labels for version rows, matching the server's app-level sourceName. */
     private fun SourceKind.displayName(): String = when (this) {
         SourceKind.GITHUB -> "GitHub"
         SourceKind.GITLAB -> "GitLab"

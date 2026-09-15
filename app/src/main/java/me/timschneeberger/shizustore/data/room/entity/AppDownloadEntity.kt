@@ -11,11 +11,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import me.timschneeberger.shizustore.data.api.SourceKind
 
-/**
- * One installable candidate per signing identity (server `downloads[]`). The
- * `sigKey` mirrors the server rule: lowercased first token of `sigSha256`, else
- * `sigMd5`, else `url:<apkUrl>`.
- */
+/** One installable candidate per signing identity (server `downloads[]`); `sigKey` mirrors the server. */
 @Entity(
     tableName = "app_download",
     foreignKeys = [

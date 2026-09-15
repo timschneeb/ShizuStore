@@ -34,8 +34,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,11 +59,6 @@ import me.timschneeberger.shizustore.data.model.AppSort
 import me.timschneeberger.shizustore.data.model.CategoryTag
 import me.timschneeberger.shizustore.data.model.flatten
 
-/**
- * Filter chips for the shared list. Each chip shows the current value (or the
- * dimension name) and opens a single-choice bottom sheet. Add a chip + sheet per
- * new filter.
- */
 @Composable
 fun AppListFilterChips(
     args: AppListArgs,
@@ -170,7 +166,10 @@ private fun FilterSheet(
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        sheetState = rememberBottomSheetState(
+            initialValue = SheetValue.Hidden,
+            enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
+        )
     ) {
         Text(
             text = title,

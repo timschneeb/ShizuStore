@@ -216,8 +216,7 @@ private fun idleButtonState(
 }
 
 /** Link-only and Play-redirect apps ship no download candidates, so the
- * details screen falls back to this instead of a resolved candidate. Installed
- * Play-only apps still get the Open and Uninstall actions. */
+ * details screen falls back to this instead of a resolved candidate. */
 internal fun linkButtonState(
     context: Context,
     availability: Availability,

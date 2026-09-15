@@ -36,8 +36,7 @@ import androidx.compose.material.icons.rounded.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
- * Rounded icon per server category slug. Unknown slugs fall back to the generic
- * category icon so categories added later still render.
+ * Unknown slugs fall back to the generic category icon so categories added later still render.
  */
 fun categoryIcon(slug: String): ImageVector = when (slug) {
     "ai-agents" -> Icons.Rounded.SmartToy

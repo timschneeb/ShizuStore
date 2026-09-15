@@ -98,11 +98,8 @@ class AppListViewModel @Inject constructor(
         appRepository.observePopularityFlag()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 
-    /**
-     * Applies the navigation preset once. Re-entering composition (back from a
-     * detail page, configuration change) must not reset the query/filters and
-     * flash the unfiltered list.
-     */
+    /** Applies the navigation preset once, so re-entering composition does not reset the
+     * query/filters and flash the unfiltered list. */
     fun initialize(args: AppListArgs) {
         if (initialized) return
         initialized = true
@@ -142,7 +139,6 @@ class AppListViewModel @Inject constructor(
         _args.update { it.copy(categorySlug = null, recommended = false, sort = AppSort.NAME) }
     }
 
-    /** Back from a search/list leaves only the untouched search home. */
     fun clearAll() {
         _args.value = AppListArgs()
         _atSearchHome.value = true

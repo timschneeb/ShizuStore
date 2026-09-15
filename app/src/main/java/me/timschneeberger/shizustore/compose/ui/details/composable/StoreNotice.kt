@@ -24,7 +24,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 
-/** Notice that the app is only distributed on Google Play; tapping it links out to the listing. */
 @Composable
 fun StoreNotice(onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Surface(

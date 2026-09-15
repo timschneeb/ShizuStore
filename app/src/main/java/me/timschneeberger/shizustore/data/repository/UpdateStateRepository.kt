@@ -18,10 +18,8 @@ import me.timschneeberger.shizustore.data.room.dao.InstalledDao
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 
 /**
- * Recomputes the denormalized update columns on catalog apps. Matching is candidate level:
- * only a candidate whose signing set contains the installed fingerprint can be offered, so a
- * user is never moved between signing keys. When a detail was never fetched (no candidates),
- * it falls back to a summary version comparison without pinning a candidate.
+ * Only a candidate whose signing set contains the installed fingerprint is offered, so a user is
+ * never moved between signing keys; with no candidates it falls back to a summary version compare.
  */
 @Singleton
 class UpdateStateRepository @Inject constructor(
@@ -31,9 +29,8 @@ class UpdateStateRepository @Inject constructor(
     private val installedDao: InstalledDao
 ) {
     /**
-     * One transaction keeps the cleared state invisible to observers, so badges do not flicker.
-     * Uses the driver transaction API because `withTransaction` needs a
-     * `SupportSQLiteOpenHelper`, which a `BundledSQLiteDriver` database does not have.
+     * One transaction keeps the cleared state invisible to observers so badges do not flicker; the
+     * driver API is required because `withTransaction` needs a `SupportSQLiteOpenHelper`.
      */
     suspend fun recomputeAll() = database.useWriterConnection { transactor ->
         transactor.immediateTransaction {

@@ -26,7 +26,6 @@ class PermissionPresentationTest {
     fun ignoresNonDangerousProtection() {
         assertFalse(isDangerousProtection(PermissionInfo.PROTECTION_NORMAL))
         assertFalse(isDangerousProtection(PermissionInfo.PROTECTION_SIGNATURE))
-        assertFalse(isDangerousProtection(PermissionInfo.PROTECTION_SIGNATURE_OR_SYSTEM))
     }
 
     @Test

@@ -14,11 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import me.timschneeberger.shizustore.R
 
-/**
- * One tappable action on a bottom sheet. Shares [AuroraListItem]'s metrics so a sheet's actions
- * are the same height as the rows on the screen behind it, rather than each sheet carrying its own
- * padding on top of a minimum height.
- */
+/** Shares [AuroraListItem]'s metrics so a sheet's actions match the rows behind them. */
 @Composable
 fun SheetActionItem(
     label: String,

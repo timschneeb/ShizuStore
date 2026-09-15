@@ -8,9 +8,8 @@ package me.timschneeberger.shizustore.data.api
 import kotlinx.serialization.Serializable
 
 /**
- * Typed views of the server's lowercase/snake enum strings. DTOs keep the raw
- * string; these mappings are tolerant by design: an unknown value maps to
- * `null` instead of throwing, so a server-side addition never breaks the app.
+ * Tolerant mappings: an unknown wire value maps to `null` instead of throwing,
+ * so a server-side addition never breaks the app.
  */
 
 enum class Availability(val wire: String) {

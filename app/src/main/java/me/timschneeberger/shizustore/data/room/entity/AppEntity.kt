@@ -13,11 +13,7 @@ import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
 
-/**
- * One catalog entry keyed by the server `slug`. Summary fields are refreshed on
- * every sync; detail fields only from `/v1/apps/{slug}`. The install/update
- * columns are denormalized so paging queries never need a join.
- */
+/** Install/update columns are denormalized so paging queries never need a join. */
 @Entity(
     tableName = "app",
     indices = [
@@ -79,10 +75,7 @@ data class AppEntity(
     val syncedAt: Long = 0L
 )
 
-/**
- * Keeps the detail columns when a summary upsert refreshes the same row, so an
- * incremental `/v1/changes` pass never discards previously fetched detail.
- */
+/** Keeps detail columns when a summary upsert refreshes the row, so `/v1/changes` never discards them. */
 fun AppEntity.mergeDetailFrom(existing: AppEntity?): AppEntity = if (existing == null) {
     this
 } else {

@@ -12,8 +12,7 @@ import androidx.compose.ui.res.dimensionResource
 import me.timschneeberger.shizustore.R
 
 /**
- * Holds a tappable row to the 48dp minimum target. Rows here are laid out from their text, which
- * on one line lands well under that, and a presentational control inside enforces nothing.
+ * Holds a tappable row to the 48dp minimum target that a short one-line row would otherwise miss.
  */
 @Composable
 fun Modifier.minTouchTarget(): Modifier =

@@ -46,6 +46,7 @@ internal fun titleCase(text: String): String = text
 internal fun customPermissionName(permission: String): String =
     titleCase(permission.substringAfterLast('.').replace('_', ' ').lowercase())
 
+@Suppress("DEPRECATION")
 internal fun resolvePermission(context: Context, permission: String): PermissionEntry {
     val pm = context.packageManager
     val info = runCatching { pm.getPermissionInfo(permission, 0) }.getOrNull()
@@ -68,8 +69,6 @@ internal fun resolvePermission(context: Context, permission: String): Permission
 }
 
 /**
- * Prefers the permission's own icon, then the icon of its permission group.
- *
  * The resource id is checked before loading because loadIcon() falls back to the
  * declaring app's icon and loadLogo() is almost always unset. Platform
  * permissions declare group UNDEFINED, so the platform table resolves them first.
@@ -79,8 +78,6 @@ internal fun loadPermissionIcon(context: Context, info: PermissionInfo): Drawabl
     if (info.icon != 0) {
         runCatching { info.loadUnbadgedIcon(pm) }.getOrNull()?.let { return it }
     }
-    // Platform permissions declare group UNDEFINED in the framework manifest,
-    // so info.group alone never resolves them; the platform table comes first.
     val groupName = PermissionGroups.groupOfPlatformPermission(info.name)
         ?: info.group?.takeUnless { it.endsWith(".UNDEFINED") }
         ?: return null
@@ -93,6 +90,7 @@ internal fun loadPermissionIcon(context: Context, info: PermissionInfo): Drawabl
         ?: runCatching { resources.getDrawable(groupInfo.icon, null) }.getOrNull()
 }
 
+@Suppress("DEPRECATION")
 internal fun isDangerousProtection(protectionLevel: Int): Boolean =
     (protectionLevel and PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS
 

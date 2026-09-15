@@ -16,9 +16,8 @@ import kotlinx.coroutines.flow.stateIn
 import me.timschneeberger.shizustore.data.helper.DownloadHelper
 
 /**
- * Whether anything is downloading, watched app-wide. A download starts from the details screen, the
- * manual download screen, the updates list and the update sheet, so watching the table catches all
- * of them where hooking each button would not.
+ * Watches the downloads table rather than hooking each button, since a download can start from
+ * the details screen, the manual download screen, the updates list and the update sheet.
  */
 @HiltViewModel
 class DownloadActivityViewModel @Inject constructor(

@@ -13,7 +13,6 @@ import me.timschneeberger.shizustore.util.Hashing
 
 object ApkVerifier {
 
-    /** Verifies a downloaded artifact against the server sha256. */
     fun verify(
         file: File,
         expectedHash: String,

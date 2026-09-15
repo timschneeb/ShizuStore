@@ -41,10 +41,7 @@ class SyncWorker @AssistedInject constructor(
         CatalogSyncOutcome.AlreadyRunning -> Result.success()
 
         is CatalogSyncOutcome.Failed -> when (outcome.failure) {
-            // Fail fast on connection loss: the attempt already surfaced the
-            // error, and retry() would flap the spinner forever. The user
-            // retries manually (pull-to-refresh / retry button). Rate limits
-            // stay retried: they are transient and server-driven.
+            // Fail fast on connection loss; only server-driven rate limits are retried.
             CatalogSyncFailure.NETWORK -> Result.failure(
                 workDataOf(
                     KEY_ERROR to outcome.failure.name

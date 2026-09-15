@@ -19,11 +19,7 @@ import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 
-/**
- * Wire to catalog mappings. Enums fall back to the entity defaults when the
- * server sends a value this build does not know, so a server-side addition
- * never drops a row.
- */
+/** Enums fall back to entity defaults for unknown server values, so an addition never drops a row. */
 
 fun AppSummaryDto.toEntity(syncedAt: Long): AppEntity = AppEntity(
     slug = slug,

@@ -60,7 +60,6 @@ interface AppDao {
     @Query("DELETE FROM app")
     suspend fun clear()
 
-    /** Summary-only refresh that preserves already fetched detail columns. */
     @Transaction
     suspend fun upsertSummaries(summaries: List<AppEntity>) {
         summaries.forEach { summary ->
@@ -89,7 +88,6 @@ interface AppDao {
         updateCandidateId: Long?
     )
 
-    /** One bound query for every filter combination, built by `AppListQueryBuilder`. */
     @RawQuery(observedEntities = [AppEntity::class])
     fun pagedFiltered(query: SupportSQLiteQuery): PagingSource<Int, AppEntity>
 

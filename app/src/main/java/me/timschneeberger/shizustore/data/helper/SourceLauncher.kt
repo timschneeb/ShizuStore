@@ -10,10 +10,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import me.timschneeberger.shizustore.data.api.Availability
 
-/**
- * Where an app that cannot be installed from an APK should send the user.
- * Kept separate from the launcher so the routing can be unit tested without Android.
- */
 sealed interface SourceTarget {
     data object Apk : SourceTarget
 

@@ -47,11 +47,8 @@ import me.timschneeberger.shizustore.data.model.Installer
 import me.timschneeberger.shizustore.extensions.viewExternal
 import me.timschneeberger.shizustore.util.Preferences
 
-/**
- * Home card that walks the user through the Shizuku installer: install Shizuku when it is
- * absent, otherwise ask it for the install permission. Re-probes on every resume so coming
- * back from Play or the permission dialog updates (or hides) the card.
- */
+/** Walks the user through installing or granting the Shizuku installer; re-probes on resume so
+ * returning from Play or the permission dialog refreshes the card. */
 @Composable
 fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -65,10 +62,8 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     val current = prompt
     val scope = rememberCoroutineScope()
 
-    // Granting through this card means the user wants the Shizuku installer:
-    // once the resume re-probe reports READY, store it as the installer. Only
-    // then, since availability (package present) does not imply the grant and
-    // installs would fail without it.
+    // Only store Shizuku as the installer once the re-probe reports READY: availability
+    // (package present) does not imply the grant and installs would fail without it.
     var grantRequested by remember { mutableStateOf(false) }
     LaunchedEffect(current) {
         if (grantRequested && current == ShizukuPrompt.READY) {

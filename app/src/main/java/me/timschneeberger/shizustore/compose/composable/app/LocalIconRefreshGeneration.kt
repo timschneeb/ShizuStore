@@ -15,9 +15,8 @@ import coil3.request.ImageRequest
 val LocalIconRefreshGeneration = compositionLocalOf { 0 }
 
 /**
- * Only forces a fresh request so icons that failed once are retried. The Coil
- * memory key stays the URL, so loaded icons come from the memory cache without
- * flicker; missing ones hit the disk/network again.
+ * Forces a fresh request only: the Coil memory key stays the URL, so loaded icons come from
+ * cache without flicker while missing ones are retried.
  */
 @Composable
 fun rememberAppIconModel(url: String?): Any? {

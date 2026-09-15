@@ -40,11 +40,6 @@ import okhttp3.brotli.BrotliInterceptor
 internal fun proxyTypeFor(protocol: String): Proxy.Type =
     if (protocol.removeSuffix("5") == "SOCKS") Proxy.Type.SOCKS else Proxy.Type.HTTP
 
-/**
- * Value for the `User-Agent` header sent on every request of the shared
- * client (API, APK downloads, icons). Identifies the app and its version to
- * upstream hosts; spaces are legal inside a header value.
- */
 internal fun userAgent(appName: String, versionName: String): String = "$appName/$versionName"
 
 internal class PreferenceProxySelector(

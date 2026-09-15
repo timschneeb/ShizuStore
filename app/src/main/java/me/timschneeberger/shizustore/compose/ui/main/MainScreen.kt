@@ -78,7 +78,6 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            // The Search tab provides its own search field in the bar.
             if (MainTab.entries[pagerState.currentPage] != MainTab.SEARCH) {
                 TopAppBar(
                     title = stringResource(MainTab.entries[pagerState.currentPage].labelRes),

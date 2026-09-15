@@ -59,7 +59,6 @@ object CommonUtil {
         return tempValue.toString() + diPrefixes[order]
     }
 
-    /** Compact decimal count for popularity values, e.g. 10137 -> "10.1k". */
     fun formatCount(value: Long): String {
         if (value < 1_000L) return value.toString()
         val units = listOf("k", "M", "B")

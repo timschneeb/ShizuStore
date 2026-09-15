@@ -28,7 +28,7 @@ val successColor: Color
     @Composable @ReadOnlyComposable
     get() = if (isAppInDarkTheme()) Color(0xFF5BD27A) else Color(0xFF1B8738)
 
-/** Pure black base for night mode. Elevated containers keep their tone for depth. */
+/** Elevated containers keep their tone for depth. */
 fun ColorScheme.withPureBlack(): ColorScheme = copy(
     background = Color.Black,
     surface = Color.Black,

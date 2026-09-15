@@ -18,10 +18,6 @@ import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.ServerConfig
 
-/**
- * Status caption plus detail for a download row: progress and speed while in
- * flight, failure reason or arrival date once done.
- */
 internal data class DownloadRow(val status: String, val detail: String?)
 
 internal fun downloadRow(context: Context, download: Download): DownloadRow = DownloadRow(
@@ -93,10 +89,8 @@ internal fun barFor(progress: Int) =
 internal fun iconBaseUrl(download: Download): String =
     download.apkUrl.removeSuffix(download.apkName.trimStart('/')).trimEnd('/')
 
-/**
- * Prefer the immutable server icon URL. Downloads whose apkUrl points upstream
- * cannot resolve a repo-relative base, so the hash is the only reliable source.
- */
+/** Prefer the immutable server icon URL: an upstream apkUrl has no repo-relative base, so the
+ * hash is the only reliable source. */
 internal fun downloadIconUrl(download: Download): String =
     ShizuUrls.icon(ServerConfig.baseUrl, download.iconHash)
         ?: indexUrl(iconBaseUrl(download), download.iconUrl).orEmpty()

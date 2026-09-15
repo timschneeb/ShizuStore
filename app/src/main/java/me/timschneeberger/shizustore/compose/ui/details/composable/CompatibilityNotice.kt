@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.model.DeviceProfile
 
-/** Warns when the served APK requires a newer Android than this device runs. */
 @Composable
 fun CompatibilityNotice(minSdk: Int, modifier: Modifier = Modifier) {
     if (!DeviceProfile.isIncompatible(minSdk)) return

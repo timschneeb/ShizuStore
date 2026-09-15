@@ -19,12 +19,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 
 /**
- * Drag-to-reorder for a [LazyListState] whose items are keyed by id.
- *
- * The order shown during a drag is held here rather than in the store behind the list: the rows
- * come from a database flow, and writing on every boundary crossing would have each row's position
- * race the drag that moved it. The new order goes out once, on drop, and is held on screen until
- * the store catches up so the list never snaps back to the old order on the way.
+ * The order shown during a drag is held here rather than in the store behind the list: writing to
+ * the database flow on every boundary crossing would race the drag, so the new order goes out once
+ * on drop and is held until the store catches up.
  */
 class ReorderState<T> internal constructor(
     private val listState: LazyListState,
@@ -38,14 +35,11 @@ class ReorderState<T> internal constructor(
     var draggedId: Int? by mutableStateOf(null)
         private set
 
-    /** How far the dragged row has travelled from the slot it currently occupies. */
     var offset: Float by mutableFloatStateOf(0f)
         private set
 
-    /**
-     * The rows as the store last reported them. A plain field on purpose: it is written during
-     * composition and read only from a gesture callback, so it must not invalidate anything.
-     */
+    /** A plain field on purpose: written during composition and read only from a gesture
+     * callback, so it must not invalidate anything. */
     internal var source: List<T> = emptyList()
 
     fun start(id: Int) {
@@ -91,11 +85,8 @@ class ReorderState<T> internal constructor(
         offset = 0f
     }
 
-    /**
-     * Hands the list back to [items] once they agree, which is the write having landed. A change in
-     * membership hands it back too: whatever the held order was, a row appearing or disappearing
-     * makes it stale, and holding on would keep that row off the screen.
-     */
+    /** Hands the list back to [items] once they agree, or when membership changes and the held
+     * order is stale. */
     internal fun settle(items: List<T>) {
         if (draggedId != null) return
         val held = (order ?: return).map(idOf)
@@ -117,10 +108,8 @@ fun <T> rememberReorderState(
     return state
 }
 
-/**
- * Long-press then drag on this element to reorder. Keyed on the row's id alone: keying on the list
- * would restart the gesture the moment the drag reordered it.
- */
+/** Keyed on the row's id alone: keying on the list would restart the gesture the moment the drag
+ * reordered it. */
 @Composable
 fun <T> Modifier.dragHandle(state: ReorderState<T>, id: Int): Modifier {
     val haptics = LocalHapticFeedback.current

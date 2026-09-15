@@ -8,9 +8,8 @@ package me.timschneeberger.shizustore.data.model
 import me.timschneeberger.shizustore.util.Hashing
 
 /**
- * Signing identity fingerprints in lowercase hex. Server `sigSha256`/`sigMd5` columns are
- * space-joined sets (key rotation), so both the installed and the candidate side are sets
- * and matching is set intersection, never whole-string equality.
+ * Server `sigSha256`/`sigMd5` are space-joined sets (key rotation), so matching is set
+ * intersection, never whole-string equality.
  */
 data class CertFingerprint(
     val sha256: Set<String>,
@@ -32,7 +31,6 @@ data class CertFingerprint(
     }
 }
 
-/** Parses a space-separated fingerprint set, normalizing case and ignoring blanks. */
 fun parseFingerprintSet(raw: String?): Set<String> = raw
     .orEmpty()
     .split(' ', '\t', '\n', '\r')
@@ -40,20 +38,17 @@ fun parseFingerprintSet(raw: String?): Set<String> = raw
     .filter { it.isNotEmpty() }
     .toSet()
 
-/** True when any value in the space-joined [raw] set is present in [values]. */
 fun fingerprintSetIntersects(raw: String?, values: Set<String>): Boolean {
     if (raw.isNullOrBlank() || values.isEmpty()) return false
     return parseFingerprintSet(raw).any { it in values }
 }
 
-/** True when [installed] matches the candidate signing sets, by SHA-256 or MD5 membership. */
 fun fingerprintMatches(installed: CertFingerprint, sigSha256: String?, sigMd5: String?): Boolean {
     if (!installed.isKnown) return false
     return fingerprintSetIntersects(sigSha256, installed.sha256) ||
         fingerprintSetIntersects(sigMd5, installed.md5)
 }
 
-/** True when any of the installed signing identities matches the candidate signing sets. */
 fun signaturesMatch(
     installed: List<CertFingerprint>,
     sigSha256: String?,

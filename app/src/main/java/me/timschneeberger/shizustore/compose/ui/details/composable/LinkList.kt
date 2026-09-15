@@ -55,7 +55,6 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
 
         // Play-only apps link to the store through the notice card above,
         // so a Website/Store row would just repeat that link.
-        // A website that is just the F-Droid listing is labeled as such.
         if (details.availability != Availability.PLAY_REDIRECT) {
             if (forgeAsSource == null) {
                 websiteUrl?.let {

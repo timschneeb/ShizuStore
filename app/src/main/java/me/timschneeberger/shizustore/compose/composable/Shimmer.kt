@@ -42,8 +42,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import me.timschneeberger.shizustore.R
 
-/** Shared by every block in a skeleton so one transition drives the whole
- * placeholder. A transition per block stutters badly on a full screen of rows. */
+/** Shared so one transition drives the whole placeholder; a transition per block stutters
+ * badly on a full screen of rows. */
 private val LocalShimmerOffset = staticCompositionLocalOf<State<Float>> {
     error("Shimmer blocks must be wrapped in ShimmerHost")
 }

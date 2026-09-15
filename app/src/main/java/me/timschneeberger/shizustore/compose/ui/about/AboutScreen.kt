@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -79,7 +79,7 @@ private fun AboutLinkItem(headline: String, supporting: String, onClick: () -> U
         onClick = onClick,
         trailing = {
             Icon(
-                imageVector = Icons.Rounded.OpenInNew,
+                imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )

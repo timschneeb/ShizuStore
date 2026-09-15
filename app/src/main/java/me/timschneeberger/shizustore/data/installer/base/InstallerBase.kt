@@ -59,8 +59,7 @@ abstract class InstallerBase(
                 return@launch
             }
 
-            // The download worker's terminal "downloaded" row is still showing;
-            // swap it for an installing row until the install settles.
+            // Swap the still-showing "downloaded" notification for an installing row.
             isolate(TAG, "notify installing $packageName") {
                 NotificationUtil.notifyApp(
                     context,

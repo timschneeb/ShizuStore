@@ -21,11 +21,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 
-/**
- * OkHttp implementation of [ShizuApi]. Reuses the Hilt [OkHttpClient] (proxy,
- * cache, timeouts) and serializes with [ShizuJson]; requests are funneled
- * through [RequestThrottle].
- */
 @Singleton
 class OkHttpShizuApi @Inject constructor(
     private val client: OkHttpClient,
@@ -96,9 +91,7 @@ class OkHttpShizuApi @Inject constructor(
         val url = base.takeIf { it.isNotBlank() }?.let { buildUrl(it, path, params) }
             ?: return ApiResult.Failure(ApiError.NotConfigured)
 
-        // The catalog is dynamic and synced into Room, so never let the shared
-        // OkHttp cache serve an API response without hitting the network: a
-        // cached /v1/changes would make a manual refresh a no-op.
+        // A cached /v1/changes would make a manual refresh a no-op.
         val request = Request.Builder()
             .url(url)
             .cacheControl(CacheControl.FORCE_NETWORK)
@@ -114,8 +107,7 @@ class OkHttpShizuApi @Inject constructor(
         val url = base.takeIf { it.isNotBlank() }?.let { buildUrl(it, path, emptyList()) }
             ?: return ApiResult.Failure(ApiError.NotConfigured)
 
-        // Reports are fire-and-forget writes: never cache them, and the empty
-        // body keeps the request small (the slug rides in the path).
+        // Reports are fire-and-forget writes, so never cache them.
         val request = Request.Builder()
             .url(url)
             .cacheControl(CacheControl.FORCE_NETWORK)

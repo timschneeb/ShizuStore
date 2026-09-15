@@ -150,7 +150,6 @@ class AppDetailsViewModel @Inject constructor(
             emptyList()
         )
 
-    // Leaf category of the current app; drives the category shelf and its links.
     val categorySlug: StateFlow<String?> = slug
         .filterNotNull()
         .distinctUntilChanged()

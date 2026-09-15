@@ -22,7 +22,6 @@ import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 
-/** Read model over the synced catalog. All queries are Room backed; the network sync lives elsewhere. */
 @Singleton
 class AppRepository @Inject constructor(
     private val appDao: AppDao,
@@ -30,14 +29,12 @@ class AppRepository @Inject constructor(
     private val categoryDao: CategoryDao,
     private val syncStateDao: SyncStateDao
 ) {
-    /** The shared list: one parameterized query for every [AppListArgs] combination. */
     fun pagedApps(
         args: AppListArgs,
         useInstallCountsForPopularity: Boolean = false
     ): PagingSource<Int, AppEntity> =
         appDao.pagedFiltered(AppListQueryBuilder.build(args, useInstallCountsForPopularity))
 
-    /** Server feature flag for the popularity sort, persisted by the sync. */
     fun observePopularityFlag(): Flow<Boolean> =
         syncStateDao.observe().map { it?.useInstallCountsForPopularity == true }
 

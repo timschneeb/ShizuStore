@@ -12,10 +12,8 @@ import coil3.network.NetworkResponse
 import coil3.request.Options
 
 /**
- * Coil's default strategy persists RFC-cacheable failures such as 404 and then
- * always serves them from disk, so an icon that was missing once stays blank
- * forever. Cache only successes and treat everything else as a miss so the
- * server is queried again.
+ * Coil caches 404s and then serves them from disk forever, so only 2xx responses
+ * are cached.
  */
 @OptIn(ExperimentalCoilApi::class)
 class SuccessOnlyImageCacheStrategy : CacheStrategy {

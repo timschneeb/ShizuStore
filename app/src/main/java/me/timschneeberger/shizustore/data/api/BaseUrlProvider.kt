@@ -12,16 +12,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
 /**
- * Resolves the effective server base URL: a Settings override wins, otherwise
- * the build-time default ([me.timschneeberger.shizustore.BuildConfig.API_BASE_URL]).
- * Release builds default to empty and require the override.
+ * A Settings override wins over the build-time default; release builds default
+ * to empty and require the override.
  */
 class BaseUrlProvider(
     private val readOverride: suspend () -> String?,
     private val observeOverride: () -> Flow<String> = { flowOf("") },
     private val defaultValue: String
 ) {
-    /** Normalized base without a trailing slash, or empty when unconfigured. */
     suspend fun current(): String = pick().trim().trimEnd('/')
 
     suspend fun isConfigured(): Boolean = pick().isNotBlank()

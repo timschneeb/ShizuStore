@@ -295,7 +295,6 @@ class DownloadWorker @AssistedInject constructor(
             Result.success()
         }
 
-    /** Removes both the apk target and any staged archive so a failed attempt leaves nothing behind. */
     private fun cleanup(download: Download, target: File) {
         target.delete()
         if (!download.archiveEntry.isNullOrBlank()) {
@@ -427,8 +426,7 @@ class DownloadWorker @AssistedInject constructor(
             current,
             grouped = isGrouped()
         )
-        // Per-download id: workers sharing one id overwrote the same row,
-        // so parallel downloads jumped between progresses.
+        // Per-download id so parallel downloads do not overwrite each other's progress.
         val id = NotificationUtil.notificationId(
             inputData.getString(KEY_PACKAGE_NAME).orEmpty()
         )
@@ -451,7 +449,6 @@ class DownloadWorker @AssistedInject constructor(
         )
     }
 
-    /** Groups only while two or more downloads are visibly progressing. */
     private suspend fun isGrouped(): Boolean = downloadDao.countByStatus(
         listOf(DownloadStatus.DOWNLOADING, DownloadStatus.VERIFYING)
     ) > 1

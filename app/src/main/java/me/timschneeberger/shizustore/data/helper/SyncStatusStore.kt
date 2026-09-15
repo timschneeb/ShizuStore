@@ -13,9 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 
 /**
- * Last catalog sync failure for the running process, so the UI can show a real
- * error with a retry instead of spinning on "syncing" forever. Cleared on the
- * next successful pass. In-memory only: a restart starts fresh.
+ * Last catalog sync failure for the running process so the UI can show an error
+ * instead of an endless spinner.
  */
 @Singleton
 class SyncStatusStore @Inject constructor() {
@@ -26,16 +25,14 @@ class SyncStatusStore @Inject constructor() {
     val failure: StateFlow<CatalogSyncFailure?> = _failure.asStateFlow()
 
     /**
-     * True only for a refresh the user asked for. The automatic launch and
-     * periodic syncs also run, but they must not blank the list or show the
-     * pull-to-refresh spinner, otherwise the content flickers on every start.
+     * True only for a refresh the user asked for; background syncs also run but
+     * must not blank the list or show the pull-to-refresh spinner.
      */
     val manualRefreshing: StateFlow<Boolean> = _manualRefreshing.asStateFlow()
 
     /**
-     * Bumped on every refresh so app icons re-run Coil. Failed icons are not
-     * cached on disk, but Coil may still remember an error in memory; changing
-     * the memory key makes them hit the network again.
+     * Bumped on every refresh so app icons re-run Coil; a failed icon is not cached
+     * on disk but can linger in Coil's memory cache, so the key forces a network retry.
      */
     val iconGeneration: StateFlow<Int> = _iconGeneration.asStateFlow()
 

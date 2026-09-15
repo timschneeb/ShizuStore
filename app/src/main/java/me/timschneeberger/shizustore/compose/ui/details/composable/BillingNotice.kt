@@ -23,7 +23,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 
-/** Muted notice that the app is paid and/or offers in-app purchases. */
 @Composable
 fun BillingNotice(hasPaid: Boolean, hasIap: Boolean, modifier: Modifier = Modifier) {
     if (!hasPaid && !hasIap) return

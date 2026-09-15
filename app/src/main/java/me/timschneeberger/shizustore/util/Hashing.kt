@@ -8,7 +8,6 @@ package me.timschneeberger.shizustore.util
 import java.io.File
 import java.security.MessageDigest
 
-/** Lowercase hex digest helpers, independent of the F-Droid index hashing code. */
 object Hashing {
 
     fun sha256Hex(bytes: ByteArray): String = digestHex("SHA-256", bytes)

@@ -11,7 +11,6 @@ import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 import me.timschneeberger.shizustore.data.api.CategorySection
 
-/** Flattened server category tree (`/v1/categories`). */
 @Entity(
     tableName = "category",
     indices = [Index("parentSlug"), Index("section")]
@@ -25,7 +24,6 @@ data class CategoryEntity(
     val sortOrder: Int = 0
 )
 
-/** One breadcrumb entry in a detail response `categoryPath`. */
 @Serializable
 data class CategoryPath(
     val slug: String,

@@ -33,7 +33,6 @@ fun rememberNotificationPermissionRequest(): () -> Unit {
                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
-            Unit
         }
     }
 }

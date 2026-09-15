@@ -7,10 +7,7 @@ package me.timschneeberger.shizustore.data.model
 
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 
-/**
- * A category as shown in the search tag cloud. A tag with [children] is a container
- * (for example Vendor-specific); it opens a menu instead of navigating directly.
- */
+/** A tag with [children] is a container and opens a menu instead of navigating directly. */
 data class CategoryTag(
     val slug: String,
     val name: String,
@@ -38,6 +35,5 @@ object CategoryTagTree {
     }
 }
 
-/** Depth-first list of a tag tree, containers included. */
 fun List<CategoryTag>.flatten(): List<CategoryTag> =
     flatMap { tag -> listOf(tag) + tag.children.flatten() }
