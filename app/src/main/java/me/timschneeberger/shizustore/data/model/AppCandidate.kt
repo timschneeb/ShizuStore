@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import android.os.Build
 import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 
@@ -22,6 +23,7 @@ data class AppCandidate(
     val sigSha256: String?,
     val sigMd5: String?,
     val minSdk: Int?,
+    val abi: String? = null,
     val isPrimary: Boolean
 ) {
     val isArchive: Boolean get() = !archiveEntry.isNullOrBlank()
@@ -32,10 +34,19 @@ data class AppCandidate(
         return fingerprintMatches(installed, sigSha256, sigMd5)
     }
 
+    /** A universal candidate (no ABI) runs anywhere; an empty device list means "do not filter". */
+    fun supportsAbi(supported: List<String>): Boolean =
+        abi.isNullOrBlank() || supported.isEmpty() || supported.any { it.equals(abi, ignoreCase = true) }
+
     fun isNewerThan(installedVersionCode: Long?): Boolean =
         installedVersionCode != null && versionCode != null && versionCode > installedVersionCode
 
     companion object {
+
+        /** Device ABIs, safely empty off-device (JVM unit tests) so ABI never filters there. */
+        val deviceAbis: List<String> by lazy {
+            runCatching { Build.SUPPORTED_ABIS.toList() }.getOrElse { emptyList() }
+        }
 
         fun from(entity: AppDownloadEntity, packageName: String?): AppCandidate = AppCandidate(
             id = entity.id,
@@ -51,6 +62,7 @@ data class AppCandidate(
             sigSha256 = entity.sigSha256,
             sigMd5 = entity.sigMd5,
             minSdk = entity.minSdk,
+            abi = entity.abi,
             isPrimary = entity.isPrimary
         )
     }

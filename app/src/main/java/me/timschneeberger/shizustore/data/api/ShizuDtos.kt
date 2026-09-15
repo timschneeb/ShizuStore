@@ -60,6 +60,7 @@ data class DownloadDto(
     val sigSha256: String? = null,
     val sigMd5: String? = null,
     val minSdk: Int? = null,
+    val abi: String? = null,
     val primary: Boolean = false
 )
 

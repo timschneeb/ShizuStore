@@ -121,8 +121,9 @@ fun DownloadDto.toEntity(appSlug: String): AppDownloadEntity = AppDownloadEntity
     sigSha256 = sigSha256,
     sigMd5 = sigMd5,
     minSdk = minSdk,
+    abi = abi,
     isPrimary = primary,
-    sigKey = AppDownloadEntity.sigKeyOf(sigSha256, sigMd5, apkUrl)
+    sigKey = AppDownloadEntity.sigKeyOf(sigSha256, sigMd5, apkUrl, abi)
 )
 
 /** Depth-first flatten of the server category tree, parents before children. */

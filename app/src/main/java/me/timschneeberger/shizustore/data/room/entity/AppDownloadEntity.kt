@@ -11,7 +11,10 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import me.timschneeberger.shizustore.data.api.SourceKind
 
-/** One installable candidate per signing identity (server `downloads[]`); `sigKey` mirrors the server. */
+/**
+ * One installable candidate per (signing identity, ABI) (server `downloads[]`); `sigKey` mirrors the
+ * server and carries the ABI suffix so per-architecture rows of one signing key stay distinct.
+ */
 @Entity(
     tableName = "app_download",
     foreignKeys = [
@@ -37,14 +40,16 @@ data class AppDownloadEntity(
     val sigSha256: String? = null,
     val sigMd5: String? = null,
     val minSdk: Int? = null,
+    val abi: String? = null,
     val isPrimary: Boolean = false,
     val sigKey: String
 ) {
     companion object {
-        fun sigKeyOf(sigSha256: String?, sigMd5: String?, apkUrl: String): String {
-            firstToken(sigSha256)?.let { return it }
-            firstToken(sigMd5)?.let { return it }
-            return "url:$apkUrl"
+        fun sigKeyOf(sigSha256: String?, sigMd5: String?, apkUrl: String, abi: String? = null): String {
+            val base = firstToken(sigSha256)
+                ?: firstToken(sigMd5)
+                ?: "url:$apkUrl"
+            return abi?.lowercase()?.ifBlank { null }?.let { "$base:$it" } ?: base
         }
 
         private fun firstToken(value: String?): String? =

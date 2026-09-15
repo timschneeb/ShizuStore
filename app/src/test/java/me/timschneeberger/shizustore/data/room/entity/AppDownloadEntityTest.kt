@@ -39,4 +39,26 @@ class AppDownloadEntityTest {
         )
         assertEquals("url:https://example.com/app.apk", key)
     }
+
+    @Test
+    fun sigKeyAppendsLowercasedAbiSuffix() {
+        val key = AppDownloadEntity.sigKeyOf(
+            sigSha256 = "AAAA",
+            sigMd5 = null,
+            apkUrl = "https://example.com/app.apk",
+            abi = "Arm64-v8a"
+        )
+        assertEquals("aaaa:arm64-v8a", key)
+    }
+
+    @Test
+    fun sigKeyIgnoresBlankAbi() {
+        val key = AppDownloadEntity.sigKeyOf(
+            sigSha256 = "AAAA",
+            sigMd5 = null,
+            apkUrl = "https://example.com/app.apk",
+            abi = "  "
+        )
+        assertEquals("aaaa", key)
+    }
 }

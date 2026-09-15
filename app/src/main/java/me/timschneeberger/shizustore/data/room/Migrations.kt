@@ -56,3 +56,10 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         )
     }
 }
+
+/** Per-architecture APK candidates carry the native ABI; null means universal. */
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL("ALTER TABLE app_download ADD COLUMN abi TEXT")
+    }
+}

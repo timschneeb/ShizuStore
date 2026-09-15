@@ -59,7 +59,8 @@ class UpdateStateRepository @Inject constructor(
         val app = appDao.get(slug) ?: return
         val installedFingerprint = CertFingerprint.of(installed.signer, installed.signerMd5)
         val candidates = appDownloadDao.forApp(slug).map { AppCandidate.from(it, app.packageName) }
-        val match = candidates.firstOrNull { it.matchesInstalled(installedFingerprint) }
+        val matches = candidates.filter { it.matchesInstalled(installedFingerprint) }
+        val match = matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) } ?: matches.firstOrNull()
 
         val available: Boolean
         val candidateId: Long?
