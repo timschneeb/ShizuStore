@@ -39,7 +39,6 @@ class RequestThrottle(
         }
     }
 
-    /** Applies exponential backoff after a 429. */
     suspend fun penalize() {
         mutex.withLock {
             backoffMillis =

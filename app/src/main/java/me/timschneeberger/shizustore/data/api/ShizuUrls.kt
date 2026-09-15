@@ -5,7 +5,6 @@
 
 package me.timschneeberger.shizustore.data.api
 
-/** URL builders for the server's content-addressed resources. */
 object ShizuUrls {
     /** Immutable icon URL, or null when the app has no icon. */
     fun icon(baseUrl: String, hash: String?): String? {

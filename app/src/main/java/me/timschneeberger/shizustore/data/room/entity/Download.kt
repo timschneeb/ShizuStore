@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -46,7 +47,6 @@ data class Download(
     companion object {
         const val HASH_SHA256 = "sha256"
 
-        /** Builds the queue row from the chosen catalog candidate; no repo or mirror lookup. */
         fun fromCatalog(app: AppEntity, candidate: AppCandidate): Download {
             val packageName = app.packageName ?: candidate.packageName ?: app.slug
             return Download(

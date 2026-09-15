@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -60,7 +61,6 @@ open class DownloadHelper @Inject constructor(
             .enqueue()
     }
 
-    /** Queues the chosen catalog candidate; no repo or mirror lookup. */
     suspend fun stageRow(app: AppEntity, candidate: AppCandidate) {
         val packageName = app.packageName ?: candidate.packageName ?: return
         val existing = downloadDao.getDownload(packageName)

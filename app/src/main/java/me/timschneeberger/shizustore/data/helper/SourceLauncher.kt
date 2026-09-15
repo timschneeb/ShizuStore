@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2026 Aurora OSS
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
@@ -43,7 +43,6 @@ fun sourceTarget(
     Availability.EXCLUDED -> SourceTarget.None
 }
 
-/** Opens Play listings and link-only pages in a Custom Tab. */
 object SourceLauncher {
     fun launch(
         context: Context,

@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -28,7 +29,6 @@ class UpdateBatch @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val downloadHelper: DownloadHelper
 ) {
-    /** Adds one catalog update to the live batch. Returns false when it was already chained. */
     suspend fun enqueue(
         app: AppEntity,
         candidate: AppCandidate,

@@ -20,7 +20,6 @@ data class AppsQuery(
     val order: String? = null
 )
 
-/** Thin typed client over the public version 1 API. */
 interface ShizuApi {
     suspend fun apps(query: AppsQuery = AppsQuery()): ApiResult<PagedAppsDto>
 

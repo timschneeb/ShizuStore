@@ -82,7 +82,6 @@ class DownloadsViewModel @Inject constructor(
         }
     }
 
-    /** Copies the downloaded APK out to wherever the document picker landed. */
     fun export(packageName: String, target: Uri) {
         viewModelScope.launch(NonCancellable) {
             val download = downloadHelper.getDownload(packageName)

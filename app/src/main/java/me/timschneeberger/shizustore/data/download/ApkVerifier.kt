@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -12,7 +13,7 @@ import me.timschneeberger.shizustore.util.Hashing
 
 object ApkVerifier {
 
-    /** Verifies a downloaded artifact against the server hash. The server uses sha256 today. */
+    /** Verifies a downloaded artifact against the server sha256. */
     fun verify(
         file: File,
         expectedHash: String,

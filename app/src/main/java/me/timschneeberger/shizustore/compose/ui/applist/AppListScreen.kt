@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2026 Aurora OSS
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * The search-in-app-bar treatment and the tag cloud follow the official F-Droid
