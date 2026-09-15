@@ -27,6 +27,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import me.timschneeberger.shizustore.BuildConfig
 import me.timschneeberger.shizustore.compose.permission.rememberDozeExemptionRequest
 import me.timschneeberger.shizustore.compose.ui.about.AboutScreen
 import me.timschneeberger.shizustore.compose.ui.applist.AppListScreen
@@ -85,7 +86,9 @@ fun ShizuNavDisplay(
             is Destination.InstallationPreferences ->
                 backStack.add(Screen.InstallationPreferences)
             is Destination.NetworkPreferences -> backStack.add(Screen.NetworkPreferences)
-            is Destination.ServerPreferences -> backStack.add(Screen.ServerPreferences)
+            is Destination.ServerPreferences ->
+                // Matches SettingsScreen: the server override is debug only.
+                if (BuildConfig.DEBUG) backStack.add(Screen.ServerPreferences)
             is Destination.PermissionPreferences ->
                 backStack.add(Screen.PermissionPreferences)
             is Destination.About -> backStack.add(Screen.About)

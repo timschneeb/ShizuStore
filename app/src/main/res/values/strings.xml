@@ -317,6 +317,8 @@
 
     <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>
     <string name="settings_appearance_title">Appearance</string>
+    <string name="settings_black_night_subtitle">Use the pure black theme if night mode is enabled</string>
+    <string name="settings_black_night_title">Black night theme</string>
     <string name="settings_dynamic_color_subtitle">Draws the palette from your wallpaper. Android 12 and later.</string>
     <string name="settings_dynamic_color_title">Dynamic colour</string>
     <string name="settings_group_updates_summary">Check schedule, network limits and automatic installs</string>

@@ -28,6 +28,9 @@ object ThemePreference {
     @Volatile
     private var cachedDynamicColors: Boolean? = null
 
+    @Volatile
+    private var cachedBlackNight: Boolean? = null
+
     fun style(context: Context): Int {
         cachedStyle?.let { return it }
 
@@ -49,6 +52,16 @@ object ThemePreference {
             )
         }
         cachedDynamicColors = enabled
+        return enabled
+    }
+
+    fun blackNight(context: Context): Boolean {
+        cachedBlackNight?.let { return it }
+
+        val enabled = runBlocking {
+            Preferences.readBoolean(context, Preferences.PREFERENCE_BLACK_NIGHT)
+        }
+        cachedBlackNight = enabled
         return enabled
     }
 
@@ -83,6 +96,11 @@ object ThemePreference {
                 Preferences.PREFERENCE_DYNAMIC_COLORS,
                 Preferences.dynamicColorsDefault
             ).distinctUntilChanged().collect { cachedDynamicColors = it }
+        }
+
+        launch {
+            Preferences.booleanFlow(context, Preferences.PREFERENCE_BLACK_NIGHT)
+                .distinctUntilChanged().collect { cachedBlackNight = it }
         }
     }
 

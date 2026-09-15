@@ -6,6 +6,7 @@
 package me.timschneeberger.shizustore.compose.theme
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -25,6 +26,15 @@ val warningColor: Color
 val successColor: Color
     @Composable @ReadOnlyComposable
     get() = if (isAppInDarkTheme()) Color(0xFF5BD27A) else Color(0xFF1B8738)
+
+/** Pure black base for night mode. Elevated containers keep their tone for depth. */
+fun ColorScheme.withPureBlack(): ColorScheme = copy(
+    background = Color.Black,
+    surface = Color.Black,
+    surfaceDim = Color.Black,
+    surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = Color.Black
+)
 
 val BrandLightColorScheme = lightColorScheme(
     primary = Color(0xFF6C63FF),

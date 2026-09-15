@@ -56,6 +56,17 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private val _blackNightEnabled = MutableStateFlow(false)
+    val blackNightEnabled: StateFlow<Boolean> = _blackNightEnabled.asStateFlow()
+
+    fun setBlackNightEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            initialLoad.join()
+            _blackNightEnabled.value = enabled
+            Preferences.putBoolean(context, Preferences.PREFERENCE_BLACK_NIGHT, enabled)
+        }
+    }
+
     private val _updateCheckIntervalHours =
         MutableStateFlow(UpdateWorker.DEFAULT_INTERVAL_HOURS)
     val updateCheckIntervalHours: StateFlow<Int> = _updateCheckIntervalHours.asStateFlow()
@@ -114,6 +125,10 @@ class SettingsViewModel @Inject constructor(
             context,
             Preferences.PREFERENCE_DYNAMIC_COLORS,
             Preferences.dynamicColorsDefault
+        )
+        _blackNightEnabled.value = Preferences.readBoolean(
+            context,
+            Preferences.PREFERENCE_BLACK_NIGHT
         )
         _updateCheckIntervalHours.value = UpdateWorker.intervalHours(context)
         _syncOnWifiOnly.value = Preferences.readBoolean(

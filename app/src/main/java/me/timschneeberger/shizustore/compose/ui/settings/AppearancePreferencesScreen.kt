@@ -36,6 +36,7 @@ fun AppearancePreferencesScreen(
 ) {
     val themeStyle by viewModel.themeStyle.collectAsStateWithLifecycle()
     val dynamicColorsEnabled by viewModel.dynamicColorsEnabled.collectAsStateWithLifecycle()
+    val blackNightEnabled by viewModel.blackNightEnabled.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
@@ -74,6 +75,17 @@ fun AppearancePreferencesScreen(
                 },
                 onClick = { viewModel.setDynamicColorsEnabled(!dynamicColorsEnabled) },
                 selection = ItemSelection.Switch(dynamicColorsEnabled)
+            )
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_black_night_title),
+                supporting = stringResource(R.string.settings_black_night_subtitle),
+                supportingMaxLines = 2,
+                trailing = {
+                    Switch(checked = blackNightEnabled, onCheckedChange = null)
+                },
+                onClick = { viewModel.setBlackNightEnabled(!blackNightEnabled) },
+                selection = ItemSelection.Switch(blackNightEnabled)
             )
         }
     }

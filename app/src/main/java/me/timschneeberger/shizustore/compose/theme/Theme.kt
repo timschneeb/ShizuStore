@@ -31,6 +31,7 @@ fun ShizuTheme(content: @Composable () -> Unit) {
 
     val initialThemeStyle = remember(context) { ThemePreference.style(context) }
     val initialDynamicColor = remember(context) { ThemePreference.dynamicColors(context) }
+    val initialBlackNight = remember(context) { ThemePreference.blackNight(context) }
 
     val themeStyleFlow = remember(context) {
         Preferences.integerFlow(
@@ -46,9 +47,13 @@ fun ShizuTheme(content: @Composable () -> Unit) {
             Preferences.dynamicColorsDefault
         )
     }
+    val blackNightFlow = remember(context) {
+        Preferences.booleanFlow(context, Preferences.PREFERENCE_BLACK_NIGHT)
+    }
 
     val themeStyle by themeStyleFlow.collectAsStateWithLifecycle(initialThemeStyle)
     val dynamicColor by dynamicColorFlow.collectAsStateWithLifecycle(initialDynamicColor)
+    val blackNight by blackNightFlow.collectAsStateWithLifecycle(initialBlackNight)
 
     val useDynamicColor = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
@@ -70,7 +75,12 @@ fun ShizuTheme(content: @Composable () -> Unit) {
         else -> isSystemInDarkTheme()
     }
 
-    val colorScheme = if (darkTheme) darkScheme else lightScheme
+    val colorScheme = if (darkTheme) {
+        // Pure black base only affects night mode, never the light scheme.
+        if (blackNight) darkScheme.withPureBlack() else darkScheme
+    } else {
+        lightScheme
+    }
 
     val view = LocalView.current
     val activity = LocalActivity.current

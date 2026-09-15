@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Debug builds carry the suffix in the launcher label and in-app title. -->
+    <string name="app_name" translatable="false">Shizu Store (Debug)</string>
+</resources>
