@@ -134,22 +134,54 @@ class CatalogUiMapper @Inject constructor() {
         )
     }
 
-    fun toSources(detailed: DetailedApp, installed: CertFingerprint?): List<AppSource> =
-        detailed.candidates.map { candidate ->
-            AppSource(
-                app = candidateToResolvedApp(detailed.app, candidate, installed),
-                added = 0L,
-                releaseChannels = emptyList(),
-                signerMatch = candidate.matchesInstalled(installed)
-            )
-        }
+    fun toSources(
+        detailed: DetailedApp,
+        installed: CertFingerprint?,
+        installedPackage: String? = null
+    ): List<AppSource> {
+        val app = detailed.app
+        // A per-ABI release ships one download per architecture and each may carry a
+        // distinct version code, so key on the version name: those are the same
+        // source, not several. Collapse them to one row per (package, version label,
+        // signing identity), keeping the build this device can run.
+        return detailed.candidates
+            .groupBy { candidate ->
+                Triple(
+                    candidate.packageName ?: app.packageName,
+                    candidate.versionName ?: candidate.versionCode,
+                    candidate.sigSha256 ?: candidate.sigMd5
+                )
+            }
+            .map { (_, candidates) ->
+                val candidate = candidates.firstOrNull { it.isPrimary && it.supportsAbi(AppCandidate.deviceAbis) }
+                    ?: candidates.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
+                    ?: candidates.firstOrNull { it.isPrimary }
+                    ?: candidates.first()
+                // Flavors usually share a signing key, so only the package ties the
+                // installed app to its own source; the fingerprint alone cannot.
+                val sourcePackage = candidate.packageName ?: app.packageName
+                val installedPackageMatch =
+                    installedPackage != null && sourcePackage == installedPackage
+                AppSource(
+                    app = candidateToResolvedApp(app, candidate, installed, installedPackageMatch),
+                    added = 0L,
+                    releaseChannels = emptyList(),
+                    nativeCode = candidate.abi?.let { listOf(it) } ?: emptyList(),
+                    signerMatch = candidate.matchesInstalled(installed),
+                    installedPackageMatch = installedPackageMatch
+                )
+            }
+    }
 
     private fun candidateToResolvedApp(
         app: AppEntity,
         candidate: AppCandidate,
-        installed: CertFingerprint?
+        installed: CertFingerprint?,
+        installedPackageMatch: Boolean
     ): ResolvedApp = ResolvedApp(
-        packageName = app.packageName ?: app.slug,
+        // The candidate's own package wins so a flavor source shows the package
+        // it actually installs as.
+        packageName = candidate.packageName ?: app.packageName ?: app.slug,
         repoId = 0,
         // The candidate's own origin, not the app's: one app can ship both a forge
         // build and an F-Droid build signed by different keys.
@@ -168,7 +200,9 @@ class CatalogUiMapper @Inject constructor() {
         hash = candidate.sha256.orEmpty(),
         size = candidate.size ?: 0L,
         minSdk = candidate.minSdk ?: app.minSdk ?: 0,
-        installedVersionCode = app.installedVersionCode,
+        // Only the installed flavor's row carries the installed version, so the
+        // "Installed" chip and update hint never leak onto a sibling flavor.
+        installedVersionCode = if (installedPackageMatch) app.installedVersionCode else null,
         installedSigner = installed?.takeIf { it.isKnown }?.sha256?.joinToString(" "),
         slug = app.slug,
         iconHash = app.iconHash,

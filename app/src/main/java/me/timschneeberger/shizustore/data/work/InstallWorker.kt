@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.data.work
 import android.content.Context
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import androidx.core.content.pm.PackageInfoCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequest
@@ -26,6 +27,7 @@ import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallDispatch
 import me.timschneeberger.shizustore.data.room.dao.DownloadDao
 import me.timschneeberger.shizustore.util.NotificationUtil
+import me.timschneeberger.shizustore.util.SHIZU_STORE_PACKAGE
 
 @HiltWorker
 class InstallWorker @AssistedInject constructor(
@@ -62,6 +64,17 @@ class InstallWorker @AssistedInject constructor(
         }
 
         val before = downloadDao.getDownload(packageName)
+
+        if (
+            isSelfUpdateSatisfied(
+                packageName,
+                before?.versionCode,
+                installedVersionCode(packageName)
+            )
+        ) {
+            Log.i(TAG, "$packageName already runs ${before?.versionCode}; skipping self-update")
+            return Result.success()
+        }
 
         when (val dispatch = installDispatcher.dispatch(packageName)) {
             InstallDispatch.Started -> Unit
@@ -123,6 +136,12 @@ class InstallWorker @AssistedInject constructor(
             }
     }
 
+    private fun installedVersionCode(packageName: String): Long? = runCatching {
+        PackageInfoCompat.getLongVersionCode(
+            applicationContext.packageManager.getPackageInfo(packageName, 0)
+        )
+    }.getOrNull()
+
     companion object {
         const val KEY_PACKAGE_NAME = "packageName"
 
@@ -147,3 +166,16 @@ class InstallWorker @AssistedInject constructor(
                 .build()
     }
 }
+
+/**
+ * A self-update that already landed must not be dispatched again: WorkManager can reschedule
+ * this worker after the replacement killed the process.
+ */
+internal fun isSelfUpdateSatisfied(
+    packageName: String,
+    rowVersionCode: Long?,
+    installedVersionCode: Long?
+): Boolean = packageName == SHIZU_STORE_PACKAGE &&
+    rowVersionCode != null &&
+    rowVersionCode != 0L &&
+    installedVersionCode == rowVersionCode

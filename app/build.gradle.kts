@@ -71,7 +71,7 @@ android {
         targetSdk = 37
         versionCode = appVersionCode
         versionName = appVersionName
-        buildConfigField("String", "API_BASE_URL", "\"\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://shizustore.timschneeberger.me/\"")
     }
 
     signingConfigs {
@@ -99,7 +99,6 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             signingConfig = signingConfigs.getByName("aosp")
-            buildConfigField("String", "API_BASE_URL", "\"http://192.168.178.72:5137/\"")
         }
         release {
             isMinifyEnabled = true

@@ -51,6 +51,16 @@
             android:name=".data.receiver.InstallerStatusReceiver"
             android:exported="false" />
 
+        <!-- Self-update replaces the process; a manifest receiver is the only way to
+             observe it and settle the install row on the next start. -->
+        <receiver
+            android:name=".data.receiver.SelfUpdateReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name=".data.receiver.DownloadCancelReceiver"
             android:exported="false" />

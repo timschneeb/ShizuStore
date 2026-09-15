@@ -152,8 +152,13 @@ fun SourceList(
 
                     AuroraListItem(
                         headline = row.source.app.versionName,
-                        supporting = listOfNotNull(releasedOn(row.source.added), origin)
-                            .joinToString(SEPARATOR),
+                        supporting = listOfNotNull(
+                            releasedOn(row.source.added),
+                            origin,
+                            // Flavor builds of one app differ only by package, so the
+                            // package is what tells the sources apart.
+                            row.source.app.packageName.takeIf { it.isNotBlank() }
+                        ).joinToString(SEPARATOR),
                         tertiary = row.abiLabel?.let { AnnotatedString(it) },
                         tertiaryMaxLines = 2,
                         onClick = { onSelect(row.source) },

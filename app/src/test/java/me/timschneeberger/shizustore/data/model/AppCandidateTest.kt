@@ -5,6 +5,8 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -14,6 +16,27 @@ class AppCandidateTest {
     @Test
     fun universalCandidateRunsOnAnyDevice() {
         assertTrue(candidate(abi = null).supportsAbi(listOf("x86")))
+    }
+
+    @Test
+    fun fromKeepsTheCandidatesOwnFlavorPackage() {
+        val entity = AppDownloadEntity(
+            appSlug = "app",
+            packageName = "com.app.play",
+            apkUrl = "https://example/play.apk",
+            sigKey = "k"
+        )
+        assertEquals("com.app.play", AppCandidate.from(entity, "com.app").packageName)
+    }
+
+    @Test
+    fun fromFallsBackToTheAppPackageForLegacyRows() {
+        val entity = AppDownloadEntity(
+            appSlug = "app",
+            apkUrl = "https://example/app.apk",
+            sigKey = "k"
+        )
+        assertEquals("com.app", AppCandidate.from(entity, "com.app").packageName)
     }
 
     @Test

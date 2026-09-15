@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.compose.ui.settings
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,8 +35,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
+import me.timschneeberger.shizustore.compose.composable.ItemSelection
+import me.timschneeberger.shizustore.compose.composable.SectionHeader
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.util.ServerConfig
 import me.timschneeberger.shizustore.viewmodel.ServerStatus
 import me.timschneeberger.shizustore.viewmodel.ServerViewModel
 
@@ -44,19 +49,32 @@ fun ServerPreferencesScreen(
     viewModel: ServerViewModel = hiltViewModel(),
     onNavigateTo: (Destination) -> Unit = {}
 ) {
+    val useCustom by viewModel.useCustom.collectAsStateWithLifecycle()
+    val customUrl by viewModel.customUrl.collectAsStateWithLifecycle()
     val baseUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
     val status by viewModel.status.collectAsStateWithLifecycle()
-    var showServerDialog by remember { mutableStateOf(false) }
+    var showResetDialog by remember { mutableStateOf(false) }
 
-    if (showServerDialog) {
-        ServerDialog(
-            currentUrl = baseUrl,
-            onSave = viewModel::save,
-            onClear = {
-                viewModel.clear()
-                showServerDialog = false
+    if (showResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            title = { Text(stringResource(R.string.settings_server_reset)) },
+            text = { Text(stringResource(R.string.settings_server_reset_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearLocalDatabase()
+                        showResetDialog = false
+                    }
+                ) {
+                    Text(stringResource(R.string.action_clear))
+                }
             },
-            onDismiss = { showServerDialog = false }
+            dismissButton = {
+                TextButton(onClick = { showResetDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            }
         )
     }
 
@@ -75,14 +93,51 @@ fun ServerPreferencesScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+            SectionHeader(title = stringResource(R.string.settings_server_title))
+
             AuroraListItem(
-                headline = stringResource(R.string.settings_server_title),
+                headline = stringResource(R.string.settings_server_production),
+                supporting = ServerConfig.productionBaseUrl,
+                leading = {
+                    RadioButton(selected = !useCustom, onClick = null)
+                },
+                onClick = { viewModel.setUseCustom(false) },
+                selection = ItemSelection.Radio(!useCustom)
+            )
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_server_custom),
+                supporting = customUrl.takeIf { it.isNotBlank() },
+                leading = {
+                    RadioButton(selected = useCustom, onClick = null)
+                },
+                onClick = { viewModel.setUseCustom(true) },
+                selection = ItemSelection.Radio(useCustom)
+            )
+
+            if (useCustom) {
+                CustomServerField(
+                    currentUrl = customUrl,
+                    onSave = viewModel::saveCustomUrl
+                )
+            }
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_server_active),
                 supporting = baseUrl.ifBlank {
                     stringResource(R.string.settings_server_not_configured)
                 },
                 tertiary = AnnotatedString(stringResource(statusTextRes(status))),
-                supportingMaxLines = 2,
-                onClick = { showServerDialog = true }
+                supportingMaxLines = 2
+            )
+
+            SectionHeader(title = stringResource(R.string.settings_server_maintenance))
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_server_reset),
+                supporting = stringResource(R.string.settings_server_reset_summary),
+                supportingMaxLines = 3,
+                onClick = { showResetDialog = true }
             )
         }
     }
@@ -96,69 +151,49 @@ private fun statusTextRes(status: ServerStatus): Int = when (status) {
 }
 
 @Composable
-private fun ServerDialog(
+private fun CustomServerField(
     currentUrl: String,
     onSave: (String) -> Boolean,
-    onClear: () -> Unit,
-    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var url by remember { mutableStateOf(currentUrl) }
+    var url by remember(currentUrl) { mutableStateOf(currentUrl) }
     var invalid by remember { mutableStateOf(false) }
 
-    AlertDialog(
-        modifier = modifier,
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_server_title)) },
-        text = {
-            Column {
-                Text(
-                    text = stringResource(R.string.settings_server_dialog_message),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                OutlinedTextField(
-                    value = url,
-                    onValueChange = {
-                        url = it
-                        invalid = false
-                    },
-                    label = { Text(stringResource(R.string.settings_server_hint)) },
-                    singleLine = true,
-                    isError = invalid,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = dimensionResource(R.dimen.spacing_small))
-                )
-                if (invalid) {
-                    Text(
-                        text = stringResource(R.string.settings_server_invalid),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = dimensionResource(R.dimen.spacing_small))
-                    )
-                }
-            }
-        },
-        confirmButton = {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(R.dimen.spacing_large))
+    ) {
+        OutlinedTextField(
+            value = url,
+            onValueChange = {
+                url = it
+                invalid = false
+            },
+            label = { Text(stringResource(R.string.settings_server_hint)) },
+            singleLine = true,
+            isError = invalid,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (invalid) {
+            Text(
+                text = stringResource(R.string.settings_server_invalid),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = dimensionResource(R.dimen.spacing_small))
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
             TextButton(
-                onClick = { if (onSave(url)) onDismiss() else invalid = true },
+                onClick = { if (onSave(url)) invalid = false else invalid = true },
                 enabled = url.isNotBlank()
             ) {
                 Text(stringResource(R.string.action_save))
             }
-        },
-        dismissButton = {
-            Row {
-                if (currentUrl.isNotBlank()) {
-                    TextButton(onClick = onClear) {
-                        Text(stringResource(R.string.settings_server_clear))
-                    }
-                }
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.action_cancel))
-                }
-            }
         }
-    )
+    }
 }

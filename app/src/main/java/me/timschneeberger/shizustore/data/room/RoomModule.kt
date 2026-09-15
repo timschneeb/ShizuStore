@@ -33,47 +33,38 @@ object RoomModule {
 
     @Provides
     @Singleton
-    fun providesDatabase(@ApplicationContext context: Context): AuroraDatabase =
+    fun providesDatabase(@ApplicationContext context: Context): ShizuStoreDatabase =
         buildDatabase(context, BundledSQLiteDriver())
 
-    internal fun buildDatabase(context: Context, driver: SQLiteDriver): AuroraDatabase =
-        Room.databaseBuilder(context, AuroraDatabase::class.java, DATABASE_NAME)
+    internal fun buildDatabase(context: Context, driver: SQLiteDriver): ShizuStoreDatabase =
+        Room.databaseBuilder(context, ShizuStoreDatabase::class.java, DATABASE_NAME)
             .setDriver(driver)
-            .addMigrations(
-                MIGRATION_1_2,
-                MIGRATION_2_3,
-                MIGRATION_3_4,
-                MIGRATION_4_5,
-                MIGRATION_5_6,
-                MIGRATION_6_7,
-                MIGRATION_7_8
-            )
             .build()
 
     @Provides
-    fun providesAppDao(db: AuroraDatabase): AppDao = db.appDao()
+    fun providesAppDao(db: ShizuStoreDatabase): AppDao = db.appDao()
 
     @Provides
-    fun providesAppDownloadDao(db: AuroraDatabase): AppDownloadDao = db.appDownloadDao()
+    fun providesAppDownloadDao(db: ShizuStoreDatabase): AppDownloadDao = db.appDownloadDao()
 
     @Provides
-    fun providesCategoryDao(db: AuroraDatabase): CategoryDao = db.categoryDao()
+    fun providesCategoryDao(db: ShizuStoreDatabase): CategoryDao = db.categoryDao()
 
     @Provides
-    fun providesSyncStateDao(db: AuroraDatabase): SyncStateDao = db.syncStateDao()
+    fun providesSyncStateDao(db: ShizuStoreDatabase): SyncStateDao = db.syncStateDao()
 
     @Provides
-    fun providesInstalledDao(db: AuroraDatabase): InstalledDao = db.installedDao()
+    fun providesInstalledDao(db: ShizuStoreDatabase): InstalledDao = db.installedDao()
 
     @Provides
-    fun providesDownloadDao(db: AuroraDatabase): DownloadDao = db.downloadDao()
+    fun providesDownloadDao(db: ShizuStoreDatabase): DownloadDao = db.downloadDao()
 
     @Provides
-    fun providesFavouriteDao(db: AuroraDatabase): FavouriteDao = db.favouriteDao()
+    fun providesFavouriteDao(db: ShizuStoreDatabase): FavouriteDao = db.favouriteDao()
 
     @Provides
-    fun providesBlacklistDao(db: AuroraDatabase): BlacklistDao = db.blacklistDao()
+    fun providesBlacklistDao(db: ShizuStoreDatabase): BlacklistDao = db.blacklistDao()
 
     @Provides
-    fun providesIgnoredUpdateDao(db: AuroraDatabase): IgnoredUpdateDao = db.ignoredUpdateDao()
+    fun providesIgnoredUpdateDao(db: ShizuStoreDatabase): IgnoredUpdateDao = db.ignoredUpdateDao()
 }

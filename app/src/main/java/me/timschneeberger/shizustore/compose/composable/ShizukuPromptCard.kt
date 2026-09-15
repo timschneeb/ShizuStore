@@ -74,6 +74,7 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
                     Preferences.PREFERENCE_INSTALLER_ID,
                     Installer.SHIZUKU.ordinal
                 )
+                onDismiss()
             }
         }
     }

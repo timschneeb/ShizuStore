@@ -335,11 +335,16 @@
     <string name="settings_proxy_invalid">Enter a proxy as protocol://host:port, optionally with user:password@ before the host. http, https, socks and socks5 are supported.</string>
     <string name="settings_proxy_summary_none">Not set. Repository traffic follows this device\'s network settings.</string>
     <string name="settings_proxy_title">Proxy</string>
-    <string name="settings_server_clear">Clear</string>
-    <string name="settings_server_dialog_message">The base URL of the Shizu catalog server. The app is checked against its health endpoint when you save.</string>
+    <string name="settings_server_active">Active server</string>
+    <string name="settings_server_custom">Custom server</string>
     <string name="settings_server_hint" translatable="false">https://example.com</string>
     <string name="settings_server_invalid">Enter a valid http or https URL.</string>
+    <string name="settings_server_maintenance">Maintenance</string>
     <string name="settings_server_not_configured">Not configured</string>
+    <string name="settings_server_production">Production</string>
+    <string name="settings_server_reset">Clear local database</string>
+    <string name="settings_server_reset_message">Clear the cached catalog and pull everything from the active server again? Favourites and installed apps are kept.</string>
+    <string name="settings_server_reset_summary">Deletes the cached catalog and downloads it again from the active server. Favourites and installed apps are kept.</string>
     <string name="settings_server_status_checking">Checking...</string>
     <string name="settings_server_status_reachable">Reachable</string>
     <string name="settings_server_status_unknown">Not checked</string>

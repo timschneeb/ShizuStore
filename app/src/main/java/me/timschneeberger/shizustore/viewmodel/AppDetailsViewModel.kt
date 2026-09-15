@@ -58,11 +58,20 @@ sealed interface AppDetailsUiState {
     data class Loaded(
         val details: AppDetails,
         val sources: List<AppSource>,
-        val download: Download? = null
+        val download: Download? = null,
+        /**
+         * The package the entry is actually installed under. An entry is keyed by
+         * its canonical package, but a flavor installs under its own, so system
+         * actions (open, uninstall, app info) must target this, not the key.
+         */
+        val installedPackage: String? = null
     ) : AppDetailsUiState {
         val resolved: ResolvedApp? get() = sources.preferredForThisDevice()?.app
 
         val downloadStatus: DownloadStatus? get() = download?.status
+
+        /** The package to act on for installed-app actions, falling back to the catalog key. */
+        val actionablePackage: String get() = installedPackage ?: details.packageName
     }
 }
 
@@ -258,7 +267,8 @@ class AppDetailsViewModel @Inject constructor(
 
     fun install() {
         val loaded = uiState.value as? AppDetailsUiState.Loaded ?: return
-        val source = loaded.sources.firstOrNull { it.signerMatch }
+        val source = loaded.sources.firstOrNull { it.installedPackageMatch }
+            ?: loaded.sources.firstOrNull { it.signerMatch }
             ?: loaded.sources.firstOrNull { it.app.candidateId != null }
             ?: return
         val app = source.app
@@ -310,12 +320,32 @@ class AppDetailsViewModel @Inject constructor(
 
         val catalog = combine(
             appRepository.observeDetail(slug),
-            installedRepository.observe(identity)
-        ) { detailed, installed -> detailed to installed }
+            installedRepository.observeAll()
+        ) { detailed, installedAll ->
+            // The entry is keyed by its canonical package, but the user may have
+            // installed a flavor, so match any package the entry ships.
+            val installed = detailed?.let { detail ->
+                val packages = buildSet {
+                    detail.app.packageName?.let { add(it) }
+                    detail.candidates.forEach { candidate -> candidate.packageName?.let { add(it) } }
+                }
+                installedAll.firstOrNull { it.packageName == detail.app.packageName }
+                    ?: installedAll.firstOrNull { it.packageName in packages }
+            }
+            detailed to installed
+        }
 
-        val row = downloadHelper.downloads
-            .map { rows -> rows.firstOrNull { it.packageName == identity } }
-            .distinctUntilChanged()
+        // The download row is keyed by the flavor package, which is not always
+        // the nav-key package, so match any package the entry ships.
+        val row = combine(catalog, downloadHelper.downloads) { catalogPair, rows ->
+            val detail = catalogPair.first
+            val packages = buildSet {
+                add(identity)
+                detail?.app?.packageName?.let { add(it) }
+                detail?.candidates?.forEach { candidate -> candidate.packageName?.let { add(it) } }
+            }
+            rows.firstOrNull { it.packageName in packages }
+        }.distinctUntilChanged()
 
         return combine(
             catalog,
@@ -334,8 +364,9 @@ class AppDetailsViewModel @Inject constructor(
                     AppDetailsUiState.Loaded(
                         details = mapper.toAppDetails(detailed)
                             .copy(fullDescription = detailedAppRepository.fullDescription(slug)),
-                        sources = mapper.toSources(detailed, fingerprint),
-                        download = download
+                        sources = mapper.toSources(detailed, fingerprint, installed?.packageName),
+                        download = download,
+                        installedPackage = installed?.packageName
                     )
                 }
 

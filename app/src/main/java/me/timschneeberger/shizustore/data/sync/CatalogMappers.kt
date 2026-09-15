@@ -111,6 +111,7 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
 
 fun DownloadDto.toEntity(appSlug: String): AppDownloadEntity = AppDownloadEntity(
     appSlug = appSlug,
+    packageName = packageName,
     source = SourceKind.fromWire(source),
     apkUrl = apkUrl,
     archiveEntry = archiveEntry,

@@ -57,7 +57,15 @@ class UpdatesViewModel @Inject constructor(
     val updates: Flow<PagingData<ResolvedApp>> =
         Pager(PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false)) {
             appRepository.pagedUpdatable()
-        }.flow.map { paging -> paging.map(mapper::toResolvedApp) }.cachedIn(viewModelScope)
+        }.flow.map { paging ->
+            paging.map { entity ->
+                // Carry the package the app is actually installed under so the
+                // row's download/progress and actions target the installed flavor.
+                mapper.toResolvedApp(entity).copy(
+                    installedPackage = appRepository.installedPackageFor(entity.slug)
+                )
+            }
+        }.cachedIn(viewModelScope)
 
     val downloadsByPackage: StateFlow<Map<String, Download>> = downloadHelper.downloads
         .map { downloads -> downloads.associateBy { it.packageName } }

@@ -18,22 +18,30 @@ import me.timschneeberger.shizustore.data.room.AppListQueryBuilder
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
+import me.timschneeberger.shizustore.data.room.dao.InstalledDao
 import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
+import me.timschneeberger.shizustore.util.SHIZU_STORE_PACKAGE
 
 @Singleton
 class AppRepository @Inject constructor(
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao,
     private val categoryDao: CategoryDao,
-    private val syncStateDao: SyncStateDao
+    private val syncStateDao: SyncStateDao,
+    private val installedDao: InstalledDao
 ) {
     fun pagedApps(
         args: AppListArgs,
         useInstallCountsForPopularity: Boolean = false
-    ): PagingSource<Int, AppEntity> =
-        appDao.pagedFiltered(AppListQueryBuilder.build(args, useInstallCountsForPopularity))
+    ): PagingSource<Int, AppEntity> = appDao.pagedFiltered(
+        AppListQueryBuilder.build(
+            args,
+            useInstallCountsForPopularity,
+            excludePackage = SHIZU_STORE_PACKAGE
+        )
+    )
 
     fun observePopularityFlag(): Flow<Boolean> =
         syncStateDao.observe().map { it?.useInstallCountsForPopularity == true }
@@ -45,29 +53,29 @@ class AppRepository @Inject constructor(
     fun observeUpdatableCount(): Flow<Int> = appDao.observeUpdatableCount()
 
     fun observeRecentlyAdded(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
-        appDao.observeRecentlyAdded(limit)
+        appDao.observeRecentlyAdded(limit).hideSelf()
 
-    fun observeRecommendedPool(): Flow<List<AppEntity>> = appDao.observeRecommendedPool()
+    fun observeRecommendedPool(): Flow<List<AppEntity>> = appDao.observeRecommendedPool().hideSelf()
 
     fun observeByAuthor(
         authorKey: String,
         excludeSlug: String,
         limit: Int = CAROUSEL_LIMIT
-    ): Flow<List<AppEntity>> = appDao.observeByAuthor(authorKey, excludeSlug, limit)
+    ): Flow<List<AppEntity>> = appDao.observeByAuthor(authorKey, excludeSlug, limit).hideSelf()
 
     fun observeByCategory(
         categorySlug: String,
         excludeSlug: String,
         limit: Int = CAROUSEL_LIMIT
-    ): Flow<List<AppEntity>> = appDao.observeByCategory(categorySlug, excludeSlug, limit)
+    ): Flow<List<AppEntity>> = appDao.observeByCategory(categorySlug, excludeSlug, limit).hideSelf()
 
     fun observeRecentlyUpdated(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
-        appDao.observeRecentlyUpdated(limit)
+        appDao.observeRecentlyUpdated(limit).hideSelf()
 
     fun observeMostStarred(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
-        appDao.observeMostStarred(limit)
+        appDao.observeMostStarred(limit).hideSelf()
 
-    fun observeRandomPool(): Flow<List<AppEntity>> = appDao.observeAll()
+    fun observeRandomPool(): Flow<List<AppEntity>> = appDao.observeAll().hideSelf()
 
     fun pagedFavourites(): PagingSource<Int, AppEntity> = appDao.pagedFavourites()
 
@@ -91,9 +99,26 @@ class AppRepository @Inject constructor(
 
     suspend fun get(slug: String): AppEntity? = appDao.get(slug)
 
-    suspend fun getByPackage(packageName: String): AppEntity? = appDao.getByPackage(packageName)
+    suspend fun getByPackage(packageName: String): AppEntity? =
+        appDao.getByPackage(packageName) ?: appDao.getByDownloadPackage(packageName)
 
     suspend fun getAll(): List<AppEntity> = appDao.getAll()
+
+    /**
+     * The package the entry is actually installed under: the canonical package or,
+     * when a flavor is installed, that flavor's package. Installed-app actions
+     * (open, uninstall, app info) must target it rather than the catalog key.
+     */
+    suspend fun installedPackageFor(slug: String): String? {
+        val app = appDao.get(slug) ?: return null
+        val packages = buildSet {
+            app.packageName?.let { add(it) }
+            appDownloadDao.forApp(slug).forEach { download ->
+                download.packageName?.let { add(it) }
+            }
+        }
+        return packages.firstOrNull { installedDao.getByPackage(it) != null }
+    }
 
     /** Updatable rows with a real package name, the only ones an install can target. */
     suspend fun updatableApps(): List<AppEntity> =
@@ -113,6 +138,9 @@ class AppRepository @Inject constructor(
     fun observeCategories(): Flow<List<CategoryEntity>> = categoryDao.observeAll()
 
     suspend fun categories(): List<CategoryEntity> = categoryDao.getAll()
+
+    private fun Flow<List<AppEntity>>.hideSelf(): Flow<List<AppEntity>> =
+        map { apps -> apps.filterNot { it.packageName == SHIZU_STORE_PACKAGE } }
 
     companion object {
         const val CAROUSEL_LIMIT = 20

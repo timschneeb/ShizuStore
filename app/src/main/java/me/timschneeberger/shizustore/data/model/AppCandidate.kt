@@ -35,8 +35,9 @@ data class AppCandidate(
     }
 
     /** A universal candidate (no ABI) runs anywhere; an empty device list means "do not filter". */
-    fun supportsAbi(supported: List<String>): Boolean =
-        abi.isNullOrBlank() || supported.isEmpty() || supported.any { it.equals(abi, ignoreCase = true) }
+    fun supportsAbi(supported: List<String>): Boolean = abi.isNullOrBlank() ||
+        supported.isEmpty() ||
+        supported.any { it.equals(abi, ignoreCase = true) }
 
     fun isNewerThan(installedVersionCode: Long?): Boolean =
         installedVersionCode != null && versionCode != null && versionCode > installedVersionCode
@@ -48,10 +49,11 @@ data class AppCandidate(
             runCatching { Build.SUPPORTED_ABIS.toList() }.getOrElse { emptyList() }
         }
 
-        fun from(entity: AppDownloadEntity, packageName: String?): AppCandidate = AppCandidate(
+        /** `fallbackPackage` is the app's canonical package for legacy rows without one. */
+        fun from(entity: AppDownloadEntity, fallbackPackage: String?): AppCandidate = AppCandidate(
             id = entity.id,
             appSlug = entity.appSlug,
-            packageName = packageName,
+            packageName = entity.packageName ?: fallbackPackage,
             versionCode = entity.versionCode,
             versionName = entity.versionName,
             source = entity.source,

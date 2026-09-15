@@ -20,8 +20,10 @@ import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.data.api.ApiResult
 import me.timschneeberger.shizustore.data.api.BaseUrlProvider
 import me.timschneeberger.shizustore.data.api.ShizuApi
+import me.timschneeberger.shizustore.data.helper.SyncHelper
 import me.timschneeberger.shizustore.util.Preferences
 import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_API_BASE_URL
+import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_API_SERVER_CUSTOM
 import me.timschneeberger.shizustore.util.ServerConfig
 
 enum class ServerStatus { UNKNOWN, CHECKING, REACHABLE, UNREACHABLE }
@@ -30,8 +32,17 @@ enum class ServerStatus { UNKNOWN, CHECKING, REACHABLE, UNREACHABLE }
 class ServerViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     baseUrlProvider: BaseUrlProvider,
-    private val api: ShizuApi
+    private val api: ShizuApi,
+    private val syncHelper: SyncHelper
 ) : ViewModel() {
+
+    val useCustom: StateFlow<Boolean> = Preferences
+        .booleanFlow(context, PREFERENCE_API_SERVER_CUSTOM)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
+
+    val customUrl: StateFlow<String> = Preferences
+        .stringFlow(context, PREFERENCE_API_BASE_URL)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), "")
 
     val baseUrl: StateFlow<String> = baseUrlProvider.observe().stateIn(
         viewModelScope,
@@ -46,22 +57,28 @@ class ServerViewModel @Inject constructor(
         validate()
     }
 
+    /** Switches between the production server and the stored custom one. */
+    fun setUseCustom(enabled: Boolean) {
+        viewModelScope.launch {
+            Preferences.putBoolean(context, PREFERENCE_API_SERVER_CUSTOM, enabled)
+            validate()
+        }
+    }
+
     /** Returns false when [raw] is not a usable http(s) base URL. */
-    fun save(raw: String): Boolean {
+    fun saveCustomUrl(raw: String): Boolean {
         val normalized = normalize(raw) ?: return false
-        ServerConfig.baseUrl = normalized
         viewModelScope.launch {
             Preferences.putString(context, PREFERENCE_API_BASE_URL, normalized)
+            Preferences.putBoolean(context, PREFERENCE_API_SERVER_CUSTOM, true)
+            validate()
         }
-        validate()
         return true
     }
 
-    fun clear() {
-        viewModelScope.launch {
-            Preferences.remove(context, PREFERENCE_API_BASE_URL)
-            validate()
-        }
+    /** Wipes the cached catalog and pulls everything again from the active server. */
+    fun clearLocalDatabase() {
+        syncHelper.clearLocalDatabase()
     }
 
     fun validate() {

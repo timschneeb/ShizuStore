@@ -14,9 +14,10 @@ import me.timschneeberger.shizustore.data.api.RequestThrottle
 import me.timschneeberger.shizustore.data.api.ShizuJson
 import me.timschneeberger.shizustore.data.helper.SyncStatusStore
 import me.timschneeberger.shizustore.data.repository.UpdateStateRepository
-import me.timschneeberger.shizustore.data.room.AuroraDatabase
+import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
 import okhttp3.OkHttpClient
@@ -41,7 +42,7 @@ import org.robolectric.annotation.Config
 class CatalogSyncerTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var db: AuroraDatabase
+    private lateinit var db: ShizuStoreDatabase
     private lateinit var syncer: CatalogSyncer
 
     @Before
@@ -50,7 +51,7 @@ class CatalogSyncerTest {
         server.start()
         db = Room.inMemoryDatabaseBuilder(
             RuntimeEnvironment.getApplication(),
-            AuroraDatabase::class.java
+            ShizuStoreDatabase::class.java
         ).allowMainThreadQueries().build()
 
         val api = OkHttpShizuApi(
@@ -167,6 +168,39 @@ class CatalogSyncerTest {
         assertEquals(9, alpha.installCount)
         assertEquals("Alpha", alpha.name)
         assertNull(db.appDao().get("ghost"))
+    }
+
+    @Test
+    fun clearCatalogWipesCacheSoNextSyncBootstraps() = runTest {
+        db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
+        db.appDao().upsert(AppEntity(slug = "gone", name = "Gone"))
+        db.appDownloadDao().upsertAll(
+            listOf(
+                AppDownloadEntity(appSlug = "gone", apkUrl = "https://x/gone.apk", sigKey = "k")
+            )
+        )
+        db.categoryDao().upsertAll(listOf(CategoryEntity(slug = "stale", name = "Stale")))
+
+        syncer.clearCatalog()
+
+        assertEquals(0, db.appDao().count())
+        assertEquals(0, db.appDownloadDao().count())
+        assertEquals(0, db.categoryDao().getAll().size)
+        assertNull(db.syncStateDao().get())
+
+        server.dispatcher = routes(
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to json(CATEGORIES)
+        )
+
+        val outcome = syncer.sync()
+
+        assertTrue(outcome is CatalogSyncOutcome.Success)
+        assertEquals(2, db.appDao().count())
+        assertNull(db.appDao().get("gone"))
+        assertEquals(listOf("tools"), db.categoryDao().getAll().map { it.slug })
+        assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
     }
 
     @Test

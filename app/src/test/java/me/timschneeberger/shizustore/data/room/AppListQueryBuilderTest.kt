@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.data.room
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppPrice
 import me.timschneeberger.shizustore.data.model.AppSort
+import me.timschneeberger.shizustore.util.SHIZU_STORE_PACKAGE
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -126,5 +127,31 @@ class AppListQueryBuilderTest {
     @Test
     fun likeWildcardsAreEscaped() {
         assertEquals("50\\%\\_a\\\\b", AppListQueryBuilder.escapeLikePattern("50%_a\\b"))
+    }
+
+    @Test
+    fun excludedPackageAddsNullSafeFilterAndBindsIt() {
+        val query = AppListQueryBuilder.build(
+            AppListArgs(),
+            excludePackage = SHIZU_STORE_PACKAGE
+        )
+
+        assertEquals(
+            "SELECT * FROM app WHERE (packageName IS NULL OR packageName != ?)" +
+                " ORDER BY name COLLATE NOCASE ASC",
+            query.sql
+        )
+        assertEquals(1, query.argCount)
+    }
+
+    @Test
+    fun excludedPackageCombinesWithSearchBinds() {
+        val query = AppListQueryBuilder.build(
+            AppListArgs(query = "foo"),
+            excludePackage = SHIZU_STORE_PACKAGE
+        )
+
+        assertTrue(query.sql.contains("(packageName IS NULL OR packageName != ?)"))
+        assertEquals(4, query.argCount)
     }
 }

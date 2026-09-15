@@ -15,13 +15,16 @@ import me.timschneeberger.shizustore.data.api.CategorySection
 import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.model.AppListArgs
+import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
+import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -34,14 +37,14 @@ import org.robolectric.annotation.Config
 @Config(sdk = [35])
 class CatalogDaoTest {
 
-    private lateinit var db: AuroraDatabase
+    private lateinit var db: ShizuStoreDatabase
 
     @Before
     fun setUp() {
         db =
             Room.inMemoryDatabaseBuilder(
                 RuntimeEnvironment.getApplication(),
-                AuroraDatabase::class.java
+                ShizuStoreDatabase::class.java
             )
                 .allowMainThreadQueries()
                 .build()
@@ -151,6 +154,53 @@ class CatalogDaoTest {
         assertEquals(1L, stored.installedVersionCode)
         assertTrue(stored.updateAvailable)
         assertEquals(9L, stored.updateCandidateId)
+    }
+
+    @Test
+    fun installedPackageForResolvesTheInstalledFlavor() = runTest {
+        val appDao = db.appDao()
+        appDao.upsert(app("mihon", "Mihon").copy(packageName = "app.mihon"))
+        db.appDownloadDao().replaceForApp(
+            "mihon",
+            listOf(
+                AppDownloadEntity(
+                    appSlug = "mihon",
+                    source = SourceKind.GITHUB,
+                    apkUrl = "https://example.com/base.apk",
+                    versionCode = 29L,
+                    sigKey = "aaa",
+                    packageName = null
+                ),
+                AppDownloadEntity(
+                    appSlug = "mihon",
+                    source = SourceKind.GITHUB,
+                    apkUrl = "https://example.com/foss.apk",
+                    versionCode = 29L,
+                    sigKey = "bbb",
+                    packageName = "app.mihon.foss"
+                )
+            )
+        )
+        val repository = AppRepository(
+            appDao,
+            db.appDownloadDao(),
+            db.categoryDao(),
+            db.syncStateDao(),
+            db.installedDao()
+        )
+
+        assertNull(repository.installedPackageFor("mihon"))
+
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "app.mihon.foss",
+                versionCode = 24L,
+                versionName = "0.20.4",
+                signer = "sig"
+            )
+        )
+
+        assertEquals("app.mihon.foss", repository.installedPackageFor("mihon"))
     }
 
     @Test

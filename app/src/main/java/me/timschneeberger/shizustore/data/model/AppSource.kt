@@ -26,11 +26,12 @@ data class AppSource(
     val releaseChannels: List<String>,
     val nativeCode: List<String> = emptyList(),
     val maxSdk: Int? = null,
-    @Ignore val signerMatch: Boolean = false
+    @Ignore val signerMatch: Boolean = false,
+    @Ignore val installedPackageMatch: Boolean = false
 ) {
     val channel: ReleaseChannel get() = releaseChannelOf(releaseChannels)
 
-    val isInstalled: Boolean get() = app.installedVersionCode == app.versionCode
+    val isInstalled: Boolean get() = installedPackageMatch && app.installedVersionCode == app.versionCode
 
     val abiLabel: String? get() = DeviceProfile.abiLabel(nativeCode)
 
@@ -41,7 +42,9 @@ data class AppSource(
 }
 
 fun List<AppSource>.preferredForThisDevice(): AppSource? =
-    firstOrNull { it.runsOnThisDevice && it.signerMatch }
+    firstOrNull { it.installedPackageMatch && it.runsOnThisDevice }
+        ?: firstOrNull { it.installedPackageMatch }
+        ?: firstOrNull { it.runsOnThisDevice && it.signerMatch }
         ?: firstOrNull { it.runsOnThisDevice && !it.app.signerDiffersFromInstalled }
         ?: firstOrNull { it.runsOnThisDevice }
         ?: firstOrNull()

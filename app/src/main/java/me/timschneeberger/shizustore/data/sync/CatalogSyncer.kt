@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.data.sync
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import me.timschneeberger.shizustore.data.api.ApiError
 import me.timschneeberger.shizustore.data.api.ApiResult
 import me.timschneeberger.shizustore.data.api.AppsQuery
@@ -60,6 +61,20 @@ class CatalogSyncer @Inject constructor(
             }
         } finally {
             mutex.unlock()
+        }
+    }
+
+    /**
+     * Drops the cached catalog and the sync cursor. Taking the mutex keeps a
+     * running sync from writing rows back after the wipe; the next sync then
+     * bootstraps instead of replaying deltas that belong to the previous server.
+     */
+    suspend fun clearCatalog() {
+        mutex.withLock {
+            syncStateDao.clear()
+            categoryDao.clear()
+            // app_download rows cascade with their app.
+            appDao.clear()
         }
     }
 

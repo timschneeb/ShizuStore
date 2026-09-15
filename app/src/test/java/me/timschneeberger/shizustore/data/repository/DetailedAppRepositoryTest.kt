@@ -12,7 +12,7 @@ import me.timschneeberger.shizustore.data.api.BaseUrlProvider
 import me.timschneeberger.shizustore.data.api.OkHttpShizuApi
 import me.timschneeberger.shizustore.data.api.RequestThrottle
 import me.timschneeberger.shizustore.data.api.ShizuJson
-import me.timschneeberger.shizustore.data.room.AuroraDatabase
+import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
@@ -32,7 +32,7 @@ import org.robolectric.annotation.Config
 class DetailedAppRepositoryTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var db: AuroraDatabase
+    private lateinit var db: ShizuStoreDatabase
     private lateinit var repository: DetailedAppRepository
 
     @Before
@@ -41,7 +41,7 @@ class DetailedAppRepositoryTest {
         server.start()
         db = Room.inMemoryDatabaseBuilder(
             RuntimeEnvironment.getApplication(),
-            AuroraDatabase::class.java
+            ShizuStoreDatabase::class.java
         ).allowMainThreadQueries().build()
 
         val api = OkHttpShizuApi(
@@ -50,7 +50,12 @@ class DetailedAppRepositoryTest {
             baseUrlProvider = BaseUrlProvider({ server.url("/").toString() }, defaultValue = ""),
             throttle = RequestThrottle(minSpacingMillis = 0)
         )
-        repository = DetailedAppRepository(api, db.appDao(), db.appDownloadDao())
+        repository = DetailedAppRepository(
+            api,
+            db.appDao(),
+            db.appDownloadDao(),
+            UpdateStateRepository(db, db.appDao(), db.appDownloadDao(), db.installedDao())
+        )
     }
 
     @After

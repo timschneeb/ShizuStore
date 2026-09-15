@@ -12,7 +12,10 @@ import me.timschneeberger.shizustore.BuildConfig
  * URLs) can stay synchronous.
  */
 object ServerConfig {
+    /** The production catalog server, used whenever the custom option is off. */
+    val productionBaseUrl: String = BuildConfig.API_BASE_URL.trimEnd('/')
+
     @Volatile
-    var baseUrl: String = BuildConfig.API_BASE_URL
+    var baseUrl: String = productionBaseUrl
         internal set
 }

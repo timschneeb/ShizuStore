@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 4,
-    "identityHash": "46200c2117faccea5589f4f4fcaa9b59",
+    "version": 1,
+    "identityHash": "ccebeb1df82272e00ec24eaf016bb210",
     "entities": [
       {
         "tableName": "app",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`slug` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `packageName` TEXT, `license` TEXT, `listing` TEXT NOT NULL, `type` TEXT NOT NULL, `isRecommended` INTEGER NOT NULL, `hasPaid` INTEGER NOT NULL, `hasIap` INTEGER NOT NULL, `hasAds` INTEGER NOT NULL, `trialDays` INTEGER, `requiresRoot` INTEGER NOT NULL, `availability` TEXT NOT NULL, `versionCode` INTEGER, `versionName` TEXT, `minSdk` INTEGER, `size` INTEGER, `iconHash` TEXT, `iconAdaptive` INTEGER NOT NULL, `categorySlug` TEXT, `updatedAt` TEXT NOT NULL, `versionUpdatedAt` TEXT, `listUpdatedAt` TEXT, `sigSha256` TEXT, `sigMd5` TEXT, `stars` INTEGER, `downloadTotal` INTEGER, `url` TEXT, `sourceUrl` TEXT, `sourceKind` TEXT, `storeUrl` TEXT, `excludedReason` TEXT, `parentSlug` TEXT, `categoryPath` TEXT NOT NULL, `addedAt` TEXT, `lastCheckedAt` TEXT, `detailsFetchedAt` INTEGER, `installedVersionCode` INTEGER, `updateAvailable` INTEGER NOT NULL, `updateCandidateId` INTEGER, `syncedAt` INTEGER NOT NULL, PRIMARY KEY(`slug`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`slug` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `packageName` TEXT, `license` TEXT, `listing` TEXT NOT NULL, `type` TEXT NOT NULL, `isRecommended` INTEGER NOT NULL, `hasPaid` INTEGER NOT NULL, `hasIap` INTEGER NOT NULL, `hasAds` INTEGER NOT NULL, `trialDays` INTEGER, `requiresRoot` INTEGER NOT NULL, `availability` TEXT NOT NULL, `versionCode` INTEGER, `versionName` TEXT, `minSdk` INTEGER, `size` INTEGER, `iconHash` TEXT, `iconAdaptive` INTEGER NOT NULL, `categorySlug` TEXT, `updatedAt` TEXT NOT NULL, `versionUpdatedAt` TEXT, `listUpdatedAt` TEXT, `authorKey` TEXT, `authorName` TEXT, `sigSha256` TEXT, `sigMd5` TEXT, `stars` INTEGER, `downloadTotal` INTEGER, `installCount` INTEGER NOT NULL, `url` TEXT, `sourceUrl` TEXT, `sourceKind` TEXT, `sourceName` TEXT, `storeUrl` TEXT, `authorUrl` TEXT, `permissions` TEXT NOT NULL, `excludedReason` TEXT, `parentSlug` TEXT, `categoryPath` TEXT NOT NULL, `addedAt` TEXT, `lastCheckedAt` TEXT, `detailsFetchedAt` INTEGER, `installedVersionCode` INTEGER, `updateAvailable` INTEGER NOT NULL, `updateCandidateId` INTEGER, `syncedAt` INTEGER NOT NULL, PRIMARY KEY(`slug`))",
         "fields": [
           {
             "fieldPath": "slug",
@@ -142,6 +142,16 @@
             "affinity": "TEXT"
           },
           {
+            "fieldPath": "authorKey",
+            "columnName": "authorKey",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "authorName",
+            "columnName": "authorName",
+            "affinity": "TEXT"
+          },
+          {
             "fieldPath": "sigSha256",
             "columnName": "sigSha256",
             "affinity": "TEXT"
@@ -162,6 +172,12 @@
             "affinity": "INTEGER"
           },
           {
+            "fieldPath": "installCount",
+            "columnName": "installCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "url",
             "columnName": "url",
             "affinity": "TEXT"
@@ -177,9 +193,25 @@
             "affinity": "TEXT"
           },
           {
+            "fieldPath": "sourceName",
+            "columnName": "sourceName",
+            "affinity": "TEXT"
+          },
+          {
             "fieldPath": "storeUrl",
             "columnName": "storeUrl",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "authorUrl",
+            "columnName": "authorUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "permissions",
+            "columnName": "permissions",
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "excludedReason",
@@ -282,7 +314,7 @@
       },
       {
         "tableName": "app_download",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `appSlug` TEXT NOT NULL, `source` TEXT, `apkUrl` TEXT NOT NULL, `archiveEntry` TEXT, `versionCode` INTEGER, `versionName` TEXT, `size` INTEGER, `sha256` TEXT, `sigSha256` TEXT, `sigMd5` TEXT, `minSdk` INTEGER, `isPrimary` INTEGER NOT NULL, `sigKey` TEXT NOT NULL, FOREIGN KEY(`appSlug`) REFERENCES `app`(`slug`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `appSlug` TEXT NOT NULL, `packageName` TEXT, `source` TEXT, `apkUrl` TEXT NOT NULL, `archiveEntry` TEXT, `versionCode` INTEGER, `versionName` TEXT, `size` INTEGER, `sha256` TEXT, `sigSha256` TEXT, `sigMd5` TEXT, `minSdk` INTEGER, `abi` TEXT, `isPrimary` INTEGER NOT NULL, `sigKey` TEXT NOT NULL, FOREIGN KEY(`appSlug`) REFERENCES `app`(`slug`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -295,6 +327,11 @@
             "columnName": "appSlug",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "source",
@@ -348,6 +385,11 @@
             "affinity": "INTEGER"
           },
           {
+            "fieldPath": "abi",
+            "columnName": "abi",
+            "affinity": "TEXT"
+          },
+          {
             "fieldPath": "isPrimary",
             "columnName": "isPrimary",
             "affinity": "INTEGER",
@@ -377,14 +419,15 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_app_download_appSlug` ON `${TABLE_NAME}` (`appSlug`)"
           },
           {
-            "name": "index_app_download_appSlug_sigKey",
+            "name": "index_app_download_appSlug_packageName_sigKey",
             "unique": true,
             "columnNames": [
               "appSlug",
+              "packageName",
               "sigKey"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_app_download_appSlug_sigKey` ON `${TABLE_NAME}` (`appSlug`, `sigKey`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_app_download_appSlug_packageName_sigKey` ON `${TABLE_NAME}` (`appSlug`, `packageName`, `sigKey`)"
           }
         ],
         "foreignKeys": [
@@ -470,7 +513,7 @@
       },
       {
         "tableName": "sync_state",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `cursor` TEXT, `categoriesEtag` TEXT, `listCommit` TEXT, `syncedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `cursor` TEXT, `categoriesEtag` TEXT, `listCommit` TEXT, `syncedAt` INTEGER NOT NULL, `useInstallCountsForPopularity` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -496,6 +539,12 @@
           {
             "fieldPath": "syncedAt",
             "columnName": "syncedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "useInstallCountsForPopularity",
+            "columnName": "useInstallCountsForPopularity",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -741,7 +790,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '46200c2117faccea5589f4f4fcaa9b59')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ccebeb1df82272e00ec24eaf016bb210')"
     ]
   }
 }

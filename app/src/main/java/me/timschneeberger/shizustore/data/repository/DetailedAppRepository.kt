@@ -43,7 +43,8 @@ sealed interface DetailedAppResult {
 class DetailedAppRepository @Inject constructor(
     private val api: ShizuApi,
     private val appDao: AppDao,
-    private val appDownloadDao: AppDownloadDao
+    private val appDownloadDao: AppDownloadDao,
+    private val updateStateRepository: UpdateStateRepository
 ) {
     /** Server-only, never in Room: a small LRU keeps the README until its subscreen opens. */
     private val fullDescriptions = Collections.synchronizedMap(
@@ -82,6 +83,8 @@ class DetailedAppRepository @Inject constructor(
 
         val downloads = detail.downloads.map { it.toEntity(slug) }
         appDownloadDao.replaceForApp(slug, downloads)
+        // Replaced candidate ids invalidate a previously pinned updateCandidateId.
+        updateStateRepository.recompute(updated.packageName ?: slug)
         return DetailedAppResult.Success(updated, downloads)
     }
 

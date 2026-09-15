@@ -21,13 +21,18 @@ import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.svg.SvgDecoder
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.timschneeberger.shizustore.data.installer.HiddenApiExemption
+import me.timschneeberger.shizustore.data.installer.ShizukuInstaller
+import me.timschneeberger.shizustore.data.model.Installer
 import me.timschneeberger.shizustore.data.network.SuccessOnlyImageCacheStrategy
 import me.timschneeberger.shizustore.data.receiver.PackageManagerReceiver
 import me.timschneeberger.shizustore.data.work.UpdateWorker
 import me.timschneeberger.shizustore.extensions.isPAndAbove
 import me.timschneeberger.shizustore.util.NotificationUtil
+import me.timschneeberger.shizustore.util.Preferences
+import me.timschneeberger.shizustore.util.isolatedIoScope
 import okhttp3.OkHttpClient
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 
@@ -38,6 +43,8 @@ class ShizuApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
 
     @Inject
     lateinit var okHttpClient: OkHttpClient
+
+    private val appScope = isolatedIoScope(TAG)
 
     @OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: PlatformContext): ImageLoader =
@@ -65,6 +72,39 @@ class ShizuApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
         NotificationUtil.createChannels(this)
         runBlocking { UpdateWorker.schedule(this@ShizuApp) }
         registerPackageManagerReceiver()
+        selectShizukuInstallerOnFirstLaunch()
+    }
+
+    /**
+     * A data reset clears the installer choice while Shizuku keeps its grant, so
+     * pick Shizuku once when it is available and granted and otherwise persist
+     * the default. Running only while the preference is absent keeps this a
+     * one-time first-launch step.
+     */
+    private fun selectShizukuInstallerOnFirstLaunch() {
+        appScope.launch {
+            val stored = Preferences.readInteger(
+                this@ShizuApp,
+                Preferences.PREFERENCE_INSTALLER_ID,
+                NO_INSTALLER_CHOSEN
+            )
+            if (stored != NO_INSTALLER_CHOSEN) return@launch
+
+            val installer = if (
+                ShizukuInstaller.isAvailable(this@ShizuApp) &&
+                ShizukuInstaller.hasPermission()
+            ) {
+                Installer.SHIZUKU
+            } else {
+                Installer.SESSION
+            }
+
+            Preferences.putInteger(
+                this@ShizuApp,
+                Preferences.PREFERENCE_INSTALLER_ID,
+                installer.ordinal
+            )
+        }
     }
 
     private fun exemptPackageManagerHiddenApis() {
@@ -102,6 +142,9 @@ class ShizuApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
 
     private companion object {
         const val TAG = "ShizuApp"
+
+        // Sentinel that means no installer has been persisted yet.
+        const val NO_INSTALLER_CHOSEN = -1
 
         val PACKAGE_INSTALLER_SIGNATURE_PREFIXES = arrayOf(
             "Landroid/content/pm/IPackageManager",

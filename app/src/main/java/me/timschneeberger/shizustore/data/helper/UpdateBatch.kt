@@ -34,7 +34,7 @@ class UpdateBatch @Inject constructor(
         candidate: AppCandidate,
         unattended: Boolean = false
     ): Boolean {
-        val packageName = app.packageName ?: candidate.packageName ?: return false
+        val packageName = candidate.packageName ?: app.packageName ?: return false
 
         if (packageName in chainedPackages()) {
             Log.i(TAG, "$packageName is already in the live batch; not adding it again")

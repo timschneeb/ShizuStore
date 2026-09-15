@@ -20,6 +20,7 @@ data class DetailedApp(
 
     fun candidateFor(installed: CertFingerprint?): AppCandidate? {
         val matches = candidates.filter { it.matchesInstalled(installed) }
-        return matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) } ?: matches.firstOrNull()
+        return matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
+            ?: matches.firstOrNull()
     }
 }

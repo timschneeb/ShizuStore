@@ -19,7 +19,8 @@ object AppListQueryBuilder {
 
     fun build(
         args: AppListArgs,
-        useInstallCountsForPopularity: Boolean = false
+        useInstallCountsForPopularity: Boolean = false,
+        excludePackage: String? = null
     ): SupportSQLiteQuery {
         val binds = mutableListOf<Any?>()
         val where = mutableListOf<String>()
@@ -60,6 +61,13 @@ object AppListQueryBuilder {
 
         if (args.recommended) {
             where += "isRecommended = 1"
+        }
+
+        if (excludePackage != null) {
+            // The store's own catalog row is never browsable; it surfaces only via
+            // the installed and updates lists. NULL stays because most rows have a package.
+            where += "(packageName IS NULL OR packageName != ?)"
+            binds += excludePackage
         }
 
         val sql = buildString {

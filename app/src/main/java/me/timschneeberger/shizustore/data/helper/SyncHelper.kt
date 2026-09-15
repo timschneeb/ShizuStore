@@ -21,13 +21,15 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
+import me.timschneeberger.shizustore.data.sync.CatalogSyncer
 import me.timschneeberger.shizustore.data.work.SyncWorker
 
 /** Global catalog sync control; there is a single remote, so no per-repo state. */
 @Singleton
 open class SyncHelper @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val syncStatus: SyncStatusStore
+    private val syncStatus: SyncStatusStore,
+    private val syncer: CatalogSyncer
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -83,6 +85,18 @@ open class SyncHelper @Inject constructor(
         syncStatus.refreshIcons()
         syncStatus.setManualRefreshing(true)
         SyncWorker.enqueue(context, expedited = true)
+    }
+
+    /** User-initiated wipe followed by a full pull; used when the server may have changed. */
+    open fun clearLocalDatabase() {
+        if (!isOnline()) {
+            syncStatus.set(CatalogSyncFailure.NETWORK)
+            return
+        }
+        scope.launch {
+            syncer.clearCatalog()
+            refresh()
+        }
     }
 
     open fun cancel() {

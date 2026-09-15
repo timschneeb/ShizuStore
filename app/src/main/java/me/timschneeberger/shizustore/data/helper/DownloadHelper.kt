@@ -49,7 +49,7 @@ open class DownloadHelper @Inject constructor(
     }
 
     suspend fun enqueueAndInstall(app: AppEntity, candidate: AppCandidate) {
-        val packageName = app.packageName ?: candidate.packageName ?: return
+        val packageName = pipelinePackage(app, candidate)
         stageRow(app, candidate)
         WorkManager.getInstance(context)
             .beginUniqueWork(
@@ -62,7 +62,7 @@ open class DownloadHelper @Inject constructor(
     }
 
     suspend fun stageRow(app: AppEntity, candidate: AppCandidate) {
-        val packageName = app.packageName ?: candidate.packageName ?: return
+        val packageName = pipelinePackage(app, candidate)
         val existing = downloadDao.getDownload(packageName)
         if (existing != null && existing.isInFlight) {
             Log.i(TAG, "Not restaging $packageName; it is already ${existing.status}")
@@ -71,6 +71,14 @@ open class DownloadHelper @Inject constructor(
 
         downloadDao.insert(Download.fromCatalog(app, candidate))
     }
+
+    /**
+     * The package the install pipeline keys on. Mirrors [Download.fromCatalog]:
+     * the candidate's own flavor package wins so the staged row, the download and
+     * install workers and the installer all agree on one name.
+     */
+    private fun pipelinePackage(app: AppEntity, candidate: AppCandidate): String =
+        candidate.packageName ?: app.packageName ?: app.slug
 
     open suspend fun cancel(packageName: String) {
         downloadDao.updateStatusAndError(packageName, DownloadStatus.CANCELLED, null)

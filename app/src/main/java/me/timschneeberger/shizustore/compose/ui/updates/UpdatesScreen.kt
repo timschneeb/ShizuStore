@@ -150,10 +150,12 @@ fun UpdatesScreen(
                                     apps[index]?.let { app ->
                                         AppUpdateItem(
                                             app = app,
-                                            download = downloads[app.packageName],
+                                            download = downloads[app.installedPackage ?: app.packageName],
                                             onClick = { viewModel.openSheet(app) },
                                             onUpdate = { viewModel.update(app) },
-                                            onCancel = { viewModel.cancel(app.packageName) }
+                                            onCancel = {
+                                                viewModel.cancel(app.installedPackage ?: app.packageName)
+                                            }
                                         )
                                     }
                                 }
@@ -173,8 +175,8 @@ fun UpdatesScreen(
                 onIgnoreAllUpdates = { viewModel.ignoreAllUpdates(app) },
                 onIgnoreThisVersion = { viewModel.ignoreThisVersion(app) },
                 onToggleBlacklist = { viewModel.toggleBlacklist(app) },
-                onUninstall = { context.uninstallPackage(app.packageName) },
-                onAppInfo = { context.appInfo(app.packageName) },
+                onUninstall = { context.uninstallPackage(app.installedPackage ?: app.packageName) },
+                onAppInfo = { context.appInfo(app.installedPackage ?: app.packageName) },
                 onDismiss = viewModel::dismissSheet
             )
         }

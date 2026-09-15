@@ -165,8 +165,8 @@ next connection.
 **Stop an app from nagging.** Open the app and ignore the update to skip that one version, or use
 the blacklist to hide the package entirely. Both lists are under More.
 
-**Point at another server.** Debug builds only: Settings → Server sets a base URL override. Release
-builds use the baked `API_BASE_URL`.
+**Point at another server.** Debug builds only: Settings → Server picks between Production and a
+custom base URL. Release builds always use the production `API_BASE_URL`.
 
 ## Setting up the Shizuku installer
 

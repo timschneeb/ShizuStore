@@ -91,10 +91,11 @@ fun AppDetailsScreen(
     val moreFromAuthor by viewModel.moreFromAuthor.collectAsStateWithLifecycle()
     val moreFromCategory by viewModel.moreFromCategory.collectAsStateWithLifecycle()
     val categorySlug by viewModel.categorySlug.collectAsStateWithLifecycle()
-    val canAddToHome = rememberCanOpen(
-        packageName,
-        (uiState as? AppDetailsUiState.Loaded)?.downloadStatus
-    )
+    val loadedState = uiState as? AppDetailsUiState.Loaded
+    // Installed-app actions must target the flavor the user installed, not the
+    // catalog's canonical package.
+    val actionablePackage = loadedState?.actionablePackage ?: packageName
+    val canAddToHome = rememberCanOpen(actionablePackage, loadedState?.downloadStatus)
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -149,7 +150,7 @@ fun AppDetailsScreen(
                         )
                     }
 
-                    val resolved = (uiState as? AppDetailsUiState.Loaded)?.resolved
+                    val resolved = loadedState?.resolved
                     AppExclusionMenu(
                         isBlacklisted = isBlacklisted,
                         isIgnored = ignoredUpdate != null,
@@ -160,9 +161,9 @@ fun AppDetailsScreen(
                         onIgnoreAllUpdates = viewModel::ignoreAllUpdates,
                         onIgnoreThisVersion = viewModel::ignoreThisVersion,
                         onStopIgnoring = viewModel::stopIgnoringUpdates,
-                        onAppInfo = { context.appInfo(packageName) },
+                        onAppInfo = { context.appInfo(actionablePackage) },
                         onAddToHome = canAddToHome.takeIf { it }?.let {
-                            { ShortcutUtil.requestPinShortcut(context, packageName) }
+                            { ShortcutUtil.requestPinShortcut(context, actionablePackage) }
                         }
                     )
                 }
@@ -210,7 +211,10 @@ fun AppDetailsScreen(
                         is AppDetailsUiState.Loaded -> Column(
                             modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
                         ) {
-                            val canOpen = rememberCanOpen(packageName, state.downloadStatus)
+                            val canOpen = rememberCanOpen(
+                                state.actionablePackage,
+                                state.downloadStatus
+                            )
                             val actions = state.resolved?.let { app ->
                                 installButtonState(
                                     context = context,
@@ -256,9 +260,9 @@ fun AppDetailsScreen(
                                             }
 
                                             InstallAction.CANCEL -> viewModel.cancel()
-                                            InstallAction.OPEN -> launchApp(context, packageName)
+                                            InstallAction.OPEN -> launchApp(context, state.actionablePackage)
                                             InstallAction.UNINSTALL ->
-                                                context.uninstallPackage(packageName)
+                                                context.uninstallPackage(state.actionablePackage)
 
                                             InstallAction.OPEN_STORE,
                                             InstallAction.OPEN_LINK -> SourceLauncher.launch(

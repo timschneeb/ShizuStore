@@ -8,7 +8,7 @@ package me.timschneeberger.shizustore.data.repository
 import android.os.Build
 import androidx.room.Room
 import kotlinx.coroutines.test.runTest
-import me.timschneeberger.shizustore.data.room.AuroraDatabase
+import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
@@ -27,14 +27,14 @@ import org.robolectric.annotation.Config
 @Config(sdk = [Build.VERSION_CODES.VANILLA_ICE_CREAM])
 class UpdateStateRepositoryTest {
 
-    private lateinit var db: AuroraDatabase
+    private lateinit var db: ShizuStoreDatabase
     private lateinit var repository: UpdateStateRepository
 
     @Before
     fun setUp() {
         db = Room.inMemoryDatabaseBuilder(
             RuntimeEnvironment.getApplication(),
-            AuroraDatabase::class.java
+            ShizuStoreDatabase::class.java
         ).allowMainThreadQueries().build()
         repository = UpdateStateRepository(db, db.appDao(), db.appDownloadDao(), db.installedDao())
     }
@@ -183,8 +183,127 @@ class UpdateStateRepositoryTest {
         assertEquals(null, app.updateCandidateId)
     }
 
+    @Test
+    fun installedFlavorPackageMarksEntryInstalledAndOffersUpdate() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(
+                download(
+                    slug = "app",
+                    packageName = "com.app",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = true,
+                    url = "base"
+                ),
+                download(
+                    slug = "app",
+                    packageName = "com.app.play",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = false,
+                    url = "play"
+                )
+            )
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app.play",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+
+        repository.recomputeAll()
+
+        val app = db.appDao().get("app")!!
+        assertTrue(app.updateAvailable)
+        assertEquals(4L, app.installedVersionCode)
+        val play = db.appDownloadDao().forApp("app").first { it.packageName == "com.app.play" }
+        assertEquals(play.id, app.updateCandidateId)
+    }
+
+    @Test
+    fun recomputeByFlavorPackageResolvesTheOwningEntry() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(
+                download(
+                    slug = "app",
+                    packageName = "com.app.play",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = true,
+                    url = "play"
+                )
+            )
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app.play",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+
+        repository.recompute("com.app.play")
+
+        val app = db.appDao().get("app")!!
+        assertEquals(4L, app.installedVersionCode)
+        assertTrue(app.updateAvailable)
+    }
+
+    @Test
+    fun recomputeByCanonicalPackageResolvesInstalledFlavor() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(
+                download(
+                    slug = "app",
+                    packageName = "com.app",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = true,
+                    url = "base"
+                ),
+                download(
+                    slug = "app",
+                    packageName = "com.app.play",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    url = "play"
+                )
+            )
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app.play",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+
+        repository.recompute("com.app")
+
+        val app = db.appDao().get("app")!!
+        val play = db.appDownloadDao().forApp("app").first { it.packageName == "com.app.play" }
+        assertEquals(4L, app.installedVersionCode)
+        assertTrue(app.updateAvailable)
+        assertEquals(play.id, app.updateCandidateId)
+    }
+
     private fun download(
         slug: String,
+        packageName: String? = null,
         sigSha256: String? = null,
         sigMd5: String? = null,
         versionCode: Long? = 1,
@@ -192,6 +311,7 @@ class UpdateStateRepositoryTest {
         url: String
     ): AppDownloadEntity = AppDownloadEntity(
         appSlug = slug,
+        packageName = packageName,
         apkUrl = "https://example/$url.apk",
         versionCode = versionCode,
         sigSha256 = sigSha256,

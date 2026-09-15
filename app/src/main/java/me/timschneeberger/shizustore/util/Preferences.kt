@@ -48,6 +48,7 @@ object Preferences {
     const val PREFERENCE_SHIZUKU_CARD_DISMISSED = "PREFERENCE_SHIZUKU_CARD_DISMISSED"
 
     const val PREFERENCE_API_BASE_URL = "PREFERENCE_API_BASE_URL"
+    const val PREFERENCE_API_SERVER_CUSTOM = "PREFERENCE_API_SERVER_CUSTOM"
 
     const val PREFERENCE_SEARCH_HISTORY = "PREFERENCE_SEARCH_HISTORY"
 
@@ -130,6 +131,9 @@ object Preferences {
     suspend fun putString(context: Context, key: String, value: String) =
         write(context) { it[stringPreferencesKey(key)] = value }
 
-    suspend fun remove(context: Context, key: String) =
-        write(context) { it.remove(booleanPreferencesKey(key)) }
+    suspend fun remove(context: Context, key: String) = write(context) {
+        it.remove(booleanPreferencesKey(key))
+        it.remove(intPreferencesKey(key))
+        it.remove(stringPreferencesKey(key))
+    }
 }

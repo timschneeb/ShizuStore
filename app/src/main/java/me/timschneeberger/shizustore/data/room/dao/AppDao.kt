@@ -25,6 +25,13 @@ interface AppDao {
     @Query("SELECT * FROM app WHERE packageName = :packageName LIMIT 1")
     suspend fun getByPackage(packageName: String): AppEntity?
 
+    /** A flavor package lives on app_download, not on the app's canonical packageName. */
+    @Query(
+        "SELECT * FROM app WHERE slug IN" +
+            " (SELECT appSlug FROM app_download WHERE packageName = :packageName) LIMIT 1"
+    )
+    suspend fun getByDownloadPackage(packageName: String): AppEntity?
+
     @Query("SELECT * FROM app WHERE slug = :slug")
     fun observe(slug: String): Flow<AppEntity?>
 

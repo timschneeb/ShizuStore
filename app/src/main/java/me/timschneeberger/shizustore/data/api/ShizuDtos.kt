@@ -51,6 +51,8 @@ data class AppSummaryDto(
 @Serializable
 data class DownloadDto(
     val source: String = "",
+    // The package this flavor installs as; differs from the app's canonical package.
+    val packageName: String? = null,
     val apkUrl: String,
     val archiveEntry: String? = null,
     val versionCode: Long? = null,

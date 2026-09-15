@@ -11,10 +11,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.CertFingerprint
-import me.timschneeberger.shizustore.data.room.AuroraDatabase
+import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
 import me.timschneeberger.shizustore.data.room.dao.InstalledDao
+import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 
 /**
@@ -23,7 +24,7 @@ import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
  */
 @Singleton
 class UpdateStateRepository @Inject constructor(
-    private val database: AuroraDatabase,
+    private val database: ShizuStoreDatabase,
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao,
     private val installedDao: InstalledDao
@@ -37,7 +38,7 @@ class UpdateStateRepository @Inject constructor(
             appDao.clearUpdateState()
             val installedByPackage = installedDao.getAll().associateBy { it.packageName }
             appDao.getAll().forEach { app ->
-                val installed = app.packageName?.let { installedByPackage[it] }
+                val installed = resolveInstalled(app, installedByPackage)
                 applyState(app.slug, installed)
             }
         }
@@ -45,9 +46,26 @@ class UpdateStateRepository @Inject constructor(
 
     suspend fun recompute(packageName: String) = database.useWriterConnection { transactor ->
         transactor.immediateTransaction {
-            val app = appDao.getByPackage(packageName) ?: return@immediateTransaction
-            applyState(app.slug, installedDao.getByPackage(packageName))
+            val app = appDao.getByPackage(packageName)
+                ?: appDao.getByDownloadPackage(packageName)
+                ?: return@immediateTransaction
+            val installedByPackage = installedDao.getAll().associateBy { it.packageName }
+            applyState(app.slug, resolveInstalled(app, installedByPackage))
         }
+    }
+
+    /**
+     * A flavor installs under its own package, so the entry counts as installed when any of its
+     * candidate packages is; the canonical package is only the fast path.
+     */
+    private suspend fun resolveInstalled(
+        app: AppEntity,
+        installedByPackage: Map<String, InstalledEntity>
+    ): InstalledEntity? {
+        app.packageName?.let { installedByPackage[it] }?.let { return it }
+        return appDownloadDao.forApp(app.slug)
+            .mapNotNull { it.packageName }
+            .firstNotNullOfOrNull { installedByPackage[it] }
     }
 
     private suspend fun applyState(slug: String, installed: InstalledEntity?) {
@@ -60,7 +78,13 @@ class UpdateStateRepository @Inject constructor(
         val installedFingerprint = CertFingerprint.of(installed.signer, installed.signerMd5)
         val candidates = appDownloadDao.forApp(slug).map { AppCandidate.from(it, app.packageName) }
         val matches = candidates.filter { it.matchesInstalled(installedFingerprint) }
-        val match = matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) } ?: matches.firstOrNull()
+        // Flavor builds usually share a signing key, so the package is what ties the
+        // installed app to its own candidate; never offer a different flavor's APK.
+        val match =
+            matches.firstOrNull { it.packageName == installed.packageName && it.supportsAbi(AppCandidate.deviceAbis) }
+                ?: matches.firstOrNull { it.packageName == installed.packageName }
+                ?: matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
+                ?: matches.firstOrNull()
 
         val available: Boolean
         val candidateId: Long?

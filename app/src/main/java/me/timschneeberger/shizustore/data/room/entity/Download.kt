@@ -48,7 +48,9 @@ data class Download(
         const val HASH_SHA256 = "sha256"
 
         fun fromCatalog(app: AppEntity, candidate: AppCandidate): Download {
-            val packageName = app.packageName ?: candidate.packageName ?: app.slug
+            // The candidate's package wins: a flavor installs under its own package,
+            // and the install pipeline keys its state by that name.
+            val packageName = candidate.packageName ?: app.packageName ?: app.slug
             return Download(
                 packageName = packageName,
                 repoId = NO_REPO_ID,

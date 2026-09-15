@@ -26,6 +26,12 @@ data class ResolvedApp(
     val minSdk: Int,
     val installedVersionCode: Long?,
     val installedSigner: String?,
+    /**
+     * The package the app is actually installed under. The entry is keyed by its
+     * canonical package, but a flavor installs under its own, so installed-app
+     * actions (open, uninstall, app info) must target this when non-null.
+     */
+    val installedPackage: String? = null,
     val channelRank: Int = CHANNEL_STABLE,
     val installedChannelRank: Int = CHANNEL_STABLE,
     val releasedAt: Long = 0L,

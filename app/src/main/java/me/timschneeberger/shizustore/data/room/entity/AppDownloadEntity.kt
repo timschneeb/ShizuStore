@@ -12,8 +12,9 @@ import androidx.room.PrimaryKey
 import me.timschneeberger.shizustore.data.api.SourceKind
 
 /**
- * One installable candidate per (signing identity, ABI) (server `downloads[]`); `sigKey` mirrors the
- * server and carries the ABI suffix so per-architecture rows of one signing key stay distinct.
+ * One installable candidate per (package, signing identity, ABI) (server `downloads[]`); `sigKey`
+ * mirrors the server and carries the ABI suffix so per-architecture rows stay distinct. `packageName`
+ * keeps flavor builds of one app (FOSS, Play, debug, release) apart.
  */
 @Entity(
     tableName = "app_download",
@@ -25,11 +26,15 @@ import me.timschneeberger.shizustore.data.api.SourceKind
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("appSlug"), Index(value = ["appSlug", "sigKey"], unique = true)]
+    indices = [
+        Index("appSlug"),
+        Index(value = ["appSlug", "packageName", "sigKey"], unique = true)
+    ]
 )
 data class AppDownloadEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val appSlug: String,
+    val packageName: String? = null,
     val source: SourceKind? = null,
     val apkUrl: String,
     val archiveEntry: String? = null,
@@ -45,7 +50,12 @@ data class AppDownloadEntity(
     val sigKey: String
 ) {
     companion object {
-        fun sigKeyOf(sigSha256: String?, sigMd5: String?, apkUrl: String, abi: String? = null): String {
+        fun sigKeyOf(
+            sigSha256: String?,
+            sigMd5: String?,
+            apkUrl: String,
+            abi: String? = null
+        ): String {
             val base = firstToken(sigSha256)
                 ?: firstToken(sigMd5)
                 ?: "url:$apkUrl"

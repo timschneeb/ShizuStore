@@ -29,7 +29,7 @@ import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
 
 @Database(
-    version = 8,
+    version = 1,
     exportSchema = true,
     entities = [
         AppEntity::class,
@@ -44,7 +44,7 @@ import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
     ]
 )
 @TypeConverters(Converters::class)
-abstract class AuroraDatabase : RoomDatabase() {
+abstract class ShizuStoreDatabase : RoomDatabase() {
     abstract fun appDao(): AppDao
     abstract fun appDownloadDao(): AppDownloadDao
     abstract fun categoryDao(): CategoryDao
