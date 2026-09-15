@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -90,7 +92,7 @@ import me.timschneeberger.shizustore.data.model.flatten
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.viewmodel.AppListViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AppListScreen(
     args: AppListArgs,
@@ -122,6 +124,7 @@ fun AppListScreen(
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val searchFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val imeVisible = WindowInsets.isImeVisible
 
     // Guarded by appliedArgs: LaunchedEffect also fires when the screen re-enters
     // composition (back from details), which must keep position.
@@ -141,9 +144,15 @@ fun AppListScreen(
     }
 
     // Back from active search/list returns to the search home instead of closing the app.
+    // While the keyboard is up, back (including the navigation bar keyboard-close button)
+    // must only hide it, not leave search.
     BackHandler(enabled = searchHome && !atSearchHome) {
-        searchFieldState.setTextAndPlaceCursorAtEnd("")
-        viewModel.clearAll()
+        if (imeVisible) {
+            keyboardController?.hide()
+        } else {
+            searchFieldState.setTextAndPlaceCursorAtEnd("")
+            viewModel.clearAll()
+        }
     }
 
     Scaffold(

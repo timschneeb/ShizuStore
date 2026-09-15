@@ -23,6 +23,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.model.DeviceProfile
+import me.timschneeberger.shizustore.util.AndroidVersion
 
 @Composable
 fun CompatibilityNotice(minSdk: Int, modifier: Modifier = Modifier) {
@@ -54,8 +55,8 @@ fun CompatibilityNotice(minSdk: Int, modifier: Modifier = Modifier) {
             Text(
                 text = stringResource(
                     R.string.details_incompatible_notice,
-                    minSdk,
-                    DeviceProfile.sdkInt
+                    apiLevelLabel(minSdk),
+                    apiLevelLabel(DeviceProfile.sdkInt)
                 ),
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 style = MaterialTheme.typography.bodyMedium
@@ -63,3 +64,7 @@ fun CompatibilityNotice(minSdk: Int, modifier: Modifier = Modifier) {
         }
     }
 }
+
+@Composable
+private fun apiLevelLabel(apiLevel: Int): String =
+    AndroidVersion.name(apiLevel) ?: stringResource(R.string.details_api_level, apiLevel)

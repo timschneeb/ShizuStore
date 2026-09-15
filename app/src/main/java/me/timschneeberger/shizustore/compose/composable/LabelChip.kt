@@ -5,7 +5,8 @@
 
 package me.timschneeberger.shizustore.compose.composable
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,15 +21,22 @@ import androidx.compose.ui.res.dimensionResource
 import me.timschneeberger.shizustore.R
 
 @Composable
-fun LabelChip(text: String, container: Color, content: Color, modifier: Modifier = Modifier) {
+fun LabelChip(
+    text: String,
+    container: Color,
+    content: Color,
+    modifier: Modifier = Modifier,
+    leadingIcon: (@Composable () -> Unit)? = null
+) {
     Surface(
         modifier = modifier,
         color = container,
         contentColor = content,
         shape = RoundedCornerShape(dimensionResource(R.dimen.radius_small))
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall)),
             modifier = Modifier
                 .defaultMinSize(minHeight = dimensionResource(R.dimen.chip_height))
                 .padding(
@@ -36,6 +44,7 @@ fun LabelChip(text: String, container: Color, content: Color, modifier: Modifier
                     vertical = dimensionResource(R.dimen.spacing_xsmall)
                 )
         ) {
+            leadingIcon?.invoke()
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge,
