@@ -50,8 +50,6 @@ fun OfflineBanner(onRetry: () -> Unit, modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f)
             )
-            // Plain image button: just the glyph, tinted by the surface content
-            // color. No elevation, border, or label.
             IconButton(onClick = onRetry) {
                 Icon(
                     imageVector = Icons.Rounded.Refresh,

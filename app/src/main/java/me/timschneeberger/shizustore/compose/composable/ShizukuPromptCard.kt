@@ -44,8 +44,8 @@ import me.timschneeberger.shizustore.data.installer.ShizukuInstaller
 import me.timschneeberger.shizustore.data.installer.ShizukuPrompt
 import me.timschneeberger.shizustore.data.installer.probeShizukuPrompt
 import me.timschneeberger.shizustore.data.model.Installer
-import me.timschneeberger.shizustore.util.Preferences
 import me.timschneeberger.shizustore.extensions.viewExternal
+import me.timschneeberger.shizustore.util.Preferences
 
 /**
  * Home card that walks the user through the Shizuku installer: install Shizuku when it is

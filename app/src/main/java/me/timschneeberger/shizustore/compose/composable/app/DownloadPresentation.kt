@@ -9,8 +9,8 @@ package me.timschneeberger.shizustore.compose.composable.app
 
 import android.content.Context
 import me.timschneeberger.shizustore.R
-import me.timschneeberger.shizustore.compose.stringRes
 import me.timschneeberger.shizustore.compose.indexUrl
+import me.timschneeberger.shizustore.compose.stringRes
 import me.timschneeberger.shizustore.data.api.ShizuUrls
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.room.entity.Download
@@ -18,10 +18,8 @@ import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.ServerConfig
 
 /**
- * The two lines under a download's name: what it is doing, and how it is going.
- *
- * One in flight reports progress, speed and time left; one that has finished has nothing left to
- * report, so it gives why it failed, or the date it arrived.
+ * Status caption plus detail for a download row: progress and speed while in
+ * flight, failure reason or arrival date once done.
  */
 internal data class DownloadRow(val status: String, val detail: String?)
 
@@ -45,10 +43,7 @@ private fun progressDetail(context: Context, download: Download): String {
     return listOfNotNull(percent, rate).joinToString(SEPARATOR)
 }
 
-/**
- * The install button has one line to work with, so it asks for the progress inside the caption.
- * The downloads list leaves it out and puts progress, speed and time left on a line of its own.
- */
+/** Carries progress inside the caption; the install button has no separate detail line. */
 internal fun statusCaption(
     context: Context,
     status: DownloadStatus,
@@ -76,7 +71,7 @@ internal fun statusCaption(
     DownloadStatus.UNAVAILABLE -> context.getString(R.string.download_status_unavailable)
 }
 
-/** What the install button draws under itself, which the downloads list has no room for. */
+/** Drawn under the install button, which the downloads list has no room for. */
 internal sealed interface ProgressBar {
     data object None : ProgressBar
     data object Indeterminate : ProgressBar
@@ -98,9 +93,8 @@ internal fun iconBaseUrl(download: Download): String =
     download.apkUrl.removeSuffix(download.apkName.trimStart('/')).trimEnd('/')
 
 /**
- * Catalog downloads carry the server icon hash but no repo icon URL, and their
- * apkUrl points upstream, so the legacy repo-relative base cannot resolve them.
- * Prefer the immutable server icon URL and keep the legacy path as fallback.
+ * Prefer the immutable server icon URL. Downloads whose apkUrl points upstream
+ * cannot resolve a repo-relative base, so the hash is the only reliable source.
  */
 internal fun downloadIconUrl(download: Download): String =
     ShizuUrls.icon(ServerConfig.baseUrl, download.iconHash)

@@ -67,14 +67,11 @@ internal fun resolvePermission(context: Context, permission: String): Permission
 }
 
 /**
- * Mirrors PermissionController's KotlinUtils.getPermInfoIcon: use the permission's
- * own icon first, then fall back to the icon of the permission group it belongs to.
+ * Prefers the permission's own icon, then the icon of its permission group.
  *
- * The icon resource id must be checked before loading: loadIcon() falls back to
- * the declaring app's icon when the permission sets none, and loadLogo() is
- * almost always unset, which is why both are wrong here. Group drawables are
- * inflated with the app theme so their theme attribute tints resolve, matching
- * the system's themed load plus applyTint(colorControlNormal).
+ * The resource id is checked before loading because loadIcon() falls back to the
+ * declaring app's icon and loadLogo() is almost always unset. Platform
+ * permissions declare group UNDEFINED, so the platform table resolves them first.
  */
 internal fun loadPermissionIcon(context: Context, info: PermissionInfo): Drawable? {
     val pm = context.packageManager

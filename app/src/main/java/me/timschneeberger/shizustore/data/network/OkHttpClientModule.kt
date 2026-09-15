@@ -120,30 +120,29 @@ object OkHttpClientModule {
         @ApplicationContext context: Context,
         proxySelector: ProxySelector,
         cache: Cache
-    ): OkHttpClient =
-        OkHttpClient.Builder()
-            .cache(cache)
-            // Negotiates br (falling back to gzip) for the catalog JSON.
-            .addInterceptor(BrotliInterceptor)
-            // Single choke point: this client serves the API, APK downloads
-            // and Coil, so one header covers every request the app makes.
-            .addInterceptor { chain ->
-                val request = chain.request().newBuilder()
-                    .header(
-                        "User-Agent",
-                        userAgent(context.getString(R.string.app_name), BuildConfig.VERSION_NAME)
-                    )
-                    .build()
-                chain.proceed(request)
-            }
-            .proxySelector(proxySelector)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .retryOnConnectionFailure(true)
-            .followRedirects(true)
-            .followSslRedirects(true)
-            .build()
+    ): OkHttpClient = OkHttpClient.Builder()
+        .cache(cache)
+        // Negotiates br (falling back to gzip) for the catalog JSON.
+        .addInterceptor(BrotliInterceptor)
+        // Single choke point: this client serves the API, APK downloads
+        // and Coil, so one header covers every request the app makes.
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header(
+                    "User-Agent",
+                    userAgent(context.getString(R.string.app_name), BuildConfig.VERSION_NAME)
+                )
+                .build()
+            chain.proceed(request)
+        }
+        .proxySelector(proxySelector)
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
+        .followRedirects(true)
+        .followSslRedirects(true)
+        .build()
 
     private const val CACHE_SIZE_BYTES = 50L * 1024 * 1024
 }

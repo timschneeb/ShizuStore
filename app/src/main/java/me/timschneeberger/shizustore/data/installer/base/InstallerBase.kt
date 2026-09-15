@@ -64,7 +64,11 @@ abstract class InstallerBase(
                 NotificationUtil.notifyApp(
                     context,
                     packageName,
-                    NotificationUtil.installingNotification(context, packageName, download.displayName)
+                    NotificationUtil.installingNotification(
+                        context,
+                        packageName,
+                        download.displayName
+                    )
                 )
             }
 

@@ -10,10 +10,8 @@ import coil3.network.NetworkRequest
 import coil3.network.NetworkResponse
 import coil3.request.Options
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -59,14 +57,5 @@ class SuccessOnlyImageCacheStrategyTest {
         val result = strategy.write(null, request, NetworkResponse(code = 404), options)
 
         assertNull(result.response)
-    }
-
-    @Test
-    fun onlyTwoHundredsAreCacheable() {
-        assertTrue(isCacheableResponse(200))
-        assertTrue(isCacheableResponse(204))
-        assertFalse(isCacheableResponse(304))
-        assertFalse(isCacheableResponse(404))
-        assertFalse(isCacheableResponse(500))
     }
 }

@@ -45,7 +45,11 @@ class SyncWorker @AssistedInject constructor(
             // error, and retry() would flap the spinner forever. The user
             // retries manually (pull-to-refresh / retry button). Rate limits
             // stay retried: they are transient and server-driven.
-            CatalogSyncFailure.NETWORK -> Result.failure(workDataOf(KEY_ERROR to outcome.failure.name))
+            CatalogSyncFailure.NETWORK -> Result.failure(
+                workDataOf(
+                    KEY_ERROR to outcome.failure.name
+                )
+            )
             CatalogSyncFailure.RATE_LIMITED -> Result.retry()
             else -> Result.failure(workDataOf(KEY_ERROR to outcome.failure.name))
         }

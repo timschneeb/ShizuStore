@@ -276,7 +276,9 @@ fun AppDetailsScreen(
 
                             DetailsTags(
                                 details = state.details,
-                                onCategoryClick = categorySlug?.takeIf { it.isNotBlank() }?.let { slug ->
+                                onCategoryClick = categorySlug?.takeIf {
+                                    it.isNotBlank()
+                                }?.let { slug ->
                                     { onNavigateTo(Destination.AppList(categorySlug = slug)) }
                                 }
                             )
@@ -328,7 +330,9 @@ fun AppDetailsScreen(
                             DetailsCarousel(
                                 title = stringResource(R.string.details_more_from_category),
                                 apps = moreFromCategory,
-                                onHeaderClick = categorySlug?.takeIf { it.isNotBlank() }?.let { slug ->
+                                onHeaderClick = categorySlug?.takeIf {
+                                    it.isNotBlank()
+                                }?.let { slug ->
                                     { onNavigateTo(Destination.AppList(categorySlug = slug)) }
                                 },
                                 onAppClick = {

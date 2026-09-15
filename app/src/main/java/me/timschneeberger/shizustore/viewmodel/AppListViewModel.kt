@@ -38,7 +38,7 @@ import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.util.SearchHistoryStore
 
-/** One list for search, category, recently added/updated and future filters. */
+/** One list for search, category, recently added/updated and the other sort presets. */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AppListViewModel @Inject constructor(

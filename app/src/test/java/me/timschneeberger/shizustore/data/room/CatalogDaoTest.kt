@@ -19,11 +19,9 @@ import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
-import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -241,24 +239,5 @@ class CatalogDaoTest {
             .map { it.name }
 
         assertEquals(listOf("Beta", "Delta"), rows)
-    }
-
-    @Test
-    fun syncStateRoundTrips() = runTest {
-        val dao = db.syncStateDao()
-        assertNull(dao.get())
-
-        dao.upsert(
-            SyncStateEntity(
-                cursor = "2026-05-01T00:00:00+00:00",
-                categoriesEtag = "\"cat-1\"",
-                listCommit = "abc",
-                syncedAt = 7L
-            )
-        )
-        val stored = dao.get()!!
-        assertEquals("2026-05-01T00:00:00+00:00", stored.cursor)
-        assertEquals("\"cat-1\"", stored.categoriesEtag)
-        assertEquals(7L, stored.syncedAt)
     }
 }

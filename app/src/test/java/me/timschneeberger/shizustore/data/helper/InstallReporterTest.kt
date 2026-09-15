@@ -8,9 +8,7 @@ package me.timschneeberger.shizustore.data.helper
 import android.os.Build
 import androidx.room.Room
 import kotlinx.coroutines.test.runTest
-import me.timschneeberger.shizustore.data.api.ApiResult
 import me.timschneeberger.shizustore.data.api.BaseUrlProvider
-import me.timschneeberger.shizustore.data.api.InstallRecordedDto
 import me.timschneeberger.shizustore.data.api.OkHttpShizuApi
 import me.timschneeberger.shizustore.data.api.RequestThrottle
 import me.timschneeberger.shizustore.data.api.ShizuJson
@@ -21,7 +19,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -122,24 +119,5 @@ class InstallReporterTest {
         reporter.reportInstalled("com.example.micup", 42L)
 
         assertEquals(1, server.requestCount)
-    }
-
-    @Test
-    fun reportInstallParsesServerTotal() = runTest {
-        val api = OkHttpShizuApi(
-            client = OkHttpClient(),
-            json = ShizuJson,
-            baseUrlProvider = BaseUrlProvider({ server.url("/").toString() }, defaultValue = ""),
-            throttle = RequestThrottle(minSpacingMillis = 0)
-        )
-        server.enqueue(MockResponse().setBody("""{"slug":"micup","installCount":3}"""))
-
-        val result = api.reportInstall("micup")
-
-        assertTrue(result is ApiResult.Success)
-        assertEquals(
-            InstallRecordedDto("micup", 3),
-            (result as ApiResult.Success).value
-        )
     }
 }

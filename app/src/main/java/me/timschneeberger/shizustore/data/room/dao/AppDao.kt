@@ -89,7 +89,7 @@ interface AppDao {
         updateCandidateId: Long?
     )
 
-    /** One bound query for every filter combination; see `AppListQueryBuilder`. */
+    /** One bound query for every filter combination, built by `AppListQueryBuilder`. */
     @RawQuery(observedEntities = [AppEntity::class])
     fun pagedFiltered(query: SupportSQLiteQuery): PagingSource<Int, AppEntity>
 
@@ -125,7 +125,11 @@ interface AppDao {
         "SELECT * FROM app WHERE categorySlug = :categorySlug AND slug != :excludeSlug" +
             " ORDER BY name COLLATE NOCASE ASC LIMIT :limit"
     )
-    fun observeByCategory(categorySlug: String, excludeSlug: String, limit: Int): Flow<List<AppEntity>>
+    fun observeByCategory(
+        categorySlug: String,
+        excludeSlug: String,
+        limit: Int
+    ): Flow<List<AppEntity>>
 
     @Query(
         "SELECT * FROM app ORDER BY versionUpdatedAt IS NULL, versionUpdatedAt DESC," +

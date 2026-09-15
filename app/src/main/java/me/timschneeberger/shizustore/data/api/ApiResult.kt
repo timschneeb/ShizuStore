@@ -5,7 +5,6 @@
 
 package me.timschneeberger.shizustore.data.api
 
-/** Result of an API call: either a decoded value or a typed [ApiError]. */
 sealed interface ApiResult<out T> {
     data class Success<T>(val value: T) : ApiResult<T>
 

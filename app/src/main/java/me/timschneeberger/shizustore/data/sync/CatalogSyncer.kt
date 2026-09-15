@@ -29,7 +29,6 @@ enum class CatalogSyncFailure {
     NOT_CONFIGURED
 }
 
-/** Result of one full catalog sync pass. */
 sealed interface CatalogSyncOutcome {
     data class Success(val added: Int, val updated: Int, val removed: Int) : CatalogSyncOutcome
 

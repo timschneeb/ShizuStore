@@ -181,10 +181,9 @@ class AppDetailsViewModel @Inject constructor(
             emptyList()
         )
 
-    private fun observeCategorySlug(currentSlug: String) =
-        appRepository.observeDetail(currentSlug)
-            .map { it?.app?.categorySlug }
-            .distinctUntilChanged()
+    private fun observeCategorySlug(currentSlug: String) = appRepository.observeDetail(currentSlug)
+        .map { it?.app?.categorySlug }
+        .distinctUntilChanged()
 
     fun load(packageName: String) {
         identity.value = packageName

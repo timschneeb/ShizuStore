@@ -43,7 +43,13 @@ open class InstallReconciler @Inject constructor(
         val installed = installedVersionCode(packageName)
         if (installed == download.versionCode) {
             Log.i(TAG, "$packageName installed at $installed; settling the row as INSTALLED")
-            settle(packageName, DownloadStatus.INSTALLED, null, download.status, download.versionCode)
+            settle(
+                packageName,
+                DownloadStatus.INSTALLED,
+                null,
+                download.status,
+                download.versionCode
+            )
         } else {
             Log.i(
                 TAG,

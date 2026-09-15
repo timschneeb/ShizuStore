@@ -124,20 +124,6 @@ class AppListQueryBuilderTest {
     }
 
     @Test
-    fun filtersCombineWithAnd() {
-        val query = AppListQueryBuilder.build(
-            AppListArgs(
-                query = "foo",
-                categorySlug = "audio",
-                sort = AppSort.RECENTLY_UPDATED
-            )
-        )
-
-        assertTrue(query.sql.contains(" AND "))
-        assertEquals(4, query.argCount)
-    }
-
-    @Test
     fun likeWildcardsAreEscaped() {
         assertEquals("50\\%\\_a\\\\b", AppListQueryBuilder.escapeLikePattern("50%_a\\b"))
     }

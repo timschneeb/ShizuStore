@@ -47,7 +47,6 @@ private val LocalShimmerOffset = staticCompositionLocalOf<State<Float>> {
     error("Shimmer blocks must be wrapped in ShimmerHost")
 }
 
-/** Provides the single shimmer animation for a skeleton subtree. */
 @Composable
 internal fun ShimmerHost(content: @Composable () -> Unit) {
     val transition = rememberInfiniteTransition(label = "shimmer")

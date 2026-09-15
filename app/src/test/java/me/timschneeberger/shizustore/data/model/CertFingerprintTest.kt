@@ -55,6 +55,16 @@ class CertFingerprintTest {
         assertFalse(candidate(versionCode = 5).isNewerThan(null))
     }
 
+    @Test
+    fun anyOfSeveralInstalledIdentitiesMatches() {
+        val installed = listOf(
+            CertFingerprint.of("aaaa", null),
+            CertFingerprint.of("bbbb", null)
+        )
+        assertTrue(signaturesMatch(installed, "bbbb", null))
+        assertFalse(signaturesMatch(installed, "cccc", null))
+    }
+
     private fun candidate(
         versionCode: Long? = 1,
         sigSha256: String? = null,

@@ -21,7 +21,6 @@ import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.data.sync.applyDetail
 import me.timschneeberger.shizustore.data.sync.toEntity
 
-/** Outcome of fetching one app's detail and install candidates. */
 sealed interface DetailedAppResult {
     data class Success(
         val app: AppEntity,

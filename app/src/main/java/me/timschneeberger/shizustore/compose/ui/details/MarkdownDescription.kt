@@ -37,10 +37,8 @@ import java.net.URI
 import me.timschneeberger.shizustore.extensions.viewExternal
 
 /**
- * Renders the upstream README. The backend ships markdown now; rows enriched by
- * the old server still carry GitHub's rendered HTML, which the markdown
- * renderer drops, so those fall back to the platform HTML renderer until the
- * next enrich replaces them.
+ * Renders the upstream README. Rows that carry GitHub rendered HTML instead of
+ * markdown fall back to the platform HTML renderer.
  */
 @Composable
 internal fun MarkdownDescription(

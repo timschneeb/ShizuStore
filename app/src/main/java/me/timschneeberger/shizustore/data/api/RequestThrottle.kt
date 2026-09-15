@@ -52,7 +52,6 @@ class RequestThrottle(
         }
     }
 
-    /** Clears the backoff after a successful response. */
     suspend fun reset() {
         mutex.withLock {
             backoffMillis = 0L

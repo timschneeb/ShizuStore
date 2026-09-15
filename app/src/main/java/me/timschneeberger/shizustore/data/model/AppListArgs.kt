@@ -7,7 +7,7 @@ package me.timschneeberger.shizustore.data.model
 
 import kotlinx.serialization.Serializable
 
-/** Sort presets for the shared app list. More filter dimensions will join [AppListArgs] later. */
+/** Sort presets for the shared app list. */
 @Serializable
 enum class AppSort { NAME, RECENTLY_ADDED, RECENTLY_UPDATED, STARS, DOWNLOADS, SIZE_DESC }
 

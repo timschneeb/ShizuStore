@@ -87,7 +87,7 @@ fun ShizuNavDisplay(
                 backStack.add(Screen.InstallationPreferences)
             is Destination.NetworkPreferences -> backStack.add(Screen.NetworkPreferences)
             is Destination.ServerPreferences ->
-                // Matches SettingsScreen: the server override is debug only.
+                // The server override is debug only.
                 if (BuildConfig.DEBUG) backStack.add(Screen.ServerPreferences)
             is Destination.PermissionPreferences ->
                 backStack.add(Screen.PermissionPreferences)

@@ -27,10 +27,9 @@ import kotlinx.coroutines.delay
 private const val MIN_REFRESH_VISIBLE_MS = 500L
 
 /** Pull to refresh using the Material 3 expressive loading indicator. While the
- * indicator is visible the content is replaced by [placeholder] (a skeleton),
- * or blanked when none is given, so stale rows do not show through. A fast sync
- * completes in a blink, which reads as "nothing happened", so the feedback is
- * held for at least [MIN_REFRESH_VISIBLE_MS]. */
+ * indicator is visible the content is replaced by [placeholder] (a skeleton), or
+ * blanked, so stale rows do not show through. [MIN_REFRESH_VISIBLE_MS] holds the
+ * feedback long enough to read when a sync completes in a blink. */
 @Composable
 fun ExpressivePullToRefreshBox(
     isRefreshing: Boolean,

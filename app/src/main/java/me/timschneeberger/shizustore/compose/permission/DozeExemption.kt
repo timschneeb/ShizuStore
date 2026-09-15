@@ -27,9 +27,9 @@ private const val TAG = "DozeExemption"
 /**
  * Asks to be left out of battery optimisation, once.
  *
- * A download runs as a foreground service, which is enough on a stock device. Several vendors
- * freeze a backgrounded app anyway unless it is exempt, and a frozen app stops mid-transfer, so
- * the ask belongs at the moment a download starts rather than buried in settings.
+ * A foreground service is enough on stock devices, but several vendors freeze a
+ * backgrounded app and stop the transfer mid-way, so the ask belongs at the start
+ * of a download.
  */
 @Composable
 fun rememberDozeExemptionRequest(): () -> Unit {

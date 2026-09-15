@@ -56,8 +56,10 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
         // so a Website/Store row would just repeat that link.
         // A website that is just the F-Droid listing is labeled as such.
         if (details.availability != Availability.PLAY_REDIRECT) {
-            if (forgeAsSource == null) websiteUrl?.let {
-                addOnce(if (isFDroidUrl(it)) fdroidLabel else websiteLabel, it)
+            if (forgeAsSource == null) {
+                websiteUrl?.let {
+                    addOnce(if (isFDroidUrl(it)) fdroidLabel else websiteLabel, it)
+                }
             }
             details.storeUrl?.let { addOnce(storeLabel, it) }
         }
@@ -95,11 +97,10 @@ private const val FDROID_HOST = "f-droid.org"
 
 private val urlHostRegex = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*://([^/?#]+)", RegexOption.IGNORE_CASE)
 
-internal fun urlHost(url: String): String? =
-    urlHostRegex.find(url)?.groupValues?.get(1)
-        ?.substringAfterLast('@')
-        ?.substringBefore(':')
-        ?.lowercase()
+internal fun urlHost(url: String): String? = urlHostRegex.find(url)?.groupValues?.get(1)
+    ?.substringAfterLast('@')
+    ?.substringBefore(':')
+    ?.lowercase()
 
 internal fun isForgeRepositoryUrl(url: String): Boolean {
     val host = urlHost(url) ?: return false

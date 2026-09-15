@@ -9,12 +9,11 @@ import kotlinx.serialization.Serializable
 
 /**
  * Wire models mirroring the server camelCase JSON exactly. Field names and
- * nullability follow `ShizuAppStoreServer/src/ShizuAppStoreServer/Api/Dtos.cs`;
- * never rename a field to something the server does not send.
+ * nullability follow `ShizuAppStoreServer/src/ShizuAppStoreServer/Api/Dtos.cs`.
  *
  * Dates stay as raw ISO-8601 strings: the `since` cursor and `generatedAt` are
- * passed back to the server verbatim, and parsing them here would only add an
- * API-level desugaring dependency on the UI layer.
+ * passed back to the server verbatim, so parsing them would only add a
+ * desugaring dependency for nothing.
  */
 
 @Serializable

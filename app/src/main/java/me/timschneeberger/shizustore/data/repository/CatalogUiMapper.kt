@@ -20,10 +20,7 @@ import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.util.ServerConfig
 
-/**
- * Adapts the catalog Room entities into the presentation models the inherited
- * AuroraDroid UI consumes. M8 replaces this shim with the catalog models proper.
- */
+/** Adapts catalog Room entities into the presentation models the inherited AuroraDroid UI consumes. */
 @Singleton
 class CatalogUiMapper @Inject constructor() {
 

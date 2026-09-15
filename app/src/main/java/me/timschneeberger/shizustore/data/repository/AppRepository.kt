@@ -37,11 +37,7 @@ class AppRepository @Inject constructor(
     ): PagingSource<Int, AppEntity> =
         appDao.pagedFiltered(AppListQueryBuilder.build(args, useInstallCountsForPopularity))
 
-    /**
-     * Server feature flag for the popularity sort, persisted by the sync.
-     * False until the first sync after the flag ships, so the legacy
-     * download-count ordering stays the default.
-     */
+    /** Server feature flag for the popularity sort, persisted by the sync. */
     fun observePopularityFlag(): Flow<Boolean> =
         syncStateDao.observe().map { it?.useInstallCountsForPopularity == true }
 
