@@ -49,13 +49,7 @@ fun IgnoredUpdatesScreen(
                 R.string.ignored_updates_empty
             }
         ),
-        emptyDetail = stringResource(
-            if (hasIgnoredPackages == true) {
-                R.string.unavailable_detail
-            } else {
-                R.string.ignored_updates_empty_detail
-            }
-        ),
+        emptyDetail = stringResource(R.string.ignored_updates_empty_detail),
         transitionLabel = "IgnoredUpdatesScreenContent",
         onNavigateBack = { onNavigateTo(Destination.Back) },
         modifier = modifier

@@ -61,13 +61,7 @@ fun FavouritesScreen(
                 R.string.favourites_empty
             }
         ),
-        emptyDetail = stringResource(
-            if (hasStarredPackages == true) {
-                R.string.unavailable_detail
-            } else {
-                R.string.favourites_empty_detail
-            }
-        ),
+        emptyDetail = stringResource(R.string.favourites_empty_detail),
         transitionLabel = "FavouritesScreenContent",
         onNavigateBack = { onNavigateTo(Destination.Back) },
         modifier = modifier

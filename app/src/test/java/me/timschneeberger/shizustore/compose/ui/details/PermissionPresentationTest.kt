@@ -20,12 +20,8 @@ class PermissionPresentationTest {
                 PermissionInfo.PROTECTION_DANGEROUS or PermissionInfo.PROTECTION_FLAG_APPOP
             )
         )
-    }
-
-    @Test
-    fun ignoresNonDangerousProtection() {
-        assertFalse(isDangerousProtection(PermissionInfo.PROTECTION_NORMAL))
-        assertFalse(isDangerousProtection(PermissionInfo.PROTECTION_SIGNATURE))
+        // Flag bits above the base level must not be mistaken for danger.
+        assertFalse(isDangerousProtection(PermissionInfo.PROTECTION_FLAG_APPOP))
     }
 
     @Test

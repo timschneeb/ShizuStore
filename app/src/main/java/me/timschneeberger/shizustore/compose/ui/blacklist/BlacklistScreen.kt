@@ -49,13 +49,7 @@ fun BlacklistScreen(
                 R.string.blacklist_empty
             }
         ),
-        emptyDetail = stringResource(
-            if (hasBlacklistedPackages == true) {
-                R.string.unavailable_detail
-            } else {
-                R.string.blacklist_empty_detail
-            }
-        ),
+        emptyDetail = stringResource(R.string.blacklist_empty_detail),
         transitionLabel = "BlacklistScreenContent",
         onNavigateBack = { onNavigateTo(Destination.Back) },
         modifier = modifier

@@ -4,8 +4,8 @@
     <string name="about_licence_value">GNU General Public License v3.0 or later</string>
     <string name="about_version">Version <xliff:g id="version_name">%1$s</xliff:g> (<xliff:g id="version_code">%2$d</xliff:g>)</string>
     <string name="about_developer_title">Developer</string>
-    <string name="about_developer_value">Tim Schneeberger</string>
-    <string name="about_auroradroid_title">AuroraDroid</string>
+    <string name="about_developer_value" translatable="false">Tim Schneeberger</string>
+    <string name="about_auroradroid_title" translatable="false">AuroraDroid</string>
     <string name="about_auroradroid_value">Based on AuroraDroid by Aurora OSS</string>
 
     <string name="action_add_to_home">Add to home screen</string>
@@ -44,7 +44,7 @@
     <string name="action_update">Update</string>
     <string name="action_update_all">Update all</string>
 
-    <string name="app_name" translatable="false">Shizu Store</string>
+    <string name="app_name" translatable="false">ShizuStore</string>
     <!-- Double spaces are \u0020 escapes: aapt collapses literal
         repeated whitespace in string resources into one. -->
     <string name="app_version_size" translatable="false">%1$s\u0020\u0020·\u0020\u0020%2$s</string>
@@ -101,7 +101,7 @@
         <item quantity="other">%1$d sources</item>
     </plurals>
     <string name="details_website">Website</string>
-    <string name="details_fdroid">F-Droid</string>
+    <string name="details_fdroid" translatable="false">F-Droid</string>
 
     <string name="download_cancel_all">Cancel all</string>
     <string name="download_clear_all">Clear all</string>
@@ -141,9 +141,9 @@
     <string name="error_install_incompatible">This app is not compatible with this device.</string>
     <string name="error_install_interrupted">The install did not finish and the app is not installed. Try again.</string>
     <string name="error_install_invalid">The package is invalid or damaged. Download it again.</string>
-    <string name="error_install_root_unavailable">No root access. Grant Shizu Store superuser rights, or choose another installer in Settings.</string>
+    <string name="error_install_root_unavailable">No root access. Grant ShizuStore superuser rights, or choose another installer in Settings.</string>
     <string name="error_install_session_failure">The install session failed. Try again.</string>
-    <string name="error_install_shizuku_unavailable">Shizuku is not running or has not given Shizu Store access. Open Shizuku, start it, then allow Shizu Store.</string>
+    <string name="error_install_shizuku_unavailable">Shizuku is not running or has not given ShizuStore access. Open Shizuku, start it, then allow ShizuStore.</string>
     <string name="error_install_signer_mismatch">This version is signed with a different key than the copy you have installed, so it cannot replace it.</string>
     <string name="error_install_storage_full">Not enough space to install. Free some up and try again.</string>
 
@@ -163,19 +163,19 @@
     <string name="installer_native_desc">Opens Android\'s install screen for every app. Always asks for confirmation, and works when the session installer is blocked.</string>
     <string name="installer_native_subtitle">Hands off to the system dialog</string>
     <string name="installer_native_title">System installer</string>
-    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for Shizu Store.</string>
+    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
     <string name="installer_root_subtitle">Installs silently through a root shell</string>
     <string name="installer_root_title">Root installer</string>
     <string name="installer_session_desc">Uses Android\'s own package installer service. Needs no setup; Android may still ask you to confirm each install.</string>
     <string name="installer_session_subtitle">Default, works without root</string>
     <string name="installer_session_title">Session installer</string>
-    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to Shizu Store.</string>
+    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to ShizuStore.</string>
     <string name="installer_shizuku_subtitle">Installs silently through Shizuku or Sui</string>
     <string name="installer_shizuku_title">Shizuku installer</string>
 
     <string name="shizuku_card_title">Set up Shizuku</string>
-    <string name="shizuku_card_install_body">Shizuku is not installed. Install it so Shizu Store can install apps in the background without root.</string>
-    <string name="shizuku_card_grant_body">Shizuku is installed. Allow Shizu Store to install apps through it.</string>
+    <string name="shizuku_card_install_body">Shizuku is not installed. Install it so ShizuStore can install apps in the background without root.</string>
+    <string name="shizuku_card_grant_body">Shizuku is installed. Allow ShizuStore to install apps through it.</string>
     <string name="shizuku_card_install_action">Get Shizuku</string>
     <string name="shizuku_card_grant_action">Allow access</string>
     <string name="shizuku_card_dismiss">Dismiss</string>
@@ -222,12 +222,12 @@
         <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
         <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
     </plurals>
-    <string name="notification_updates_available_text">Open Shizu Store to review and install them.</string>
+    <string name="notification_updates_available_text">Open ShizuStore to review and install them.</string>
 
     <string name="permission_doze">Ignore battery optimisation</string>
-    <string name="permission_doze_desc">Keeps downloads running and update checks on time when Shizu Store is in the background.</string>
+    <string name="permission_doze_desc">Keeps downloads running and update checks on time when ShizuStore is in the background.</string>
     <string name="permission_install">Install unknown apps</string>
-    <string name="permission_install_desc">Required before Shizu Store can install anything. Android still confirms each install unless you use root or Shizuku.</string>
+    <string name="permission_install_desc">Required before ShizuStore can install anything. Android still confirms each install unless you use root or Shizuku.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_desc">Shows repository sync, download and install progress, and alerts you when updates are ready.</string>
 
@@ -252,7 +252,8 @@
     <string name="app_badge_iap">IAP</string>
     <string name="app_indicator_installed">Installed</string>
     <string name="app_indicator_update">Update available</string>
-    <string name="details_billing_paid">This is a paid app.</string>    <string name="details_billing_iap">This app offers in-app purchases.</string>
+    <string name="details_billing_paid">This is a paid app.</string>
+    <string name="details_billing_iap">This app offers in-app purchases.</string>
     <string name="details_billing_paid_iap">This is a paid app with in-app purchases.</string>
 
     <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>
@@ -297,8 +298,8 @@
     <string name="settings_theme_title">Theme</string>
     <string name="settings_unattended_paused_checks_off">Paused. Background checks are set to Never above, so nothing runs to install. Choose an interval to start them.</string>
     <string name="settings_unattended_paused_confirmation">Paused. Your installer asks you to confirm each install, so you\'ll just be notified when updates are available. Root or Shizuku, if your device supports one, removes that step.</string>
-    <string name="settings_unattended_paused_root">Paused. No root access - grant Shizu Store superuser rights, or choose another installer under App installer.</string>
-    <string name="settings_unattended_paused_shizuku">Paused. This device cannot install through Shizuku right now. Check that Shizuku is installed, running and has allowed Shizu Store; if it already is, choose another installer under App installer.</string>
+    <string name="settings_unattended_paused_root">Paused. No root access - grant ShizuStore superuser rights, or choose another installer under App installer.</string>
+    <string name="settings_unattended_paused_shizuku">Paused. This device cannot install through Shizuku right now. Check that Shizuku is installed, running and has allowed ShizuStore; if it already is, choose another installer under App installer.</string>
     <string name="settings_unattended_section_title">Automatic installs</string>
     <string name="settings_unattended_subtitle">Downloads and installs new versions in the background, without confirming each one.</string>
     <string name="settings_unattended_title">Install updates automatically</string>
@@ -323,8 +324,6 @@
     <string name="title_my_apps">My apps</string>
     <string name="title_settings">Settings</string>
     <string name="title_updates">Updates</string>
-
-    <string name="unavailable_detail">Still saved, but not in an enabled repository</string>
 
     <string name="updates_app_details">Details</string>
     <plurals name="updates_available_count">
