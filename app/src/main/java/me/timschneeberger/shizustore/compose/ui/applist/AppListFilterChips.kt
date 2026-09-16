@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.compose.ui.applist
 
+import android.content.Context
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,10 +42,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -71,6 +74,9 @@ fun AppListFilterChips(
 ) {
     var openSheet by rememberSaveable { mutableStateOf<String?>(null) }
 
+    val context = LocalContext.current
+    val flatCategories = remember(categories) { categories.flatten() }
+
     val gap = dimensionResource(R.dimen.spacing_small)
     Row(
         modifier = modifier
@@ -80,7 +86,7 @@ fun AppListFilterChips(
         horizontalArrangement = Arrangement.spacedBy(gap)
     ) {
         val categoryName = args.categorySlug
-            ?.let { slug -> categories.flatten().firstOrNull { it.slug == slug }?.name }
+            ?.let { slug -> flatCategories.firstOrNull { it.slug == slug }?.name }
             ?: stringResource(R.string.filter_all)
         FilterChip(
             selected = args.categorySlug != null,
@@ -121,7 +127,7 @@ fun AppListFilterChips(
     when (openSheet) {
         SHEET_CATEGORY -> FilterSheet(
             title = stringResource(R.string.filter_title_category),
-            options = categoryOptions(categories),
+            options = remember(context, categories) { categoryOptions(context, categories) },
             selectedId = args.categorySlug,
             onSelect = {
                 onCategory(it)
@@ -132,7 +138,7 @@ fun AppListFilterChips(
 
         SHEET_PRICE -> FilterSheet(
             title = stringResource(R.string.filter_title_price),
-            options = priceOptions(),
+            options = remember(context) { priceOptions(context) },
             selectedId = args.price?.name,
             onSelect = { id ->
                 onPrice(id?.let(AppPrice::valueOf))
@@ -143,7 +149,7 @@ fun AppListFilterChips(
 
         SHEET_SORT -> FilterSheet(
             title = stringResource(R.string.filter_title_sort),
-            options = sortOptions(),
+            options = remember(context) { sortOptions(context) },
             selectedId = args.sort.name,
             onSelect = { id ->
                 id?.let { onSort(AppSort.valueOf(it)) }
@@ -220,88 +226,86 @@ private fun FilterSheet(
     }
 }
 
-@Composable
-private fun categoryOptions(categories: List<CategoryTag>): List<FilterOption> = buildList {
-    add(
-        FilterOption(
-            id = null,
-            label = stringResource(R.string.filter_all),
-            icon = Icons.Rounded.Category
+private fun categoryOptions(context: Context, categories: List<CategoryTag>): List<FilterOption> =
+    buildList {
+        add(
+            FilterOption(
+                id = null,
+                label = context.getString(R.string.filter_all),
+                icon = Icons.Rounded.Category
+            )
         )
-    )
-    categories.forEach { root ->
-        if (root.isContainer) {
-            add(FilterOption(id = null, label = root.name, isHeader = true))
-            root.children.forEach { child ->
-                add(
-                    FilterOption(
-                        id = child.slug,
-                        label = child.name,
-                        icon = categoryIcon(child.slug),
-                        indented = true
+        categories.forEach { root ->
+            if (root.isContainer) {
+                add(FilterOption(id = null, label = root.name, isHeader = true))
+                root.children.forEach { child ->
+                    add(
+                        FilterOption(
+                            id = child.slug,
+                            label = child.name,
+                            icon = categoryIcon(child.slug),
+                            indented = true
+                        )
                     )
-                )
+                }
+            } else {
+                add(FilterOption(id = root.slug, label = root.name, icon = categoryIcon(root.slug)))
             }
-        } else {
-            add(FilterOption(id = root.slug, label = root.name, icon = categoryIcon(root.slug)))
         }
     }
-}
 
-@Composable
-private fun priceOptions(): List<FilterOption> = listOf(
+private fun priceOptions(context: Context): List<FilterOption> = listOf(
     FilterOption(
         id = null,
-        label = stringResource(R.string.filter_all),
+        label = context.getString(R.string.filter_all),
         icon = Icons.Rounded.AttachMoney
     ),
     FilterOption(
         id = AppPrice.FREE.name,
-        label = stringResource(R.string.filter_free),
+        label = context.getString(R.string.filter_free),
         icon = Icons.Rounded.MoneyOff
     ),
     FilterOption(
         id = AppPrice.IAP.name,
-        label = stringResource(R.string.filter_iap),
+        label = context.getString(R.string.filter_iap),
         icon = Icons.Rounded.Redeem
     ),
     FilterOption(
         id = AppPrice.IAP_OR_PAID.name,
-        label = stringResource(R.string.filter_iap_or_paid),
+        label = context.getString(R.string.filter_iap_or_paid),
         icon = Icons.Rounded.Paid
     )
 )
 
-@Composable
-private fun sortOptions(): List<FilterOption> = listOf(
+private fun sortOptions(context: Context): List<FilterOption> = listOf(
     FilterOption(
         id = AppSort.NAME.name,
-        label = stringResource(R.string.search_sort_name),
+        label = context.getString(R.string.search_sort_name),
         icon = Icons.Rounded.SortByAlpha
     ),
     FilterOption(
         id = AppSort.RECENTLY_ADDED.name,
-        label = stringResource(R.string.apps_recently_added),
+        label = context.getString(R.string.apps_recently_added),
         icon = Icons.Rounded.Schedule
     ),
     FilterOption(
         id = AppSort.RECENTLY_UPDATED.name,
-        label = stringResource(R.string.apps_recently_updated),
+        label = context.getString(R.string.apps_recently_updated),
         icon = Icons.Rounded.Update
     ),
     FilterOption(
         id = AppSort.STARS.name,
-        label = stringResource(R.string.search_sort_stars),
+        label = context.getString(R.string.search_sort_stars),
         icon = Icons.Rounded.Star
     ),
     FilterOption(
         id = AppSort.DOWNLOADS.name,
-        label = stringResource(R.string.search_sort_popularity),
+        label = context.getString(R.string.search_sort_popularity),
         icon = Icons.Rounded.Download
     ),
     FilterOption(
         id = AppSort.SIZE_DESC.name,
-        label = stringResource(R.string.search_sort_size),
+        label = context.getString(R.string.search_sort_size),
         icon = Icons.Rounded.SdStorage
     )
 )

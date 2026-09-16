@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -37,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.timschneeberger.shizustore.R
@@ -46,6 +48,7 @@ import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.ScrollHint
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.composable.app.DownloadListItem
+import me.timschneeberger.shizustore.compose.composable.app.toRowState
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.ui.details.composable.installRefusalText
 import me.timschneeberger.shizustore.compose.ui.downloads.composable.DownloadActionsSheet
@@ -91,11 +94,6 @@ fun DownloadsScreen(
         }
     }
 
-    val isInitialLoad = downloads.loadState.refresh is LoadState.Loading &&
-        downloads.itemCount == 0
-    val isEmpty = downloads.loadState.refresh is LoadState.NotLoading &&
-        downloads.itemCount == 0
-
     val listState = rememberLazyListState()
     val listPadding = PaddingValues(bottom = dimensionResource(R.dimen.spacing_large))
 
@@ -120,59 +118,15 @@ fun DownloadsScreen(
             )
         }
     ) { padding ->
-        val contentPhase = when {
-            isInitialLoad -> ContentPhase.Loading
-            isEmpty -> ContentPhase.Empty
-            else -> ContentPhase.Loaded
-        }
-
-        Box(
+        DownloadsContent(
+            downloads = downloads,
+            listState = listState,
+            listPadding = listPadding,
+            onItemClick = { actionsTarget = it },
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-        ) {
-            AnimatedContent(
-                targetState = contentPhase,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "DownloadsScreenContent"
-            ) { phase ->
-                when (phase) {
-                    ContentPhase.Loading -> AppRowSkeleton(contentPadding = listPadding)
-
-                    ContentPhase.Empty -> Placeholder(
-                        painter = painterResource(R.drawable.ic_download_manager),
-                        message = stringResource(R.string.downloads_empty),
-                        detail = stringResource(R.string.downloads_empty_detail)
-                    )
-
-                    ContentPhase.Loaded -> Box(modifier = Modifier.fillMaxSize()) {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            state = listState,
-                            contentPadding = listPadding
-                        ) {
-                            items(
-                                count = downloads.itemCount,
-                                key = downloads.itemKey { it.packageName }
-                            ) { index ->
-                                downloads[index]?.let { download ->
-                                    DownloadListItem(
-                                        download = download,
-                                        onClick = { actionsTarget = download },
-                                        modifier = Modifier.animateItem()
-                                    )
-                                }
-                            }
-                        }
-
-                        ScrollHint(
-                            listState = listState,
-                            modifier = Modifier.align(Alignment.BottomCenter)
-                        )
-                    }
-                }
-            }
-        }
+        )
     }
 
     actionsTarget?.let { target ->
@@ -189,6 +143,74 @@ fun DownloadsScreen(
             onClear = { viewModel.clear(target.packageName) },
             onDismiss = { actionsTarget = null }
         )
+    }
+}
+
+/**
+ * Owns the paging state reads so page loads only invalidate this content, not
+ * the whole screen (top bar, snackbar host, sheet).
+ */
+@Composable
+private fun DownloadsContent(
+    downloads: LazyPagingItems<Download>,
+    listState: LazyListState,
+    listPadding: PaddingValues,
+    onItemClick: (Download) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isInitialLoad = downloads.loadState.refresh is LoadState.Loading &&
+        downloads.itemCount == 0
+    val isEmpty = downloads.loadState.refresh is LoadState.NotLoading &&
+        downloads.itemCount == 0
+
+    val contentPhase = when {
+        isInitialLoad -> ContentPhase.Loading
+        isEmpty -> ContentPhase.Empty
+        else -> ContentPhase.Loaded
+    }
+
+    Box(modifier = modifier) {
+        AnimatedContent(
+            targetState = contentPhase,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label = "DownloadsScreenContent"
+        ) { phase ->
+            when (phase) {
+                ContentPhase.Loading -> AppRowSkeleton(contentPadding = listPadding)
+
+                ContentPhase.Empty -> Placeholder(
+                    painter = painterResource(R.drawable.ic_download_manager),
+                    message = stringResource(R.string.downloads_empty),
+                    detail = stringResource(R.string.downloads_empty_detail)
+                )
+
+                ContentPhase.Loaded -> Box(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        state = listState,
+                        contentPadding = listPadding
+                    ) {
+                        items(
+                            count = downloads.itemCount,
+                            key = downloads.itemKey { it.packageName }
+                        ) { index ->
+                            downloads[index]?.let { download ->
+                                DownloadListItem(
+                                    state = download.toRowState(),
+                                    onClick = { onItemClick(download) },
+                                    modifier = Modifier.animateItem()
+                                )
+                            }
+                        }
+                    }
+
+                    ScrollHint(
+                        listState = listState,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
+            }
+        }
     }
 }
 

@@ -6,6 +6,9 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class AppSource(
     val app: ResolvedApp,
     val nativeCode: List<String> = emptyList(),

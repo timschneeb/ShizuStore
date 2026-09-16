@@ -6,6 +6,7 @@
 
 package me.timschneeberger.shizustore.viewmodel
 
+import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 
 enum class AppGroupKind(
@@ -21,6 +22,7 @@ enum class AppGroupKind(
     CATEGORY(isCarousel = false, hasMorePage = true)
 }
 
+@Immutable
 data class AppGroup(
     val kind: AppGroupKind,
     val apps: List<ResolvedApp>,

@@ -37,12 +37,16 @@ data class ResolvedApp(
     val stars: Int? = null,
     val installCount: Long = 0
 ) {
+    // Parsed once: hasUpdate and the signer checks run per row and re-parsing the
+    // space-joined sets on every read shows up in profiles.
+    private val installedFingerprint: Set<String> = parseFingerprintSet(installedSigner)
+    private val candidateFingerprint: Set<String> = parseFingerprintSet(signer)
+
     val isInstalled: Boolean get() = installedVersionCode != null
 
     /** The candidate shares the installed signing identity (set intersection, not equality). */
     private val signerMatchesInstalled: Boolean
-        get() = installedSigner != null &&
-            fingerprintSetIntersects(signer, parseFingerprintSet(installedSigner))
+        get() = installedSigner != null && candidateFingerprint.any { it in installedFingerprint }
 
     val hasUpdate: Boolean
         get() = updateAvailable ||

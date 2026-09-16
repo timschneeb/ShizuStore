@@ -5,8 +5,10 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 
+@Immutable
 data class DetailedApp(
     val app: AppEntity,
     val candidates: List<AppCandidate>

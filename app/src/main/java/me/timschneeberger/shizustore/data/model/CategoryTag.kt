@@ -5,9 +5,11 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 
 /** A tag with [children] is a container and opens a menu instead of navigating directly. */
+@Immutable
 data class CategoryTag(
     val slug: String,
     val name: String,

@@ -28,6 +28,9 @@ fun TopAppBar(
     onNavigateBack: () -> Unit = {},
     actions: @Composable (RowScope.() -> Unit) = {}
 ) {
+    val colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
+    )
     TopAppBar(
         modifier = modifier,
         title = { if (title != null) Text(text = title) },
@@ -41,9 +44,7 @@ fun TopAppBar(
                 }
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
+        colors = colors,
         actions = actions
     )
 }

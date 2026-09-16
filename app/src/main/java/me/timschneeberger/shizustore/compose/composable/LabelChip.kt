@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,11 +29,12 @@ fun LabelChip(
     modifier: Modifier = Modifier,
     leadingIcon: (@Composable () -> Unit)? = null
 ) {
+    val radius = dimensionResource(R.dimen.radius_small)
     Surface(
         modifier = modifier,
         color = container,
         contentColor = content,
-        shape = RoundedCornerShape(dimensionResource(R.dimen.radius_small))
+        shape = remember(radius) { RoundedCornerShape(radius) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

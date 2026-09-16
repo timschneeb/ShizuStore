@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -43,29 +44,40 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
         sourceCodeUrl == null && isForgeRepositoryUrl(it)
     }
 
-    val links = buildList {
-        val seen = mutableSetOf<String>()
+    val links = remember(
+        details,
+        sourceCodeLabel,
+        fdroidLabel,
+        websiteLabel,
+        storeLabel,
+        issueTrackerLabel,
+        translationLabel,
+        donateLabel
+    ) {
+        buildList {
+            val seen = mutableSetOf<String>()
 
-        fun addOnce(label: String, url: String) {
-            if (url.isNotBlank() && seen.add(url)) add(label to url)
-        }
-
-        (sourceCodeUrl ?: forgeAsSource)?.let { addOnce(sourceCodeLabel, it) }
-
-        // Play-only apps link to the store through the notice card above,
-        // so a Website/Store row would just repeat that link.
-        if (details.availability != Availability.PLAY_REDIRECT) {
-            if (forgeAsSource == null) {
-                websiteUrl?.let {
-                    addOnce(if (isFDroidUrl(it)) fdroidLabel else websiteLabel, it)
-                }
+            fun addOnce(label: String, url: String) {
+                if (url.isNotBlank() && seen.add(url)) add(label to url)
             }
-            details.storeUrl?.let { addOnce(storeLabel, it) }
-        }
 
-        details.issueTracker?.let { addOnce(issueTrackerLabel, it) }
-        details.translation?.let { addOnce(translationLabel, it) }
-        details.donate.forEach { addOnce(donateLabel, it) }
+            (sourceCodeUrl ?: forgeAsSource)?.let { addOnce(sourceCodeLabel, it) }
+
+            // Play-only apps link to the store through the notice card above,
+            // so a Website/Store row would just repeat that link.
+            if (details.availability != Availability.PLAY_REDIRECT) {
+                if (forgeAsSource == null) {
+                    websiteUrl?.let {
+                        addOnce(if (isFDroidUrl(it)) fdroidLabel else websiteLabel, it)
+                    }
+                }
+                details.storeUrl?.let { addOnce(storeLabel, it) }
+            }
+
+            details.issueTracker?.let { addOnce(issueTrackerLabel, it) }
+            details.translation?.let { addOnce(translationLabel, it) }
+            details.donate.forEach { addOnce(donateLabel, it) }
+        }
     }
 
     if (links.isEmpty()) return

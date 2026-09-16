@@ -136,6 +136,10 @@ object CommonUtil {
     fun proxyDisplayText(info: ProxyInfo): String =
         "${info.protocol.lowercase(Locale.ROOT)}://${info.host}:${info.port}"
 
-    fun formatDate(epochMillis: Long): String =
-        DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(epochMillis))
+    /** Per-thread because DateFormat is not thread-safe; call sites are per-frame hot. */
+    private val dateFormat: ThreadLocal<DateFormat> = object : ThreadLocal<DateFormat>() {
+        override fun initialValue(): DateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM)
+    }
+
+    fun formatDate(epochMillis: Long): String = dateFormat.get()!!.format(Date(epochMillis))
 }

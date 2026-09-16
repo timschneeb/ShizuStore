@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.ContentPhase
@@ -68,7 +69,9 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.requiresUnkno
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.helper.SourceLauncher
 import me.timschneeberger.shizustore.data.installer.AppInstaller
-import me.timschneeberger.shizustore.data.model.DownloadStatus
+import me.timschneeberger.shizustore.data.model.AppDetails
+import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.extensions.appInfo
 import me.timschneeberger.shizustore.extensions.isOAndAbove
 import me.timschneeberger.shizustore.extensions.shareApp
@@ -97,7 +100,10 @@ fun AppDetailsScreen(
     // Installed-app actions must target the flavor the user installed, not the
     // catalog's canonical package.
     val actionablePackage = loadedState?.actionablePackage ?: packageName
-    val canAddToHome = rememberCanOpen(actionablePackage, loadedState?.downloadStatus)
+    // Keyed on the installed flag instead of the download status: the launch
+    // intent only changes when installation settles, not on progress ticks.
+    val canAddToHome =
+        rememberCanOpen(actionablePackage, loadedState?.resolved?.isInstalled == true)
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -216,72 +222,40 @@ fun AppDetailsScreen(
                         ) {
                             val canOpen = rememberCanOpen(
                                 state.actionablePackage,
-                                state.downloadStatus
-                            )
-                            val actions = state.resolved?.let { app ->
-                                installButtonState(
-                                    context = context,
-                                    app = app,
-                                    download = state.download,
-                                    canOpen = canOpen
-                                )
-                            } ?: linkButtonState(
-                                context = context,
-                                availability = state.details.availability,
-                                installed = state.details.installedVersionCode != null,
-                                canOpen = canOpen
+                                state.resolved?.isInstalled == true
                             )
 
-                            DetailsHeader(
+                            InstallSection(
                                 details = state.details,
-                                inProgress = actions?.bar?.isActive == true,
-                                progress = actions?.bar?.percent ?: 0F,
-                                status = actions?.caption,
-                                statusIsError = actions?.captionIsError == true,
-                                statusKey = state.downloadStatus
+                                resolved = state.resolved,
+                                canOpen = canOpen,
+                                downloadFlow = viewModel.download,
+                                onAction = { action ->
+                                    when (action) {
+                                        InstallAction.INSTALL -> coroutineScope.launch {
+                                            installOrRequestPermission(context, viewModel)
+                                        }
+
+                                        InstallAction.CANCEL -> viewModel.cancel()
+                                        InstallAction.OPEN -> launchApp(
+                                            context,
+                                            state.actionablePackage
+                                        )
+
+                                        InstallAction.UNINSTALL ->
+                                            context.uninstallPackage(state.actionablePackage)
+
+                                        InstallAction.OPEN_STORE,
+                                        InstallAction.OPEN_LINK -> SourceLauncher.launch(
+                                            context = context,
+                                            availability = state.details.availability,
+                                            storeUrl = state.details.storeUrl,
+                                            url = state.details.url,
+                                            sourceUrl = state.details.sourceUrl
+                                        )
+                                    }
+                                }
                             )
-
-                            // Play-only apps show the store card above the action
-                            // row so the install button pair stays the primary action.
-                            if (state.details.availability == Availability.PLAY_REDIRECT) {
-                                StoreNotice(
-                                    onOpen = {
-                                        state.details.storeUrl?.let { storeUrl ->
-                                            SourceLauncher.open(context, storeUrl)
-                                        }
-                                    }
-                                )
-                            }
-
-                            if (actions != null) {
-                                InstallActions(
-                                    state = actions,
-                                    onAction = { action ->
-                                        when (action) {
-                                            InstallAction.INSTALL -> coroutineScope.launch {
-                                                installOrRequestPermission(context, viewModel)
-                                            }
-
-                                            InstallAction.CANCEL -> viewModel.cancel()
-                                            InstallAction.OPEN -> launchApp(
-                                                context,
-                                                state.actionablePackage
-                                            )
-                                            InstallAction.UNINSTALL ->
-                                                context.uninstallPackage(state.actionablePackage)
-
-                                            InstallAction.OPEN_STORE,
-                                            InstallAction.OPEN_LINK -> SourceLauncher.launch(
-                                                context = context,
-                                                availability = state.details.availability,
-                                                storeUrl = state.details.storeUrl,
-                                                url = state.details.url,
-                                                sourceUrl = state.details.sourceUrl
-                                            )
-                                        }
-                                    }
-                                )
-                            }
 
                             CompatibilityNotice(minSdk = state.details.minSdk)
 
@@ -378,12 +352,65 @@ fun AppDetailsScreen(
 }
 
 @Composable
-private fun rememberCanOpen(packageName: String, status: DownloadStatus?): Boolean {
+private fun rememberCanOpen(packageName: String, installed: Boolean): Boolean {
     val context = LocalContext.current
-    return remember(packageName, status) {
+    return remember(packageName, installed) {
         runCatching {
             context.packageManager.getLaunchIntentForPackage(packageName) != null
         }.getOrDefault(false)
+    }
+}
+
+/**
+ * Header and install controls read the download state, so they are isolated from
+ * the rest of the page: a progress tick must not recompose screenshots or sources.
+ */
+@Composable
+private fun InstallSection(
+    details: AppDetails,
+    resolved: ResolvedApp?,
+    canOpen: Boolean,
+    downloadFlow: StateFlow<Download?>,
+    onAction: (InstallAction) -> Unit
+) {
+    val context = LocalContext.current
+    val download by downloadFlow.collectAsStateWithLifecycle()
+
+    val actions = resolved?.let { app ->
+        installButtonState(
+            context = context,
+            app = app,
+            download = download,
+            canOpen = canOpen
+        )
+    } ?: linkButtonState(
+        context = context,
+        availability = details.availability,
+        installed = details.installedVersionCode != null,
+        canOpen = canOpen
+    )
+
+    DetailsHeader(
+        details = details,
+        inProgress = actions?.bar?.isActive == true,
+        progress = actions?.bar?.percent ?: 0F,
+        status = actions?.caption,
+        statusIsError = actions?.captionIsError == true,
+        statusKey = download?.status
+    )
+
+    // Play-only apps show the store card above the action row so the install
+    // button pair stays the primary action.
+    if (details.availability == Availability.PLAY_REDIRECT) {
+        StoreNotice(
+            onOpen = {
+                details.storeUrl?.let { storeUrl -> SourceLauncher.open(context, storeUrl) }
+            }
+        )
+    }
+
+    if (actions != null) {
+        InstallActions(state = actions, onAction = onAction)
     }
 }
 

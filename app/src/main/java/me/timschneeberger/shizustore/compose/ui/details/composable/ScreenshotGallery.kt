@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -43,7 +44,7 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
-import java.util.concurrent.ConcurrentHashMap
+import coil3.size.Size
 import me.timschneeberger.shizustore.R
 
 /**
@@ -57,6 +58,17 @@ fun ScreenshotGallery(screenshots: List<String>, modifier: Modifier = Modifier) 
 
     var viewerIndex by remember { mutableIntStateOf(-1) }
 
+    val stripHeight = dimensionResource(R.dimen.screenshot_carousel_height)
+    val cornerRadius = dimensionResource(R.dimen.radius_medium)
+    val shape = remember(cornerRadius) { RoundedCornerShape(cornerRadius) }
+    // Bound the strip decode by the rendered height instead of handing Coil a
+    // constraints resolver, which forces SubcomposeAsyncImage into its
+    // SubcomposeLayout slow path.
+    val stripPixelHeight = with(LocalDensity.current) { stripHeight.roundToPx() }
+    val stripSize = remember(stripPixelHeight) {
+        Size(width = stripPixelHeight * 2, height = stripPixelHeight)
+    }
+
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(
@@ -65,9 +77,13 @@ fun ScreenshotGallery(screenshots: List<String>, modifier: Modifier = Modifier) 
         ),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {
-        itemsIndexed(screenshots) { index, url ->
+        itemsIndexed(
+            items = screenshots,
+            key = { _, url -> url },
+            contentType = { _, _ -> "screenshot" }
+        ) { index, url ->
             SubcomposeAsyncImage(
-                model = rememberScreenshotModel(url),
+                model = rememberScreenshotModel(url, stripSize),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 loading = {
@@ -75,7 +91,7 @@ fun ScreenshotGallery(screenshots: List<String>, modifier: Modifier = Modifier) 
                     // intrinsic (variable) width is known.
                     Box(
                         modifier = Modifier
-                            .height(dimensionResource(R.dimen.screenshot_carousel_height))
+                            .height(stripHeight)
                             .aspectRatio(9f / 16f),
                         contentAlignment = Alignment.Center
                     ) {
@@ -84,8 +100,8 @@ fun ScreenshotGallery(screenshots: List<String>, modifier: Modifier = Modifier) 
                 },
                 success = { SubcomposeAsyncImageContent() },
                 modifier = Modifier
-                    .height(dimensionResource(R.dimen.screenshot_carousel_height))
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+                    .height(stripHeight)
+                    .clip(shape)
                     .clickable { viewerIndex = index }
             )
         }
@@ -112,13 +128,16 @@ private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDis
             modifier = Modifier.fillMaxSize().background(Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            HorizontalPager(state = pagerState) { page ->
+            HorizontalPager(
+                state = pagerState,
+                beyondViewportPageCount = 1
+            ) { page ->
                 Box(
                     modifier = Modifier.fillMaxSize().clickable(onClick = onDismiss),
                     contentAlignment = Alignment.Center
                 ) {
                     SubcomposeAsyncImage(
-                        model = rememberScreenshotModel(screenshots[page]),
+                        model = rememberScreenshotModel(screenshots[page], Size.ORIGINAL),
                         contentDescription = null,
                         contentScale = ContentScale.Fit,
                         loading = { ScreenshotLoadingIndicator() },
@@ -147,13 +166,16 @@ private fun ScreenshotLoadingIndicator() {
  * 15 minutes lets the memory-held shot expire without growing the icon cache.
  */
 @Composable
-private fun rememberScreenshotModel(url: String): ImageRequest {
+private fun rememberScreenshotModel(url: String, size: Size): ImageRequest {
     val context = LocalPlatformContext.current
     val memoryKey = remember(url) { ScreenshotImageKeys.forUrl(url) }
-    return remember(url, memoryKey) {
+    return remember(url, memoryKey, size) {
         ImageRequest.Builder(context)
             .data(url)
-            .memoryCacheKey(memoryKey)
+            .size(size)
+            // The size is part of the key so the fullscreen viewer does not
+            // reuse the smaller strip decode.
+            .memoryCacheKey("$memoryKey:${size.width}x${size.height}")
             // Dropping the disk cache also makes Coil send "no-cache, no-store",
             // so the long max-age headers cannot pin shots in the HTTP cache.
             .diskCachePolicy(CachePolicy.DISABLED)
@@ -161,17 +183,27 @@ private fun rememberScreenshotModel(url: String): ImageRequest {
     }
 }
 
+/**
+ * Bounded LRU: the strip only holds a handful of shots, so an unbounded map
+ * would leak one entry per screenshot ever seen.
+ */
 private object ScreenshotImageKeys {
     private const val TTL_MS = 15L * 60L * 1000L
-    private val fetchedAt = ConcurrentHashMap<String, Long>()
+    private const val MAX_ENTRIES = 64
 
-    fun forUrl(url: String): String {
+    private val fetchedAt = object : LinkedHashMap<String, Long>(MAX_ENTRIES, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Long>): Boolean =
+            size > MAX_ENTRIES
+    }
+
+    fun forUrl(url: String): String = synchronized(fetchedAt) {
         val now = System.currentTimeMillis()
         val last = fetchedAt[url]
         if (last == null || now - last >= TTL_MS) {
             fetchedAt[url] = now
-            return "screenshot:$url@$now"
+            "screenshot:$url@$now"
+        } else {
+            "screenshot:$url@$last"
         }
-        return "screenshot:$url@$last"
     }
 }

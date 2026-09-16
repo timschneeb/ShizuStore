@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.timschneeberger.shizustore.R
@@ -23,6 +24,7 @@ import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.AppListScaffold
 import me.timschneeberger.shizustore.compose.composable.RemovableAppItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.viewmodel.FavouritesViewModel
 
 @Composable
@@ -32,6 +34,32 @@ fun FavouritesScreen(
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val apps = viewModel.favourites.collectAsLazyPagingItems()
+
+    // Saveable (not plain remember): the entry leaves composition while a
+    // detail screen is on top, and only rememberSaveable survives the return.
+    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+
+    FavouritesContent(
+        apps = apps,
+        viewModel = viewModel,
+        listState = listState,
+        onNavigateTo = onNavigateTo,
+        modifier = modifier
+    )
+}
+
+/**
+ * Owns the paging state reads so page loads only invalidate the list content,
+ * not the navigation wrapper.
+ */
+@Composable
+private fun FavouritesContent(
+    apps: LazyPagingItems<ResolvedApp>,
+    viewModel: FavouritesViewModel,
+    listState: LazyListState,
+    onNavigateTo: (Destination) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val hasStarredPackages by viewModel.hasStarredPackages.collectAsStateWithLifecycle()
 
     val isListEmpty = apps.itemCount == 0
@@ -40,10 +68,6 @@ fun FavouritesScreen(
     val isEmpty = isListEmpty &&
         apps.loadState.refresh is LoadState.NotLoading &&
         hasStarredPackages != null
-
-    // Saveable (not plain remember): the entry leaves composition while a
-    // detail screen is on top, and only rememberSaveable survives the return.
-    val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
     AppListScaffold(
         title = stringResource(R.string.title_favourites),

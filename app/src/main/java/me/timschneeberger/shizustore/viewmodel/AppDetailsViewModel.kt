@@ -33,7 +33,6 @@ import me.timschneeberger.shizustore.data.helper.InstallDispatcher
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.data.model.AppSource
 import me.timschneeberger.shizustore.data.model.CertFingerprint
-import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallDispatch
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
@@ -57,7 +56,6 @@ sealed interface AppDetailsUiState {
     data class Loaded(
         val details: AppDetails,
         val sources: List<AppSource>,
-        val download: Download? = null,
         /**
          * The package the entry is actually installed under. An entry is keyed by
          * its canonical package, but a flavor installs under its own, so system
@@ -65,9 +63,8 @@ sealed interface AppDetailsUiState {
          */
         val installedPackage: String? = null
     ) : AppDetailsUiState {
-        val resolved: ResolvedApp? get() = sources.preferredForThisDevice()?.app
-
-        val downloadStatus: DownloadStatus? get() = download?.status
+        /** Resolved once: the getter ran on every read and the source list is fixed. */
+        val resolved: ResolvedApp? = sources.preferredForThisDevice()?.app
 
         /** The package to act on for installed-app actions, falling back to the catalog key. */
         val actionablePackage: String get() = installedPackage ?: details.packageName
@@ -114,6 +111,16 @@ class AppDetailsViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
             AppDetailsUiState.Loading
         )
+
+    /**
+     * Kept out of [uiState]: the details page must not be recreated for every
+     * download progress tick, only consumers of the download row recompose.
+     */
+    val download: StateFlow<Download?> = slug
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { slug -> observeDownload(slug) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     val isFavourite: StateFlow<Boolean> = identity
         .filterNotNull()
@@ -312,9 +319,22 @@ class AppDetailsViewModel @Inject constructor(
 
     private fun resolvedApp(): ResolvedApp? = (uiState.value as? AppDetailsUiState.Loaded)?.resolved
 
-    private fun detailsFor(slug: String): Flow<AppDetailsUiState> {
+    /** The download row is keyed by the flavor package, which is not always
+     * the nav-key package, so match any package the entry ships. */
+    private fun observeDownload(slug: String): Flow<Download?> = combine(
+        appRepository.observeDetail(slug),
+        downloadHelper.downloads
+    ) { detailed, rows ->
         val identity = identity.value.orEmpty()
+        val packages = buildSet {
+            add(identity)
+            detailed?.app?.packageName?.let { add(it) }
+            detailed?.candidates?.forEach { candidate -> candidate.packageName?.let { add(it) } }
+        }
+        rows.firstOrNull { it.packageName in packages }
+    }.distinctUntilChanged()
 
+    private fun detailsFor(slug: String): Flow<AppDetailsUiState> {
         val catalog = combine(
             appRepository.observeDetail(slug),
             installedRepository.observeAll()
@@ -334,24 +354,11 @@ class AppDetailsViewModel @Inject constructor(
             detailed to installed
         }
 
-        // The download row is keyed by the flavor package, which is not always
-        // the nav-key package, so match any package the entry ships.
-        val row = combine(catalog, downloadHelper.downloads) { catalogPair, rows ->
-            val detail = catalogPair.first
-            val packages = buildSet {
-                add(identity)
-                detail?.app?.packageName?.let { add(it) }
-                detail?.candidates?.forEach { candidate -> candidate.packageName?.let { add(it) } }
-            }
-            rows.firstOrNull { it.packageName in packages }
-        }.distinctUntilChanged()
-
         return combine(
             catalog,
-            row,
             _detailError,
             detailFetching
-        ) { catalogPair, download, error, fetching ->
+        ) { catalogPair, error, fetching ->
             val (detailed, installed) = catalogPair
             when {
                 // Blank the screen until the request settles so the install row
@@ -367,7 +374,6 @@ class AppDetailsViewModel @Inject constructor(
                             screenshots = detailedAppRepository.screenshots(slug).orEmpty()
                         ),
                         sources = mapper.toSources(detailed, fingerprint, installed?.packageName),
-                        download = download,
                         installedPackage = installed?.packageName
                     )
                 }

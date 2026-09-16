@@ -6,9 +6,11 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.SourceKind
 
+@Immutable
 data class AppDetails(
     val packageName: String,
     val repoName: String,

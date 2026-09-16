@@ -124,7 +124,6 @@ fun AppListScreen(
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
     val searchFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    val imeVisible = WindowInsets.isImeVisible
 
     // Guarded by appliedArgs: LaunchedEffect also fires when the screen re-enters
     // composition (back from details), which must keep position.
@@ -146,14 +145,14 @@ fun AppListScreen(
     // Back from active search/list returns to the search home instead of closing the app.
     // While the keyboard is up, back (including the navigation bar keyboard-close button)
     // must only hide it, not leave search.
-    BackHandler(enabled = searchHome && !atSearchHome) {
-        if (imeVisible) {
-            keyboardController?.hide()
-        } else {
+    SearchBackHandler(
+        enabled = searchHome && !atSearchHome,
+        onHideKeyboard = { keyboardController?.hide() },
+        onClearSearch = {
             searchFieldState.setTextAndPlaceCursorAtEnd("")
             viewModel.clearAll()
         }
-    }
+    )
 
     Scaffold(
         modifier = modifier,
@@ -534,13 +533,30 @@ private fun AppRows(
 
 @Composable
 private fun listTitle(args: AppListArgs, categories: List<CategoryTag>): String {
+    val flatCategories = remember(categories) { categories.flatten() }
     args.categorySlug?.let { slug ->
-        return categories.flatten().firstOrNull { it.slug == slug }?.name ?: slug
+        return flatCategories.firstOrNull { it.slug == slug }?.name ?: slug
     }
     return when {
         args.recommended -> stringResource(R.string.apps_recommended)
         args.sort != AppSort.NAME -> stringResource(sortLabel(args.sort))
         else -> stringResource(R.string.title_apps)
+    }
+}
+
+/**
+ * Reads the IME inset here so keyboard animations only invalidate this handler,
+ * not the whole screen with its top bar and list.
+ */
+@Composable
+private fun SearchBackHandler(
+    enabled: Boolean,
+    onHideKeyboard: () -> Unit,
+    onClearSearch: () -> Unit
+) {
+    val imeVisible = WindowInsets.isImeVisible
+    BackHandler(enabled = enabled) {
+        if (imeVisible) onHideKeyboard() else onClearSearch()
     }
 }
 

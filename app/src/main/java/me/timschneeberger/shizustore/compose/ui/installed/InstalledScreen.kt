@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.timschneeberger.shizustore.R
@@ -21,6 +22,7 @@ import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.AppListScaffold
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.viewmodel.InstalledViewModel
 
 @Composable
@@ -31,12 +33,31 @@ fun InstalledScreen(
 ) {
     val apps = viewModel.installed.collectAsLazyPagingItems()
 
-    val isInitialLoad = apps.loadState.refresh is LoadState.Loading && apps.itemCount == 0
-    val isEmpty = apps.loadState.refresh is LoadState.NotLoading && apps.itemCount == 0
-
     // Saveable (not plain remember): the entry leaves composition while a
     // detail screen is on top, and only rememberSaveable survives the return.
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
+
+    InstalledContent(
+        apps = apps,
+        listState = listState,
+        onNavigateTo = onNavigateTo,
+        modifier = modifier
+    )
+}
+
+/**
+ * Owns the paging state reads so page loads only invalidate the list content,
+ * not the navigation wrapper.
+ */
+@Composable
+private fun InstalledContent(
+    apps: LazyPagingItems<ResolvedApp>,
+    listState: LazyListState,
+    onNavigateTo: (Destination) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isInitialLoad = apps.loadState.refresh is LoadState.Loading && apps.itemCount == 0
+    val isEmpty = apps.loadState.refresh is LoadState.NotLoading && apps.itemCount == 0
 
     AppListScaffold(
         title = stringResource(R.string.title_my_apps),

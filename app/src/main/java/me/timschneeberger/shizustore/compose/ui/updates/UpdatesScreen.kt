@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.timschneeberger.shizustore.R
@@ -42,8 +43,10 @@ import me.timschneeberger.shizustore.compose.composable.OfflineBanner
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.SectionHeader
 import me.timschneeberger.shizustore.compose.composable.app.AppUpdateItem
+import me.timschneeberger.shizustore.compose.composable.app.toRowState
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.ui.updates.composable.AppUpdateSheet
+import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.extensions.appInfo
 import me.timschneeberger.shizustore.extensions.uninstallPackage
 import me.timschneeberger.shizustore.viewmodel.UpdatesViewModel
@@ -55,17 +58,9 @@ fun UpdatesScreen(
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val apps = viewModel.updates.collectAsLazyPagingItems()
-    val downloads by viewModel.downloadsByPackage.collectAsStateWithLifecycle()
-    val updateCount by viewModel.updateCount.collectAsStateWithLifecycle()
-    val anyActive by viewModel.anyDownloadActive.collectAsStateWithLifecycle()
-    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val syncFailure by viewModel.syncFailure.collectAsStateWithLifecycle()
     val blacklisted by viewModel.blacklisted.collectAsStateWithLifecycle()
     val sheetApp by viewModel.sheetApp.collectAsStateWithLifecycle()
     val context = LocalContext.current
-
-    val isInitialLoad = apps.loadState.refresh is LoadState.Loading && apps.itemCount == 0
-    val isEmpty = apps.loadState.refresh is LoadState.NotLoading && apps.itemCount == 0
 
     val listPadding = PaddingValues(bottom = dimensionResource(R.dimen.fab_clearance))
 
@@ -73,102 +68,13 @@ fun UpdatesScreen(
     // detail screen is on top, and only rememberSaveable survives the return.
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
 
-    val contentPhase = when {
-        isInitialLoad -> ContentPhase.Loading
-        isEmpty -> ContentPhase.Empty
-        else -> ContentPhase.Loaded
-    }
-
     Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            if (syncFailure != null) {
-                OfflineBanner(onRetry = viewModel::retrySync)
-            }
-
-            AnimatedContent(
-                targetState = contentPhase,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "UpdatesScreenContent",
-                modifier = Modifier.weight(1f).fillMaxWidth()
-            ) { phase ->
-                when (phase) {
-                    ContentPhase.Loading -> Column(modifier = Modifier.fillMaxSize()) {
-                        UpdatesHeader(
-                            count = updateCount,
-                            anyActive = anyActive,
-                            enabled = false,
-                            onUpdateAll = viewModel::updateAll,
-                            onCancelAll = viewModel::cancelAll
-                        )
-
-                        AppRowSkeleton(
-                            modifier = Modifier.weight(1f),
-                            contentPadding = listPadding,
-                            showTrailing = true
-                        )
-                    }
-
-                    ContentPhase.Empty -> Placeholder(
-                        painter = painterResource(R.drawable.ic_updates),
-                        message = stringResource(R.string.updates_empty)
-                    )
-
-                    ContentPhase.Loaded -> Column(modifier = Modifier.fillMaxSize()) {
-                        Box(
-                            modifier = Modifier.alpha(if (refreshing) 0f else 1f)
-                        ) {
-                            UpdatesHeader(
-                                count = updateCount,
-                                anyActive = anyActive,
-                                enabled = !refreshing,
-                                onUpdateAll = viewModel::updateAll,
-                                onCancelAll = viewModel::cancelAll
-                            )
-                        }
-
-                        ExpressivePullToRefreshBox(
-                            isRefreshing = refreshing,
-                            onRefresh = viewModel::retrySync,
-                            modifier = Modifier.weight(1f).fillMaxWidth(),
-                            placeholder = {
-                                AppRowSkeleton(
-                                    contentPadding = listPadding,
-                                    showTrailing = true
-                                )
-                            }
-                        ) {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                state = listState,
-                                contentPadding = listPadding
-                            ) {
-                                items(
-                                    count = apps.itemCount,
-                                    key = apps.itemKey { it.slug }
-                                ) { index ->
-                                    apps[index]?.let { app ->
-                                        AppUpdateItem(
-                                            app = app,
-                                            download = downloads[
-                                                app.installedPackage
-                                                    ?: app.packageName
-                                            ],
-                                            onClick = { viewModel.openSheet(app) },
-                                            onUpdate = { viewModel.update(app) },
-                                            onCancel = {
-                                                viewModel.cancel(
-                                                    app.installedPackage ?: app.packageName
-                                                )
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        UpdatesBody(
+            apps = apps,
+            viewModel = viewModel,
+            listState = listState,
+            listPadding = listPadding
+        )
 
         sheetApp?.let { app ->
             AppUpdateSheet(
@@ -182,6 +88,124 @@ fun UpdatesScreen(
                 onAppInfo = { context.appInfo(app.installedPackage ?: app.packageName) },
                 onDismiss = viewModel::dismissSheet
             )
+        }
+    }
+}
+
+/**
+ * Owns the paging and download-flow reads so progress ticks and page loads only
+ * invalidate the list content, not the sheet or the screen wrapper.
+ */
+@Composable
+private fun UpdatesBody(
+    apps: LazyPagingItems<ResolvedApp>,
+    viewModel: UpdatesViewModel,
+    listState: LazyListState,
+    listPadding: PaddingValues,
+    modifier: Modifier = Modifier
+) {
+    val downloads by viewModel.downloadsByPackage.collectAsStateWithLifecycle()
+    val updateCount by viewModel.updateCount.collectAsStateWithLifecycle()
+    val anyActive by viewModel.anyDownloadActive.collectAsStateWithLifecycle()
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+    val syncFailure by viewModel.syncFailure.collectAsStateWithLifecycle()
+
+    val isInitialLoad = apps.loadState.refresh is LoadState.Loading && apps.itemCount == 0
+    val isEmpty = apps.loadState.refresh is LoadState.NotLoading && apps.itemCount == 0
+
+    val contentPhase = when {
+        isInitialLoad -> ContentPhase.Loading
+        isEmpty -> ContentPhase.Empty
+        else -> ContentPhase.Loaded
+    }
+
+    Column(modifier = modifier.fillMaxSize()) {
+        if (syncFailure != null) {
+            OfflineBanner(onRetry = viewModel::retrySync)
+        }
+
+        AnimatedContent(
+            targetState = contentPhase,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label = "UpdatesScreenContent",
+            modifier = Modifier.weight(1f).fillMaxWidth()
+        ) { phase ->
+            when (phase) {
+                ContentPhase.Loading -> Column(modifier = Modifier.fillMaxSize()) {
+                    UpdatesHeader(
+                        count = updateCount,
+                        anyActive = anyActive,
+                        enabled = false,
+                        onUpdateAll = viewModel::updateAll,
+                        onCancelAll = viewModel::cancelAll
+                    )
+
+                    AppRowSkeleton(
+                        modifier = Modifier.weight(1f),
+                        contentPadding = listPadding,
+                        showTrailing = true
+                    )
+                }
+
+                ContentPhase.Empty -> Placeholder(
+                    painter = painterResource(R.drawable.ic_updates),
+                    message = stringResource(R.string.updates_empty)
+                )
+
+                ContentPhase.Loaded -> Column(modifier = Modifier.fillMaxSize()) {
+                    Box(
+                        modifier = Modifier.alpha(if (refreshing) 0f else 1f)
+                    ) {
+                        UpdatesHeader(
+                            count = updateCount,
+                            anyActive = anyActive,
+                            enabled = !refreshing,
+                            onUpdateAll = viewModel::updateAll,
+                            onCancelAll = viewModel::cancelAll
+                        )
+                    }
+
+                    ExpressivePullToRefreshBox(
+                        isRefreshing = refreshing,
+                        onRefresh = viewModel::retrySync,
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
+                        placeholder = {
+                            AppRowSkeleton(
+                                contentPadding = listPadding,
+                                showTrailing = true
+                            )
+                        }
+                    ) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            state = listState,
+                            contentPadding = listPadding
+                        ) {
+                            items(
+                                count = apps.itemCount,
+                                key = apps.itemKey { it.slug }
+                            ) { index ->
+                                apps[index]?.let { app ->
+                                    AppUpdateItem(
+                                        app = app,
+                                        download = downloads[
+                                            app.installedPackage
+                                                ?: app.packageName
+                                        ]?.toRowState(),
+                                        onClick = { viewModel.openSheet(app) },
+                                        onUpdate = { viewModel.update(app) },
+                                        onCancel = {
+                                            viewModel.cancel(
+                                                app.installedPackage ?: app.packageName
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

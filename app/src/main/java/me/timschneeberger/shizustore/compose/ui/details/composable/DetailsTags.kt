@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -66,7 +67,7 @@ fun DetailsTags(
     onCategoryClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val tags = detailTags(context, details)
+    val tags = remember(context, details) { detailTags(context, details) }
     val category = details.categories.firstOrNull()?.takeIf { it.isNotBlank() }
 
     if (tags.isEmpty()) return

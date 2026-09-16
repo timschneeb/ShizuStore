@@ -9,17 +9,53 @@
 package me.timschneeberger.shizustore.compose.composable.app
 
 import android.content.Context
+import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.stringRes
 import me.timschneeberger.shizustore.data.api.ShizuUrls
+import me.timschneeberger.shizustore.data.model.DownloadFailure
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.ServerConfig
 
+/**
+ * The Room entity has public vars and a list, so it never skips as a composable
+ * parameter: rows take this flattened snapshot instead and only the row that
+ * actually changed recomposes on a progress tick.
+ */
+@Immutable
+internal data class DownloadRowState(
+    val packageName: String,
+    val displayName: String,
+    val iconUrl: String,
+    val status: DownloadStatus,
+    val progress: Int,
+    val speed: Long,
+    val timeRemaining: Long,
+    val downloadedAt: Long,
+    val error: DownloadFailure?,
+    val isActive: Boolean,
+    val isFinished: Boolean
+)
+
+internal fun Download.toRowState(): DownloadRowState = DownloadRowState(
+    packageName = packageName,
+    displayName = displayName,
+    iconUrl = downloadIconUrl(this),
+    status = status,
+    progress = progress,
+    speed = speed,
+    timeRemaining = timeRemaining,
+    downloadedAt = downloadedAt,
+    error = error,
+    isActive = isActive,
+    isFinished = isFinished
+)
+
 internal data class DownloadRow(val status: String, val detail: String?)
 
-internal fun downloadRow(context: Context, download: Download): DownloadRow = DownloadRow(
+internal fun downloadRow(context: Context, download: DownloadRowState): DownloadRow = DownloadRow(
     status = statusCaption(context, download.status),
     detail = when (download.status) {
         DownloadStatus.DOWNLOADING, DownloadStatus.INSTALLING -> progressDetail(context, download)
@@ -33,7 +69,7 @@ internal fun downloadRow(context: Context, download: Download): DownloadRow = Do
     }
 )
 
-private fun progressDetail(context: Context, download: Download): String {
+private fun progressDetail(context: Context, download: DownloadRowState): String {
     val percent = context.getString(R.string.download_percent, download.progress)
     val rate = CommonUtil.transferRateText(context, download.speed, download.timeRemaining)
     return listOfNotNull(percent, rate).joinToString(SEPARATOR)

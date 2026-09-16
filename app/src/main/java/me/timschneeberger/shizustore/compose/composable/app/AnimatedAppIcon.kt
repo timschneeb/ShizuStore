@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,9 +42,11 @@ fun AnimatedAppIcon(
         targetValue = if (inProgress) IN_PROGRESS_SCALE else 1F,
         animationSpec = tween(durationMillis = ANIM_DURATION_MS)
     )
-    val clip = when {
-        inProgress -> CircleShape
-        else -> RoundedCornerShape(dimensionResource(R.dimen.radius_medium))
+    val clip = if (inProgress) {
+        CircleShape
+    } else {
+        val radius = dimensionResource(R.dimen.radius_medium)
+        remember(radius) { RoundedCornerShape(radius) }
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -51,7 +54,9 @@ fun AnimatedAppIcon(
             val indicatorModifier = Modifier
                 .fillMaxSize()
                 .testTag(PROGRESS_INDICATOR_TAG)
-            if (animatedProgress > 0) {
+            // Branch on the target, not the animated value: reading the animation
+            // here would recompose the icon on every frame.
+            if (progress > 0f) {
                 CircularProgressIndicator(
                     modifier = indicatorModifier,
                     progress = { animatedProgress / PERCENT }
@@ -67,7 +72,10 @@ fun AnimatedAppIcon(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .graphicsLayer(scaleX = animatedScale, scaleY = animatedScale)
+                .graphicsLayer {
+                    scaleX = animatedScale
+                    scaleY = animatedScale
+                }
                 .clip(clip)
         )
     }

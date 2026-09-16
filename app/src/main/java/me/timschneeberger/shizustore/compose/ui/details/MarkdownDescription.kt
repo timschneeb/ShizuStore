@@ -35,6 +35,8 @@ import com.mikepenz.markdown.model.ImageData
 import com.mikepenz.markdown.model.ImageTransformer
 import java.net.URI
 import me.timschneeberger.shizustore.extensions.viewExternal
+import org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor
+import org.intellij.markdown.parser.MarkdownParser
 
 /**
  * Rows that carry GitHub rendered HTML instead of markdown fall back to the
@@ -70,63 +72,77 @@ internal fun MarkdownDescription(
             val rendered = remember(content, repoBaseUrl) {
                 normalizeReadmeImages(content, repoBaseUrl)
             }
-            // Shift the default heading scale down one step; the display sizes
-            // dominate a phone-sized screen.
-            val typography = markdownTypography(
-                h1 = MaterialTheme.typography.displayMedium,
-                h2 = MaterialTheme.typography.displaySmall,
-                h3 = MaterialTheme.typography.headlineMedium,
-                h4 = MaterialTheme.typography.headlineSmall,
-                h5 = MaterialTheme.typography.titleLarge,
-                h6 = MaterialTheme.typography.titleMedium
-            )
-            val components = markdownComponents(
-                checkbox = { MarkdownCheckBox(it.content, it.node, it.typography.text) },
-                codeBlock = {
-                    MarkdownHighlightedCodeBlock(it.content, it.node, showHeader = true)
+            RenderedMarkdown(rendered = rendered, modifier = modifier)
+        }
+    }
+}
+
+/**
+ * Isolated so a parent restart with the same content does not rebuild the
+ * typography/components or hand the renderer a fresh parser (which would
+ * reparse the whole document).
+ */
+@Composable
+private fun RenderedMarkdown(rendered: String, modifier: Modifier) {
+    val flavour = remember { GFMFlavourDescriptor() }
+    val parser = remember(flavour) { MarkdownParser(flavour) }
+    // Shift the default heading scale down one step; the display sizes
+    // dominate a phone-sized screen.
+    val typography = markdownTypography(
+        h1 = MaterialTheme.typography.displayMedium,
+        h2 = MaterialTheme.typography.displaySmall,
+        h3 = MaterialTheme.typography.headlineMedium,
+        h4 = MaterialTheme.typography.headlineSmall,
+        h5 = MaterialTheme.typography.titleLarge,
+        h6 = MaterialTheme.typography.titleMedium
+    )
+    val components = markdownComponents(
+        checkbox = { MarkdownCheckBox(it.content, it.node, it.typography.text) },
+        codeBlock = {
+            MarkdownHighlightedCodeBlock(it.content, it.node, showHeader = true)
+        },
+        codeFence = {
+            MarkdownHighlightedCodeFence(it.content, it.node, showHeader = true)
+        },
+        table = { model ->
+            // Cells ellipsize by default; let them wrap instead so long
+            // text stays readable while the table remains scrollable.
+            MarkdownTable(
+                content = model.content,
+                node = model.node,
+                style = model.typography.table,
+                headerBlock = { cellContent, header, tableWidth, cellStyle ->
+                    MarkdownTableHeader(
+                        content = cellContent,
+                        header = header,
+                        tableWidth = tableWidth,
+                        style = cellStyle,
+                        maxLines = Int.MAX_VALUE,
+                        overflow = TextOverflow.Clip
+                    )
                 },
-                codeFence = {
-                    MarkdownHighlightedCodeFence(it.content, it.node, showHeader = true)
-                },
-                table = { model ->
-                    // Cells ellipsize by default; let them wrap instead so long
-                    // text stays readable while the table remains scrollable.
-                    MarkdownTable(
-                        content = model.content,
-                        node = model.node,
-                        style = model.typography.table,
-                        headerBlock = { cellContent, header, tableWidth, cellStyle ->
-                            MarkdownTableHeader(
-                                content = cellContent,
-                                header = header,
-                                tableWidth = tableWidth,
-                                style = cellStyle,
-                                maxLines = Int.MAX_VALUE,
-                                overflow = TextOverflow.Clip
-                            )
-                        },
-                        rowBlock = { rowContent, row, tableWidth, cellStyle ->
-                            MarkdownTableRow(
-                                content = rowContent,
-                                header = row,
-                                tableWidth = tableWidth,
-                                style = cellStyle,
-                                maxLines = Int.MAX_VALUE,
-                                overflow = TextOverflow.Clip
-                            )
-                        }
+                rowBlock = { rowContent, row, tableWidth, cellStyle ->
+                    MarkdownTableRow(
+                        content = rowContent,
+                        header = row,
+                        tableWidth = tableWidth,
+                        style = cellStyle,
+                        maxLines = Int.MAX_VALUE,
+                        overflow = TextOverflow.Clip
                     )
                 }
             )
-            Markdown(
-                content = rendered,
-                modifier = modifier.fillMaxWidth(),
-                typography = typography,
-                imageTransformer = NoCacheImageTransformer,
-                components = components
-            )
         }
-    }
+    )
+    Markdown(
+        content = rendered,
+        modifier = modifier.fillMaxWidth(),
+        typography = typography,
+        flavour = flavour,
+        parser = parser,
+        imageTransformer = NoCacheImageTransformer,
+        components = components
+    )
 }
 
 private val renderedHtmlMarkers = listOf(
@@ -238,14 +254,16 @@ private fun resolveRelative(repoBaseUrl: String, url: String): String = try {
 private object NoCacheImageTransformer : ImageTransformer {
     @Composable
     override fun transform(link: String): ImageData {
-        val painter = rememberAsyncImagePainter(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
+        val context = LocalPlatformContext.current
+        val request = remember(link, context) {
+            ImageRequest.Builder(context)
                 .data(link)
                 .size(coil3.size.Size.ORIGINAL)
                 .memoryCachePolicy(CachePolicy.DISABLED)
                 .diskCachePolicy(CachePolicy.DISABLED)
                 .build()
-        )
+        }
+        val painter = rememberAsyncImagePainter(model = request)
         return ImageData(painter)
     }
 }

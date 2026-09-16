@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -22,15 +23,20 @@ import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
 import me.timschneeberger.shizustore.compose.theme.successColor
 import me.timschneeberger.shizustore.data.model.DownloadStatus
-import me.timschneeberger.shizustore.data.room.entity.Download
 
 @Composable
-fun DownloadListItem(download: Download, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val row = downloadRow(LocalContext.current, download)
+internal fun DownloadListItem(
+    state: DownloadRowState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    // Rebuilt only when the row actually changes, not on every list emission.
+    val row = remember(state, context) { downloadRow(context, state) }
 
     AuroraListItem(
         modifier = modifier,
-        headline = download.displayName,
+        headline = state.displayName,
         supporting = row.status,
         tertiary = row.detail?.let { AnnotatedString(it) },
         headlineStyle = MaterialTheme.typography.bodyMedium,
@@ -38,12 +44,12 @@ fun DownloadListItem(download: Download, onClick: () -> Unit, modifier: Modifier
         leading = {
             AnimatedAppIcon(
                 modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium)),
-                iconUrl = downloadIconUrl(download),
-                inProgress = download.isActive,
-                progress = progressPercent(download.progress)
+                iconUrl = state.iconUrl,
+                inProgress = state.isActive,
+                progress = progressPercent(state.progress)
             )
         },
-        trailing = when (download.status) {
+        trailing = when (state.status) {
             DownloadStatus.COMPLETED -> {
                 {
                     Icon(

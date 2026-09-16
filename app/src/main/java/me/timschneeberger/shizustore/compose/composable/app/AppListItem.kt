@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,16 +49,26 @@ fun AppListItem(
     showInstalls: Boolean = false,
     supporting: String? = app.summary
 ) {
-    val countPart: AnnotatedString? = when {
-        showInstalls -> buildAnnotatedString {
-            appendInlineContent(INSTALLS_ICON_ID, "[downloads]")
-            append(" ")
-            append(stringResource(R.string.app_installs, CommonUtil.formatCount(app.installCount)))
+    val installsText = if (showInstalls) {
+        stringResource(R.string.app_installs, CommonUtil.formatCount(app.installCount))
+    } else {
+        null
+    }
+    val starsText = if (showStars) {
+        app.stars?.let { stringResource(R.string.app_stars, CommonUtil.formatCount(it.toLong())) }
+    } else {
+        null
+    }
+    val countPart: AnnotatedString? = remember(installsText, starsText) {
+        when {
+            installsText != null -> buildAnnotatedString {
+                appendInlineContent(INSTALLS_ICON_ID, "[downloads]")
+                append(" ")
+                append(installsText)
+            }
+            starsText != null -> AnnotatedString(starsText)
+            else -> null
         }
-        showStars -> app.stars?.let {
-            AnnotatedString(stringResource(R.string.app_stars, CommonUtil.formatCount(it.toLong())))
-        }
-        else -> null
     }
     val sizeLabel = CommonUtil.sizeLabel(app.size)
     val versionText = if (sizeLabel != null) {
@@ -65,29 +76,45 @@ fun AppListItem(
     } else {
         app.versionName
     }
-    val tertiaryText = countPart?.let {
-        buildAnnotatedString {
-            append(it)
-            append("  ·  ")
-            append(versionText)
-        }
-    } ?: AnnotatedString(versionText)
+    val tertiaryText = remember(countPart, versionText) {
+        countPart?.let {
+            buildAnnotatedString {
+                append(it)
+                append("  ·  ")
+                append(versionText)
+            }
+        } ?: AnnotatedString(versionText)
+    }
     // The installs glyph is the download drawable, tinted to match the
     // tertiary text: InlineTextContent children do not inherit it.
-    val tertiaryInlineContent = if (showInstalls) {
-        mapOf(
-            INSTALLS_ICON_ID to InlineTextContent(
-                Placeholder(TERTIARY_ICON_SIZE, TERTIARY_ICON_SIZE, PlaceholderVerticalAlign.Center)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_download_manager),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                )
-            }
+    val installsPainter = if (showInstalls) {
+        painterResource(
+            R.drawable.ic_download_manager
         )
     } else {
-        emptyMap()
+        null
+    }
+    val tertiaryTint = MaterialTheme.colorScheme.onSurfaceVariant
+    val tertiaryInlineContent = remember(installsPainter, tertiaryTint) {
+        if (installsPainter != null) {
+            mapOf(
+                INSTALLS_ICON_ID to InlineTextContent(
+                    Placeholder(
+                        TERTIARY_ICON_SIZE,
+                        TERTIARY_ICON_SIZE,
+                        PlaceholderVerticalAlign.Center
+                    )
+                ) {
+                    Image(
+                        painter = installsPainter,
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(tertiaryTint)
+                    )
+                }
+            )
+        } else {
+            emptyMap()
+        }
     }
     val installedIcon = when {
         app.hasUpdate -> Icons.Rounded.Update

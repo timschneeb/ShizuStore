@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -20,14 +21,13 @@ import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.ResolvedApp
-import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.util.CommonUtil
 
 @Composable
-fun AppUpdateItem(
+internal fun AppUpdateItem(
     app: ResolvedApp,
     modifier: Modifier = Modifier,
-    download: Download? = null,
+    download: DownloadRowState? = null,
     onClick: () -> Unit = {},
     onUpdate: () -> Unit = {},
     onCancel: () -> Unit = {}
@@ -35,11 +35,13 @@ fun AppUpdateItem(
     val inProgress = download != null && !download.isFinished
     val installing = download?.status == DownloadStatus.INSTALLING
 
-    val sizeLabel = CommonUtil.sizeLabel(app.size)
-    val tertiaryText = if (sizeLabel != null) {
-        "$sizeLabel  •  ${app.versionName}"
-    } else {
-        app.versionName
+    val sizeLabel = remember(app.size) { CommonUtil.sizeLabel(app.size) }
+    val tertiaryText = remember(sizeLabel, app.versionName) {
+        if (sizeLabel != null) {
+            "$sizeLabel  •  ${app.versionName}"
+        } else {
+            app.versionName
+        }
     }
 
     AuroraListItem(
