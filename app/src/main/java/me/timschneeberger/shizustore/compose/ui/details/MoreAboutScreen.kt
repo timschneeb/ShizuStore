@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.timschneeberger.shizustore.R
-import me.timschneeberger.shizustore.compose.composable.ContainedLoadingIndicator
+import me.timschneeberger.shizustore.compose.composable.LoadingIndicatorBox
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
@@ -51,7 +51,7 @@ fun MoreAboutScreen(
         }
     ) { padding ->
         when (val state = uiState) {
-            is AppDetailsUiState.Loading -> ContainedLoadingIndicator(
+            is AppDetailsUiState.Loading -> LoadingIndicatorBox(
                 modifier = Modifier.padding(padding)
             )
 

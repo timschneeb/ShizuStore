@@ -31,8 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.timschneeberger.shizustore.R
-import me.timschneeberger.shizustore.compose.composable.ContainedLoadingIndicator
 import me.timschneeberger.shizustore.compose.composable.Info
+import me.timschneeberger.shizustore.compose.composable.LoadingIndicatorBox
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
@@ -71,7 +71,7 @@ fun PermissionsScreen(
         }
     ) { padding ->
         when {
-            groups == null -> ContainedLoadingIndicator(
+            groups == null -> LoadingIndicatorBox(
                 modifier = Modifier.padding(padding)
             )
 

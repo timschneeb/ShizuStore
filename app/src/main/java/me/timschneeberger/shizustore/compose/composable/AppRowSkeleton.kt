@@ -23,8 +23,7 @@ import me.timschneeberger.shizustore.R
 fun AppRowSkeleton(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
-    showTrailing: Boolean = false,
-    rowCount: Int = DEFAULT_SKELETON_ROWS
+    showTrailing: Boolean = false
 ) {
     val description = stringResource(R.string.loading)
 
@@ -37,7 +36,7 @@ fun AppRowSkeleton(
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
         ) {
-            items(rowCount) {
+            items(DEFAULT_SKELETON_ROWS) {
                 if (showTrailing) ShimmerUpdateItem() else ShimmerAppRow()
             }
         }

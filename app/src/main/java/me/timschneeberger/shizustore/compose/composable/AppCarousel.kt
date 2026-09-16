@@ -39,7 +39,6 @@ fun AppCarousel(
     groups: List<AppGroup>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
-    trailingSection: (@Composable () -> Unit)? = null,
     onGroupClick: (AppGroup) -> Unit = {},
     onAppClick: (ResolvedApp) -> Unit = {}
 ) {
@@ -68,15 +67,11 @@ fun AppCarousel(
                 }
             }
         }
-
-        if (trailingSection != null) {
-            item(key = "trailing") { trailingSection() }
-        }
     }
 }
 
 @Composable
-fun AppTileStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit) {
+private fun AppTileStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.spacing_large)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
@@ -91,7 +86,7 @@ fun AppTileStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit) {
 }
 
 @Composable
-fun AppCarouselStrip(
+private fun AppCarouselStrip(
     apps: List<ResolvedApp>,
     onAppClick: (ResolvedApp) -> Unit,
     modifier: Modifier = Modifier,
@@ -120,11 +115,11 @@ fun AppCarouselStrip(
 @Composable
 fun AppCarouselSkeleton(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(),
-    groups: List<AppGroupKind> = AppGroupKind.entries.filter { it.isCarousel },
-    cellCount: Int = DEFAULT_SKELETON_CELLS
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     val description = stringResource(R.string.loading)
+    val groups = AppGroupKind.entries.filter { it.isCarousel }
+    val cellCount = DEFAULT_SKELETON_CELLS
 
     ShimmerHost {
         LazyColumn(

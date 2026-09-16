@@ -45,13 +45,7 @@ import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.R
 
 @Composable
-fun ScrollHint(
-    listState: LazyListState,
-    modifier: Modifier = Modifier,
-    autoHideOnScroll: Boolean = true,
-    enableBounce: Boolean = true,
-    onClickScrollOffset: Float = 300f
-) {
+fun ScrollHint(listState: LazyListState, modifier: Modifier = Modifier) {
     val coroutineScope = rememberCoroutineScope()
 
     val canScrollForward by remember {
@@ -66,9 +60,9 @@ fun ScrollHint(
         }
     }
 
-    val visible = canScrollForward && (!autoHideOnScroll || !userScrolled)
+    val visible = canScrollForward && !userScrolled
 
-    val offsetY by if (enableBounce && visible) {
+    val offsetY by if (visible) {
         val transition = rememberInfiniteTransition(label = "scrollHintBounce")
         transition.animateFloat(
             initialValue = 0f,
@@ -97,7 +91,7 @@ fun ScrollHint(
         ) {
             IconButton(
                 onClick = {
-                    coroutineScope.launch { listState.animateScrollBy(onClickScrollOffset) }
+                    coroutineScope.launch { listState.animateScrollBy(SCROLL_STEP) }
                 },
                 modifier = Modifier.offset { IntOffset(0, offsetY.roundToInt()) }
             ) {
@@ -114,3 +108,4 @@ fun ScrollHint(
 }
 
 private const val HINT_ALPHA = 0.7F
+private const val SCROLL_STEP = 300f

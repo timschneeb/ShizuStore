@@ -45,7 +45,6 @@ fun AppListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     trailing: (@Composable () -> Unit)? = null,
-    leading: (@Composable () -> Unit)? = null,
     showStars: Boolean = false,
     showInstalls: Boolean = false,
     supporting: String? = app.authorName?.takeIf { it.isNotBlank() } ?: app.summary
@@ -145,7 +144,7 @@ fun AppListItem(
         } else {
             null
         },
-        leading = leading ?: {
+        leading = {
             AsyncImage(
                 model = rememberAppIconModel(indexUrl(app.repoAddress, app.iconUrl)),
                 contentDescription = null,

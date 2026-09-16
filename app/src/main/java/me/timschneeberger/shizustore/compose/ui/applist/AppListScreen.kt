@@ -76,8 +76,8 @@ import kotlinx.coroutines.flow.drop
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.categoryIcon
 import me.timschneeberger.shizustore.compose.composable.AppRowSkeleton
-import me.timschneeberger.shizustore.compose.composable.ContainedLoadingIndicator
 import me.timschneeberger.shizustore.compose.composable.ExpressivePullToRefreshBox
+import me.timschneeberger.shizustore.compose.composable.LoadingIndicatorBox
 import me.timschneeberger.shizustore.compose.composable.OfflineBanner
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.ScrollHint
@@ -477,7 +477,7 @@ private fun AppRows(
         when {
             isInitialLoad -> AppRowSkeleton(contentPadding = listPadding)
 
-            showRefreshing -> ContainedLoadingIndicator()
+            showRefreshing -> LoadingIndicatorBox()
 
             isEmpty -> Placeholder(
                 painter = painterResource(R.drawable.ic_search),

@@ -8,7 +8,6 @@
 
 package me.timschneeberger.shizustore.compose.composable
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,13 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,22 +30,11 @@ fun Info(
     title: String,
     modifier: Modifier = Modifier,
     description: String? = null,
-    painter: Painter? = null,
-    tint: Color = LocalContentColor.current,
-    onClick: (() -> Unit)? = null
+    painter: Painter? = null
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(
-                if (onClick != null) {
-                    Modifier
-                        .minTouchTarget()
-                        .clickable(onClick = onClick)
-                } else {
-                    Modifier
-                }
-            )
             .padding(
                 horizontal = dimensionResource(R.dimen.spacing_large),
                 vertical = dimensionResource(R.dimen.spacing_xsmall)
@@ -60,7 +46,6 @@ fun Info(
             Icon(
                 painter = painter,
                 contentDescription = null,
-                tint = tint,
                 modifier = Modifier.size(dimensionResource(R.dimen.icon_size_default))
             )
         }

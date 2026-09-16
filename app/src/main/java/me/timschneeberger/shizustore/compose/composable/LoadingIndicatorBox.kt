@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -20,7 +21,7 @@ import androidx.compose.ui.semantics.stateDescription
 import me.timschneeberger.shizustore.R
 
 @Composable
-fun ContainedLoadingIndicator(modifier: Modifier = Modifier) {
+fun LoadingIndicatorBox(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()

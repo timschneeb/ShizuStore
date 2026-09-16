@@ -42,8 +42,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.ContentPhase
-import me.timschneeberger.shizustore.compose.composable.ContainedLoadingIndicator
 import me.timschneeberger.shizustore.compose.composable.ExpressivePullToRefreshBox
+import me.timschneeberger.shizustore.compose.composable.LoadingIndicatorBox
 import me.timschneeberger.shizustore.compose.composable.OfflineBanner
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.SectionHeader
@@ -196,7 +196,7 @@ fun AppDetailsScreen(
                     label = "AppDetailsScreenContent"
                 ) { state ->
                     when (state) {
-                        is AppDetailsUiState.Loading -> ContainedLoadingIndicator()
+                        is AppDetailsUiState.Loading -> LoadingIndicatorBox()
 
                         is AppDetailsUiState.NotFound -> Placeholder(
                             painter = painterResource(R.drawable.ic_apps),

@@ -6,8 +6,6 @@
 
 package me.timschneeberger.shizustore.compose.ui.main
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.HorizontalDivider
@@ -36,30 +34,42 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
             enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)
         )
     ) {
-        MoreSheetItem(R.drawable.ic_widgets_outlined, R.string.title_my_apps) {
-            navigateAndDismiss(Destination.Installed)
-        }
+        SheetActionItem(
+            label = stringResource(R.string.title_my_apps),
+            onClick = { navigateAndDismiss(Destination.Installed) },
+            icon = R.drawable.ic_widgets_outlined
+        )
 
         HorizontalDivider()
 
-        MoreSheetItem(R.drawable.ic_favorite_border_outlined, R.string.title_favourites) {
-            navigateAndDismiss(Destination.Favourites)
-        }
-        MoreSheetItem(R.drawable.ic_block_outlined, R.string.title_blacklist) {
-            navigateAndDismiss(Destination.Blacklist)
-        }
-        MoreSheetItem(R.drawable.ic_update_disabled_outlined, R.string.title_ignored_updates) {
-            navigateAndDismiss(Destination.IgnoredUpdates)
-        }
+        SheetActionItem(
+            label = stringResource(R.string.title_favourites),
+            onClick = { navigateAndDismiss(Destination.Favourites) },
+            icon = R.drawable.ic_favorite_border_outlined
+        )
+        SheetActionItem(
+            label = stringResource(R.string.title_blacklist),
+            onClick = { navigateAndDismiss(Destination.Blacklist) },
+            icon = R.drawable.ic_block_outlined
+        )
+        SheetActionItem(
+            label = stringResource(R.string.title_ignored_updates),
+            onClick = { navigateAndDismiss(Destination.IgnoredUpdates) },
+            icon = R.drawable.ic_update_disabled_outlined
+        )
 
         HorizontalDivider()
 
-        MoreSheetItem(R.drawable.ic_settings_outlined, R.string.title_settings) {
-            navigateAndDismiss(Destination.Settings)
-        }
-        MoreSheetItem(R.drawable.ic_info_outlined, R.string.title_about) {
-            navigateAndDismiss(Destination.About)
-        }
+        SheetActionItem(
+            label = stringResource(R.string.title_settings),
+            onClick = { navigateAndDismiss(Destination.Settings) },
+            icon = R.drawable.ic_settings_outlined
+        )
+        SheetActionItem(
+            label = stringResource(R.string.title_about),
+            onClick = { navigateAndDismiss(Destination.About) },
+            icon = R.drawable.ic_info_outlined
+        )
 
         Spacer(
             Modifier
@@ -67,9 +77,4 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
                 .navigationBarsPadding()
         )
     }
-}
-
-@Composable
-private fun MoreSheetItem(@DrawableRes icon: Int, @StringRes label: Int, onClick: () -> Unit) {
-    SheetActionItem(label = stringResource(label), icon = icon, onClick = onClick)
 }
