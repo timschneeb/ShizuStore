@@ -15,8 +15,6 @@ data class AppSource(
     val isInstalled: Boolean get() = installedPackageMatch &&
         app.installedVersionCode == app.versionCode
 
-    val abiLabel: String? get() = DeviceProfile.abiLabel(nativeCode)
-
     val runsOnThisDevice: Boolean
         get() = DeviceProfile.supports(nativeCode) && !DeviceProfile.isIncompatible(app.minSdk)
 }

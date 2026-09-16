@@ -32,10 +32,21 @@ data class AppCandidate(
         return fingerprintMatches(installed, sigSha256, sigMd5)
     }
 
+    /**
+     * F-Droid index rows may pack several ABIs into one comma or space separated
+     * string (a universal APK lists every ABI it contains).
+     */
+    val abiTokens: List<String>
+        get() = abi?.split(',', ' ')
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?.distinct()
+            .orEmpty()
+
     /** A universal candidate (no ABI) runs anywhere; an empty device list means "do not filter". */
-    fun supportsAbi(supported: List<String>): Boolean = abi.isNullOrBlank() ||
+    fun supportsAbi(supported: List<String>): Boolean = abiTokens.isEmpty() ||
         supported.isEmpty() ||
-        supported.any { it.equals(abi, ignoreCase = true) }
+        abiTokens.any { token -> supported.any { it.equals(token, ignoreCase = true) } }
 
     fun isNewerThan(installedVersionCode: Long?): Boolean =
         installedVersionCode != null && versionCode != null && versionCode > installedVersionCode

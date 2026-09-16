@@ -135,7 +135,7 @@ class CatalogUiMapper @Inject constructor() {
                     installedPackage != null && sourcePackage == installedPackage
                 AppSource(
                     app = candidateToResolvedApp(app, candidate, installed, installedPackageMatch),
-                    nativeCode = candidate.abi?.let { listOf(it) } ?: emptyList(),
+                    nativeCode = candidate.abiTokens,
                     signerMatch = candidate.matchesInstalled(installed),
                     installedPackageMatch = installedPackageMatch
                 )

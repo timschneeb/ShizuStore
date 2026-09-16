@@ -34,7 +34,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
@@ -49,8 +48,6 @@ internal data class SourceRow(
     val signerDiffers: Boolean
 ) {
     val isInstalled: Boolean get() = source.isInstalled
-
-    val abiLabel: String? get() = source.abiLabel
 
     val runsHere: Boolean get() = source.runsOnThisDevice
 
@@ -154,8 +151,6 @@ fun SourceList(
                             // package is what tells the sources apart.
                             row.source.app.packageName.takeIf { it.isNotBlank() }
                         ).joinToString(SEPARATOR),
-                        tertiary = row.abiLabel?.let { AnnotatedString(it) },
-                        tertiaryMaxLines = 2,
                         onClick = { onSelect(row.source) },
                         enabled = row.selectable,
                         headlineStyle = MaterialTheme.typography.bodyLarge,

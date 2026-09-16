@@ -55,6 +55,14 @@ class AppCandidateTest {
         assertTrue(candidate(abi = "x86").supportsAbi(emptyList()))
     }
 
+    @Test
+    fun supportsAnyTokenOfCommaSeparatedAbiList() {
+        assertTrue(candidate(abi = "armeabi-v7a,arm64-v8a").supportsAbi(listOf("arm64-v8a")))
+        assertTrue(candidate(abi = "armeabi-v7a, arm64-v8a").supportsAbi(listOf("ARM64-V8A")))
+        assertTrue(candidate(abi = "armeabi-v7a arm64-v8a").supportsAbi(listOf("arm64-v8a")))
+        assertFalse(candidate(abi = "armeabi-v7a,x86").supportsAbi(listOf("arm64-v8a")))
+    }
+
     private fun candidate(abi: String?): AppCandidate = AppCandidate(
         id = 1,
         appSlug = "app",

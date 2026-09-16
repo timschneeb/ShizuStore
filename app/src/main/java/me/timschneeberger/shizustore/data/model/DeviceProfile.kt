@@ -14,15 +14,9 @@ object DeviceProfile {
 
     val sdkInt: Int = Build.VERSION.SDK_INT
 
-    fun supports(nativeCode: List<String>): Boolean =
-        nativeCode.isEmpty() || nativeCode.any { it in abis }
+    fun supports(nativeCode: List<String>): Boolean = nativeCode.isEmpty() ||
+        nativeCode.any { code -> abis.any { it.equals(code, ignoreCase = true) } }
 
     fun isIncompatible(minSdk: Int, deviceSdk: Int = sdkInt): Boolean =
         minSdk > 0 && minSdk > deviceSdk
-
-    fun abiLabel(nativeCode: List<String>): String? = when {
-        nativeCode.isEmpty() -> null
-        else -> nativeCode.sortedBy { abis.indexOf(it).takeIf { i -> i >= 0 } ?: abis.size }
-            .joinToString(", ")
-    }
 }
