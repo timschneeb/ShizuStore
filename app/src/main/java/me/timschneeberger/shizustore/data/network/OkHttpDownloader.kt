@@ -10,7 +10,6 @@ package me.timschneeberger.shizustore.data.network
 
 import java.io.File
 import java.io.IOException
-import java.net.ConnectException
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -67,8 +66,6 @@ class OkHttpDownloader @Inject constructor(
             }
         } catch (e: SocketTimeoutException) {
             NetworkResponse.Error.SocketTimeout(e)
-        } catch (e: ConnectException) {
-            NetworkResponse.Error.ConnectionTimeout(e)
         } catch (e: IOException) {
             NetworkResponse.Error.IO(e)
         } catch (e: CancellationException) {

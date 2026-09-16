@@ -11,8 +11,6 @@ sealed interface NetworkResponse {
 
     sealed interface Error : NetworkResponse {
 
-        data class ConnectionTimeout(val exception: Exception) : Error
-
         data class SocketTimeout(val exception: Exception) : Error
 
         data class IO(val exception: Exception) : Error

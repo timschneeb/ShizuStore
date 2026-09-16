@@ -35,7 +35,6 @@ fun DownloadError.stringRes(): Int = when (this) {
     is DownloadError.HashMismatch -> R.string.error_hash_mismatch
     is DownloadError.Archive -> R.string.error_download_archive
     is DownloadError.InsufficientStorage -> R.string.error_download_insufficient_storage
-    is DownloadError.MirrorExhausted -> R.string.error_download_mirrors_exhausted
 }
 
 @StringRes
@@ -47,7 +46,6 @@ fun DownloadFailure.stringRes(): Int = when (this) {
     DownloadFailure.DOWNLOAD_INSUFFICIENT_STORAGE ->
         R.string.error_download_insufficient_storage
 
-    DownloadFailure.DOWNLOAD_MIRRORS_EXHAUSTED -> R.string.error_download_mirrors_exhausted
     DownloadFailure.INSTALL_ABORTED -> R.string.error_install_aborted
     DownloadFailure.INSTALL_BLOCKED -> R.string.error_install_blocked
     DownloadFailure.INSTALL_CONFLICT -> R.string.error_install_conflict

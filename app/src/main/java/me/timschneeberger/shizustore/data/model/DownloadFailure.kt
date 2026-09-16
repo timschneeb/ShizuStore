@@ -12,7 +12,6 @@ enum class DownloadFailure {
     DOWNLOAD_HASH_MISMATCH,
     DOWNLOAD_ARCHIVE,
     DOWNLOAD_INSUFFICIENT_STORAGE,
-    DOWNLOAD_MIRRORS_EXHAUSTED,
     INSTALL_ABORTED,
     INSTALL_BLOCKED,
     INSTALL_CONFLICT,
@@ -33,7 +32,6 @@ enum class DownloadFailure {
             DOWNLOAD_HASH_MISMATCH,
             DOWNLOAD_ARCHIVE,
             DOWNLOAD_INSUFFICIENT_STORAGE,
-            DOWNLOAD_MIRRORS_EXHAUSTED,
             INSTALL_APK_MISSING,
             INSTALL_INVALID -> false
 
@@ -56,7 +54,6 @@ enum class DownloadFailure {
             is DownloadError.HashMismatch -> DOWNLOAD_HASH_MISMATCH
             is DownloadError.Archive -> DOWNLOAD_ARCHIVE
             is DownloadError.InsufficientStorage -> DOWNLOAD_INSUFFICIENT_STORAGE
-            is DownloadError.MirrorExhausted -> DOWNLOAD_MIRRORS_EXHAUSTED
         }
 
         fun of(error: InstallError): DownloadFailure = when (error) {

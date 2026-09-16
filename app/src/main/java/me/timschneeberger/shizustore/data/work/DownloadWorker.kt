@@ -65,8 +65,6 @@ class DownloadWorker @AssistedInject constructor(
     @Volatile
     private var cancelRequested = false
 
-    private var urlsTried = 0
-
     private var lastEmittedAt = 0L
     private var lastEmittedBytes = 0L
     private var lastEmittedProgress = -1
@@ -83,8 +81,8 @@ class DownloadWorker @AssistedInject constructor(
             transfer(packageName)
         } catch (exception: CancellationException) {
             throw exception
-        } catch (throwable: Throwable) {
-            Log.e(TAG, "Unexpected failure for $packageName; the batch continues", throwable)
+        } catch (exception: Exception) {
+            Log.e(TAG, "Unexpected failure for $packageName; the batch continues", exception)
             Result.success()
         } finally {
             release(packageName)
@@ -127,9 +125,9 @@ class DownloadWorker @AssistedInject constructor(
             fetch(packageName, download, source, target)
         } catch (exception: CancellationException) {
             if (cancelRequested) onStopped(packageName, download, target) else throw exception
-        } catch (throwable: Throwable) {
-            Log.e(TAG, "Unexpected failure for $packageName", throwable)
-            onFailure(packageName, download, DownloadError.Network(throwable), target)
+        } catch (exception: Exception) {
+            Log.e(TAG, "Unexpected failure for $packageName", exception)
+            onFailure(packageName, download, DownloadError.Network(exception), target)
         }
     }
 
@@ -147,69 +145,56 @@ class DownloadWorker @AssistedInject constructor(
         source: File,
         target: File
     ): Result {
-        val urls = listOf(download.apkUrl)
         var lastError: DownloadError? = null
+        var resumeFromDisk = false
+        var attempt = 0
 
-        for (url in urls) {
+        while (attempt < MAX_ATTEMPTS_PER_URL) {
             if (isCancelledByUser(packageName)) return onCancelled(packageName, download, target)
-            urlsTried++
+            attempt++
+            resetProgressWindow()
 
-            var resumeFromDisk = false
-            var attempt = 0
-
-            while (attempt < MAX_ATTEMPTS_PER_URL) {
-                attempt++
-                resetProgressWindow()
-
-                val response = downloader.downloadToFile(
-                    url = url,
-                    target = source,
-                    resume = resumeFromDisk
-                ) { read, total ->
-                    onProgress(packageName, read, total)
-                }
-
-                val error: DownloadError? = when (response) {
-                    is NetworkResponse.Success -> null
-                    is NetworkResponse.Error.Http -> DownloadError.Http(response.statusCode)
-                    is NetworkResponse.Error.ConnectionTimeout ->
-                        DownloadError.Network(response.exception)
-
-                    is NetworkResponse.Error.SocketTimeout ->
-                        DownloadError.Network(response.exception)
-
-                    is NetworkResponse.Error.IO -> DownloadError.Network(response.exception)
-                    is NetworkResponse.Error.Unknown -> DownloadError.Network(response.exception)
-                }
-
-                if (response is NetworkResponse.Success) {
-                    if (resumeFromDisk && response.statusCode != HTTP_PARTIAL) {
-                        Log.w(TAG, "$url ignored Range (${response.statusCode}), restarting")
-                        source.delete()
-                        resumeFromDisk = false
-                        attempt--
-                        continue
-                    }
-                    return verifyAndFinish(packageName, download, source, target)
-                }
-
-                val failure = error ?: DownloadError.MirrorExhausted(urls.size)
-                Log.w(TAG, "Attempt $attempt for $packageName at $url failed: $failure")
-                lastError = failure
-
-                if (!isRetryable(failure) || attempt >= MAX_ATTEMPTS_PER_URL) break
-
-                resumeFromDisk = true
-                delay(RETRY_DELAY_MS * attempt)
+            val response = downloader.downloadToFile(
+                url = download.apkUrl,
+                target = source,
+                resume = resumeFromDisk
+            ) { read, total ->
+                onProgress(packageName, read, total)
             }
+
+            if (response is NetworkResponse.Success) {
+                if (resumeFromDisk && response.statusCode != HTTP_PARTIAL) {
+                    Log.w(
+                        TAG,
+                        "${download.apkUrl} ignored Range (${response.statusCode}), restarting"
+                    )
+                    source.delete()
+                    resumeFromDisk = false
+                    attempt--
+                    continue
+                }
+                return verifyAndFinish(packageName, download, source, target)
+            }
+
+            val failure = when (response) {
+                is NetworkResponse.Error.Http -> DownloadError.Http(response.statusCode)
+                is NetworkResponse.Error.SocketTimeout ->
+                    DownloadError.Network(response.exception)
+
+                is NetworkResponse.Error.IO -> DownloadError.Network(response.exception)
+                is NetworkResponse.Error.Unknown -> DownloadError.Network(response.exception)
+            }
+            Log.w(TAG, "Attempt $attempt for $packageName at ${download.apkUrl} failed: $failure")
+            lastError = failure
+
+            if (!isRetryable(failure) || attempt >= MAX_ATTEMPTS_PER_URL) break
+
+            resumeFromDisk = true
+            delay(RETRY_DELAY_MS * attempt)
         }
 
-        return onFailure(
-            packageName,
-            download,
-            lastError ?: DownloadError.MirrorExhausted(urls.size),
-            target
-        )
+        // The loop only exits after recording a failure.
+        return onFailure(packageName, download, checkNotNull(lastError), target)
     }
 
     private suspend fun verifyAndFinish(
@@ -304,40 +289,13 @@ class DownloadWorker @AssistedInject constructor(
 
     private fun failureData(error: DownloadError): Data = Data.Builder()
         .putString(KEY_ERROR, error::class.simpleName)
-        .putInt(KEY_URLS_TRIED, urlsTried)
-        .apply {
-            when (error) {
-                is DownloadError.Http -> putInt(KEY_HTTP_CODE, error.code)
-
-                is DownloadError.Network -> putString(
-                    KEY_CAUSE,
-                    "${error.cause::class.simpleName}: ${error.cause.message}"
-                        .take(MAX_CAUSE_CHARS)
-                )
-
-                is DownloadError.HashMismatch -> {
-                    putString(KEY_EXPECTED_HASH, error.expected.take(HASH_PREFIX_CHARS))
-                    putString(KEY_ACTUAL_HASH, error.actual.take(HASH_PREFIX_CHARS))
-                }
-
-                is DownloadError.Archive -> putString(KEY_CAUSE, error.entry.take(MAX_CAUSE_CHARS))
-
-                is DownloadError.InsufficientStorage -> {
-                    putLong(KEY_REQUIRED_BYTES, error.requiredBytes)
-                    putLong(KEY_AVAILABLE_BYTES, error.availableBytes)
-                }
-
-                is DownloadError.MirrorExhausted -> Unit
-            }
-        }
         .build()
 
     private suspend fun isCancelledByUser(packageName: String): Boolean = runCatching {
         downloadDao.getDownload(packageName)?.status == DownloadStatus.CANCELLED
     }.getOrDefault(false)
 
-    private fun isRetryable(error: DownloadError?): Boolean = when (error) {
-        null -> false
+    private fun isRetryable(error: DownloadError): Boolean = when (error) {
         is DownloadError.Network -> isTransient(error.cause)
         is DownloadError.Http ->
             error.code == HTTP_CLIENT_TIMEOUT ||
@@ -347,7 +305,6 @@ class DownloadWorker @AssistedInject constructor(
         is DownloadError.HashMismatch -> false
         is DownloadError.Archive -> false
         is DownloadError.InsufficientStorage -> false
-        is DownloadError.MirrorExhausted -> false
     }
 
     private fun isTransient(throwable: Throwable?): Boolean = when (throwable) {
@@ -392,7 +349,6 @@ class DownloadWorker @AssistedInject constructor(
         if (progress >= 0 && progress != lastEmittedProgress) {
             lastEmittedProgress = progress
             downloadDao.updateProgress(packageName, progress, speed, timeRemaining)
-            setProgressAsync(workDataOf(KEY_PROGRESS to progress))
 
             current = current?.copy(
                 status = DownloadStatus.DOWNLOADING,
@@ -463,20 +419,10 @@ class DownloadWorker @AssistedInject constructor(
 
     companion object {
         const val KEY_PACKAGE_NAME = "packageName"
-        const val KEY_PROGRESS = "progress"
 
         const val KEY_ERROR = "error"
-        const val KEY_URLS_TRIED = "urlsTried"
-        const val KEY_HTTP_CODE = "httpCode"
-        const val KEY_CAUSE = "cause"
-        const val KEY_EXPECTED_HASH = "expectedHash"
-        const val KEY_ACTUAL_HASH = "actualHash"
-        const val KEY_REQUIRED_BYTES = "requiredBytes"
-        const val KEY_AVAILABLE_BYTES = "availableBytes"
 
         private const val TAG = "DownloadWorker"
-        private const val HASH_PREFIX_CHARS = 16
-        private const val MAX_CAUSE_CHARS = 200
 
         @SuppressLint("InlinedApi")
         const val FOREGROUND_SERVICE_TYPE = FOREGROUND_SERVICE_TYPE_DATA_SYNC

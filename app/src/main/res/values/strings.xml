@@ -132,7 +132,6 @@
     <string name="error_download_archive">Could not unpack the downloaded archive. Try again later.</string>
     <string name="error_download_http">The repository refused the download. Try again later.</string>
     <string name="error_download_insufficient_storage">Not enough space to download this app. Free some up and try again.</string>
-    <string name="error_download_mirrors_exhausted">Every mirror for this repository failed. Try again later.</string>
     <string name="error_download_network">Could not reach the repository to download this app. Check your connection.</string>
     <string name="error_hash_mismatch">The downloaded file did not match what the repository signed. It was discarded.</string>
     <string name="error_install_aborted">Installation was canceled.</string>

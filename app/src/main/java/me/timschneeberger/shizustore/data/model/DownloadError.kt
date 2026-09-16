@@ -15,5 +15,4 @@ sealed interface DownloadError {
         val requiredBytes: Long,
         val availableBytes: Long
     ) : DownloadError
-    data class MirrorExhausted(val tried: Int) : DownloadError
 }
