@@ -300,7 +300,7 @@ fun AppDetailsScreen(
 
                             SectionHeader(
                                 title = stringResource(R.string.details_more_about),
-                                subtitle = state.details.summary.takeIf { it.isNotBlank() },
+                                subtitle = state.details.description.takeIf { it.isNotBlank() },
                                 onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
                             )
 

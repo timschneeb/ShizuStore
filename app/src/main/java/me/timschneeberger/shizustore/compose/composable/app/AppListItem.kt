@@ -35,7 +35,6 @@ import coil3.compose.AsyncImage
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
 import me.timschneeberger.shizustore.compose.composable.LabelChip
-import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.util.CommonUtil
 
@@ -47,7 +46,7 @@ fun AppListItem(
     trailing: (@Composable () -> Unit)? = null,
     showStars: Boolean = false,
     showInstalls: Boolean = false,
-    supporting: String? = app.authorName?.takeIf { it.isNotBlank() } ?: app.summary
+    supporting: String? = app.summary
 ) {
     val countPart: AnnotatedString? = when {
         showInstalls -> buildAnnotatedString {
@@ -146,7 +145,7 @@ fun AppListItem(
         },
         leading = {
             AsyncImage(
-                model = rememberAppIconModel(indexUrl(app.repoAddress, app.iconUrl)),
+                model = rememberAppIconModel(app.iconUrl),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

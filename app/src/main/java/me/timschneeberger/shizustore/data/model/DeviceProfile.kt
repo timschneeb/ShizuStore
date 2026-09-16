@@ -17,9 +17,6 @@ object DeviceProfile {
     fun supports(nativeCode: List<String>): Boolean =
         nativeCode.isEmpty() || nativeCode.any { it in abis }
 
-    fun runs(minSdk: Int, maxSdk: Int?): Boolean =
-        minSdk <= sdkInt && (maxSdk == null || maxSdk == 0 || maxSdk >= sdkInt)
-
     fun isIncompatible(minSdk: Int, deviceSdk: Int = sdkInt): Boolean =
         minSdk > 0 && minSdk > deviceSdk
 

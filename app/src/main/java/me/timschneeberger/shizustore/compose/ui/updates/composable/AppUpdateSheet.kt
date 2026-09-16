@@ -24,9 +24,7 @@ import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.SheetActionItem
 import me.timschneeberger.shizustore.compose.composable.SheetAppHeader
 import me.timschneeberger.shizustore.compose.composable.SheetDivider
-import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.data.model.ResolvedApp
-import me.timschneeberger.shizustore.util.CommonUtil
 
 @Composable
 fun AppUpdateSheet(
@@ -55,11 +53,10 @@ fun AppUpdateSheet(
             SheetAppHeader(
                 title = app.name.ifBlank { app.packageName },
                 packageName = app.packageName,
-                iconUrl = indexUrl(app.repoAddress, app.iconUrl).orEmpty(),
-                lines = buildList {
-                    add(stringResource(R.string.updates_version, app.versionName, app.versionCode))
-                    if (app.releasedAt > 0L) add(CommonUtil.formatDate(app.releasedAt))
-                },
+                iconUrl = app.iconUrl.orEmpty(),
+                lines = listOf(
+                    stringResource(R.string.updates_version, app.versionName, app.versionCode)
+                ),
                 onAppDetails = {
                     onAppDetails()
                     onDismiss()

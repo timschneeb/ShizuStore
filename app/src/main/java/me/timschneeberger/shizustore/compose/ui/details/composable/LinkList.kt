@@ -34,8 +34,8 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
     val translationLabel = stringResource(R.string.details_translation)
     val donateLabel = stringResource(R.string.details_donate)
 
-    val sourceCodeUrl = details.sourceCode?.takeIf { it.isNotBlank() }
-    val websiteUrl = details.webSite?.takeIf { it.isNotBlank() }
+    val sourceCodeUrl = details.sourceUrl?.takeIf { it.isNotBlank() }
+    val websiteUrl = details.url?.takeIf { it.isNotBlank() }
 
     // A forge website with no dedicated source link is the source link: label
     // it as source code and hide the otherwise duplicate Website row.

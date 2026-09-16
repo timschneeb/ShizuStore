@@ -10,7 +10,6 @@ package me.timschneeberger.shizustore.compose.composable.app
 
 import android.content.Context
 import me.timschneeberger.shizustore.R
-import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.compose.stringRes
 import me.timschneeberger.shizustore.data.api.ShizuUrls
 import me.timschneeberger.shizustore.data.model.DownloadStatus
@@ -86,14 +85,10 @@ internal sealed interface ProgressBar {
 internal fun barFor(progress: Int) =
     ProgressBar.Determinate(progress.coerceIn(0, PERCENT.toInt()) / PERCENT)
 
-internal fun iconBaseUrl(download: Download): String =
-    download.apkUrl.removeSuffix(download.apkName.trimStart('/')).trimEnd('/')
-
-/** Prefer the immutable server icon URL: an upstream apkUrl has no repo-relative base, so the
+/** The immutable server icon URL: an upstream apkUrl has no repo-relative base, so the
  * hash is the only reliable source. */
 internal fun downloadIconUrl(download: Download): String =
-    ShizuUrls.icon(ServerConfig.baseUrl, download.iconHash)
-        ?: indexUrl(iconBaseUrl(download), download.iconUrl).orEmpty()
+    ShizuUrls.icon(ServerConfig.baseUrl, download.iconHash).orEmpty()
 
 internal fun progressPercent(progress: Int): Float = progress.coerceIn(0, PERCENT.toInt()).toFloat()
 

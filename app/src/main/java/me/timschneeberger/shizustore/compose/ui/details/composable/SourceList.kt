@@ -42,7 +42,6 @@ import me.timschneeberger.shizustore.compose.composable.LabelChip
 import me.timschneeberger.shizustore.compose.composable.minTouchTarget
 import me.timschneeberger.shizustore.data.model.AppSource
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
-import me.timschneeberger.shizustore.util.CommonUtil
 
 internal data class SourceRow(
     val source: AppSource,
@@ -150,7 +149,6 @@ fun SourceList(
                     AuroraListItem(
                         headline = row.source.app.versionName,
                         supporting = listOfNotNull(
-                            releasedOn(row.source.added),
                             origin,
                             // Flavor builds of one app differ only by package, so the
                             // package is what tells the sources apart.
@@ -199,10 +197,6 @@ private fun SourceChips(row: SourceRow) {
         }
     }
 }
-
-@Composable
-private fun releasedOn(added: Long): String? =
-    remember(added) { if (added <= 0L) null else CommonUtil.formatDate(added) }
 
 private const val CHEVRON_EXPANDED_DEGREES = 180f
 

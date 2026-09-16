@@ -106,7 +106,7 @@ fun RemovableAppItem(
     icon: Painter,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    supporting: String? = app.authorName?.takeIf { it.isNotBlank() } ?: app.summary
+    supporting: String? = app.summary
 ) {
     RemovableListItem(onRemove = onRemove, modifier = modifier) { triggerRemove ->
         AppListItem(

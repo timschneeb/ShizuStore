@@ -28,7 +28,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.app.AnimatedAppIcon
-import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.extensions.viewExternal
 
@@ -56,7 +55,7 @@ fun DetailsHeader(
     ) {
         AnimatedAppIcon(
             modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_large)),
-            iconUrl = indexUrl(details.repoAddress, details.iconUrl).orEmpty(),
+            iconUrl = details.iconUrl.orEmpty(),
             inProgress = inProgress,
             progress = progress
         )

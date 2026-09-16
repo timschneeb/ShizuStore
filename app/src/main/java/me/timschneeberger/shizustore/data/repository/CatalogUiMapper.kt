@@ -43,32 +43,21 @@ class CatalogUiMapper @Inject constructor() {
 
     fun toResolvedApp(app: AppEntity): ResolvedApp = ResolvedApp(
         packageName = app.packageName ?: app.slug,
-        repoId = 0,
         repoName = displayRepoName(app),
-        repoAddress = "",
         name = app.name,
         summary = app.description,
-        authorName = null,
         iconUrl = ShizuUrls.icon(ServerConfig.baseUrl, app.iconHash),
         versionCode = app.versionCode ?: 0L,
         versionName = app.versionName.orEmpty(),
         signer = app.sigSha256,
-        apkName = "",
-        hash = "",
         size = app.size ?: 0L,
         minSdk = app.minSdk ?: 0,
         installedVersionCode = app.installedVersionCode,
         installedSigner = null,
         slug = app.slug,
-        iconHash = app.iconHash,
         availability = app.availability,
-        storeUrl = app.storeUrl,
-        url = app.url,
-        sourceUrl = app.sourceUrl,
         iconAdaptive = app.iconAdaptive,
-        signerMd5 = app.sigMd5,
         updateAvailable = app.updateAvailable,
-        updateCandidateId = app.updateCandidateId,
         hasPaid = app.hasPaid,
         hasIap = app.hasIap,
         stars = app.stars,
@@ -80,53 +69,33 @@ class CatalogUiMapper @Inject constructor() {
         val primary = detailed.primaryCandidate
         return AppDetails(
             packageName = app.packageName ?: app.slug,
-            repoId = 0,
             repoName = displayRepoName(app),
-            repoAddress = "",
             name = app.name,
-            summary = app.description,
             description = app.description,
             iconUrl = ShizuUrls.icon(ServerConfig.baseUrl, app.iconHash),
             license = app.license.orEmpty(),
             authorName = app.authorName,
-            authorEmail = null,
-            authorPhone = null,
-            authorWebSite = null,
-            webSite = app.url,
-            sourceCode = app.sourceUrl,
             issueTracker = null,
             changelog = null,
             translation = null,
             donate = emptyList(),
-            liberapay = null,
-            openCollective = null,
-            bitcoin = null,
-            litecoin = null,
             categories = listOfNotNull(
                 app.categoryPath.lastOrNull()?.name?.takeIf { it.isNotBlank() }
                     ?: app.categorySlug
             ),
-            antiFeatures = emptyList(),
             screenshots = emptyList(),
-            added = 0L,
             lastUpdated = 0L,
-            versionCode = app.versionCode ?: 0L,
             versionName = app.versionName.orEmpty(),
-            signer = primary?.sigSha256 ?: app.sigSha256,
             size = primary?.size ?: 0L,
             minSdk = app.minSdk ?: 0,
             permissions = app.permissions.filterNot { it.endsWith(DYNAMIC_RECEIVER_SUFFIX) },
             installedVersionCode = app.installedVersionCode,
-            installedSigner = null,
-            slug = app.slug,
-            iconHash = app.iconHash,
             availability = app.availability,
             storeUrl = app.storeUrl,
             url = app.url,
             sourceUrl = app.sourceUrl,
             sourceKind = app.sourceKind,
             authorUrl = app.authorUrl,
-            iconAdaptive = app.iconAdaptive,
             hasPaid = app.hasPaid,
             hasIap = app.hasIap,
             stars = app.stars
@@ -166,8 +135,6 @@ class CatalogUiMapper @Inject constructor() {
                     installedPackage != null && sourcePackage == installedPackage
                 AppSource(
                     app = candidateToResolvedApp(app, candidate, installed, installedPackageMatch),
-                    added = 0L,
-                    releaseChannels = emptyList(),
                     nativeCode = candidate.abi?.let { listOf(it) } ?: emptyList(),
                     signerMatch = candidate.matchesInstalled(installed),
                     installedPackageMatch = installedPackageMatch
@@ -184,22 +151,17 @@ class CatalogUiMapper @Inject constructor() {
         // The candidate's own package wins so a flavor source shows the package
         // it actually installs as.
         packageName = candidate.packageName ?: app.packageName ?: app.slug,
-        repoId = 0,
         // The candidate's own origin, not the app's: one app can ship both a forge
         // build and an F-Droid build signed by different keys.
         repoName = candidate.source?.displayName()
             ?: app.sourceName?.takeIf { it.isNotBlank() }
             ?: "Shizu Store",
-        repoAddress = "",
         name = app.name,
         summary = app.description,
-        authorName = null,
         iconUrl = ShizuUrls.icon(ServerConfig.baseUrl, app.iconHash),
         versionCode = candidate.versionCode ?: 0L,
         versionName = candidate.versionName.orEmpty(),
         signer = candidate.sigSha256,
-        apkName = candidate.fileName(),
-        hash = candidate.sha256.orEmpty(),
         size = candidate.size ?: 0L,
         minSdk = candidate.minSdk ?: app.minSdk ?: 0,
         // Only the installed flavor's row carries the installed version, so the
@@ -207,21 +169,11 @@ class CatalogUiMapper @Inject constructor() {
         installedVersionCode = if (installedPackageMatch) app.installedVersionCode else null,
         installedSigner = installed?.takeIf { it.isKnown }?.sha256?.joinToString(" "),
         slug = app.slug,
-        iconHash = app.iconHash,
         availability = app.availability,
-        storeUrl = app.storeUrl,
-        url = app.url,
-        sourceUrl = app.sourceUrl,
         iconAdaptive = app.iconAdaptive,
-        signerMd5 = candidate.sigMd5,
         updateAvailable = app.updateAvailable,
-        updateCandidateId = app.updateCandidateId,
         candidateId = candidate.id
     )
-
-    private fun AppCandidate.fileName(): String =
-        archiveEntry?.takeIf { it.isNotBlank() }?.substringAfterLast('/')
-            ?: apkUrl.substringBefore('?').substringAfterLast('/')
 }
 
 /** AndroidX's ContextCompat declares this per-app permission; it is not a user grant. */

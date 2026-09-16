@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import coil3.compose.AsyncImage
 import me.timschneeberger.shizustore.R
-import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.util.CommonUtil
 
@@ -64,7 +63,7 @@ fun AppTile(app: ResolvedApp, onClick: () -> Unit, modifier: Modifier = Modifier
                 .aspectRatio(1f)
         ) {
             AsyncImage(
-                model = rememberAppIconModel(indexUrl(app.repoAddress, app.iconUrl)),
+                model = rememberAppIconModel(app.iconUrl),
                 contentDescription = null,
                 contentScale = Crop,
                 modifier = Modifier
