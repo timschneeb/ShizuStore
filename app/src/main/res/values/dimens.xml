@@ -38,7 +38,7 @@
     <dimen name="progress_width_placeholder">160dp</dimen>
     <dimen name="repo_tile_width">220dp</dimen>
     <dimen name="icon_container_category">40dp</dimen>
-    <dimen name="screenshot_carousel_height">320dp</dimen>
+    <dimen name="screenshot_carousel_height">240dp</dimen>
     <dimen name="carousel_item_width">280dp</dimen>
 
     <dimen name="skeleton_line_tile">11dp</dimen>

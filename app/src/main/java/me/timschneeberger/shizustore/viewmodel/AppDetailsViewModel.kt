@@ -362,8 +362,11 @@ class AppDetailsViewModel @Inject constructor(
                 detailed != null -> {
                     val fingerprint = installed?.let { CertFingerprint.of(it.signer, it.signerMd5) }
                     AppDetailsUiState.Loaded(
-                        details = mapper.toAppDetails(detailed)
-                            .copy(fullDescription = detailedAppRepository.fullDescription(slug)),
+                        details = mapper.toAppDetails(detailed).copy(
+                            fullDescription = detailedAppRepository.fullDescription(slug),
+                            changelog = detailedAppRepository.changelog(slug),
+                            screenshots = detailedAppRepository.screenshots(slug).orEmpty()
+                        ),
                         sources = mapper.toSources(detailed, fingerprint, installed?.packageName),
                         download = download,
                         installedPackage = installed?.packageName

@@ -84,6 +84,12 @@ class DetailedAppRepositoryTest {
         assertEquals("github", candidates.first().source!!.wire)
         assertTrue(candidates.first().isPrimary)
         assertEquals("https://example.com/alpha.apk", candidates.first().apkUrl)
+        assertEquals("# Alpha readme", repository.fullDescription("alpha"))
+        assertEquals("## 1.0\n- First release", repository.changelog("alpha"))
+        assertEquals(
+            "https://f-droid.org/repo/example/en-US/phoneScreenshots/00.png",
+            repository.screenshots("alpha")?.single()
+        )
     }
 
     @Test
@@ -116,7 +122,10 @@ class DetailedAppRepositoryTest {
               "storeUrl": null, "excludedReason": null,
               "categoryPath": [ { "slug": "apps", "name": "Apps" } ],
               "parentSlug": null, "addedAt": "2026-01-01T00:00:00+00:00",
-              "lastCheckedAt": "2026-05-01T00:00:00+00:00"
+              "lastCheckedAt": "2026-05-01T00:00:00+00:00",
+              "fullDescription": "# Alpha readme",
+              "changelog": "## 1.0\n- First release",
+              "screenshots": ["https://f-droid.org/repo/example/en-US/phoneScreenshots/00.png"]
             }
         """.trimIndent()
     }

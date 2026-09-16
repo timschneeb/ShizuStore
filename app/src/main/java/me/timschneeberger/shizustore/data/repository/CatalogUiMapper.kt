@@ -126,6 +126,7 @@ class CatalogUiMapper @Inject constructor() {
             storeUrl = app.storeUrl,
             url = app.url,
             sourceUrl = app.sourceUrl,
+            sourceKind = app.sourceKind,
             authorUrl = app.authorUrl,
             iconAdaptive = app.iconAdaptive,
             hasPaid = app.hasPaid,

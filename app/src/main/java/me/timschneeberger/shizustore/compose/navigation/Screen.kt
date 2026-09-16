@@ -31,6 +31,9 @@ sealed class Screen : NavKey, Parcelable {
     data class MoreAbout(val packageName: String) : Screen()
 
     @Serializable
+    data class Changelog(val packageName: String) : Screen()
+
+    @Serializable
     data object Downloads : Screen()
 
     @Serializable

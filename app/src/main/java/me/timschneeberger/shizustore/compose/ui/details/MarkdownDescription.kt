@@ -38,12 +38,14 @@ import me.timschneeberger.shizustore.extensions.viewExternal
 
 /**
  * Rows that carry GitHub rendered HTML instead of markdown fall back to the
- * platform HTML renderer.
+ * platform HTML renderer. [assumeHtml] forces that path for sources whose
+ * release notes are always sanitized HTML (F-Droid, IzzyOnDroid).
  */
 @Composable
 internal fun MarkdownDescription(
     content: String,
     repoBaseUrl: String? = null,
+    assumeHtml: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -58,7 +60,7 @@ internal fun MarkdownDescription(
     // The library annotates links against LocalUriHandler; override it so URLs
     // fail soft like every other external link in the app.
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-        if (isRenderedHtml(content)) {
+        if (assumeHtml || isRenderedHtml(content)) {
             Text(
                 text = remember(content) { AnnotatedString.fromHtml(content) },
                 modifier = modifier.fillMaxWidth(),

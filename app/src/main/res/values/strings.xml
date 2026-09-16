@@ -78,6 +78,8 @@
 
     <string name="details_anti_features">Anti-features</string>
     <string name="details_changelog">Changelog</string>
+    <string name="details_changelog_subtitle">What\'s new for version %1$s</string>
+    <string name="details_changelog_empty">No changelog available</string>
     <string name="details_channel_alpha">Alpha</string>
     <string name="details_channel_beta">Beta</string>
     <string name="details_channel_stable">Stable</string>
@@ -384,7 +386,7 @@
     <string name="title_downloads">Downloads</string>
     <string name="title_favourites">Favourites</string>
     <string name="title_ignored_updates">Ignored updates</string>
-    <string name="title_my_apps">My apps &amp; games</string>
+    <string name="title_my_apps">My apps</string>
     <string name="title_repositories">Repositories</string>
     <string name="title_settings">Settings</string>
     <string name="title_updates">Updates</string>

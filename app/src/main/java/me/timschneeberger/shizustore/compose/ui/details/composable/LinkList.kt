@@ -31,7 +31,6 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
     val sourceCodeLabel = stringResource(R.string.details_source_code)
     val storeLabel = stringResource(R.string.details_store)
     val issueTrackerLabel = stringResource(R.string.details_issue_tracker)
-    val changelogLabel = stringResource(R.string.details_changelog)
     val translationLabel = stringResource(R.string.details_translation)
     val donateLabel = stringResource(R.string.details_donate)
 
@@ -65,7 +64,6 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
         }
 
         details.issueTracker?.let { addOnce(issueTrackerLabel, it) }
-        details.changelog?.let { addOnce(changelogLabel, it) }
         details.translation?.let { addOnce(translationLabel, it) }
         details.donate.forEach { addOnce(donateLabel, it) }
     }

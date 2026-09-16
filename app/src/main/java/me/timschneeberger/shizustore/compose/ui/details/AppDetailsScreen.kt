@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
@@ -57,6 +58,7 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsTags
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallAction
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallActions
 import me.timschneeberger.shizustore.compose.ui.details.composable.LinkList
+import me.timschneeberger.shizustore.compose.ui.details.composable.ScreenshotGallery
 import me.timschneeberger.shizustore.compose.ui.details.composable.SourceList
 import me.timschneeberger.shizustore.compose.ui.details.composable.StoreNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.installButtonState
@@ -299,6 +301,22 @@ fun AppDetailsScreen(
                                 onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
                             )
 
+                            if (!state.details.changelog.isNullOrBlank()) {
+                                SectionHeader(
+                                    title = stringResource(R.string.details_changelog),
+                                    subtitle = state.details.versionName
+                                        .takeIf { it.isNotBlank() }
+                                        ?.let { stringResource(R.string.details_changelog_subtitle, it) },
+                                    onClick = {
+                                        onNavigateTo(Destination.Changelog(packageName))
+                                    }
+                                )
+                            }
+
+                            if (state.details.screenshots.isNotEmpty()) {
+                                ScreenshotGallery(screenshots = state.details.screenshots)
+                            }
+
                             LinkList(details = state.details)
 
                             if (state.sources.isNotEmpty()) {
@@ -335,6 +353,7 @@ fun AppDetailsScreen(
                             DetailsCarousel(
                                 title = stringResource(R.string.details_more_from_category),
                                 apps = moreFromCategory,
+                                modifier = Modifier.padding(bottom = 8.dp),
                                 onHeaderClick = categorySlug?.takeIf {
                                     it.isNotBlank()
                                 }?.let { slug ->

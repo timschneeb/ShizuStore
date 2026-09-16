@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.data.model
 
 import androidx.room.Ignore
 import me.timschneeberger.shizustore.data.api.Availability
+import me.timschneeberger.shizustore.data.api.SourceKind
 
 data class AppDetails(
     val packageName: String,
@@ -58,5 +59,6 @@ data class AppDetails(
     val hasIap: Boolean = false,
     val stars: Int? = null,
     val authorUrl: String? = null,
-    @Ignore val fullDescription: String? = null
+    @Ignore val fullDescription: String? = null,
+    @Ignore val sourceKind: SourceKind? = null
 )

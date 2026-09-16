@@ -10,6 +10,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import me.timschneeberger.shizustore.data.api.SourceKind
 
 private const val BASE = "https://raw.githubusercontent.com/o/r/HEAD/"
 
@@ -75,5 +76,14 @@ class MarkdownDescriptionTest {
         assertEquals(BASE, githubRawBase("https://github.com/o/r.git"))
         assertNull(githubRawBase("https://morphe.software/"))
         assertNull(githubRawBase(null))
+    }
+
+    @Test
+    fun indexRepoChangelogsRenderAsHtml() {
+        assertTrue(changelogRendersAsHtml(SourceKind.FDROID))
+        assertTrue(changelogRendersAsHtml(SourceKind.IZZY))
+        assertFalse(changelogRendersAsHtml(SourceKind.GITHUB))
+        assertFalse(changelogRendersAsHtml(SourceKind.GITLAB))
+        assertFalse(changelogRendersAsHtml(null))
     }
 }

@@ -56,6 +56,26 @@ class DetailedAppRepository @Inject constructor(
 
     fun fullDescription(slug: String): String? = fullDescriptions[slug]
 
+    /** Same process-lifetime LRU as [fullDescriptions]; the changelog screen reads one app at a time. */
+    private val changelogs = Collections.synchronizedMap(
+        object : LinkedHashMap<String, String>(CACHE_SIZE, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>) =
+                size > MAX_CACHED_DESCRIPTIONS
+        }
+    )
+
+    fun changelog(slug: String): String? = changelogs[slug]
+
+    /** Same process-lifetime LRU as [fullDescriptions]; the details gallery reads one app at a time. */
+    private val screenshots = Collections.synchronizedMap(
+        object : LinkedHashMap<String, List<String>>(CACHE_SIZE, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<String>>) =
+                size > MAX_CACHED_DESCRIPTIONS
+        }
+    )
+
+    fun screenshots(slug: String): List<String>? = screenshots[slug]
+
     suspend fun fetchAndPersist(slug: String): DetailedAppResult =
         when (val result = api.app(slug)) {
             is ApiResult.Failure -> result.error.toFailure()
@@ -80,6 +100,8 @@ class DetailedAppRepository @Inject constructor(
         appDao.upsert(updated)
 
         detail.fullDescription?.takeIf { it.isNotBlank() }?.let { fullDescriptions[slug] = it }
+        detail.changelog?.takeIf { it.isNotBlank() }?.let { changelogs[slug] = it }
+        detail.screenshots.takeIf { it.isNotEmpty() }?.let { screenshots[slug] = it }
 
         val downloads = detail.downloads.map { it.toEntity(slug) }
         appDownloadDao.replaceForApp(slug, downloads)
