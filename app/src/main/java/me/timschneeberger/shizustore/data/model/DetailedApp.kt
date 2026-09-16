@@ -11,16 +11,8 @@ data class DetailedApp(
     val app: AppEntity,
     val candidates: List<AppCandidate>
 ) {
-    val packageName: String? get() = app.packageName
-
     /** Candidate to offer for a fresh install: first one runnable on this device (server-primary first). */
     val primaryCandidate: AppCandidate?
         get() = candidates.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
             ?: candidates.firstOrNull()
-
-    fun candidateFor(installed: CertFingerprint?): AppCandidate? {
-        val matches = candidates.filter { it.matchesInstalled(installed) }
-        return matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
-            ?: matches.firstOrNull()
-    }
 }

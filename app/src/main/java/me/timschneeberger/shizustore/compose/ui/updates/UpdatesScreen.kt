@@ -62,7 +62,6 @@ fun UpdatesScreen(
     val syncFailure by viewModel.syncFailure.collectAsStateWithLifecycle()
     val blacklisted by viewModel.blacklisted.collectAsStateWithLifecycle()
     val sheetApp by viewModel.sheetApp.collectAsStateWithLifecycle()
-    val sheetWhatsNew by viewModel.sheetWhatsNew.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val isInitialLoad = apps.loadState.refresh is LoadState.Loading && apps.itemCount == 0
@@ -150,11 +149,16 @@ fun UpdatesScreen(
                                     apps[index]?.let { app ->
                                         AppUpdateItem(
                                             app = app,
-                                            download = downloads[app.installedPackage ?: app.packageName],
+                                            download = downloads[
+                                                app.installedPackage
+                                                    ?: app.packageName
+                                            ],
                                             onClick = { viewModel.openSheet(app) },
                                             onUpdate = { viewModel.update(app) },
                                             onCancel = {
-                                                viewModel.cancel(app.installedPackage ?: app.packageName)
+                                                viewModel.cancel(
+                                                    app.installedPackage ?: app.packageName
+                                                )
                                             }
                                         )
                                     }
@@ -170,7 +174,6 @@ fun UpdatesScreen(
             AppUpdateSheet(
                 app = app,
                 isBlacklisted = app.packageName in blacklisted,
-                whatsNew = sheetWhatsNew,
                 onAppDetails = { onNavigateTo(Destination.AppDetails(app.packageName)) },
                 onIgnoreAllUpdates = { viewModel.ignoreAllUpdates(app) },
                 onIgnoreThisVersion = { viewModel.ignoreThisVersion(app) },

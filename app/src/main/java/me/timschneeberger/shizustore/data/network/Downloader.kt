@@ -11,8 +11,6 @@ import java.io.File
 import okhttp3.Headers
 
 interface Downloader {
-    suspend fun headCall(url: String, headers: Headers.Builder.() -> Unit = {}): NetworkResponse
-
     suspend fun downloadToFile(
         url: String,
         target: File,

@@ -134,11 +134,6 @@ class AppListViewModel @Inject constructor(
         _args.update { it.copy(sort = sort) }
     }
 
-    fun clearFilters() {
-        _atSearchHome.value = false
-        _args.update { it.copy(categorySlug = null, recommended = false, sort = AppSort.NAME) }
-    }
-
     fun clearAll() {
         _args.value = AppListArgs()
         _atSearchHome.value = true

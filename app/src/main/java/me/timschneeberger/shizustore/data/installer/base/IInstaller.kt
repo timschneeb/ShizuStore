@@ -11,8 +11,6 @@ import me.timschneeberger.shizustore.data.room.entity.Download
 
 interface IInstaller {
     fun install(download: Download)
-    fun clearQueue()
-    fun isAlreadyQueued(packageName: String): Boolean
     fun removeFromInstallQueue(packageName: String)
 
     fun cancelInstall(packageName: String) {}

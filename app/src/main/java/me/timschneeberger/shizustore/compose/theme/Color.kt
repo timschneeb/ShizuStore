@@ -19,10 +19,6 @@ import androidx.compose.ui.graphics.luminance
 @ReadOnlyComposable
 private fun isAppInDarkTheme(): Boolean = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
-val warningColor: Color
-    @Composable @ReadOnlyComposable
-    get() = if (isAppInDarkTheme()) Color(0xFFFFB74D) else Color(0xFFFF7600)
-
 /** Material has no success role, and a finished download wants one. Failures use `error`. */
 val successColor: Color
     @Composable @ReadOnlyComposable

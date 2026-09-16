@@ -13,7 +13,6 @@ import android.app.Notification
 import android.content.Context
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -499,11 +498,6 @@ class DownloadWorker @AssistedInject constructor(
 
         private fun release(packageName: String) {
             synchronized(claimed) { claimed.remove(packageName) }
-        }
-
-        @VisibleForTesting
-        internal fun clearClaims() {
-            synchronized(claimed) { claimed.clear() }
         }
 
         fun uniqueName(packageName: String) = "download-$packageName"

@@ -77,17 +77,6 @@ class AppRepository @Inject constructor(
 
     fun observeRandomPool(): Flow<List<AppEntity>> = appDao.observeAll().hideSelf()
 
-    fun pagedFavourites(): PagingSource<Int, AppEntity> = appDao.pagedFavourites()
-
-    fun observeBlacklisted(): Flow<List<AppEntity>> = appDao.observeBlacklisted()
-
-    fun observeIgnoredUpdates(): Flow<List<AppEntity>> = appDao.observeIgnoredUpdates()
-
-    fun observe(slug: String): Flow<AppEntity?> = appDao.observe(slug)
-
-    fun observeByPackage(packageName: String): Flow<List<AppEntity>> =
-        appDao.observeByPackage(packageName)
-
     fun observeDetail(slug: String): Flow<DetailedApp?> = combine(
         appDao.observe(slug),
         appDownloadDao.observeForApp(slug)
@@ -101,8 +90,6 @@ class AppRepository @Inject constructor(
 
     suspend fun getByPackage(packageName: String): AppEntity? =
         appDao.getByPackage(packageName) ?: appDao.getByDownloadPackage(packageName)
-
-    suspend fun getAll(): List<AppEntity> = appDao.getAll()
 
     /**
      * The package the entry is actually installed under: the canonical package or,
@@ -124,20 +111,12 @@ class AppRepository @Inject constructor(
     suspend fun updatableApps(): List<AppEntity> =
         appDao.getAll().filter { it.updateAvailable && it.packageName != null }
 
-    suspend fun detail(slug: String): DetailedApp? {
-        val app = appDao.get(slug) ?: return null
-        val candidates = appDownloadDao.forApp(slug).map { AppCandidate.from(it, app.packageName) }
-        return DetailedApp(app, candidates)
-    }
-
     suspend fun candidate(id: Long): AppCandidate? = appDownloadDao.getById(id)?.let { entity ->
         val packageName = appDao.get(entity.appSlug)?.packageName
         AppCandidate.from(entity, packageName)
     }
 
     fun observeCategories(): Flow<List<CategoryEntity>> = categoryDao.observeAll()
-
-    suspend fun categories(): List<CategoryEntity> = categoryDao.getAll()
 
     private fun Flow<List<AppEntity>>.hideSelf(): Flow<List<AppEntity>> =
         map { apps -> apps.filterNot { it.packageName == SHIZU_STORE_PACKAGE } }

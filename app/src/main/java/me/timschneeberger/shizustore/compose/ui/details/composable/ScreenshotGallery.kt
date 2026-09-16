@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap
 import me.timschneeberger.shizustore.R
 
 /**
- * Horizontal screenshot strip sourced from the F-Droid/Izzy index. URLs are
+ * Horizontal screenshot strip sourced from the server detail payload. URLs are
  * absolute upstream links, so they load directly; a tap opens a fullscreen
  * pager.
  */
@@ -101,11 +101,7 @@ fun ScreenshotGallery(screenshots: List<String>, modifier: Modifier = Modifier) 
 }
 
 @Composable
-private fun ScreenshotViewer(
-    screenshots: List<String>,
-    initialIndex: Int,
-    onDismiss: () -> Unit
-) {
+private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDismiss: () -> Unit) {
     val pagerState = rememberPagerState(initialPage = initialIndex) { screenshots.size }
 
     Dialog(

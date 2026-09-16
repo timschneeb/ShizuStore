@@ -35,9 +35,6 @@ interface AppDao {
     @Query("SELECT * FROM app WHERE slug = :slug")
     fun observe(slug: String): Flow<AppEntity?>
 
-    @Query("SELECT * FROM app WHERE packageName = :packageName")
-    fun observeByPackage(packageName: String): Flow<List<AppEntity>>
-
     @Query("SELECT * FROM app")
     suspend fun getAll(): List<AppEntity>
 
@@ -54,9 +51,6 @@ interface AppDao {
 
     @Upsert
     suspend fun upsert(app: AppEntity)
-
-    @Upsert
-    suspend fun upsertAll(apps: List<AppEntity>)
 
     @Query("DELETE FROM app WHERE slug = :slug")
     suspend fun delete(slug: String)

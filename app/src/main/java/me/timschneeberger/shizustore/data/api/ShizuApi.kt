@@ -7,13 +7,6 @@ package me.timschneeberger.shizustore.data.api
 
 /** Query for `GET /v1/apps`; null fields are omitted (server defaults apply). */
 data class AppsQuery(
-    val category: String? = null,
-    val q: String? = null,
-    val license: String? = null,
-    val listing: String? = null,
-    val availability: String? = null,
-    val type: String? = null,
-    val recommended: Boolean? = null,
     val page: Int = 1,
     val pageSize: Int = 50,
     val sort: String? = null,

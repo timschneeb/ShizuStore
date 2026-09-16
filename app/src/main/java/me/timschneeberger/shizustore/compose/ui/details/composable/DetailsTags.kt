@@ -41,7 +41,11 @@ internal sealed interface DetailTag {
 
 internal fun detailTags(context: Context, details: AppDetails): List<DetailTag> = buildList {
     details.stars?.let {
-        add(DetailTag.Text(context.getString(R.string.app_stars, CommonUtil.formatCount(it.toLong()))))
+        add(
+            DetailTag.Text(
+                context.getString(R.string.app_stars, CommonUtil.formatCount(it.toLong()))
+            )
+        )
     }
 
     if (details.lastUpdated > 0L) add(DetailTag.Text(CommonUtil.formatDate(details.lastUpdated)))

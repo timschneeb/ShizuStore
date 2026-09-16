@@ -131,16 +131,12 @@ data class CategoryNodeDto(
 @Serializable
 data class PagedAppsDto(
     val items: List<AppSummaryDto> = emptyList(),
-    val total: Int = 0,
-    val page: Int = 1,
-    val pageSize: Int = 0
+    val total: Int = 0
 )
 
 @Serializable
 data class RemovedAppDto(
-    val slug: String,
-    val name: String? = null,
-    val removedAt: String = ""
+    val slug: String
 )
 
 @Serializable
@@ -154,16 +150,9 @@ data class ChangesDto(
 )
 
 @Serializable
-data class CountsDto(
-    val apps: Int = 0,
-    val categories: Int = 0
-)
-
-@Serializable
 data class MetaDto(
     val generatedAt: String = "",
     val listCommit: String? = null,
-    val counts: CountsDto = CountsDto(),
     val useInstallCountsForPopularity: Boolean = false
 )
 

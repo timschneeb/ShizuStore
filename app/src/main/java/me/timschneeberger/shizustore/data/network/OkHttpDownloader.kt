@@ -33,16 +33,6 @@ class OkHttpDownloader @Inject constructor(
     private val client: OkHttpClient
 ) : Downloader {
 
-    override suspend fun headCall(
-        url: String,
-        headers: Headers.Builder.() -> Unit
-    ): NetworkResponse = withContext(Dispatchers.IO) {
-        val headRequest = request(url, headers)
-            .head()
-            .build()
-        client.newCall(headRequest).execute().use { it.asNetworkResponse() }
-    }
-
     override suspend fun downloadToFile(
         url: String,
         target: File,
@@ -115,7 +105,7 @@ class OkHttpDownloader @Inject constructor(
 
 private fun Response.asNetworkResponse(): NetworkResponse =
     if (isSuccessful || code == HTTP_NOT_MODIFIED) {
-        NetworkResponse.Success(code, headers.getDate("Last-Modified"), header("ETag"))
+        NetworkResponse.Success(code)
     } else {
         NetworkResponse.Error.Http(code)
     }

@@ -38,8 +38,3 @@ sealed interface EtagResult<out T> {
 
     data object NotFound : EtagResult<Nothing>
 }
-
-inline fun <T, R> ApiResult<T>.map(transform: (T) -> R): ApiResult<R> = when (this) {
-    is ApiResult.Success -> ApiResult.Success(transform(value))
-    is ApiResult.Failure -> this
-}

@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -28,8 +27,6 @@ import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.util.Preferences
-
-data class RepoSummary(val id: Int, val name: String, val appCount: Int)
 
 @HiltViewModel
 class AppsViewModel @Inject constructor(
@@ -61,10 +58,6 @@ class AppsViewModel @Inject constructor(
             Preferences.putBoolean(context, Preferences.PREFERENCE_SHIZUKU_CARD_DISMISSED, true)
         }
     }
-
-    val repos: StateFlow<List<RepoSummary>> =
-        flowOf(emptyList<RepoSummary>())
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyList())
 
     // Seeded per ViewModel (app launch): the row varies between launches but does not
     // reshuffle on every catalog emission while a sync writes to Room.

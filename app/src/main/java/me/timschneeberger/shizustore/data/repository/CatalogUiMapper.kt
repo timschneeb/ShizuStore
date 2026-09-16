@@ -16,7 +16,6 @@ import me.timschneeberger.shizustore.data.model.AppSource
 import me.timschneeberger.shizustore.data.model.CertFingerprint
 import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.ResolvedApp
-import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.util.ServerConfig
 
@@ -116,7 +115,6 @@ class CatalogUiMapper @Inject constructor() {
             signer = primary?.sigSha256 ?: app.sigSha256,
             size = primary?.size ?: 0L,
             minSdk = app.minSdk ?: 0,
-            whatsNew = "",
             permissions = app.permissions.filterNot { it.endsWith(DYNAMIC_RECEIVER_SUFFIX) },
             installedVersionCode = app.installedVersionCode,
             installedSigner = null,
@@ -154,10 +152,13 @@ class CatalogUiMapper @Inject constructor() {
                 )
             }
             .map { (_, candidates) ->
-                val candidate = candidates.firstOrNull { it.isPrimary && it.supportsAbi(AppCandidate.deviceAbis) }
-                    ?: candidates.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
-                    ?: candidates.firstOrNull { it.isPrimary }
-                    ?: candidates.first()
+                val candidate =
+                    candidates.firstOrNull {
+                        it.isPrimary && it.supportsAbi(AppCandidate.deviceAbis)
+                    }
+                        ?: candidates.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
+                        ?: candidates.firstOrNull { it.isPrimary }
+                        ?: candidates.first()
                 // Flavors usually share a signing key, so only the package ties the
                 // installed app to its own source; the fingerprint alone cannot.
                 val sourcePackage = candidate.packageName ?: app.packageName
@@ -221,9 +222,6 @@ class CatalogUiMapper @Inject constructor() {
     private fun AppCandidate.fileName(): String =
         archiveEntry?.takeIf { it.isNotBlank() }?.substringAfterLast('/')
             ?: apkUrl.substringBefore('?').substringAfterLast('/')
-
-    fun fromEntities(downloads: List<AppDownloadEntity>): List<AppCandidate> =
-        downloads.map { AppCandidate.from(it, null) }
 }
 
 /** AndroidX's ContextCompat declares this per-app permission; it is not a user grant. */

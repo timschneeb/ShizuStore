@@ -5,12 +5,12 @@
 
 package me.timschneeberger.shizustore.compose.ui.details
 
+import me.timschneeberger.shizustore.data.api.SourceKind
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import me.timschneeberger.shizustore.data.api.SourceKind
 
 private const val BASE = "https://raw.githubusercontent.com/o/r/HEAD/"
 

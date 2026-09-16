@@ -45,7 +45,6 @@ object NotificationUtil {
     const val CHANNEL_INSTALL = "install_v2"
 
     const val CHANNEL_UPDATE = "update"
-    const val CHANNEL_REPO = "repo"
     const val CHANNEL_ALERTS = "alerts"
 
     private val LEGACY_CHANNELS = listOf("install")
@@ -118,13 +117,6 @@ object NotificationUtil {
                     context,
                     CHANNEL_ALERTS,
                     R.string.notification_channel_alerts,
-                    NotificationManager.IMPORTANCE_HIGH,
-                    GROUP_CHANNELS_ALERTS
-                ),
-                channel(
-                    context,
-                    CHANNEL_REPO,
-                    R.string.notification_channel_repo,
                     NotificationManager.IMPORTANCE_HIGH,
                     GROUP_CHANNELS_ALERTS
                 )
@@ -293,8 +285,6 @@ object NotificationUtil {
             fun gone(id: Int) = AppNotification(id, group = null, title = null)
         }
     }
-
-    fun refreshGroupSummaries(context: Context) = refreshGroupSummaries(context, change = null)
 
     private fun refreshGroupSummaries(context: Context, change: AppNotification?) {
         val manager = context.getSystemService<NotificationManager>() ?: return
@@ -492,22 +482,6 @@ object NotificationUtil {
             .setContentIntent(openAppIntent(context, MainActivity.TAB_UPDATES))
             .build()
 
-    fun fingerprintMismatchNotification(context: Context, repoName: String): Notification {
-        val text = context.getString(R.string.notification_fingerprint_mismatch_text)
-        return NotificationCompat.Builder(context, CHANNEL_REPO)
-            .setSmallIcon(R.drawable.ic_shield)
-            .setContentTitle(
-                context.getString(R.string.notification_fingerprint_mismatch, repoName)
-            )
-            .setContentText(text)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
-            .setAutoCancel(true)
-            .setContentIntent(openAppIntent(context))
-            .build()
-    }
-
     /** POST_NOTIFICATIONS may be absent; a refused post must not fail the work around it. */
     @SuppressLint("MissingPermission")
     fun notify(context: Context, id: Int, notification: Notification) {
@@ -515,7 +489,7 @@ object NotificationUtil {
             .onFailure { Log.w(TAG, "Could not post notification $id", it) }
     }
 
-    fun cancel(context: Context, id: Int) {
+    private fun cancel(context: Context, id: Int) {
         runCatching { NotificationManagerCompat.from(context).cancel(id) }
             .onFailure { Log.w(TAG, "Could not cancel notification $id", it) }
     }

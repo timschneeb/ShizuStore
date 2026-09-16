@@ -34,9 +34,6 @@ interface AppDownloadDao {
     @Query("DELETE FROM app_download WHERE appSlug = :slug")
     suspend fun deleteForApp(slug: String)
 
-    @Query("DELETE FROM app_download WHERE appSlug IN (:slugs)")
-    suspend fun deleteForApps(slugs: List<String>)
-
     @Query("SELECT COUNT(*) FROM app_download")
     suspend fun count(): Int
 

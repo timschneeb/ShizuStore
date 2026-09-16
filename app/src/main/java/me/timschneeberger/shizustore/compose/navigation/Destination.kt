@@ -11,7 +11,6 @@ package me.timschneeberger.shizustore.compose.navigation
 import me.timschneeberger.shizustore.data.model.AppSort
 
 sealed class Destination {
-    data class Main(val initialTab: Int = 0) : Destination()
     data class AppDetails(val packageName: String) : Destination()
     data class Permissions(val packageName: String) : Destination()
     data class MoreAbout(val packageName: String) : Destination()
@@ -35,7 +34,6 @@ sealed class Destination {
     data object IgnoredUpdates : Destination()
 
     data class AppList(
-        val query: String = "",
         val categorySlug: String? = null,
         val recommended: Boolean = false,
         val sort: AppSort = AppSort.NAME

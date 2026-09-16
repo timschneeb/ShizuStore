@@ -16,9 +16,6 @@ import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 interface CategoryDao {
 
     @Query("SELECT * FROM category ORDER BY sortOrder ASC, name COLLATE NOCASE ASC")
-    suspend fun getAll(): List<CategoryEntity>
-
-    @Query("SELECT * FROM category ORDER BY sortOrder ASC, name COLLATE NOCASE ASC")
     fun observeAll(): Flow<List<CategoryEntity>>
 
     @Upsert

@@ -26,9 +26,6 @@ open class InstalledRepository @Inject constructor(
 ) {
     fun observeAll(): Flow<List<InstalledEntity>> = installedDao.observeAll()
 
-    fun observe(packageName: String): Flow<InstalledEntity?> =
-        installedDao.observeByPackage(packageName)
-
     suspend fun refreshAll() = withContext(Dispatchers.IO) {
         val packages = context.packageManager
             .getInstalledPackages(0)

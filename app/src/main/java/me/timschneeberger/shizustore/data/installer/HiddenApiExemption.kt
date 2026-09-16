@@ -5,8 +5,6 @@
 
 package me.timschneeberger.shizustore.data.installer
 
-import androidx.annotation.VisibleForTesting
-
 object HiddenApiExemption {
 
     @Volatile
@@ -17,10 +15,5 @@ object HiddenApiExemption {
 
     fun record(exempted: Boolean) {
         this.exempted = exempted
-    }
-
-    @VisibleForTesting
-    internal fun reset() {
-        exempted = true
     }
 }

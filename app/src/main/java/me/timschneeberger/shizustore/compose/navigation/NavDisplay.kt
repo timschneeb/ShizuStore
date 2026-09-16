@@ -75,7 +75,6 @@ fun ShizuNavDisplay(
     fun navigate(destination: Destination) {
         when (destination) {
             is Destination.Back -> if (backStack.size > 1) backStack.removeLastOrNull()
-            is Destination.Main -> backStack.add(Screen.Main(destination.initialTab))
             is Destination.AppDetails -> backStack.add(Screen.AppDetails(destination.packageName))
             is Destination.Permissions ->
                 backStack.add(Screen.Permissions(destination.packageName))
@@ -102,7 +101,6 @@ fun ShizuNavDisplay(
             is Destination.AppList ->
                 backStack.add(
                     Screen.AppList(
-                        query = destination.query,
                         categorySlug = destination.categorySlug,
                         recommended = destination.recommended,
                         sort = destination.sort
@@ -189,7 +187,6 @@ fun ShizuNavDisplay(
             entry<Screen.AppList> { key ->
                 AppListScreen(
                     args = AppListArgs(
-                        query = key.query,
                         categorySlug = key.categorySlug,
                         recommended = key.recommended,
                         sort = key.sort

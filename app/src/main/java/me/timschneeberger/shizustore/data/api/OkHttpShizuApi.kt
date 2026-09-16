@@ -188,13 +188,6 @@ class OkHttpShizuApi @Inject constructor(
     }
 
     private fun AppsQuery.toParams(): List<Pair<String, String>> = buildList {
-        category?.let { add("category" to it) }
-        q?.let { add("q" to it) }
-        license?.let { add("license" to it) }
-        listing?.let { add("listing" to it) }
-        availability?.let { add("availability" to it) }
-        type?.let { add("type" to it) }
-        recommended?.let { add("recommended" to it.toString()) }
         add("page" to page.toString())
         add("pageSize" to pageSize.toString())
         sort?.let { add("sort" to it) }

@@ -26,9 +26,6 @@ interface InstalledDao {
     @Query("SELECT * FROM installed WHERE packageName = :packageName")
     suspend fun getByPackage(packageName: String): InstalledEntity?
 
-    @Query("SELECT * FROM installed WHERE packageName = :packageName")
-    fun observeByPackage(packageName: String): Flow<InstalledEntity?>
-
     @Upsert
     suspend fun upsert(installed: InstalledEntity)
 

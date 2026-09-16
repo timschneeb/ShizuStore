@@ -24,14 +24,6 @@ object CommonUtil {
         Pair(9, " GB")
     )
 
-    private val diPrefixes: Map<Int, String> = hashMapOf(
-        Pair(0, ""),
-        Pair(1, ""),
-        Pair(3, " K"),
-        Pair(6, " M"),
-        Pair(9, " B")
-    )
-
     fun addSiPrefix(value: Long): String {
         if (value <= 1L) {
             return "NA"
@@ -47,17 +39,6 @@ object CommonUtil {
 
     /** Null when the size is unknown, so callers can hide the placeholder. */
     fun sizeLabel(value: Long): String? = if (value <= 1L) null else addSiPrefix(value)
-
-    fun addDiPrefix(value: Long): String? {
-        if (value <= 1L) return null
-        var tempValue = value
-        var order = 0
-        while (tempValue >= 1000.0) {
-            tempValue /= 1000.0.toLong()
-            order += 3
-        }
-        return tempValue.toString() + diPrefixes[order]
-    }
 
     fun formatCount(value: Long): String {
         if (value < 1_000L) return value.toString()

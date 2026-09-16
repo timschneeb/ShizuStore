@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -97,10 +96,6 @@ class UpdatesViewModel @Inject constructor(
 
     private val _sheetApp = MutableStateFlow<ResolvedApp?>(null)
     val sheetApp: StateFlow<ResolvedApp?> = _sheetApp.asStateFlow()
-
-    // The server catalog carries no changelog; the sheet section stays hidden.
-    val sheetWhatsNew: StateFlow<String?> = flowOf(null)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     fun update(app: ResolvedApp) {
         viewModelScope.launch {

@@ -335,7 +335,6 @@ open class SessionInstaller @Inject constructor(
             putExtra(PackageInstaller.EXTRA_SESSION_ID, sessionInfo.sessionId)
             putExtra(InstallerStatusReceiver.EXTRA_PACKAGE_NAME, sessionInfo.packageName)
             putExtra(InstallerStatusReceiver.EXTRA_VERSION_CODE, sessionInfo.versionCode)
-            putExtra(InstallerStatusReceiver.EXTRA_DISPLAY_NAME, sessionInfo.displayName)
             addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         }
 

@@ -327,7 +327,9 @@ class AppDetailsViewModel @Inject constructor(
             val installed = detailed?.let { detail ->
                 val packages = buildSet {
                     detail.app.packageName?.let { add(it) }
-                    detail.candidates.forEach { candidate -> candidate.packageName?.let { add(it) } }
+                    detail.candidates.forEach { candidate ->
+                        candidate.packageName?.let { add(it) }
+                    }
                 }
                 installedAll.firstOrNull { it.packageName == detail.app.packageName }
                     ?: installedAll.firstOrNull { it.packageName in packages }

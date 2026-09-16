@@ -31,17 +31,34 @@ class CatalogUiMapperTest {
             DetailedApp(
                 app,
                 listOf(
-                    candidate(download(id = 1, packageName = null, abi = null, primary = true, url = "universal")),
-                    candidate(download(id = 2, packageName = null, abi = "arm64-v8a", url = "arm64")),
+                    candidate(
+                        download(
+                            id = 1,
+                            packageName = null,
+                            abi = null,
+                            primary = true,
+                            url = "universal"
+                        )
+                    ),
+                    candidate(
+                        download(id = 2, packageName = null, abi = "arm64-v8a", url = "arm64")
+                    ),
                     candidate(download(id = 3, packageName = null, abi = "x86_64", url = "x86_64")),
-                    candidate(download(id = 4, packageName = "app.mihon.foss", abi = null, url = "foss"))
+                    candidate(
+                        download(id = 4, packageName = "app.mihon.foss", abi = null, url = "foss")
+                    )
                 )
             ),
             null
         )
 
         assertEquals(2, sources.size)
-        assertEquals(setOf("app.mihon", "app.mihon.foss"), sources.map { it.app.packageName }.toSet())
+        assertEquals(
+            setOf("app.mihon", "app.mihon.foss"),
+            sources.map {
+                it.app.packageName
+            }.toSet()
+        )
     }
 
     @Test
@@ -51,8 +68,17 @@ class CatalogUiMapperTest {
             DetailedApp(
                 app,
                 listOf(
-                    candidate(download(id = 1, packageName = "app.mihon", abi = "arm64-v8a", url = "arm64")),
-                    candidate(download(id = 2, packageName = "app.mihon", abi = "x86_64", url = "x86_64"))
+                    candidate(
+                        download(
+                            id = 1,
+                            packageName = "app.mihon",
+                            abi = "arm64-v8a",
+                            url = "arm64"
+                        )
+                    ),
+                    candidate(
+                        download(id = 2, packageName = "app.mihon", abi = "x86_64", url = "x86_64")
+                    )
                 )
             ),
             null
@@ -69,8 +95,12 @@ class CatalogUiMapperTest {
             DetailedApp(
                 app,
                 listOf(
-                    candidate(download(id = 1, packageName = "app.mihon", versionCode = 29, url = "v29")),
-                    candidate(download(id = 2, packageName = "app.mihon", versionCode = 30, url = "v30")),
+                    candidate(
+                        download(id = 1, packageName = "app.mihon", versionCode = 29, url = "v29")
+                    ),
+                    candidate(
+                        download(id = 2, packageName = "app.mihon", versionCode = 30, url = "v30")
+                    ),
                     candidate(
                         download(
                             id = 3,
@@ -139,7 +169,9 @@ class CatalogUiMapperTest {
             DetailedApp(
                 app,
                 listOf(
-                    candidate(download(id = 1, packageName = "app.mihon", primary = true, url = "base")),
+                    candidate(
+                        download(id = 1, packageName = "app.mihon", primary = true, url = "base")
+                    ),
                     candidate(download(id = 2, packageName = "app.mihon.foss", url = "foss"))
                 )
             ),
@@ -150,14 +182,18 @@ class CatalogUiMapperTest {
         assertEquals(listOf(false, true), sources.map { it.installedPackageMatch })
         assertEquals("app.mihon.foss", sources.preferredForThisDevice()?.app?.packageName)
         assertNull(sources.first { it.app.packageName == "app.mihon" }.app.installedVersionCode)
-        assertEquals(24L, sources.first { it.app.packageName == "app.mihon.foss" }.app.installedVersionCode)
+        assertEquals(
+            24L,
+            sources.first {
+                it.app.packageName == "app.mihon.foss"
+            }.app.installedVersionCode
+        )
     }
 
     private fun app(): AppEntity =
         AppEntity(slug = "mihon", name = "Mihon", packageName = "app.mihon", versionCode = 29)
 
-    private fun candidate(entity: AppDownloadEntity): AppCandidate =
-        AppCandidate.from(entity, null)
+    private fun candidate(entity: AppDownloadEntity): AppCandidate = AppCandidate.from(entity, null)
 
     private fun download(
         id: Long,

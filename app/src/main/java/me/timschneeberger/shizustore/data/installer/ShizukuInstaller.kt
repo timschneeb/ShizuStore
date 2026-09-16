@@ -23,7 +23,6 @@ import android.os.IBinder
 import android.os.IInterface
 import android.os.Process
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.rikka.tools.refine.Refine
 import java.util.concurrent.ConcurrentHashMap
@@ -175,7 +174,6 @@ open class ShizukuInstaller @Inject constructor(
             putExtra(PackageInstaller.EXTRA_SESSION_ID, sessionId)
             putExtra(InstallerStatusReceiver.EXTRA_PACKAGE_NAME, download.packageName)
             putExtra(InstallerStatusReceiver.EXTRA_VERSION_CODE, download.versionCode)
-            putExtra(InstallerStatusReceiver.EXTRA_DISPLAY_NAME, download.displayName)
             addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         }
 
@@ -233,17 +231,11 @@ open class ShizukuInstaller @Inject constructor(
                 Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
         }
 
-        @VisibleForTesting
-        internal var permissionProbe: () -> Boolean = DEFAULT_PERMISSION_PROBE
+        private val permissionProbe: () -> Boolean = DEFAULT_PERMISSION_PROBE
 
         fun hasPermission(): Boolean = runCatching { permissionProbe() }.getOrElse {
             Log.w(TAG, "Shizuku permission check failed", it)
             false
-        }
-
-        @VisibleForTesting
-        internal fun resetPermissionProbe() {
-            permissionProbe = DEFAULT_PERMISSION_PROBE
         }
 
         fun requestPermissionIfNeeded() = permissionRequester()
@@ -257,13 +249,7 @@ open class ShizukuInstaller @Inject constructor(
             }
         }
 
-        @VisibleForTesting
-        internal var permissionRequester: () -> Unit = DEFAULT_PERMISSION_REQUESTER
-
-        @VisibleForTesting
-        internal fun resetPermissionRequester() {
-            permissionRequester = DEFAULT_PERMISSION_REQUESTER
-        }
+        private val permissionRequester: () -> Unit = DEFAULT_PERMISSION_REQUESTER
 
         private fun isBinderAlive(): Boolean = runCatching { Shizuku.pingBinder() }
             .getOrElse { false }
@@ -276,19 +262,13 @@ open class ShizukuInstaller @Inject constructor(
             isOAndAbove && (isPackagePresent(context, SHIZUKU_PACKAGE_NAME) || Sui.isSui())
         }
 
-        @VisibleForTesting
-        internal var availabilityProbe: (Context) -> Boolean = DEFAULT_AVAILABILITY_PROBE
+        private val availabilityProbe: (Context) -> Boolean = DEFAULT_AVAILABILITY_PROBE
 
         fun isAvailable(context: Context): Boolean =
             runCatching { availabilityProbe(context) }.getOrElse { failure ->
                 Log.w(TAG, "Shizuku availability probe failed, assuming absent", failure)
                 false
             }
-
-        @VisibleForTesting
-        internal fun resetAvailabilityProbe() {
-            availabilityProbe = DEFAULT_AVAILABILITY_PROBE
-        }
 
         private fun isPackagePresent(context: Context, packageName: String): Boolean =
             runCatching { context.packageManager.getPackageInfo(packageName, 0) }.isSuccess

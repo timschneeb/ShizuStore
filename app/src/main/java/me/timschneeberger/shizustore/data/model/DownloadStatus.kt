@@ -21,8 +21,6 @@ enum class DownloadStatus {
         val finished = setOf(FAILED, CANCELLED, COMPLETED, INSTALLED)
         val running = setOf(QUEUED, DOWNLOADING)
 
-        val processing = setOf(DOWNLOADING, VERIFYING)
-
         val installing = setOf(INSTALLING, AWAITING_CONFIRMATION)
     }
 }

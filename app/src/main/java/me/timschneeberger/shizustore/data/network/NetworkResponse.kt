@@ -7,8 +7,6 @@
 
 package me.timschneeberger.shizustore.data.network
 
-import java.util.Date
-
 sealed interface NetworkResponse {
 
     sealed interface Error : NetworkResponse {
@@ -24,9 +22,5 @@ sealed interface NetworkResponse {
         data class Http(val statusCode: Int) : Error
     }
 
-    data class Success(
-        val statusCode: Int,
-        val lastModified: Date?,
-        val etag: String?
-    ) : NetworkResponse
+    data class Success(val statusCode: Int) : NetworkResponse
 }

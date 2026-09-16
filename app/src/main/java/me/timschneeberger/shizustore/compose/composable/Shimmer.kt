@@ -174,49 +174,6 @@ internal fun ShimmerSectionHeader(clickable: Boolean = true) {
 }
 
 @Composable
-internal fun ShimmerCarouselSection() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = dimensionResource(R.dimen.spacing_small)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
-    ) {
-        ShimmerBlock(
-            modifier = Modifier
-                .fillMaxWidth(0.42f)
-                .height(dimensionResource(R.dimen.skeleton_line_title))
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
-        ) {
-            repeat(5) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(
-                        dimensionResource(R.dimen.spacing_xsmall)
-                    )
-                ) {
-                    ShimmerBlock(
-                        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_cluster)),
-                        radiusRes = R.dimen.radius_medium
-                    )
-                    ShimmerBlock(
-                        modifier = Modifier
-                            .width(dimensionResource(R.dimen.icon_size_cluster) * 0.75f)
-                            .height(dimensionResource(R.dimen.skeleton_line_tile))
-                    )
-                    ShimmerBlock(
-                        modifier = Modifier
-                            .width(dimensionResource(R.dimen.icon_size_cluster) * 0.5f)
-                            .height(dimensionResource(R.dimen.skeleton_line_tile))
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 internal fun ShimmerAppTile() {
     Column(
         modifier = Modifier

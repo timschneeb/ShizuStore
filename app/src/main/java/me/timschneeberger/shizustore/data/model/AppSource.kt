@@ -31,7 +31,8 @@ data class AppSource(
 ) {
     val channel: ReleaseChannel get() = releaseChannelOf(releaseChannels)
 
-    val isInstalled: Boolean get() = installedPackageMatch && app.installedVersionCode == app.versionCode
+    val isInstalled: Boolean get() = installedPackageMatch &&
+        app.installedVersionCode == app.versionCode
 
     val abiLabel: String? get() = DeviceProfile.abiLabel(nativeCode)
 

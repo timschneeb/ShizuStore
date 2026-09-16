@@ -29,8 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.SheetActionItem
@@ -43,7 +41,6 @@ import me.timschneeberger.shizustore.util.CommonUtil
 fun AppUpdateSheet(
     app: ResolvedApp,
     isBlacklisted: Boolean,
-    whatsNew: String?,
     onAppDetails: () -> Unit,
     onIgnoreAllUpdates: () -> Unit,
     onIgnoreThisVersion: () -> Unit,
@@ -71,10 +68,6 @@ fun AppUpdateSheet(
                     onDismiss()
                 }
             )
-
-            if (!whatsNew.isNullOrBlank()) {
-                ChangelogSection(html = whatsNew)
-            }
 
             SheetDivider()
 
@@ -184,27 +177,6 @@ private fun AppHeader(app: ResolvedApp, onAppDetails: () -> Unit) {
             Text(stringResource(R.string.updates_app_details))
         }
     }
-}
-
-@Composable
-private fun ChangelogSection(html: String) {
-    Text(
-        text = stringResource(R.string.details_changelog),
-        style = MaterialTheme.typography.titleSmall,
-        modifier = Modifier.padding(
-            horizontal = dimensionResource(R.dimen.spacing_large),
-            vertical = dimensionResource(R.dimen.spacing_xsmall)
-        )
-    )
-    Text(
-        text = AnnotatedString.fromHtml(html),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(
-            horizontal = dimensionResource(R.dimen.spacing_large),
-            vertical = dimensionResource(R.dimen.spacing_xsmall)
-        )
-    )
 }
 
 @Composable

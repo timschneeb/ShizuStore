@@ -81,7 +81,10 @@ class UpdateStateRepository @Inject constructor(
         // Flavor builds usually share a signing key, so the package is what ties the
         // installed app to its own candidate; never offer a different flavor's APK.
         val match =
-            matches.firstOrNull { it.packageName == installed.packageName && it.supportsAbi(AppCandidate.deviceAbis) }
+            matches.firstOrNull {
+                it.packageName == installed.packageName &&
+                    it.supportsAbi(AppCandidate.deviceAbis)
+            }
                 ?: matches.firstOrNull { it.packageName == installed.packageName }
                 ?: matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
                 ?: matches.firstOrNull()

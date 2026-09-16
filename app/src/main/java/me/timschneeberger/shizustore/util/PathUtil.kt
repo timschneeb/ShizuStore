@@ -11,11 +11,6 @@ import java.io.File
 
 object PathUtil {
 
-    fun getIndexDir(context: Context): File =
-        File(context.cacheDir, "index").apply { if (!exists()) mkdirs() }
-
-    fun getIndexFile(context: Context, name: String): File = File(getIndexDir(context), name)
-
     fun getApkDir(context: Context): File =
         File(context.filesDir, "apk").apply { if (!exists()) mkdirs() }
 

@@ -125,7 +125,5 @@ class InstallerStatusReceiver : BroadcastReceiver() {
             "me.timschneeberger.shizustore.data.receiver.InstallerStatusReceiver.EXTRA_PACKAGE_NAME"
         const val EXTRA_VERSION_CODE =
             "me.timschneeberger.shizustore.data.receiver.InstallerStatusReceiver.EXTRA_VERSION_CODE"
-        const val EXTRA_DISPLAY_NAME =
-            "me.timschneeberger.shizustore.data.receiver.InstallerStatusReceiver.EXTRA_DISPLAY_NAME"
     }
 }

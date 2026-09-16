@@ -26,8 +26,6 @@ data class AppCandidate(
     val abi: String? = null,
     val isPrimary: Boolean
 ) {
-    val isArchive: Boolean get() = !archiveEntry.isNullOrBlank()
-
     /** Only a candidate whose signing set contains the installed fingerprint is installable. */
     fun matchesInstalled(installed: CertFingerprint?): Boolean {
         if (installed == null) return false

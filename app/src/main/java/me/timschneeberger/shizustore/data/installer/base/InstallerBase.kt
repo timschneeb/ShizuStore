@@ -11,7 +11,6 @@ package me.timschneeberger.shizustore.data.installer.base
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import androidx.core.content.FileProvider
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
@@ -94,13 +93,6 @@ abstract class InstallerBase(
     }
 
     protected abstract suspend fun beginInstall(download: Download)
-
-    override fun clearQueue() {
-        synchronized(queue) { queue.clear() }
-    }
-
-    override fun isAlreadyQueued(packageName: String): Boolean =
-        synchronized(queue) { queue.contains(packageName) }
 
     override fun removeFromInstallQueue(packageName: String) {
         synchronized(queue) { queue.remove(packageName) }
@@ -189,11 +181,6 @@ abstract class InstallerBase(
 
         fun wasDispatchedInThisProcess(packageName: String): Boolean =
             synchronized(dispatched) { dispatched.contains(packageName) }
-
-        @VisibleForTesting
-        fun forgetDispatchedInThisProcess() {
-            synchronized(dispatched) { dispatched.clear() }
-        }
 
         private val scope: CoroutineScope = isolatedIoScope(TAG)
     }

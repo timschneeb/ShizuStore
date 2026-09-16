@@ -44,7 +44,6 @@ data class AppDetails(
     val signer: String?,
     val size: Long,
     val minSdk: Int,
-    val whatsNew: String,
     val permissions: List<String>,
     val installedVersionCode: Long?,
     val installedSigner: String?,

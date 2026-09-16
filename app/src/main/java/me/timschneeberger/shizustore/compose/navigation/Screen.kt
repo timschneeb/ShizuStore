@@ -74,7 +74,6 @@ sealed class Screen : NavKey, Parcelable {
 
     @Serializable
     data class AppList(
-        val query: String = "",
         val categorySlug: String? = null,
         val recommended: Boolean = false,
         val sort: AppSort = AppSort.NAME

@@ -41,7 +41,6 @@ import me.timschneeberger.shizustore.compose.composable.AuroraListItem
 import me.timschneeberger.shizustore.compose.composable.LabelChip
 import me.timschneeberger.shizustore.compose.composable.minTouchTarget
 import me.timschneeberger.shizustore.data.model.AppSource
-import me.timschneeberger.shizustore.data.model.ReleaseChannel
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.util.CommonUtil
 
@@ -51,8 +50,6 @@ internal data class SourceRow(
     val signerDiffers: Boolean
 ) {
     val isInstalled: Boolean get() = source.isInstalled
-
-    val channel: ReleaseChannel get() = source.channel
 
     val abiLabel: String? get() = source.abiLabel
 

@@ -5,32 +5,17 @@
 
 package me.timschneeberger.shizustore.extensions
 
-import android.Manifest
-import android.app.NotificationManager
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.verify.domain.DomainVerificationManager
-import android.content.pm.verify.domain.DomainVerificationUserState
-import android.graphics.Color
-import android.os.Bundle
-import android.os.Environment
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
-import android.util.TypedValue
-import android.view.LayoutInflater
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 
 private const val TAG = "Context"
-
-val Context.inflater: LayoutInflater
-    get() = LayoutInflater.from(this)
 
 fun Context.viewExternal(url: String): Boolean = try {
     startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
@@ -50,17 +35,6 @@ fun Context.shareApp(displayName: String, packageName: String) {
         .onFailure { Log.e(TAG, "No app to share $packageName with") }
 }
 
-/** [url] must carry the fingerprint, or the recipient's client trusts any signing key. */
-fun Context.shareRepository(name: String, url: String) {
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, name)
-        putExtra(Intent.EXTRA_TEXT, url)
-    }
-    runCatching { startActivity(Intent.createChooser(intent, name)) }
-        .onFailure { Log.e(TAG, "No app to share $name with") }
-}
-
 fun Context.uninstallPackage(packageName: String) {
     val intent = Intent(Intent.ACTION_DELETE, "package:$packageName".toUri())
     runCatching { startActivity(intent) }
@@ -78,69 +52,8 @@ fun Context.appInfo(packageName: String) {
     }
 }
 
-fun Context.openInfo(packageName: String) {
-    try {
-        val intent = Intent(
-            "android.settings.APPLICATION_DETAILS_SETTINGS",
-            "package:$packageName".toUri()
-        )
-        startActivity(intent)
-    } catch (exception: Exception) {
-        Log.e(TAG, "Failed to open app info page", exception)
-    }
-}
-
-fun <T> Context.open(className: Class<T>, newTask: Boolean = false) {
-    val intent = Intent(this, className)
-    if (newTask) {
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    }
-    startActivity(
-        intent,
-        getEmptyActivityBundle()
-    )
-}
-
-fun Context.getEmptyActivityBundle(): Bundle? = ActivityOptionsCompat.makeCustomAnimation(
-    this,
-    android.R.anim.fade_in,
-    android.R.anim.fade_out
-).toBundle()
-
-fun Context.copyToClipBoard(data: String?) {
-    val clipboard = getSystemService<ClipboardManager>()
-    val clip = ClipData.newPlainText("Download Url", data)
-    clipboard?.setPrimaryClip(clip)
-}
-
-fun Context.getStyledAttributeColor(id: Int): Int {
-    val arr = obtainStyledAttributes(TypedValue().data, intArrayOf(id))
-    val styledAttr = arr.getColor(0, Color.WHITE)
-    arr.recycle()
-    return styledAttr
-}
-
 fun Context.isIgnoringBatteryOptimizations(): Boolean =
     getSystemService<PowerManager>()?.isIgnoringBatteryOptimizations(packageName) ?: true
 
-fun Context.areNotificationsEnabled(): Boolean =
-    getSystemService<NotificationManager>()!!.areNotificationsEnabled()
-
 fun Context.checkManifestPermission(permission: String): Boolean =
     ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-
-fun Context.isExternalStorageAccessible(): Boolean = when {
-    isRAndAbove -> Environment.isExternalStorageManager()
-    else -> checkManifestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-}
-
-fun Context.isDomainVerified(domain: String): Boolean = when {
-    isSAndAbove -> {
-        val domainVerificationManager = getSystemService<DomainVerificationManager>()
-        val userState = domainVerificationManager!!.getDomainVerificationUserState(packageName)
-        val domainMap = userState?.hostToStateMap?.filterKeys { it == domain }
-        domainMap?.values?.first() == DomainVerificationUserState.DOMAIN_STATE_SELECTED
-    }
-
-    else -> true
-}

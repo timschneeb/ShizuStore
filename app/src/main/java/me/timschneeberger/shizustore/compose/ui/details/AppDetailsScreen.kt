@@ -262,7 +262,10 @@ fun AppDetailsScreen(
                                             }
 
                                             InstallAction.CANCEL -> viewModel.cancel()
-                                            InstallAction.OPEN -> launchApp(context, state.actionablePackage)
+                                            InstallAction.OPEN -> launchApp(
+                                                context,
+                                                state.actionablePackage
+                                            )
                                             InstallAction.UNINSTALL ->
                                                 context.uninstallPackage(state.actionablePackage)
 
@@ -306,7 +309,9 @@ fun AppDetailsScreen(
                                     title = stringResource(R.string.details_changelog),
                                     subtitle = state.details.versionName
                                         .takeIf { it.isNotBlank() }
-                                        ?.let { stringResource(R.string.details_changelog_subtitle, it) },
+                                        ?.let {
+                                            stringResource(R.string.details_changelog_subtitle, it)
+                                        },
                                     onClick = {
                                         onNavigateTo(Destination.Changelog(packageName))
                                     }

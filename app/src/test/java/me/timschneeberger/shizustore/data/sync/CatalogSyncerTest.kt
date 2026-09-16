@@ -7,6 +7,7 @@ package me.timschneeberger.shizustore.data.sync
 
 import android.os.Build
 import androidx.room.Room
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import me.timschneeberger.shizustore.data.api.BaseUrlProvider
 import me.timschneeberger.shizustore.data.api.OkHttpShizuApi
@@ -96,18 +97,14 @@ class CatalogSyncerTest {
         assertEquals("Alpha", db.appDao().get("alpha")!!.name)
         assertEquals("com.alpha", db.appDao().get("alpha")!!.packageName)
         assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
-        assertEquals(listOf("tools"), db.categoryDao().getAll().map { it.slug })
+        assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
     }
 
     @Test
     fun incrementalAppliesAddedUpdatedAndRemoved() = runTest {
         db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR, categoriesEtag = "etag-1"))
-        db.appDao().upsertAll(
-            listOf(
-                AppEntity(slug = "alpha", name = "Alpha"),
-                AppEntity(slug = "gone", name = "Gone")
-            )
-        )
+        db.appDao().upsert(AppEntity(slug = "alpha", name = "Alpha"))
+        db.appDao().upsert(AppEntity(slug = "gone", name = "Gone"))
         db.appDownloadDao().upsertAll(
             listOf(
                 AppDownloadEntity(appSlug = "gone", apkUrl = "https://x/gone.apk", sigKey = "k")
@@ -185,7 +182,7 @@ class CatalogSyncerTest {
 
         assertEquals(0, db.appDao().count())
         assertEquals(0, db.appDownloadDao().count())
-        assertEquals(0, db.categoryDao().getAll().size)
+        assertEquals(0, db.categoryDao().observeAll().first().size)
         assertNull(db.syncStateDao().get())
 
         server.dispatcher = routes(
@@ -199,7 +196,7 @@ class CatalogSyncerTest {
         assertTrue(outcome is CatalogSyncOutcome.Success)
         assertEquals(2, db.appDao().count())
         assertNull(db.appDao().get("gone"))
-        assertEquals(listOf("tools"), db.categoryDao().getAll().map { it.slug })
+        assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
         assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
     }
 
