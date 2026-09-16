@@ -97,8 +97,4 @@ class ServerViewModel @Inject constructor(
         if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return null
         return trimmed
     }
-
-    private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
-    }
 }

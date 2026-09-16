@@ -83,11 +83,7 @@ open class ShizukuInstaller @Inject constructor(
             return
         }
 
-        val apkFile = getApkFile(download)
-        if (!apkFile.exists()) {
-            postError(packageName, InstallError.ApkMissing(packageName))
-            return
-        }
+        val apkFile = requireApkFile(download) ?: return
 
         Log.i(TAG, "Received shizuku install request for $packageName")
 
@@ -140,10 +136,6 @@ open class ShizukuInstaller @Inject constructor(
         removeFromInstallQueue(packageName)
     }
 
-    override fun onInstallFailed(packageName: String, error: InstallError) {
-        cancelInstall(packageName)
-    }
-
     private fun openPrivilegedSession(packageName: String): Pair<Int, PackageInstaller.Session> {
         val params = SessionParams(SessionParams.MODE_FULL_INSTALL).apply {
             setAppPackageName(packageName)
@@ -193,16 +185,6 @@ open class ShizukuInstaller @Inject constructor(
         }
 
     private fun hasPermission(): Boolean = Companion.hasPermission()
-
-    private fun abandonQuietly(session: PackageInstaller.Session) {
-        runCatching { session.abandon() }
-            .onFailure { Log.w(TAG, "Failed to abandon session", it) }
-    }
-
-    private fun closeQuietly(session: PackageInstaller.Session) {
-        runCatching { session.close() }
-            .onFailure { Log.w(TAG, "Failed to close session handle", it) }
-    }
 
     companion object {
         private const val TAG = "ShizukuInstaller"

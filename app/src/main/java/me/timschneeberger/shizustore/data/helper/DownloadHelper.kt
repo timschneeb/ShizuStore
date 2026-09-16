@@ -100,7 +100,7 @@ open class DownloadHelper @Inject constructor(
             return
         }
 
-        if (existing.canInstallAgain) {
+        if (existing.canInstallFromDisk(hasApk(existing))) {
             Log.i(TAG, "Retrying $packageName from the apk it already has")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 DownloadWorker.uniqueName(packageName),
@@ -114,9 +114,6 @@ open class DownloadHelper @Inject constructor(
         downloadDao.updateProgress(packageName, 0, 0L, 0L)
         DownloadWorker.enqueue(context, packageName)
     }
-
-    private val Download.canInstallAgain: Boolean
-        get() = error?.canRetryWithoutDownloading == true && hasApk(this)
 
     suspend fun cancelAll() {
         downloads.first()

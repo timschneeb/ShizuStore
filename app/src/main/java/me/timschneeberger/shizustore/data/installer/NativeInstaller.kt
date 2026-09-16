@@ -30,11 +30,7 @@ open class NativeInstaller @Inject constructor(
     override suspend fun beginInstall(download: Download) {
         val packageName = download.packageName
 
-        val apkFile = getApkFile(download)
-        if (!apkFile.exists()) {
-            postError(packageName, InstallError.ApkMissing(packageName))
-            return
-        }
+        val apkFile = requireApkFile(download) ?: return
 
         Log.i(TAG, "Received native install request for $packageName")
 
@@ -66,10 +62,6 @@ open class NativeInstaller @Inject constructor(
 
     override fun cancelInstall(packageName: String) {
         removeFromInstallQueue(packageName)
-    }
-
-    override fun onInstallFailed(packageName: String, error: InstallError) {
-        cancelInstall(packageName)
     }
 
     companion object {

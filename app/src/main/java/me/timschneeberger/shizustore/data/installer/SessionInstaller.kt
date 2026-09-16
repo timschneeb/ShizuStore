@@ -108,11 +108,7 @@ open class SessionInstaller @Inject constructor(
             abandon(staged.sessionId)
         }
 
-        val apkFile = getApkFile(download)
-        if (!apkFile.exists()) {
-            postError(packageName, InstallError.ApkMissing(packageName))
-            return
-        }
+        val apkFile = requireApkFile(download) ?: return
 
         Log.i(TAG, "Received session install request for $packageName")
         val sessionInfo = stageInstall(download, apkFile) ?: return
@@ -170,10 +166,6 @@ open class SessionInstaller @Inject constructor(
         } else {
             true
         }
-
-    override fun onInstallFailed(packageName: String, error: InstallError) {
-        cancelInstall(packageName)
-    }
 
     suspend fun downloadStatus(packageName: String): DownloadStatus? =
         downloadDao.getDownload(packageName)?.status
@@ -303,11 +295,6 @@ open class SessionInstaller @Inject constructor(
         committedSessions.add(sessionInfo.sessionId)
         removeFromInstallQueue(sessionInfo.packageName)
         closeQuietly(session)
-    }
-
-    private fun closeQuietly(session: PackageInstaller.Session) {
-        runCatching { session.close() }
-            .onFailure { Log.w(TAG, "Failed to close session handle", it) }
     }
 
     @VisibleForTesting

@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.timschneeberger.shizustore.data.helper.DownloadHelper
 import me.timschneeberger.shizustore.data.helper.InstallDispatcher
-import me.timschneeberger.shizustore.data.installer.AppInstaller
 import me.timschneeberger.shizustore.data.model.InstallDispatch
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.util.PathUtil
@@ -36,10 +35,8 @@ import me.timschneeberger.shizustore.util.PathUtil
 class DownloadsViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val downloadHelper: DownloadHelper,
-    appInstaller: AppInstaller
+    private val installDispatcher: InstallDispatcher
 ) : ViewModel() {
-    private val installDispatcher = InstallDispatcher(downloadHelper, appInstaller)
-
     val downloads: Flow<PagingData<Download>> =
         Pager(PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false)) {
             downloadHelper.pagedDownloads()

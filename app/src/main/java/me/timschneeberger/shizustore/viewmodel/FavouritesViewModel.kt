@@ -41,8 +41,4 @@ class FavouritesViewModel @Inject constructor(
     fun unfavourite(packageName: String) {
         viewModelScope.launch { favouriteRepository.toggle(packageName) }
     }
-
-    private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
-    }
 }

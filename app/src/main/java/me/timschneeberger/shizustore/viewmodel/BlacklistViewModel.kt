@@ -32,8 +32,4 @@ class BlacklistViewModel @Inject constructor(
     fun unblacklist(packageName: String) {
         viewModelScope.launch { blacklistRepository.toggle(packageName) }
     }
-
-    private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
-    }
 }

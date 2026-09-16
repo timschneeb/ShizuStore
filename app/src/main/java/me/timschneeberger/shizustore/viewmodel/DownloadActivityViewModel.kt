@@ -27,8 +27,4 @@ class DownloadActivityViewModel @Inject constructor(
     val isDownloading: StateFlow<Boolean> = downloadHelper.downloads
         .map { downloads -> downloads.any { it.isActive } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
-
-    private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
-    }
 }

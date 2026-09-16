@@ -9,6 +9,7 @@
 package me.timschneeberger.shizustore.data.installer.base
 
 import android.content.Context
+import android.content.pm.PackageInstaller
 import android.net.Uri
 import android.util.Log
 import androidx.core.content.FileProvider
@@ -101,6 +102,14 @@ abstract class InstallerBase(
     protected fun getApkFile(download: Download): File =
         PathUtil.getApkFile(context, download.packageName, download.versionCode)
 
+    /** Returns the staged APK, or reports [InstallError.ApkMissing] and returns null. */
+    protected fun requireApkFile(download: Download): File? {
+        val apk = getApkFile(download)
+        if (apk.exists()) return apk
+        postError(download.packageName, InstallError.ApkMissing(download.packageName))
+        return null
+    }
+
     protected fun getUri(file: File): Uri =
         FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", file)
 
@@ -170,7 +179,19 @@ abstract class InstallerBase(
         onInstallFailed(packageName, error)
     }
 
-    protected open fun onInstallFailed(packageName: String, error: InstallError) {}
+    protected open fun onInstallFailed(packageName: String, error: InstallError) {
+        cancelInstall(packageName)
+    }
+
+    protected fun closeQuietly(session: PackageInstaller.Session) {
+        runCatching { session.close() }
+            .onFailure { Log.w(TAG, "Failed to close session handle", it) }
+    }
+
+    protected fun abandonQuietly(session: PackageInstaller.Session) {
+        runCatching { session.abandon() }
+            .onFailure { Log.w(TAG, "Failed to abandon session", it) }
+    }
 
     companion object {
         private const val TAG = "InstallerBase"

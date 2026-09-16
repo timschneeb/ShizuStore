@@ -532,15 +532,6 @@ private fun AppRows(
     }
 }
 
-private fun sortLabel(sort: AppSort): Int = when (sort) {
-    AppSort.NAME -> R.string.search_sort_name
-    AppSort.RECENTLY_ADDED -> R.string.apps_recently_added
-    AppSort.RECENTLY_UPDATED -> R.string.apps_recently_updated
-    AppSort.STARS -> R.string.search_sort_stars
-    AppSort.DOWNLOADS -> R.string.search_sort_popularity
-    AppSort.SIZE_DESC -> R.string.search_sort_size
-}
-
 @Composable
 private fun listTitle(args: AppListArgs, categories: List<CategoryTag>): String {
     args.categorySlug?.let { slug ->

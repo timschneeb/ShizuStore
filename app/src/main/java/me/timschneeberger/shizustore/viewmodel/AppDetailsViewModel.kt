@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.data.helper.DownloadHelper
 import me.timschneeberger.shizustore.data.helper.InstallDispatcher
-import me.timschneeberger.shizustore.data.installer.AppInstaller
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.data.model.AppSource
 import me.timschneeberger.shizustore.data.model.CertFingerprint
@@ -81,15 +80,13 @@ class AppDetailsViewModel @Inject constructor(
     private val appRepository: AppRepository,
     private val detailedAppRepository: DetailedAppRepository,
     private val downloadHelper: DownloadHelper,
-    private val appInstaller: AppInstaller,
+    private val installDispatcher: InstallDispatcher,
     private val mapper: CatalogUiMapper,
     private val favouriteRepository: FavouriteRepository,
     private val blacklistRepository: BlacklistRepository,
     private val ignoredUpdateRepository: IgnoredUpdateRepository,
     private val installedRepository: InstalledRepository
 ) : ViewModel() {
-    private val installDispatcher = InstallDispatcher(downloadHelper, appInstaller)
-
     /** The navigation key: a real package name when known, otherwise the catalog slug. */
     private val identity = MutableStateFlow<String?>(null)
     private val slug = MutableStateFlow<String?>(null)
@@ -385,6 +382,5 @@ class AppDetailsViewModel @Inject constructor(
 
     private companion object {
         const val TAG = "AppDetailsViewModel"
-        const val STOP_TIMEOUT_MS = 5_000L
     }
 }

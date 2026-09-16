@@ -144,8 +144,4 @@ class AppListViewModel @Inject constructor(
     }
 
     fun retrySync() = syncHelper.refresh()
-
-    private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
-    }
 }

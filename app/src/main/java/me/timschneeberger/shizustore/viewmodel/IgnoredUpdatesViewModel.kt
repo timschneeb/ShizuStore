@@ -42,8 +42,4 @@ class IgnoredUpdatesViewModel @Inject constructor(
     fun stopIgnoring(packageName: String) {
         viewModelScope.launch { ignoredUpdateRepository.stopIgnoring(packageName) }
     }
-
-    private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
-    }
 }

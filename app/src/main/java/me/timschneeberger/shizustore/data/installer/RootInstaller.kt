@@ -53,11 +53,7 @@ open class RootInstaller @Inject constructor(
             return
         }
 
-        val apkFile = getApkFile(download)
-        if (!apkFile.exists()) {
-            postError(packageName, InstallError.ApkMissing(packageName))
-            return
-        }
+        val apkFile = requireApkFile(download) ?: return
 
         Log.i(TAG, "Received root install request for $packageName")
 
@@ -75,10 +71,6 @@ open class RootInstaller @Inject constructor(
 
     override fun cancelInstall(packageName: String) {
         removeFromInstallQueue(packageName)
-    }
-
-    override fun onInstallFailed(packageName: String, error: InstallError) {
-        cancelInstall(packageName)
     }
 
     private fun installCommand(apkFile: File): String {

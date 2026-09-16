@@ -7,32 +7,23 @@
 
 package me.timschneeberger.shizustore.compose.ui.updates.composable
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.SheetActionItem
-import me.timschneeberger.shizustore.compose.composable.app.AnimatedAppIcon
+import me.timschneeberger.shizustore.compose.composable.SheetAppHeader
+import me.timschneeberger.shizustore.compose.composable.SheetDivider
 import me.timschneeberger.shizustore.compose.indexUrl
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.util.CommonUtil
@@ -61,8 +52,14 @@ fun AppUpdateSheet(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            AppHeader(
-                app = app,
+            SheetAppHeader(
+                title = app.name.ifBlank { app.packageName },
+                packageName = app.packageName,
+                iconUrl = indexUrl(app.repoAddress, app.iconUrl).orEmpty(),
+                lines = buildList {
+                    add(stringResource(R.string.updates_version, app.versionName, app.versionCode))
+                    if (app.releasedAt > 0L) add(CommonUtil.formatDate(app.releasedAt))
+                },
                 onAppDetails = {
                     onAppDetails()
                     onDismiss()
@@ -118,70 +115,4 @@ fun AppUpdateSheet(
             Spacer(Modifier.navigationBarsPadding())
         }
     }
-}
-
-@Composable
-private fun AppHeader(app: ResolvedApp, onAppDetails: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = dimensionResource(R.dimen.spacing_large),
-                vertical = dimensionResource(R.dimen.spacing_small)
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
-    ) {
-        AnimatedAppIcon(
-            modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium)),
-            iconUrl = indexUrl(app.repoAddress, app.iconUrl).orEmpty()
-        )
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = app.name.ifBlank { app.packageName },
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = app.packageName,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = stringResource(
-                    R.string.updates_version,
-                    app.versionName,
-                    app.versionCode
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (app.releasedAt > 0L) {
-                Text(
-                    text = CommonUtil.formatDate(app.releasedAt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-
-        FilledTonalButton(onClick = onAppDetails) {
-            Text(stringResource(R.string.updates_app_details))
-        }
-    }
-}
-
-@Composable
-private fun SheetDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.spacing_xsmall))
-    )
 }

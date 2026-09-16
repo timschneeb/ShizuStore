@@ -99,8 +99,6 @@ class AppsViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     private companion object {
-        const val STOP_TIMEOUT_MS = 5_000L
-
         /** `Calendar`, not `LocalDate`: that is API 26, `minSdk` is 24 and desugaring is off. */
         fun daySeed(): Long = Calendar.getInstance().let { now ->
             now.get(Calendar.YEAR) * 1_000L + now.get(Calendar.DAY_OF_YEAR)

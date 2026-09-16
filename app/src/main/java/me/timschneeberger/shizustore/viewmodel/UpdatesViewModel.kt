@@ -167,6 +167,5 @@ class UpdatesViewModel @Inject constructor(
 
     private companion object {
         const val TAG = "UpdatesViewModel"
-        const val STOP_TIMEOUT_MS = 5_000L
     }
 }

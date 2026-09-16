@@ -320,7 +320,7 @@ private fun priceIcon(price: AppPrice?): ImageVector = when (price) {
     AppPrice.IAP_OR_PAID -> Icons.Rounded.Paid
 }
 
-private fun sortLabel(sort: AppSort): Int = when (sort) {
+internal fun sortLabel(sort: AppSort): Int = when (sort) {
     AppSort.NAME -> R.string.search_sort_name
     AppSort.RECENTLY_ADDED -> R.string.apps_recently_added
     AppSort.RECENTLY_UPDATED -> R.string.apps_recently_updated

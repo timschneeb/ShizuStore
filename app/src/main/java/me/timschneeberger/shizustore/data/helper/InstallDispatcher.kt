@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -22,13 +23,17 @@ class InstallDispatcher @Inject constructor(
         return appInstaller.install(row)
     }
 
-    fun canInstallFromDisk(row: Download): Boolean {
-        val reusable = when (row.status) {
-            DownloadStatus.COMPLETED -> true
-            DownloadStatus.FAILED -> row.error?.canRetryWithoutDownloading == true
-            else -> false
-        }
+    fun canInstallFromDisk(row: Download): Boolean =
+        row.canInstallFromDisk(downloadHelper.hasApk(row))
+}
 
-        return reusable && downloadHelper.hasApk(row)
+/** A row whose APK is still on disk can be installed again without downloading. */
+fun Download.canInstallFromDisk(hasApk: Boolean): Boolean {
+    val reusable = when (status) {
+        DownloadStatus.COMPLETED -> true
+        DownloadStatus.FAILED -> error?.canRetryWithoutDownloading == true
+        else -> false
     }
+
+    return reusable && hasApk
 }
