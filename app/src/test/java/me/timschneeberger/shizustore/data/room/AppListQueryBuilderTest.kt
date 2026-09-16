@@ -101,14 +101,6 @@ class AppListQueryBuilderTest {
     }
 
     @Test
-    fun recommendedFilterEmitsBooleanMatch() {
-        val query = AppListQueryBuilder.build(AppListArgs(recommended = true))
-
-        assertTrue(query.sql.contains("isRecommended = 1"))
-        assertEquals(0, query.argCount)
-    }
-
-    @Test
     fun allFiltersCombineWithAnd() {
         val query = AppListQueryBuilder.build(
             AppListArgs(

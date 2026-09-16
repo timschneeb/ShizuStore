@@ -131,9 +131,6 @@ object Preferences {
     suspend fun putString(context: Context, key: String, value: String) =
         write(context) { it[stringPreferencesKey(key)] = value }
 
-    suspend fun remove(context: Context, key: String) = write(context) {
-        it.remove(booleanPreferencesKey(key))
-        it.remove(intPreferencesKey(key))
-        it.remove(stringPreferencesKey(key))
-    }
+    suspend fun removeString(context: Context, key: String) =
+        write(context) { it.remove(stringPreferencesKey(key)) }
 }

@@ -120,10 +120,11 @@ fun AppDetailsScreen(
                 actions = {
                     IconButton(
                         onClick = {
+                            val details = (uiState as? AppDetailsUiState.Loaded)?.details
                             context.shareApp(
-                                (uiState as? AppDetailsUiState.Loaded)?.details?.name
-                                    ?: packageName,
-                                packageName
+                                details?.name ?: packageName,
+                                packageName,
+                                url = details?.storeUrl ?: details?.url ?: details?.sourceUrl
                             )
                         }
                     ) {

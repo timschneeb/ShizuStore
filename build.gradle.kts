@@ -6,5 +6,6 @@ plugins {
     alias(libs.plugins.google.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ktlint) apply false
+    // Kept on the classpath only: :app applies the transform via RefineFactory.
     alias(libs.plugins.rikka.tools.refine.plugin) apply false
 }

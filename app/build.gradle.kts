@@ -22,6 +22,8 @@ val hasReleaseKey = File("signing.properties").exists()
 
 androidComponents {
     onVariants { variant ->
+        // Applied via the RefineFactory API instead of the Gradle plugin;
+        // the plugin only needs to stay on the classpath in the root project.
         variant.instrumentation.transformClassesWith(
             dev.rikka.tools.refine.RefineFactory::class.java,
             com.android.build.api.instrumentation.InstrumentationScope.ALL
@@ -75,7 +77,7 @@ android {
     }
 
     signingConfigs {
-        if (File("signing.properties").exists()) {
+        if (hasReleaseKey) {
             create("release") {
                 val properties = Properties().apply {
                     File("signing.properties").inputStream().use { load(it) }
@@ -84,7 +86,9 @@ android {
                 keyAlias = properties["KEY_ALIAS"] as String
                 keyPassword = properties["KEY_PASSWORD"] as String
                 storeFile = file(properties["STORE_FILE"] as String)
-                storePassword = properties["KEY_PASSWORD"] as String
+                // Older local files only define KEY_PASSWORD for both.
+                storePassword =
+                    (properties["STORE_PASSWORD"] ?: properties["KEY_PASSWORD"]) as String
             }
         }
         create("aosp") {
@@ -162,7 +166,6 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.navigation3)
@@ -185,7 +188,6 @@ dependencies {
 
     implementation(libs.markdown.renderer)
     implementation(libs.markdown.renderer.m3)
-    implementation(libs.markdown.renderer.coil3)
     implementation(libs.markdown.renderer.code)
 
     implementation(libs.hilt.android.core)
@@ -195,17 +197,13 @@ dependencies {
     ksp(libs.hilt.androidx.compiler)
 
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.sqlite.bundled)
     ksp(libs.androidx.room.compiler)
 
-    debugImplementation(libs.androidx.ui.tooling)
-
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
-    testImplementation(libs.androidx.room.testing)
     testImplementation(libs.okhttp.mockwebserver)
 }
 

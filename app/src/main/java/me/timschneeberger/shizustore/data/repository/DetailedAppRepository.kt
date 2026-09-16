@@ -11,6 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.api.ApiError
 import me.timschneeberger.shizustore.data.api.ApiResult
+import me.timschneeberger.shizustore.data.api.AppDetailDto
 import me.timschneeberger.shizustore.data.api.EtagResult
 import me.timschneeberger.shizustore.data.api.ShizuApi
 import me.timschneeberger.shizustore.data.room.dao.AppDao
@@ -91,10 +92,7 @@ class DetailedAppRepository @Inject constructor(
         return DetailedAppResult.Success(app, appDownloadDao.forApp(slug))
     }
 
-    private suspend fun persist(
-        slug: String,
-        detail: me.timschneeberger.shizustore.data.api.AppDetailDto
-    ): DetailedAppResult {
+    private suspend fun persist(slug: String, detail: AppDetailDto): DetailedAppResult {
         val existing = appDao.get(slug) ?: return DetailedAppResult.NotFound
         val updated = existing.applyDetail(detail, System.currentTimeMillis())
         appDao.upsert(updated)

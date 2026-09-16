@@ -5,43 +5,24 @@
 
 package me.timschneeberger.shizustore.data.repository
 
-import android.os.Build
-import androidx.room.Room
 import kotlinx.coroutines.test.runTest
-import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
+import me.timschneeberger.shizustore.RobolectricTestBase
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [Build.VERSION_CODES.VANILLA_ICE_CREAM])
-class UpdateStateRepositoryTest {
+class UpdateStateRepositoryTest : RobolectricTestBase() {
 
-    private lateinit var db: ShizuStoreDatabase
     private lateinit var repository: UpdateStateRepository
 
     @Before
     fun setUp() {
-        db = Room.inMemoryDatabaseBuilder(
-            RuntimeEnvironment.getApplication(),
-            ShizuStoreDatabase::class.java
-        ).allowMainThreadQueries().build()
-        repository = UpdateStateRepository(db, db.appDao(), db.appDownloadDao(), db.installedDao())
-    }
-
-    @After
-    fun tearDown() {
-        db.close()
+        repository = updateStateRepository()
     }
 
     @Test

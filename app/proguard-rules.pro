@@ -1,12 +1,9 @@
 # kotlinx.serialization
+# The runtime artifacts ship their own consumer rules for @Serializable
+# types; this only covers the app's generated serializers explicitly.
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.**
--keepclassmembers class me.timschneeberger.shizustore.data.sync.model.** {
-    *** Companion;
-}
--keepclasseswithmembers class me.timschneeberger.shizustore.data.sync.model.** {
+
+-keepclasseswithmembers class me.timschneeberger.shizustore.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
-
-# Room
--keep class androidx.room.RoomDatabase { *; }

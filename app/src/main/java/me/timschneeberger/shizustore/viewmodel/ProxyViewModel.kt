@@ -47,7 +47,7 @@ class ProxyViewModel @Inject constructor(
     }
 
     fun clear() {
-        viewModelScope.launch { Preferences.remove(context, PREFERENCE_PROXY_INFO) }
+        viewModelScope.launch { Preferences.removeString(context, PREFERENCE_PROXY_INFO) }
     }
 
     private fun decode(raw: String): ProxyInfo? {

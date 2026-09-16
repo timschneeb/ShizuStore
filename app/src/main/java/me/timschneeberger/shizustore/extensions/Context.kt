@@ -25,11 +25,13 @@ fun Context.viewExternal(url: String): Boolean = try {
     false
 }
 
-fun Context.shareApp(displayName: String, packageName: String) {
+fun Context.shareApp(displayName: String, packageName: String, url: String? = null) {
+    val link = url?.takeIf { it.isNotBlank() }
+        ?: "https://play.google.com/store/apps/details?id=$packageName"
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra(Intent.EXTRA_SUBJECT, displayName)
-        putExtra(Intent.EXTRA_TEXT, "https://f-droid.org/packages/$packageName/")
+        putExtra(Intent.EXTRA_TEXT, link)
     }
     runCatching { startActivity(Intent.createChooser(intent, displayName)) }
         .onFailure { Log.e(TAG, "No app to share $packageName with") }

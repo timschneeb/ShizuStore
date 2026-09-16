@@ -6,9 +6,9 @@
 package me.timschneeberger.shizustore.data.room
 
 import androidx.paging.PagingSource
-import androidx.room.Room
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import me.timschneeberger.shizustore.RobolectricTestBase
 import me.timschneeberger.shizustore.data.api.AppType
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.CategorySection
@@ -21,39 +21,13 @@ import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
-import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [35])
-class CatalogDaoTest {
-
-    private lateinit var db: ShizuStoreDatabase
-
-    @Before
-    fun setUp() {
-        db =
-            Room.inMemoryDatabaseBuilder(
-                RuntimeEnvironment.getApplication(),
-                ShizuStoreDatabase::class.java
-            )
-                .allowMainThreadQueries()
-                .build()
-    }
-
-    @After
-    fun tearDown() {
-        db.close()
-    }
+class CatalogDaoTest : RobolectricTestBase() {
 
     private fun app(
         slug: String,
