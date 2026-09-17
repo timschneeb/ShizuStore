@@ -211,7 +211,7 @@ object NotificationUtil {
         packageName: String,
         displayName: String
     ): Notification = NotificationCompat.Builder(context, CHANNEL_INSTALL)
-        .setSmallIcon(R.drawable.ic_install_done)
+        .setSmallIcon(R.drawable.ic_installed)
         .setContentTitle(
             context.getString(R.string.notification_installing, displayName)
         )
@@ -228,7 +228,7 @@ object NotificationUtil {
         packageName: String,
         displayName: String
     ): Notification = NotificationCompat.Builder(context, CHANNEL_INSTALL)
-        .setSmallIcon(R.drawable.ic_install_done)
+        .setSmallIcon(R.drawable.ic_installed)
         .setLargeIcon(appIcon(context, packageName))
         .setContentTitle(
             context.getString(R.string.notification_install_complete, displayName)
@@ -296,7 +296,7 @@ object NotificationUtil {
                 summaryId = SUMMARY_ID_INSTALLED,
                 group = GROUP_INSTALLED,
                 channelId = CHANNEL_INSTALL,
-                smallIcon = R.drawable.ic_install_done,
+                smallIcon = R.drawable.ic_installed,
                 titleRes = R.plurals.notification_installed_summary,
                 timeoutMs = INSTALLED_TIMEOUT_MS
             )
@@ -448,7 +448,7 @@ object NotificationUtil {
         displayName: String,
         confirmIntent: Intent
     ): Notification = NotificationCompat.Builder(context, CHANNEL_ALERTS)
-        .setSmallIcon(R.drawable.ic_install_done)
+        .setSmallIcon(R.drawable.ic_installed)
         .setContentTitle(
             context.getString(R.string.notification_confirm_install, displayName)
         )

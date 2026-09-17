@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -100,7 +98,7 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
                 )
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Terminal,
+                    painter = painterResource(R.drawable.ic_info_outlined),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -123,7 +121,7 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
                 }
                 IconButton(onClick = onDismiss) {
                     Icon(
-                        imageVector = Icons.Rounded.Close,
+                        painter = painterResource(R.drawable.ic_clear),
                         contentDescription = stringResource(R.string.shizuku_card_dismiss)
                     )
                 }

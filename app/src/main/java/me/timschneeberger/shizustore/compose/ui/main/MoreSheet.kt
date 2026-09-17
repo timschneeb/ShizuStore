@@ -56,12 +56,12 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
         SheetActionItem(
             label = stringResource(R.string.title_favourites),
             onClick = { navigateAndDismiss(Destination.Favourites) },
-            icon = R.drawable.ic_favorite_border_outlined
+            icon = R.drawable.ic_favorite_unchecked
         )
         SheetActionItem(
             label = stringResource(R.string.title_blacklist),
             onClick = { navigateAndDismiss(Destination.Blacklist) },
-            icon = R.drawable.ic_block_outlined
+            icon = R.drawable.ic_block
         )
         SheetActionItem(
             label = stringResource(R.string.title_ignored_updates),
@@ -77,9 +77,9 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
             icon = R.drawable.ic_settings_outlined
         )
         SheetActionItem(
-            label = stringResource(R.string.donation_card_title),
+            label = stringResource(R.string.title_donate),
             onClick = { showDonationDialog = true },
-            icon = R.drawable.ic_favorite_checked
+            icon = R.drawable.ic_volunteer_activism
         )
         SheetActionItem(
             label = stringResource(R.string.title_about),

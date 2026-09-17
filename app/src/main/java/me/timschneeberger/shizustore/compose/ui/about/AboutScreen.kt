@@ -9,14 +9,13 @@ package me.timschneeberger.shizustore.compose.ui.about
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.BuildConfig
 import me.timschneeberger.shizustore.R
@@ -86,7 +85,7 @@ private fun AboutLinkItem(headline: String, supporting: String, onClick: () -> U
         onClick = onClick,
         trailing = {
             Icon(
-                imageVector = Icons.AutoMirrored.Rounded.OpenInNew,
+                painter = painterResource(R.drawable.ic_open_in_new),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )

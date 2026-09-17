@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ SPDX-FileCopyrightText: 2026 Aurora OSS
-  ~ SPDX-License-Identifier: GPL-3.0-or-later
-  ~
-  ~ Path data from Google's Material Icons ("phone_android"), used for the Installed tab.
-  -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
     android:tint="?android:attr/colorControlNormal">
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M16,1H8C6.34,1,5,2.34,5,4v16c0,1.66,1.34,3,3,3h8c1.66,0,3-1.34,3-3V4c0-1.66-1.34-3-3-3zm-2,20h-4v-1h4v1zm3.25-3H6.75V4h10.5v14z" />
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M280,920Q247,920 223.5,896.5Q200,873 200,840L200,120Q200,87 223.5,63.5Q247,40 280,40L680,40Q713,40 736.5,63.5Q760,87 760,120L760,244Q778,251 789,266Q800,281 800,300L800,380Q800,399 789,414Q778,429 760,436L760,840Q760,873 736.5,896.5Q713,920 680,920L280,920ZM280,840L680,840Q680,840 680,840Q680,840 680,840L680,120Q680,120 680,120Q680,120 680,120L280,120Q280,120 280,120Q280,120 280,120L280,840Q280,840 280,840Q280,840 280,840ZM280,840Q280,840 280,840Q280,840 280,840L280,120Q280,120 280,120Q280,120 280,120L280,120Q280,120 280,120Q280,120 280,120L280,840Q280,840 280,840Q280,840 280,840ZM442,488L414,460Q403,449 386,449Q369,449 358,460Q347,471 347,488Q347,505 358,516L414,572Q426,584 442,584Q458,584 470,572L612,430Q623,419 623,402Q623,385 612,374Q601,363 584,363Q567,363 556,374L442,488Z"/>
 </vector>

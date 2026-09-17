@@ -446,7 +446,7 @@ private fun CategoryTagChip(
 @Composable
 private fun CategoryTagIcon(slug: String) {
     Icon(
-        imageVector = categoryIcon(slug),
+        painter = painterResource(categoryIcon(slug)),
         contentDescription = null,
         tint = MaterialTheme.colorScheme.primary,
         modifier = Modifier.size(dimensionResource(R.dimen.icon_size_chip))

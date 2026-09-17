@@ -12,9 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -117,8 +114,8 @@ fun AppListItem(
         }
     }
     val installedIcon = when {
-        app.hasUpdate -> Icons.Rounded.Update
-        app.isInstalled -> Icons.Rounded.CheckCircle
+        app.hasUpdate -> R.drawable.ic_updates
+        app.isInstalled -> R.drawable.ic_check_circle
         else -> null
     }
     val showBadges = installedIcon != null || app.hasPaid || app.hasIap
@@ -142,7 +139,7 @@ fun AppListItem(
                 ) {
                     if (installedIcon != null) {
                         Icon(
-                            imageVector = installedIcon,
+                            painter = painterResource(installedIcon),
                             contentDescription = if (app.hasUpdate) {
                                 stringResource(R.string.app_indicator_update)
                             } else {

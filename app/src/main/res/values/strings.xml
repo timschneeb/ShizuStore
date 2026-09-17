@@ -332,6 +332,7 @@
     <string name="title_blacklist">Blacklist</string>
     <string name="title_categories">Categories</string>
     <string name="title_search">Search</string>
+    <string name="title_donate">Donate</string>
     <string name="title_downloads">Downloads</string>
     <string name="title_favourites">Favourites</string>
     <string name="title_ignored_updates">Ignored updates</string>

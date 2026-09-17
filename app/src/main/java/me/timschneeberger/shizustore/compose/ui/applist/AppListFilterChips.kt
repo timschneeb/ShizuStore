@@ -6,6 +6,7 @@
 package me.timschneeberger.shizustore.compose.ui.applist
 
 import android.content.Context
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,20 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AttachMoney
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Category
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Download
-import androidx.compose.material.icons.rounded.MoneyOff
-import androidx.compose.material.icons.rounded.Paid
-import androidx.compose.material.icons.rounded.Redeem
-import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.SdStorage
-import androidx.compose.material.icons.rounded.SortByAlpha
-import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -46,9 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -94,7 +81,9 @@ fun AppListFilterChips(
             label = { Text(categoryName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             leadingIcon = {
                 Icon(
-                    imageVector = args.categorySlug?.let(::categoryIcon) ?: Icons.Rounded.Category,
+                    painter = painterResource(
+                        args.categorySlug?.let(::categoryIcon) ?: R.drawable.ic_category
+                    ),
                     contentDescription = null
                 )
             }
@@ -104,7 +93,9 @@ fun AppListFilterChips(
             selected = args.sort != AppSort.NAME,
             onClick = { openSheet = SHEET_SORT },
             label = { Text(stringResource(sortLabel(args.sort)), maxLines = 1) },
-            leadingIcon = { Icon(imageVector = sortIcon(args.sort), contentDescription = null) }
+            leadingIcon = {
+                Icon(painter = painterResource(sortIcon(args.sort)), contentDescription = null)
+            }
         )
 
         FilterChip(
@@ -112,7 +103,10 @@ fun AppListFilterChips(
             onClick = { onRecommended(!args.recommended) },
             label = { Text(stringResource(R.string.apps_recommended), maxLines = 1) },
             leadingIcon = {
-                Icon(imageVector = Icons.Rounded.AutoAwesome, contentDescription = null)
+                Icon(
+                    painter = painterResource(R.drawable.ic_editor_choice),
+                    contentDescription = null
+                )
             }
         )
 
@@ -120,7 +114,9 @@ fun AppListFilterChips(
             selected = args.price != null,
             onClick = { openSheet = SHEET_PRICE },
             label = { Text(stringResource(priceChipLabel(args.price)), maxLines = 1) },
-            leadingIcon = { Icon(imageVector = priceIcon(args.price), contentDescription = null) }
+            leadingIcon = {
+                Icon(painter = painterResource(priceIcon(args.price)), contentDescription = null)
+            }
         )
     }
 
@@ -204,13 +200,16 @@ private fun FilterSheet(
                         headline = option.label,
                         selection = ItemSelection.Radio(selected),
                         onClick = { onSelect(option.id) },
-                        leading = if (option.icon != null) {
-                            { Icon(imageVector = option.icon, contentDescription = null) }
-                        } else {
-                            null
+                        leading = option.iconRes?.let { res ->
+                            { Icon(painter = painterResource(res), contentDescription = null) }
                         },
                         trailing = if (selected) {
-                            { Icon(imageVector = Icons.Rounded.Check, contentDescription = null) }
+                            {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_check),
+                                    contentDescription = null
+                                )
+                            }
                         } else {
                             null
                         },
@@ -232,7 +231,7 @@ private fun categoryOptions(context: Context, categories: List<CategoryTag>): Li
             FilterOption(
                 id = null,
                 label = context.getString(R.string.filter_all),
-                icon = Icons.Rounded.Category
+                iconRes = R.drawable.ic_category
             )
         )
         categories.forEach { root ->
@@ -243,13 +242,19 @@ private fun categoryOptions(context: Context, categories: List<CategoryTag>): Li
                         FilterOption(
                             id = child.slug,
                             label = child.name,
-                            icon = categoryIcon(child.slug),
+                            iconRes = categoryIcon(child.slug),
                             indented = true
                         )
                     )
                 }
             } else {
-                add(FilterOption(id = root.slug, label = root.name, icon = categoryIcon(root.slug)))
+                add(
+                    FilterOption(
+                        id = root.slug,
+                        label = root.name,
+                        iconRes = categoryIcon(root.slug)
+                    )
+                )
             }
         }
     }
@@ -258,22 +263,22 @@ private fun priceOptions(context: Context): List<FilterOption> = listOf(
     FilterOption(
         id = null,
         label = context.getString(R.string.filter_all),
-        icon = Icons.Rounded.AttachMoney
+        iconRes = R.drawable.ic_attach_money
     ),
     FilterOption(
         id = AppPrice.FREE.name,
         label = context.getString(R.string.filter_free),
-        icon = Icons.Rounded.MoneyOff
+        iconRes = R.drawable.ic_money_off
     ),
     FilterOption(
         id = AppPrice.IAP.name,
         label = context.getString(R.string.filter_iap),
-        icon = Icons.Rounded.Redeem
+        iconRes = R.drawable.ic_redeem
     ),
     FilterOption(
         id = AppPrice.IAP_OR_PAID.name,
         label = context.getString(R.string.filter_iap_or_paid),
-        icon = Icons.Rounded.Paid
+        iconRes = R.drawable.ic_paid
     )
 )
 
@@ -281,32 +286,32 @@ private fun sortOptions(context: Context): List<FilterOption> = listOf(
     FilterOption(
         id = AppSort.NAME.name,
         label = context.getString(R.string.search_sort_name),
-        icon = Icons.Rounded.SortByAlpha
+        iconRes = R.drawable.ic_sort_by_alpha
     ),
     FilterOption(
         id = AppSort.RECENTLY_ADDED.name,
         label = context.getString(R.string.apps_recently_added),
-        icon = Icons.Rounded.Schedule
+        iconRes = R.drawable.ic_schedule
     ),
     FilterOption(
         id = AppSort.RECENTLY_UPDATED.name,
         label = context.getString(R.string.apps_recently_updated),
-        icon = Icons.Rounded.Update
+        iconRes = R.drawable.ic_updates
     ),
     FilterOption(
         id = AppSort.STARS.name,
         label = context.getString(R.string.search_sort_stars),
-        icon = Icons.Rounded.Star
+        iconRes = R.drawable.ic_star
     ),
     FilterOption(
         id = AppSort.DOWNLOADS.name,
         label = context.getString(R.string.search_sort_popularity),
-        icon = Icons.Rounded.Download
+        iconRes = R.drawable.ic_download_manager
     ),
     FilterOption(
         id = AppSort.SIZE_DESC.name,
         label = context.getString(R.string.search_sort_size),
-        icon = Icons.Rounded.SdStorage
+        iconRes = R.drawable.ic_sd_card
     )
 )
 
@@ -317,11 +322,12 @@ private fun priceChipLabel(price: AppPrice?): Int = when (price) {
     AppPrice.IAP_OR_PAID -> R.string.filter_iap_or_paid_short
 }
 
-private fun priceIcon(price: AppPrice?): ImageVector = when (price) {
-    null -> Icons.Rounded.AttachMoney
-    AppPrice.FREE -> Icons.Rounded.MoneyOff
-    AppPrice.IAP -> Icons.Rounded.Redeem
-    AppPrice.IAP_OR_PAID -> Icons.Rounded.Paid
+@DrawableRes
+private fun priceIcon(price: AppPrice?): Int = when (price) {
+    null -> R.drawable.ic_attach_money
+    AppPrice.FREE -> R.drawable.ic_money_off
+    AppPrice.IAP -> R.drawable.ic_redeem
+    AppPrice.IAP_OR_PAID -> R.drawable.ic_paid
 }
 
 internal fun sortLabel(sort: AppSort): Int = when (sort) {
@@ -333,19 +339,20 @@ internal fun sortLabel(sort: AppSort): Int = when (sort) {
     AppSort.SIZE_DESC -> R.string.search_sort_size
 }
 
-private fun sortIcon(sort: AppSort): ImageVector = when (sort) {
-    AppSort.NAME -> Icons.Rounded.SortByAlpha
-    AppSort.RECENTLY_ADDED -> Icons.Rounded.Schedule
-    AppSort.RECENTLY_UPDATED -> Icons.Rounded.Update
-    AppSort.STARS -> Icons.Rounded.Star
-    AppSort.DOWNLOADS -> Icons.Rounded.Download
-    AppSort.SIZE_DESC -> Icons.Rounded.SdStorage
+@DrawableRes
+private fun sortIcon(sort: AppSort): Int = when (sort) {
+    AppSort.NAME -> R.drawable.ic_sort_by_alpha
+    AppSort.RECENTLY_ADDED -> R.drawable.ic_schedule
+    AppSort.RECENTLY_UPDATED -> R.drawable.ic_updates
+    AppSort.STARS -> R.drawable.ic_star
+    AppSort.DOWNLOADS -> R.drawable.ic_download_manager
+    AppSort.SIZE_DESC -> R.drawable.ic_sd_card
 }
 
 private data class FilterOption(
     val id: String?,
     val label: String,
-    val icon: ImageVector? = null,
+    @DrawableRes val iconRes: Int? = null,
     val isHeader: Boolean = false,
     val indented: Boolean = false
 )

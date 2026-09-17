@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CloudOff
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 
@@ -44,7 +42,10 @@ fun OfflineBanner(onRetry: () -> Unit, modifier: Modifier = Modifier) {
                 bottom = dimensionResource(R.dimen.spacing_xsmall)
             )
         ) {
-            Icon(imageVector = Icons.Rounded.CloudOff, contentDescription = null)
+            Icon(
+                painter = painterResource(R.drawable.ic_cloud_off),
+                contentDescription = null
+            )
             Text(
                 text = stringResource(R.string.apps_sync_failed),
                 style = MaterialTheme.typography.bodyMedium,
@@ -52,7 +53,7 @@ fun OfflineBanner(onRetry: () -> Unit, modifier: Modifier = Modifier) {
             )
             IconButton(onClick = onRetry) {
                 Icon(
-                    imageVector = Icons.Rounded.Refresh,
+                    painter = painterResource(R.drawable.ic_refresh),
                     contentDescription = stringResource(R.string.action_retry)
                 )
             }

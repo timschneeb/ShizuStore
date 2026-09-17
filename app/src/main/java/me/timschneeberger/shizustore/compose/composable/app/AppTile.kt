@@ -17,9 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale.Companion.Crop
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,8 +39,8 @@ import me.timschneeberger.shizustore.util.CommonUtil
 @Composable
 fun AppTile(app: ResolvedApp, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val badgeIcon = when {
-        app.hasUpdate -> Icons.Rounded.Update
-        app.isInstalled -> Icons.Rounded.CheckCircle
+        app.hasUpdate -> R.drawable.ic_updates
+        app.isInstalled -> R.drawable.ic_check_circle
         else -> null
     }
 
@@ -83,7 +81,7 @@ fun AppTile(app: ResolvedApp, onClick: () -> Unit, modifier: Modifier = Modifier
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = badgeIcon,
+                            painter = painterResource(badgeIcon),
                             contentDescription = stringResource(
                                 if (app.hasUpdate) {
                                     R.string.app_indicator_update
