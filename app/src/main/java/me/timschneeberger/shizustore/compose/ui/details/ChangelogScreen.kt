@@ -12,11 +12,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +31,7 @@ import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.data.api.SourceKind
+import me.timschneeberger.shizustore.data.helper.SourceLauncher
 import me.timschneeberger.shizustore.viewmodel.AppDetailsUiState
 import me.timschneeberger.shizustore.viewmodel.AppDetailsViewModel
 
@@ -49,12 +53,27 @@ fun ChangelogScreen(
 
     LaunchedEffect(packageName) { viewModel.load(packageName) }
 
+    val context = LocalContext.current
+    val changelogUrl = (uiState as? AppDetailsUiState.Loaded)?.details?.changelogBrowserUrl
+
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
                 title = stringResource(R.string.details_changelog),
-                onNavigateBack = { onNavigateTo(Destination.Back) }
+                onNavigateBack = { onNavigateTo(Destination.Back) },
+                actions = {
+                    if (changelogUrl != null) {
+                        IconButton(onClick = { SourceLauncher.open(context, changelogUrl) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_open_in_new),
+                                contentDescription = stringResource(
+                                    R.string.action_open_in_browser
+                                )
+                            )
+                        }
+                    }
+                }
             )
         }
     ) { padding ->

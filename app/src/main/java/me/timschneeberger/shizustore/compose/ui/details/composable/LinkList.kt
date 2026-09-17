@@ -6,6 +6,7 @@
 
 package me.timschneeberger.shizustore.compose.ui.details.composable
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -20,8 +21,11 @@ import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.SectionHeader
 import me.timschneeberger.shizustore.data.api.Availability
+import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.extensions.viewExternal
+
+private data class LinkRow(val label: String, val url: String, val icon: Int)
 
 @Composable
 fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
@@ -31,17 +35,27 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
     val fdroidLabel = stringResource(R.string.details_fdroid)
     val sourceCodeLabel = stringResource(R.string.details_source_code)
     val storeLabel = stringResource(R.string.details_store)
-    val issueTrackerLabel = stringResource(R.string.details_issue_tracker)
-    val translationLabel = stringResource(R.string.details_translation)
-    val donateLabel = stringResource(R.string.details_donate)
 
-    val sourceCodeUrl = details.sourceUrl?.takeIf { it.isNotBlank() }
+    val sourceCodeUrl = details.sourceUrl?.takeIf {
+        it.isNotBlank() && isSourceCodeLink(details.listing, it)
+    }
     val websiteUrl = details.url?.takeIf { it.isNotBlank() }
+
+    // A closed-source project links its forge page for release downloads, so the
+    // link stays reachable but is listed as a website, never as source code.
+    val forgeWebsiteUrl = details.sourceUrl?.takeIf {
+        details.listing == Listing.CLOSED_SOURCE &&
+            it.isNotBlank() &&
+            it != websiteUrl &&
+            isForgeRepositoryUrl(it)
+    }
 
     // A forge website with no dedicated source link is the source link: label
     // it as source code and hide the otherwise duplicate Website row.
     val forgeAsSource = websiteUrl?.takeIf {
-        sourceCodeUrl == null && isForgeRepositoryUrl(it)
+        sourceCodeUrl == null &&
+            isSourceCodeLink(details.listing, it) &&
+            isForgeRepositoryUrl(it)
     }
 
     val links = remember(
@@ -49,45 +63,46 @@ fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {
         sourceCodeLabel,
         fdroidLabel,
         websiteLabel,
-        storeLabel,
-        issueTrackerLabel,
-        translationLabel,
-        donateLabel
+        storeLabel
     ) {
         buildList {
             val seen = mutableSetOf<String>()
 
-            fun addOnce(label: String, url: String) {
-                if (url.isNotBlank() && seen.add(url)) add(label to url)
+            fun addOnce(label: String, url: String, @DrawableRes icon: Int) {
+                if (url.isNotBlank() && seen.add(url)) add(LinkRow(label, url, icon))
             }
 
-            (sourceCodeUrl ?: forgeAsSource)?.let { addOnce(sourceCodeLabel, it) }
+            (sourceCodeUrl ?: forgeAsSource)?.let {
+                addOnce(sourceCodeLabel, it, R.drawable.ic_code)
+            }
 
             // Play-only apps link to the store through the notice card above,
             // so a Website/Store row would just repeat that link.
             if (details.availability != Availability.PLAY_REDIRECT) {
                 if (forgeAsSource == null) {
                     websiteUrl?.let {
-                        addOnce(if (isFDroidUrl(it)) fdroidLabel else websiteLabel, it)
+                        addOnce(
+                            if (isFDroidUrl(it)) fdroidLabel else websiteLabel,
+                            it,
+                            R.drawable.ic_language
+                        )
                     }
                 }
-                details.storeUrl?.let { addOnce(storeLabel, it) }
+                forgeWebsiteUrl?.let { addOnce(websiteLabel, it, R.drawable.ic_language) }
+                details.storeUrl?.let { addOnce(storeLabel, it, R.drawable.ic_storefront) }
             }
-
-            details.issueTracker?.let { addOnce(issueTrackerLabel, it) }
-            details.translation?.let { addOnce(translationLabel, it) }
-            details.donate.forEach { addOnce(donateLabel, it) }
         }
     }
 
     if (links.isEmpty()) return
 
     Column(modifier = modifier) {
-        links.forEach { (label, url) ->
+        links.forEach { link ->
             SectionHeader(
-                title = label,
-                subtitle = url,
-                onClick = { context.viewExternal(url) },
+                title = link.label,
+                subtitle = link.url,
+                icon = link.icon,
+                onClick = { context.viewExternal(link.url) },
                 trailing = {
                     Icon(
                         painter = painterResource(R.drawable.ic_open_in_new),
@@ -116,6 +131,13 @@ internal fun isForgeRepositoryUrl(url: String): Boolean {
     val host = urlHost(url) ?: return false
     return FORGE_HOSTS.any { host == it || host.endsWith(".$it") }
 }
+
+/**
+ * Whether a link may be labelled as source code. Forges host release binaries
+ * for closed-source projects, so their links are websites, not source.
+ */
+internal fun isSourceCodeLink(listing: Listing, url: String): Boolean =
+    listing != Listing.CLOSED_SOURCE || !isForgeRepositoryUrl(url)
 
 internal fun isFDroidUrl(url: String): Boolean {
     val host = urlHost(url) ?: return false

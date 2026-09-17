@@ -5,6 +5,8 @@
 
 package me.timschneeberger.shizustore.data.sync
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.sync.Mutex
@@ -13,6 +15,7 @@ import me.timschneeberger.shizustore.data.api.ApiError
 import me.timschneeberger.shizustore.data.api.ApiResult
 import me.timschneeberger.shizustore.data.api.AppsQuery
 import me.timschneeberger.shizustore.data.api.EtagResult
+import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.ShizuApi
 import me.timschneeberger.shizustore.data.helper.SyncStatusStore
 import me.timschneeberger.shizustore.data.repository.UpdateStateRepository
@@ -20,6 +23,7 @@ import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
 import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
+import me.timschneeberger.shizustore.util.Preferences
 
 /** Failure classes the sync worker and UI can act on. */
 enum class CatalogSyncFailure {
@@ -44,6 +48,7 @@ sealed interface CatalogSyncOutcome {
 /** Runs single-flight; a second caller gets [CatalogSyncOutcome.AlreadyRunning]. */
 @Singleton
 class CatalogSyncer @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val api: ShizuApi,
     private val appDao: AppDao,
     private val categoryDao: CategoryDao,
@@ -78,21 +83,37 @@ class CatalogSyncer @Inject constructor(
         }
     }
 
+    /**
+     * A listing change invalidates the cursor: deltas never carry rows from a
+     * listing that was not in the previous set, so the next sync has to
+     * bootstrap. Opting out also drops the closed rows immediately.
+     */
+    suspend fun onShowClosedSourceChanged(enabled: Boolean) {
+        mutex.withLock {
+            if (!enabled) {
+                appDao.deleteByListing(Listing.CLOSED_SOURCE)
+                updateStateRepository.recomputeAll()
+            }
+            syncStateDao.clearCursor()
+        }
+    }
+
     private suspend fun run(): CatalogSyncOutcome {
         val state = syncStateDao.get()
+        val listing = listingParam()
         val counts = if (state?.cursor.isNullOrBlank()) {
-            when (val result = bootstrap()) {
+            when (val result = bootstrap(listing)) {
                 is StepResult.Failed -> return result.outcome
                 is StepResult.Ok -> result.counts
             }
         } else {
-            when (val result = incremental(state.cursor)) {
+            when (val result = incremental(state.cursor, listing)) {
                 is StepResult.Failed -> return result.outcome
                 is StepResult.Ok -> result.counts
             }
         }
 
-        val categoriesEtag = refreshCategories(state?.categoriesEtag)
+        val categoriesEtag = refreshCategories(state?.categoriesEtag, listing)
         val meta = when (val result = api.meta()) {
             is ApiResult.Success -> result.value
             is ApiResult.Failure -> return result.error.toOutcome()
@@ -112,7 +133,7 @@ class CatalogSyncer @Inject constructor(
     }
 
     /** First run: page the whole catalog, then drop rows the server no longer has. */
-    private suspend fun bootstrap(): StepResult {
+    private suspend fun bootstrap(listing: String): StepResult {
         val seen = mutableListOf<String>()
         var page = 1
         while (page <= MAX_BOOTSTRAP_PAGES) {
@@ -121,7 +142,8 @@ class CatalogSyncer @Inject constructor(
                     page = page,
                     pageSize = BOOTSTRAP_PAGE_SIZE,
                     sort = SORT_NAME,
-                    order = ORDER_ASC
+                    order = ORDER_ASC,
+                    listing = listing
                 )
             )
             val dto = when (result) {
@@ -146,8 +168,8 @@ class CatalogSyncer @Inject constructor(
         return StepResult.Ok(Counts(added = seen.size))
     }
 
-    private suspend fun incremental(since: String): StepResult {
-        val changes = when (val result = api.changes(since)) {
+    private suspend fun incremental(since: String, listing: String): StepResult {
+        val changes = when (val result = api.changes(since, listing)) {
             is ApiResult.Success -> result.value
             is ApiResult.Failure -> return StepResult.Failed(result.error.toOutcome())
         }
@@ -170,8 +192,8 @@ class CatalogSyncer @Inject constructor(
     }
 
     /** Category failures are non-fatal: the catalog stays usable with the previous tree. */
-    private suspend fun refreshCategories(etag: String?): String? =
-        when (val result = api.categories(etag)) {
+    private suspend fun refreshCategories(etag: String?, listing: String): String? =
+        when (val result = api.categories(etag, listing)) {
             is ApiResult.Failure -> etag
             is ApiResult.Success -> when (val value = result.value) {
                 is EtagResult.Data -> {
@@ -201,10 +223,19 @@ class CatalogSyncer @Inject constructor(
         message = message
     )
 
+    private suspend fun listingParam(): String =
+        if (Preferences.readBoolean(context, Preferences.PREFERENCE_SHOW_CLOSED_SOURCE, false)) {
+            LISTING_BOTH
+        } else {
+            LISTING_MAIN
+        }
+
     private companion object {
         const val BOOTSTRAP_PAGE_SIZE = 200
         const val MAX_BOOTSTRAP_PAGES = 50
         const val SORT_NAME = "name"
         const val ORDER_ASC = "asc"
+        const val LISTING_MAIN = "main"
+        const val LISTING_BOTH = "main,closed_source"
     }
 }

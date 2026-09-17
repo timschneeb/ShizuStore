@@ -10,7 +10,9 @@ data class AppsQuery(
     val page: Int = 1,
     val pageSize: Int = 50,
     val sort: String? = null,
-    val order: String? = null
+    val order: String? = null,
+    /** Comma-separated listings; null asks for the server default (`main`). */
+    val listing: String? = null
 )
 
 interface ShizuApi {
@@ -20,9 +22,12 @@ interface ShizuApi {
     suspend fun app(slug: String, etag: String? = null): ApiResult<EtagResult<AppDetailDto>>
 
     /** 304 -> [EtagResult.NotModified]. */
-    suspend fun categories(etag: String? = null): ApiResult<EtagResult<List<CategoryNodeDto>>>
+    suspend fun categories(
+        etag: String? = null,
+        listing: String? = null
+    ): ApiResult<EtagResult<List<CategoryNodeDto>>>
 
-    suspend fun changes(since: String): ApiResult<ChangesDto>
+    suspend fun changes(since: String, listing: String? = null): ApiResult<ChangesDto>
 
     suspend fun meta(): ApiResult<MetaDto>
 

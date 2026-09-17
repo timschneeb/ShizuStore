@@ -6,6 +6,7 @@
 package me.timschneeberger.shizustore.data.repository
 
 import android.os.Build
+import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
@@ -188,6 +189,28 @@ class CatalogUiMapperTest {
                 it.app.packageName == "app.mihon.foss"
             }.app.installedVersionCode
         )
+    }
+
+    @Test
+    fun resolvedAppParsesListAndVersionTimestamps() {
+        val app = app().copy(
+            listUpdatedAt = "2026-05-01T00:00:00+00:00",
+            versionUpdatedAt = null
+        )
+
+        val resolved = mapper.toResolvedApp(app)
+
+        assertEquals(1_777_593_600_000L, resolved.listUpdatedAtMillis)
+        assertNull(resolved.versionUpdatedAtMillis)
+    }
+
+    @Test
+    fun appDetailsCarriesListing() {
+        val closed = app().copy(listing = Listing.CLOSED_SOURCE)
+
+        val details = mapper.toAppDetails(DetailedApp(closed, emptyList()))
+
+        assertEquals(Listing.CLOSED_SOURCE, details.listing)
     }
 
     private fun app(): AppEntity =

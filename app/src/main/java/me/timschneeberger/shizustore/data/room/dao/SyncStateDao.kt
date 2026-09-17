@@ -25,4 +25,8 @@ interface SyncStateDao {
 
     @Query("DELETE FROM sync_state")
     suspend fun clear()
+
+    /** Forces the next sync to bootstrap after the listing set changed. */
+    @Query("UPDATE sync_state SET cursor = NULL")
+    suspend fun clearCursor()
 }

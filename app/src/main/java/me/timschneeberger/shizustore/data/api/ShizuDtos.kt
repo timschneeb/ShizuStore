@@ -115,6 +115,7 @@ data class AppDetailDto(
     val permissions: List<String> = emptyList(),
     val fullDescription: String? = null,
     val changelog: String? = null,
+    val changelogUrl: String? = null,
     val screenshots: List<String> = emptyList(),
     val sourceName: String? = null
 )

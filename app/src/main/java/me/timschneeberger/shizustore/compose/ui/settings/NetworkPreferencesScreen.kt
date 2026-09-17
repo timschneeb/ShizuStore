@@ -47,6 +47,7 @@ fun NetworkPreferencesScreen(
 ) {
     val proxy by viewModel.proxy.collectAsStateWithLifecycle()
     val installReportingEnabled by viewModel.installReportingEnabled.collectAsStateWithLifecycle()
+    val showClosedSource by viewModel.showClosedSource.collectAsStateWithLifecycle()
     var showProxyDialog by remember { mutableStateOf(false) }
 
     if (showProxyDialog) {
@@ -97,6 +98,20 @@ fun NetworkPreferencesScreen(
                 },
                 onClick = { viewModel.setInstallReportingEnabled(!installReportingEnabled) },
                 selection = ItemSelection.Switch(installReportingEnabled)
+            )
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_show_closed_source_title),
+                supporting = stringResource(R.string.settings_show_closed_source_subtitle),
+                supportingMaxLines = 3,
+                trailing = {
+                    Switch(
+                        checked = showClosedSource,
+                        onCheckedChange = null
+                    )
+                },
+                onClick = { viewModel.setShowClosedSource(!showClosedSource) },
+                selection = ItemSelection.Switch(showClosedSource)
             )
         }
     }

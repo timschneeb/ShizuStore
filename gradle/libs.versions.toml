@@ -4,12 +4,11 @@ agp = "9.3.2"
 browser = "1.10.0"
 coil = "3.6.2"
 composeBom = "2026.09.00"
-# Pinned: 1.5.0-alpha28 adds PullToRefreshDefaults.LoadingIndicator, which
-# the BOM-managed 1.4.0 does not have.
 composeMaterial = "1.5.0-alpha28"
 core = "1.19.0"
 coroutinesTest = "1.11.0"
 datastore = "1.2.1"
+desugarJdkLibs = "2.1.5"
 hiddenApiBypass = "6.1"
 hilt = "2.60.1"
 hiltAndroidx = "1.4.0"
@@ -43,7 +42,6 @@ androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hiltAn
 androidx-lifecycle-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
-androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
@@ -60,6 +58,7 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-kt = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
+desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 github-topjohnwu-libsu = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }

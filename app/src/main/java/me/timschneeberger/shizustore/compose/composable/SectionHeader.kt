@@ -1,4 +1,5 @@
 /*
+ * SPDX-FileCopyrightText: 2026 Tim Schneeberger
  * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -6,6 +7,7 @@
 
 package me.timschneeberger.shizustore.compose.composable
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ fun SectionHeader(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String? = null,
+    @DrawableRes icon: Int? = null,
     onClick: (() -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
@@ -51,6 +54,16 @@ fun SectionHeader(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        if (icon != null) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = dimensionResource(R.dimen.spacing_large))
+                    .size(dimensionResource(R.dimen.icon_size_default)),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,

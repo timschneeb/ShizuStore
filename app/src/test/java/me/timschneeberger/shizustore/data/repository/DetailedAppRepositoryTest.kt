@@ -51,6 +51,10 @@ class DetailedAppRepositoryTest : ApiTestBase() {
         assertEquals("# Alpha readme", repository.fullDescription("alpha"))
         assertEquals("## 1.0\n- First release", repository.changelog("alpha"))
         assertEquals(
+            "https://github.com/o/alpha/releases/tag/v1.0",
+            repository.changelogUrl("alpha")
+        )
+        assertEquals(
             "https://f-droid.org/repo/example/en-US/phoneScreenshots/00.png",
             repository.screenshots("alpha")?.single()
         )
@@ -89,6 +93,7 @@ class DetailedAppRepositoryTest : ApiTestBase() {
               "lastCheckedAt": "2026-05-01T00:00:00+00:00",
               "fullDescription": "# Alpha readme",
               "changelog": "## 1.0\n- First release",
+              "changelogUrl": "https://github.com/o/alpha/releases/tag/v1.0",
               "screenshots": ["https://f-droid.org/repo/example/en-US/phoneScreenshots/00.png"]
             }
         """.trimIndent()

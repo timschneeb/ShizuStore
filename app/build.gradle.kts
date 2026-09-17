@@ -15,8 +15,8 @@ val lastCommitHash = providers.exec {
     isIgnoreExitValue = true
 }.standardOutput.asText.map { it.trim() }
 
-val appVersionName = "0.1.0"
-val appVersionCode = 1
+val appVersionName = "1.0.0"
+val appVersionCode = 100
 
 val hasReleaseKey = File("signing.properties").exists()
 
@@ -128,6 +128,11 @@ android {
         compose = true
     }
 
+    compileOptions {
+        // java.time for ISO-8601 parsing; minSdk 24 predates it on Android.
+        isCoreLibraryDesugaringEnabled = true
+    }
+
     packaging {
         resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
     }
@@ -151,6 +156,8 @@ ktlint {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -163,7 +170,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.navigation3.runtime)

@@ -17,6 +17,7 @@ import me.timschneeberger.shizustore.data.model.CertFingerprint
 import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.ServerConfig
 
 @Singleton
@@ -61,7 +62,9 @@ class CatalogUiMapper @Inject constructor() {
         hasPaid = app.hasPaid,
         hasIap = app.hasIap,
         stars = app.stars,
-        installCount = app.installCount
+        installCount = app.installCount,
+        listUpdatedAtMillis = CommonUtil.parseIsoUtcMillis(app.listUpdatedAt),
+        versionUpdatedAtMillis = CommonUtil.parseIsoUtcMillis(app.versionUpdatedAt)
     )
 
     fun toAppDetails(detailed: DetailedApp): AppDetails {
@@ -75,10 +78,7 @@ class CatalogUiMapper @Inject constructor() {
             iconUrl = ShizuUrls.icon(ServerConfig.baseUrl, app.iconHash),
             license = app.license.orEmpty(),
             authorName = app.authorName,
-            issueTracker = null,
             changelog = null,
-            translation = null,
-            donate = emptyList(),
             categories = listOfNotNull(
                 app.categoryPath.lastOrNull()?.name?.takeIf { it.isNotBlank() }
                     ?: app.categorySlug
@@ -98,7 +98,8 @@ class CatalogUiMapper @Inject constructor() {
             authorUrl = app.authorUrl,
             hasPaid = app.hasPaid,
             hasIap = app.hasIap,
-            stars = app.stars
+            stars = app.stars,
+            listing = app.listing
         )
     }
 

@@ -32,8 +32,9 @@
     <string name="action_more">More</string>
     <string name="action_open">Open</string>
     <string name="action_open_external">Open externally</string>
+    <string name="action_open_in_browser">Open in browser</string>
     <string name="action_open_play">View on Play</string>
-    <string name="action_open_link">View source</string>
+    <string name="action_open_link">View website</string>
     <string name="action_retry">Retry</string>
     <string name="action_save">Save</string>
     <string name="action_scroll_down">Scroll down</string>
@@ -70,8 +71,6 @@
     <string name="details_changelog">Changelog</string>
     <string name="details_changelog_subtitle">What\'s new for version %1$s</string>
     <string name="details_changelog_empty">No changelog available</string>
-    <string name="details_donate">Donate</string>
-    <string name="details_issue_tracker">Issue tracker</string>
     <string name="details_min_sdk" translatable="false">API %1$d+</string>
     <string name="details_min_android" translatable="false">%1$s+</string>
     <string name="details_api_level" translatable="false">API %1$d</string>
@@ -92,7 +91,7 @@
     <string name="details_source_code">Source code</string>
     <string name="details_store">Store</string>
     <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
-    <string name="details_translation">Translations</string>
+    <string name="details_closed_source_notice">This app is closed source. Its code is not public, so the community cannot easily verify what it does.</string>
     <string name="details_incompatible_notice">This app needs Android %1$s or newer. This device runs Android %2$s.</string>
     <string name="details_version_incompatible">Incompatible</string>
     <string name="details_version_installed">Installed</string>
@@ -188,8 +187,10 @@
     <string name="shizuku_card_title">Set up Shizuku</string>
     <string name="shizuku_card_install_body">Shizuku is not installed. Install it so ShizuStore can install apps in the background without root.</string>
     <string name="shizuku_card_grant_body">Shizuku is installed. Allow ShizuStore to install apps through it.</string>
+    <string name="shizuku_card_start_body">Shizuku is installed but not running. Start Shizuku, then allow ShizuStore access.</string>
     <string name="shizuku_card_install_action">Get Shizuku</string>
     <string name="shizuku_card_grant_action">Allow access</string>
+    <string name="shizuku_card_start_action">Start Shizuku</string>
     <string name="shizuku_card_dismiss">Dismiss</string>
 
     <string name="item_optional">Optional</string>
@@ -306,6 +307,8 @@
     <string name="settings_server_status_unreachable">Unreachable</string>
     <string name="settings_server_summary">Catalog server address</string>
     <string name="settings_server_title">Server</string>
+    <string name="settings_show_closed_source_subtitle">Also syncs apps from the upstream closed-source list. These apps are proprietary and off by default.</string>
+    <string name="settings_show_closed_source_title">Show closed-source apps</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_system">System default</string>
@@ -326,6 +329,32 @@
     <string name="settings_updates_title">Update checks</string>
     <string name="settings_wifi_only_subtitle">Background checks and automatic downloads wait for an unmetered network.</string>
     <string name="settings_wifi_only_title">Check on Wi-Fi only</string>
+
+    <string name="time_just_now">just now</string>
+    <plurals name="time_minutes_ago">
+        <item quantity="one">%1$d minute ago</item>
+        <item quantity="other">%1$d minutes ago</item>
+    </plurals>
+    <plurals name="time_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">%1$d day ago</item>
+        <item quantity="other">%1$d days ago</item>
+    </plurals>
+    <plurals name="time_weeks_ago">
+        <item quantity="one">%1$d week ago</item>
+        <item quantity="other">%1$d weeks ago</item>
+    </plurals>
+    <plurals name="time_months_ago">
+        <item quantity="one">%1$d month ago</item>
+        <item quantity="other">%1$d months ago</item>
+    </plurals>
+    <plurals name="time_years_ago">
+        <item quantity="one">%1$d year ago</item>
+        <item quantity="other">%1$d years ago</item>
+    </plurals>
 
     <string name="title_about">About</string>
     <string name="title_apps">Apps</string>

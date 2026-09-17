@@ -8,12 +8,18 @@ package me.timschneeberger.shizustore.util
 
 import android.content.Context
 import java.text.DateFormat
+import java.time.OffsetDateTime
+import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 import kotlin.math.ln
 import kotlin.math.pow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.model.ProxyInfo
+
+enum class AgeUnit { JUST_NOW, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS }
+
+data class AgeBucket(val unit: AgeUnit, val count: Long = 0L)
 
 object CommonUtil {
     private val siPrefixes: Map<Int, String> = hashMapOf(
@@ -142,4 +148,54 @@ object CommonUtil {
     }
 
     fun formatDate(epochMillis: Long): String = dateFormat.get()!!.format(Date(epochMillis))
+
+    /** Server timestamps are ISO-8601 strings (System.Text.Json DateTimeOffset). */
+    fun parseIsoUtcMillis(value: String?): Long? {
+        if (value.isNullOrBlank()) return null
+        return try {
+            OffsetDateTime.parse(value).toInstant().toEpochMilli()
+        } catch (_: DateTimeParseException) {
+            null
+        }
+    }
+
+    fun ageBucket(ageMillis: Long): AgeBucket = when {
+        ageMillis < MINUTE_MILLIS -> AgeBucket(AgeUnit.JUST_NOW)
+        ageMillis < HOUR_MILLIS -> AgeBucket(AgeUnit.MINUTES, ageMillis / MINUTE_MILLIS)
+        ageMillis < DAY_MILLIS -> AgeBucket(AgeUnit.HOURS, ageMillis / HOUR_MILLIS)
+        ageMillis < WEEK_MILLIS -> AgeBucket(AgeUnit.DAYS, ageMillis / DAY_MILLIS)
+        ageMillis < MONTH_MILLIS -> AgeBucket(AgeUnit.WEEKS, ageMillis / WEEK_MILLIS)
+        // A 30-day month runs out just short of a year; keep 360-364 days at 11
+        // months instead of a one-off "12 months ago".
+        ageMillis < YEAR_MILLIS -> AgeBucket(AgeUnit.MONTHS, (ageMillis / MONTH_MILLIS).coerceAtMost(11))
+        else -> AgeBucket(AgeUnit.YEARS, ageMillis / YEAR_MILLIS)
+    }
+
+    /** Bucketed age for list rows, e.g. "3 days ago"; future stamps read as "just now". */
+    fun relativeAge(context: Context, epochMillis: Long, now: Long = System.currentTimeMillis()): String {
+        val age = ageBucket((now - epochMillis).coerceAtLeast(0L))
+        val count = age.count.toInt()
+        return when (age.unit) {
+            AgeUnit.JUST_NOW -> context.getString(R.string.time_just_now)
+            AgeUnit.MINUTES ->
+                context.resources.getQuantityString(R.plurals.time_minutes_ago, count, count)
+            AgeUnit.HOURS ->
+                context.resources.getQuantityString(R.plurals.time_hours_ago, count, count)
+            AgeUnit.DAYS ->
+                context.resources.getQuantityString(R.plurals.time_days_ago, count, count)
+            AgeUnit.WEEKS ->
+                context.resources.getQuantityString(R.plurals.time_weeks_ago, count, count)
+            AgeUnit.MONTHS ->
+                context.resources.getQuantityString(R.plurals.time_months_ago, count, count)
+            AgeUnit.YEARS ->
+                context.resources.getQuantityString(R.plurals.time_years_ago, count, count)
+        }
+    }
+
+    private const val MINUTE_MILLIS = 60_000L
+    private const val HOUR_MILLIS = 60 * MINUTE_MILLIS
+    private const val DAY_MILLIS = 24 * HOUR_MILLIS
+    private const val WEEK_MILLIS = 7 * DAY_MILLIS
+    private const val MONTH_MILLIS = 30 * DAY_MILLIS
+    private const val YEAR_MILLIS = 365 * DAY_MILLIS
 }

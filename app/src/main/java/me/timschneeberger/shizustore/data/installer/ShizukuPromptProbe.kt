@@ -7,8 +7,9 @@ package me.timschneeberger.shizustore.data.installer
 
 import android.content.Context
 
-/** Shizuku being installed but not running still counts as installed; the grant retries later. */
+/** Shizuku being installed but not running still counts as installed; the card asks to start it. */
 fun probeShizukuPrompt(context: Context): ShizukuPrompt = shizukuPrompt(
     available = ShizukuInstaller.isAvailable(context),
+    running = ShizukuInstaller.isRunning(),
     permitted = ShizukuInstaller.hasPermission()
 )

@@ -13,6 +13,7 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import androidx.sqlite.db.SupportSQLiteQuery
 import kotlinx.coroutines.flow.Flow
+import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.mergeDetailFrom
 
@@ -57,6 +58,9 @@ interface AppDao {
 
     @Query("DELETE FROM app WHERE slug IN (:slugs)")
     suspend fun deleteBySlugs(slugs: List<String>)
+
+    @Query("DELETE FROM app WHERE listing = :listing")
+    suspend fun deleteByListing(listing: Listing)
 
     @Query("DELETE FROM app")
     suspend fun clear()

@@ -223,7 +223,7 @@ open class ShizukuInstaller @Inject constructor(
         fun requestPermissionIfNeeded() = permissionRequester()
 
         private val DEFAULT_PERMISSION_REQUESTER: () -> Unit = {
-            if (isBinderAlive() && !hasPermission()) {
+            if (isRunning() && !hasPermission()) {
                 Log.i(TAG, "Shizuku is running but not permitted; asking for the grant")
                 runCatching { Shizuku.requestPermission(PERMISSION_REQUEST_CODE) }.onFailure {
                     Log.w(TAG, "Could not ask Shizuku for permission", it)
@@ -233,7 +233,7 @@ open class ShizukuInstaller @Inject constructor(
 
         private val permissionRequester: () -> Unit = DEFAULT_PERMISSION_REQUESTER
 
-        private fun isBinderAlive(): Boolean = runCatching { Shizuku.pingBinder() }
+        fun isRunning(): Boolean = runCatching { Shizuku.pingBinder() }
             .getOrElse { false }
 
         const val SHIZUKU_PACKAGE_NAME = "moe.shizuku.privileged.api"

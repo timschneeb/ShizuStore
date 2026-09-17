@@ -95,6 +95,14 @@ fun SourceList(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_deployed_code_update),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = dimensionResource(R.dimen.spacing_large))
+                    .requiredSize(dimensionResource(R.dimen.icon_size_default)),
+                tint = MaterialTheme.colorScheme.primary
+            )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(R.string.details_sources),

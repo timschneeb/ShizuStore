@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.compose.ui.details.composable
 
+import me.timschneeberger.shizustore.data.api.Listing
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -42,5 +43,13 @@ class LinkListTest {
         assertFalse(isFDroidUrl("https://example.com/packages/org.example.app/"))
         assertFalse(isFDroidUrl("https://notf-droid.org/packages/org.example.app/"))
         assertFalse(isFDroidUrl("f-droid.org/packages/org.example.app/"))
+    }
+
+    @Test
+    fun forgeLinksAreNotSourceCodeForClosedSourceApps() {
+        assertFalse(isSourceCodeLink(Listing.CLOSED_SOURCE, "https://github.com/owner/repo"))
+        assertFalse(isSourceCodeLink(Listing.CLOSED_SOURCE, "https://gitlab.com/owner/repo"))
+        assertTrue(isSourceCodeLink(Listing.CLOSED_SOURCE, "https://example.com/download"))
+        assertTrue(isSourceCodeLink(Listing.MAIN, "https://github.com/owner/repo"))
     }
 }

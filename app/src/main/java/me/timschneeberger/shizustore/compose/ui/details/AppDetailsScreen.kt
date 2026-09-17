@@ -52,6 +52,7 @@ import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.ui.details.composable.AppExclusionMenu
 import me.timschneeberger.shizustore.compose.ui.details.composable.BillingNotice
+import me.timschneeberger.shizustore.compose.ui.details.composable.ClosedSourceNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.CompatibilityNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsCarousel
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsHeader
@@ -273,9 +274,12 @@ fun AppDetailsScreen(
                                 hasIap = state.details.hasIap
                             )
 
+                            ClosedSourceNotice(listing = state.details.listing)
+
                             SectionHeader(
                                 title = stringResource(R.string.details_more_about),
                                 subtitle = state.details.description.takeIf { it.isNotBlank() },
+                                icon = R.drawable.ic_info_outlined,
                                 onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
                             )
 
@@ -287,6 +291,7 @@ fun AppDetailsScreen(
                                         ?.let {
                                             stringResource(R.string.details_changelog_subtitle, it)
                                         },
+                                    icon = R.drawable.ic_updates,
                                     onClick = {
                                         onNavigateTo(Destination.Changelog(packageName))
                                     }
@@ -311,6 +316,7 @@ fun AppDetailsScreen(
                                             state.details.permissions.size
                                         )
                                     },
+                                    icon = R.drawable.ic_shield,
                                     onClick = {
                                         onNavigateTo(Destination.Permissions(packageName))
                                     }

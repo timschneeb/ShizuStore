@@ -81,6 +81,7 @@ import me.timschneeberger.shizustore.compose.composable.LoadingIndicatorBox
 import me.timschneeberger.shizustore.compose.composable.OfflineBanner
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.ScrollHint
+import me.timschneeberger.shizustore.compose.composable.app.AppAge
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
 import me.timschneeberger.shizustore.compose.composable.rememberVisibleForAtLeast
 import me.timschneeberger.shizustore.compose.navigation.Destination
@@ -250,6 +251,7 @@ fun AppListScreen(
                         listState = listState,
                         showStars = currentArgs.sort == AppSort.STARS,
                         showInstalls = currentArgs.sort == AppSort.DOWNLOADS && useInstallCounts,
+                        age = currentArgs.sort.ageLabel,
                         syncing = syncing,
                         syncFailure = syncFailure,
                         onRetry = viewModel::retrySync,
@@ -459,6 +461,7 @@ private fun AppRows(
     listState: LazyListState,
     showStars: Boolean,
     showInstalls: Boolean,
+    age: AppAge?,
     syncing: Boolean,
     syncFailure: CatalogSyncFailure?,
     onRetry: () -> Unit,
@@ -516,7 +519,8 @@ private fun AppRows(
                                 app = app,
                                 onClick = { onAppClick(app) },
                                 showStars = showStars,
-                                showInstalls = showInstalls
+                                showInstalls = showInstalls,
+                                age = age
                             )
                         }
                     }
@@ -563,3 +567,11 @@ private fun SearchBackHandler(
 private const val SEARCH_DEBOUNCE_MS = 250L
 
 private const val MIN_LIST_LOADING_MS = 100L
+
+/** The date-sorted lists surface the timestamp their ORDER BY uses. */
+private val AppSort.ageLabel: AppAge?
+    get() = when (this) {
+        AppSort.RECENTLY_ADDED -> AppAge.LISTED
+        AppSort.RECENTLY_UPDATED -> AppAge.RELEASED
+        else -> null
+    }

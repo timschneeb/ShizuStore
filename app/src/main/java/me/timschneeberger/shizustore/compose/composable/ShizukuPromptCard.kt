@@ -6,6 +6,7 @@
 package me.timschneeberger.shizustore.compose.composable
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,8 +46,8 @@ import me.timschneeberger.shizustore.data.model.Installer
 import me.timschneeberger.shizustore.extensions.viewExternal
 import me.timschneeberger.shizustore.util.Preferences
 
-/** Walks the user through installing or granting the Shizuku installer; re-probes on resume so
- * returning from Play or the permission dialog refreshes the card. */
+/** Walks the user through installing, starting or granting the Shizuku installer; re-probes on
+ * resume so returning from Play, Shizuku or the permission dialog refreshes the card. */
 @Composable
 fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
@@ -60,12 +61,12 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     val current = prompt
     val scope = rememberCoroutineScope()
 
-    // Only store Shizuku as the installer once the re-probe reports READY: availability
-    // (package present) does not imply the grant and installs would fail without it.
-    var grantRequested by remember { mutableStateOf(false) }
+    // Only store Shizuku as the installer once the re-probe reports READY: a present package
+    // or a running service does not imply the grant and installs would fail without it.
+    var setupRequested by remember { mutableStateOf(false) }
     LaunchedEffect(current) {
-        if (grantRequested && current == ShizukuPrompt.READY) {
-            grantRequested = false
+        if (setupRequested && current == ShizukuPrompt.READY) {
+            setupRequested = false
             scope.launch {
                 Preferences.putInteger(
                     context,
@@ -81,6 +82,7 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     if (current == ShizukuPrompt.READY) return
 
     val isInstall = current == ShizukuPrompt.INSTALL
+    val isStart = current == ShizukuPrompt.START
 
     Card(
         modifier = modifier
@@ -109,10 +111,10 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
                     )
                     Text(
                         text = stringResource(
-                            if (isInstall) {
-                                R.string.shizuku_card_install_body
-                            } else {
-                                R.string.shizuku_card_grant_body
+                            when {
+                                isInstall -> R.string.shizuku_card_install_body
+                                isStart -> R.string.shizuku_card_start_body
+                                else -> R.string.shizuku_card_grant_body
                             }
                         ),
                         style = MaterialTheme.typography.bodyMedium,
@@ -132,26 +134,43 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
             ) {
                 TextButton(
                     onClick = {
-                        if (isInstall) {
-                            openShizukuOnPlay(context)
-                        } else {
-                            grantRequested = true
-                            ShizukuInstaller.requestPermissionIfNeeded()
+                        when {
+                            isInstall -> openShizukuOnPlay(context)
+                            isStart -> {
+                                setupRequested = true
+                                openShizukuApp(context)
+                            }
+                            else -> {
+                                setupRequested = true
+                                ShizukuInstaller.requestPermissionIfNeeded()
+                            }
                         }
                     }
                 ) {
                     Text(
                         text = stringResource(
-                            if (isInstall) {
-                                R.string.shizuku_card_install_action
-                            } else {
-                                R.string.shizuku_card_grant_action
+                            when {
+                                isInstall -> R.string.shizuku_card_install_action
+                                isStart -> R.string.shizuku_card_start_action
+                                else -> R.string.shizuku_card_grant_action
                             }
                         )
                     )
                 }
             }
         }
+    }
+}
+
+/** Opening Shizuku is the only way to start its service; fall back to the listing when absent. */
+private fun openShizukuApp(context: Context) {
+    val intent = context.packageManager
+        .getLaunchIntentForPackage(ShizukuInstaller.SHIZUKU_PACKAGE_NAME)
+    val started = intent?.let {
+        runCatching { context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess
+    } ?: false
+    if (!started) {
+        openShizukuOnPlay(context)
     }
 }
 

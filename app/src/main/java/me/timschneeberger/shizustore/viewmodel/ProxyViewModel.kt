@@ -17,14 +17,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import me.timschneeberger.shizustore.data.model.ProxyInfo
+import me.timschneeberger.shizustore.data.sync.CatalogSyncer
+import me.timschneeberger.shizustore.data.work.SyncWorker
 import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.Preferences
 import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_INSTALL_REPORTING
 import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_PROXY_INFO
+import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_SHOW_CLOSED_SOURCE
 
 @HiltViewModel
 class ProxyViewModel @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    private val syncer: CatalogSyncer
 ) : ViewModel() {
 
     private val _proxy = MutableStateFlow<ProxyInfo?>(null)
@@ -35,6 +39,10 @@ class ProxyViewModel @Inject constructor(
 
     val installReportingEnabled: StateFlow<Boolean> = _installReportingEnabled.asStateFlow()
 
+    private val _showClosedSource = MutableStateFlow(false)
+
+    val showClosedSource: StateFlow<Boolean> = _showClosedSource.asStateFlow()
+
     init {
         viewModelScope.launch {
             Preferences.stringFlow(context, PREFERENCE_PROXY_INFO).collect { raw ->
@@ -44,6 +52,11 @@ class ProxyViewModel @Inject constructor(
         viewModelScope.launch {
             Preferences.booleanFlow(context, PREFERENCE_INSTALL_REPORTING, true).collect {
                 _installReportingEnabled.value = it
+            }
+        }
+        viewModelScope.launch {
+            Preferences.booleanFlow(context, PREFERENCE_SHOW_CLOSED_SOURCE, false).collect {
+                _showClosedSource.value = it
             }
         }
     }
@@ -59,6 +72,14 @@ class ProxyViewModel @Inject constructor(
     fun setInstallReportingEnabled(enabled: Boolean) {
         viewModelScope.launch {
             Preferences.putBoolean(context, PREFERENCE_INSTALL_REPORTING, enabled)
+        }
+    }
+
+    fun setShowClosedSource(enabled: Boolean) {
+        viewModelScope.launch {
+            Preferences.putBoolean(context, PREFERENCE_SHOW_CLOSED_SOURCE, enabled)
+            syncer.onShowClosedSourceChanged(enabled)
+            SyncWorker.enqueue(context)
         }
     }
 

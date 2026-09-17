@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +45,7 @@ fun AppListItem(
     trailing: (@Composable () -> Unit)? = null,
     showStars: Boolean = false,
     showInstalls: Boolean = false,
+    age: AppAge? = null,
     supporting: String? = app.summary
 ) {
     val installsText = if (showInstalls) {
@@ -56,7 +58,15 @@ fun AppListItem(
     } else {
         null
     }
-    val countPart: AnnotatedString? = remember(installsText, starsText) {
+    val context = LocalContext.current
+    val ageText = remember(age, context, app.listUpdatedAtMillis, app.versionUpdatedAtMillis) {
+        when (age) {
+            AppAge.LISTED -> app.listUpdatedAtMillis?.let { CommonUtil.relativeAge(context, it) }
+            AppAge.RELEASED -> app.versionUpdatedAtMillis?.let { CommonUtil.relativeAge(context, it) }
+            null -> null
+        }
+    }
+    val metaPart: AnnotatedString? = remember(installsText, starsText, ageText) {
         when {
             installsText != null -> buildAnnotatedString {
                 appendInlineContent(INSTALLS_ICON_ID, "[downloads]")
@@ -64,6 +74,7 @@ fun AppListItem(
                 append(installsText)
             }
             starsText != null -> AnnotatedString(starsText)
+            ageText != null -> AnnotatedString(ageText)
             else -> null
         }
     }
@@ -73,8 +84,8 @@ fun AppListItem(
     } else {
         app.versionName
     }
-    val tertiaryText = remember(countPart, versionText) {
-        countPart?.let {
+    val tertiaryText = remember(metaPart, versionText) {
+        metaPart?.let {
             buildAnnotatedString {
                 append(it)
                 append("  ·  ")
@@ -183,3 +194,6 @@ fun AppListItem(
 private const val INSTALLS_ICON_ID = "installs"
 
 private val TERTIARY_ICON_SIZE = 14.sp
+
+/** Which stored timestamp the row's meta line shows when the list is sorted by date. */
+enum class AppAge { LISTED, RELEASED }

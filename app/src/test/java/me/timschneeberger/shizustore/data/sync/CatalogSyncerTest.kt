@@ -8,12 +8,14 @@ package me.timschneeberger.shizustore.data.sync
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import me.timschneeberger.shizustore.ApiTestBase
+import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.helper.SyncStatusStore
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
+import me.timschneeberger.shizustore.util.Preferences
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
@@ -23,6 +25,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.robolectric.RuntimeEnvironment
 
 class CatalogSyncerTest : ApiTestBase() {
 
@@ -31,6 +34,7 @@ class CatalogSyncerTest : ApiTestBase() {
     @Before
     fun setUp() {
         syncer = CatalogSyncer(
+            context = RuntimeEnvironment.getApplication(),
             api = api(),
             appDao = db.appDao(),
             categoryDao = db.categoryDao(),
@@ -196,6 +200,58 @@ class CatalogSyncerTest : ApiTestBase() {
         assertTrue(alpha.updateAvailable)
         assertEquals(4L, alpha.installedVersionCode)
         assertEquals(false, db.appDao().get("beta")!!.updateAvailable)
+    }
+
+    @Test
+    fun bootstrapAsksForMainListingByDefault() = runTest {
+        server.dispatcher = routes(
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to json(CATEGORIES)
+        )
+
+        syncer.sync()
+
+        assertEquals(
+            "/v1/apps?page=1&pageSize=200&sort=name&order=asc&listing=main",
+            server.takeRequest().path
+        )
+    }
+
+    @Test
+    fun bootstrapAsksForClosedSourceWhenEnabled() = runTest {
+        Preferences.putBoolean(
+            RuntimeEnvironment.getApplication(),
+            Preferences.PREFERENCE_SHOW_CLOSED_SOURCE,
+            true
+        )
+        server.dispatcher = routes(
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to json(CATEGORIES)
+        )
+
+        syncer.sync()
+
+        assertEquals(
+            "/v1/apps?page=1&pageSize=200&sort=name&order=asc&listing=main%2Cclosed_source",
+            server.takeRequest().path
+        )
+    }
+
+    @Test
+    fun disablingClosedSourceDropsRowsAndResetsCursor() = runTest {
+        db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
+        db.appDao().upsert(AppEntity(slug = "alpha", name = "Alpha"))
+        db.appDao().upsert(
+            AppEntity(slug = "proprietary", name = "Proprietary", listing = Listing.CLOSED_SOURCE)
+        )
+
+        syncer.onShowClosedSourceChanged(false)
+
+        assertNotNull(db.appDao().get("alpha"))
+        assertNull(db.appDao().get("proprietary"))
+        assertNull(db.syncStateDao().get()!!.cursor)
     }
 
     private fun routes(vararg pairs: Pair<String, MockResponse>): Dispatcher {

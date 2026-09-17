@@ -211,7 +211,7 @@ object NotificationUtil {
         packageName: String,
         displayName: String
     ): Notification = NotificationCompat.Builder(context, CHANNEL_INSTALL)
-        .setSmallIcon(R.drawable.ic_installed)
+        .setSmallIcon(android.R.drawable.stat_sys_download)
         .setContentTitle(
             context.getString(R.string.notification_installing, displayName)
         )

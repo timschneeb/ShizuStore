@@ -67,6 +67,16 @@ class DetailedAppRepository @Inject constructor(
 
     fun changelog(slug: String): String? = changelogs[slug]
 
+    /** Release page URLs for [changelogs]; same process-lifetime LRU. */
+    private val changelogUrls = Collections.synchronizedMap(
+        object : LinkedHashMap<String, String>(CACHE_SIZE, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>) =
+                size > MAX_CACHED_DESCRIPTIONS
+        }
+    )
+
+    fun changelogUrl(slug: String): String? = changelogUrls[slug]
+
     /** Same process-lifetime LRU as [fullDescriptions]; the details gallery reads one app at a time. */
     private val screenshots = Collections.synchronizedMap(
         object : LinkedHashMap<String, List<String>>(CACHE_SIZE, 0.75f, true) {
@@ -99,6 +109,7 @@ class DetailedAppRepository @Inject constructor(
 
         detail.fullDescription?.takeIf { it.isNotBlank() }?.let { fullDescriptions[slug] = it }
         detail.changelog?.takeIf { it.isNotBlank() }?.let { changelogs[slug] = it }
+        detail.changelogUrl?.takeIf { it.isNotBlank() }?.let { changelogUrls[slug] = it }
         detail.screenshots.takeIf { it.isNotEmpty() }?.let { screenshots[slug] = it }
 
         val downloads = detail.downloads.map { it.toEntity(slug) }

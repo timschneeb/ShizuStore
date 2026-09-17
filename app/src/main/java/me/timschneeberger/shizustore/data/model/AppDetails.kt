@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.data.model
 
 import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.api.Availability
+import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
 
 @Immutable
@@ -20,10 +21,7 @@ data class AppDetails(
     val license: String,
     val authorName: String?,
     val authorUrl: String? = null,
-    val issueTracker: String?,
     val changelog: String?,
-    val translation: String?,
-    val donate: List<String>,
     val categories: List<String>,
     val screenshots: List<String>,
     val lastUpdated: Long,
@@ -40,5 +38,15 @@ data class AppDetails(
     val hasIap: Boolean = false,
     val stars: Int? = null,
     val fullDescription: String? = null,
-    val sourceKind: SourceKind? = null
-)
+    val sourceKind: SourceKind? = null,
+    val changelogUrl: String? = null,
+    val listing: Listing = Listing.MAIN
+) {
+    /** Forge or listing page the description screen opens. */
+    val browserUrl: String?
+        get() = sourceUrl?.takeIf { it.isNotBlank() } ?: url?.takeIf { it.isNotBlank() }
+
+    /** Release page the changelog was read from; index-sourced notes fall back to [browserUrl]. */
+    val changelogBrowserUrl: String?
+        get() = changelogUrl?.takeIf { it.isNotBlank() } ?: browserUrl
+}

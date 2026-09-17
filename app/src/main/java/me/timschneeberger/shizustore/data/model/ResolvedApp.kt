@@ -35,7 +35,10 @@ data class ResolvedApp(
     val hasPaid: Boolean = false,
     val hasIap: Boolean = false,
     val stars: Int? = null,
-    val installCount: Long = 0
+    val installCount: Long = 0,
+    /** Parsed from the ISO-8601 wire strings; null when the source has no date. */
+    val listUpdatedAtMillis: Long? = null,
+    val versionUpdatedAtMillis: Long? = null
 ) {
     // Parsed once: hasUpdate and the signer checks run per row and re-parsing the
     // space-joined sets on every read shows up in profiles.

@@ -49,8 +49,11 @@ class OkHttpShizuApi @Inject constructor(
             }
         }
 
-    override suspend fun categories(etag: String?): ApiResult<EtagResult<List<CategoryNodeDto>>> =
-        when (val result = execute("/v1/categories", emptyList(), etag)) {
+    override suspend fun categories(
+        etag: String?,
+        listing: String?
+    ): ApiResult<EtagResult<List<CategoryNodeDto>>> =
+        when (val result = execute("/v1/categories", listingParams(listing), etag)) {
             is ApiResult.Failure -> result
             is ApiResult.Success -> when (val raw = result.value) {
                 is RawResponse.Ok -> try {
@@ -64,8 +67,8 @@ class OkHttpShizuApi @Inject constructor(
             }
         }
 
-    override suspend fun changes(since: String): ApiResult<ChangesDto> =
-        decode(execute("/v1/changes", listOf("since" to since))) { body ->
+    override suspend fun changes(since: String, listing: String?): ApiResult<ChangesDto> =
+        decode(execute("/v1/changes", listOf("since" to since) + listingParams(listing))) { body ->
             json.decodeFromString(ChangesDto.serializer(), body)
         }
 
@@ -192,7 +195,11 @@ class OkHttpShizuApi @Inject constructor(
         add("pageSize" to pageSize.toString())
         sort?.let { add("sort" to it) }
         order?.let { add("order" to it) }
+        listingParams(listing).forEach { add(it) }
     }
+
+    private fun listingParams(listing: String?): List<Pair<String, String>> =
+        listing?.let { listOf("listing" to it) }.orEmpty()
 
     private fun Response.retryAfterSeconds(): Long? = header("Retry-After")?.trim()?.toLongOrNull()
 

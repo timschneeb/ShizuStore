@@ -371,6 +371,7 @@ class AppDetailsViewModel @Inject constructor(
                         details = mapper.toAppDetails(detailed).copy(
                             fullDescription = detailedAppRepository.fullDescription(slug),
                             changelog = detailedAppRepository.changelog(slug),
+                            changelogUrl = detailedAppRepository.changelogUrl(slug),
                             screenshots = detailedAppRepository.screenshots(slug).orEmpty()
                         ),
                         sources = mapper.toSources(detailed, fingerprint, installed?.packageName),
