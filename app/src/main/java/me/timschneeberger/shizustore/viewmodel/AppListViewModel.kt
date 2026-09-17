@@ -107,11 +107,14 @@ class AppListViewModel @Inject constructor(
     }
 
     fun setQuery(query: String) {
-        _atSearchHome.value = false
-        _args.update { it.copy(query = query) }
+        // A blank query never leaves the search home: the back button clears the
+        // field and calls clearAll(), and the debounced emission that follows
+        // must not flip the screen back from the search home to the list.
         if (query.isNotBlank()) {
+            _atSearchHome.value = false
             viewModelScope.launch { searchHistory.record(query) }
         }
+        _args.update { it.copy(query = query) }
     }
 
     fun setCategory(categorySlug: String?) {
