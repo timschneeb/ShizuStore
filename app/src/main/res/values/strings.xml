@@ -5,6 +5,8 @@
     <string name="about_version">Version <xliff:g id="version_name">%1$s</xliff:g> (<xliff:g id="version_code">%2$d</xliff:g>)</string>
     <string name="about_developer_title">Developer</string>
     <string name="about_developer_value" translatable="false">Tim Schneeberger</string>
+    <string name="about_github_title">Source code</string>
+    <string name="about_github_value" translatable="false">github.com/timschneeb/ShizuStore</string>
     <string name="about_auroradroid_title" translatable="false">AuroraDroid</string>
     <string name="about_auroradroid_value">Based on AuroraDroid by Aurora OSS</string>
 

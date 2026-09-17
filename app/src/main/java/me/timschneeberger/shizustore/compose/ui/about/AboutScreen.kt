@@ -58,6 +58,12 @@ fun AboutScreen(modifier: Modifier = Modifier, onNavigateTo: (Destination) -> Un
             )
 
             AboutLinkItem(
+                headline = stringResource(R.string.about_github_title),
+                supporting = stringResource(R.string.about_github_value),
+                onClick = { SourceLauncher.open(context, GITHUB_URL) }
+            )
+
+            AboutLinkItem(
                 headline = stringResource(R.string.about_developer_title),
                 supporting = stringResource(R.string.about_developer_value),
                 onClick = { SourceLauncher.open(context, DEVELOPER_URL) }
@@ -89,4 +95,5 @@ private fun AboutLinkItem(headline: String, supporting: String, onClick: () -> U
 }
 
 private const val DEVELOPER_URL = "https://github.com/timschneeb"
+private const val GITHUB_URL = "https://github.com/timschneeb/ShizuStore"
 private const val AURORADROID_URL = "https://gitlab.com/AuroraOSS/auroradroid"
