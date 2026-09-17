@@ -5,13 +5,16 @@
 
 package me.timschneeberger.shizustore.data.helper
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import me.timschneeberger.shizustore.ApiTestBase
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.util.Preferences
 import okhttp3.mockwebserver.MockResponse
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.robolectric.RuntimeEnvironment
 
 class InstallReporterTest : ApiTestBase() {
 
@@ -19,7 +22,18 @@ class InstallReporterTest : ApiTestBase() {
 
     @Before
     fun setUp() {
-        reporter = InstallReporter(appDao = db.appDao(), api = api())
+        reporter = InstallReporter(
+            context = RuntimeEnvironment.getApplication(),
+            appDao = db.appDao(),
+            api = api()
+        )
+        runBlocking {
+            Preferences.putBoolean(
+                RuntimeEnvironment.getApplication(),
+                Preferences.PREFERENCE_INSTALL_REPORTING,
+                true
+            )
+        }
     }
 
     @Test
@@ -64,6 +78,27 @@ class InstallReporterTest : ApiTestBase() {
     @Test
     fun unknownPackageSendsNothing() = runTest {
         reporter.reportInstalled("com.example.ghost", 1L)
+
+        assertEquals(0, server.requestCount)
+    }
+
+    @Test
+    fun disabledReportingSendsNothing() = runTest {
+        Preferences.putBoolean(
+            RuntimeEnvironment.getApplication(),
+            Preferences.PREFERENCE_INSTALL_REPORTING,
+            false
+        )
+        db.appDao().upsert(
+            AppEntity(
+                slug = "micup",
+                name = "MicUp",
+                description = "desc",
+                packageName = "com.example.micup"
+            )
+        )
+
+        reporter.reportInstalled("com.example.micup", 42L)
 
         assertEquals(0, server.requestCount)
     }

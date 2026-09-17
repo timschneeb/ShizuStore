@@ -19,6 +19,7 @@ import kotlinx.serialization.json.Json
 import me.timschneeberger.shizustore.data.model.ProxyInfo
 import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.Preferences
+import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_INSTALL_REPORTING
 import me.timschneeberger.shizustore.util.Preferences.PREFERENCE_PROXY_INFO
 
 @HiltViewModel
@@ -30,10 +31,19 @@ class ProxyViewModel @Inject constructor(
 
     val proxy: StateFlow<ProxyInfo?> = _proxy.asStateFlow()
 
+    private val _installReportingEnabled = MutableStateFlow(true)
+
+    val installReportingEnabled: StateFlow<Boolean> = _installReportingEnabled.asStateFlow()
+
     init {
         viewModelScope.launch {
             Preferences.stringFlow(context, PREFERENCE_PROXY_INFO).collect { raw ->
                 _proxy.value = decode(raw)
+            }
+        }
+        viewModelScope.launch {
+            Preferences.booleanFlow(context, PREFERENCE_INSTALL_REPORTING, true).collect {
+                _installReportingEnabled.value = it
             }
         }
     }
@@ -44,6 +54,12 @@ class ProxyViewModel @Inject constructor(
             Preferences.putString(context, PREFERENCE_PROXY_INFO, Json.encodeToString(info))
         }
         return true
+    }
+
+    fun setInstallReportingEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            Preferences.putBoolean(context, PREFERENCE_INSTALL_REPORTING, enabled)
+        }
     }
 
     fun clear() {

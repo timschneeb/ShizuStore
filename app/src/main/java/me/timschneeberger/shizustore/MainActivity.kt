@@ -103,15 +103,12 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-
         private const val TAG = "MainActivity"
 
         const val EXTRA_INITIAL_TAB = "me.timschneeberger.shizustore.extra.INITIAL_TAB"
-
         const val EXTRA_SCREEN = "me.timschneeberger.shizustore.extra.SCREEN"
 
         val TAB_APPS = MainTab.APPS.ordinal
-
         val TAB_UPDATES = MainTab.UPDATES.ordinal
     }
 }

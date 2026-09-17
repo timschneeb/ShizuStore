@@ -264,9 +264,11 @@
     <string name="settings_dynamic_color_title">Dynamic colour</string>
     <string name="settings_group_updates_summary">Check schedule, network limits and automatic installs</string>
     <string name="settings_group_updates_title">Updates</string>
+    <string name="settings_install_reporting_subtitle">Sends an anonymous install count to the server when an app is installed. Feeds the popularity ranking.</string>
+    <string name="settings_install_reporting_title">Report installs</string>
     <string name="settings_installer_summary">Which installer applies downloaded packages</string>
     <string name="settings_installer_title">App installer</string>
-    <string name="settings_network_summary">HTTP or SOCKS proxy for repository traffic</string>
+    <string name="settings_network_summary">HTTP or SOCKS proxy and privacy</string>
     <string name="settings_network_title">Network</string>
     <string name="settings_permissions_summary">Install, notification and battery permissions</string>
     <string name="settings_permissions_title">Permissions</string>

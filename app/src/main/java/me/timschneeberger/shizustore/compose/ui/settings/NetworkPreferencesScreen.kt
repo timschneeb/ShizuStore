@@ -17,6 +17,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
+import me.timschneeberger.shizustore.compose.composable.ItemSelection
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.util.CommonUtil
@@ -44,6 +46,7 @@ fun NetworkPreferencesScreen(
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val proxy by viewModel.proxy.collectAsStateWithLifecycle()
+    val installReportingEnabled by viewModel.installReportingEnabled.collectAsStateWithLifecycle()
     var showProxyDialog by remember { mutableStateOf(false) }
 
     if (showProxyDialog) {
@@ -80,6 +83,20 @@ fun NetworkPreferencesScreen(
                     ?: stringResource(R.string.settings_proxy_summary_none),
                 supportingMaxLines = 2,
                 onClick = { showProxyDialog = true }
+            )
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_install_reporting_title),
+                supporting = stringResource(R.string.settings_install_reporting_subtitle),
+                supportingMaxLines = 2,
+                trailing = {
+                    Switch(
+                        checked = installReportingEnabled,
+                        onCheckedChange = null
+                    )
+                },
+                onClick = { viewModel.setInstallReportingEnabled(!installReportingEnabled) },
+                selection = ItemSelection.Switch(installReportingEnabled)
             )
         }
     }
