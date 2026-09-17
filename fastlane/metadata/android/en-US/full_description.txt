@@ -1,12 +1,12 @@
-Shizu Store is a catalogue of Android apps that make the most of Shizuku.
+ShizuStore is a catalogue of Android apps that make the most of Shizuku.
 
-Shizuku lets apps use system APIs without root, but finding apps that support it means digging through lists and forums. Shizu Store gathers them from the awesome-shizuku project into one searchable catalogue, with icons, descriptions, screenshots, signatures and download links.
+Shizuku lets apps use system APIs without root, but finding apps that support it means digging through lists and forums. ShizuStore gathers them from the awesome-shizuku project into one searchable catalogue, with icons, descriptions, screenshots, signatures and download links.
 
 Features:
 
 * A curated catalogue. Listings come from the awesome-shizuku list, so every app shown is one that uses Shizuku.
 
-* Direct downloads. When an app publishes APKs, Shizu Store downloads the file from the upstream server, never from a mirror, and verifies it against the published SHA-256 checksum before installing.
+* Direct downloads. When an app publishes APKs, ShizuStore downloads the file from the upstream server, never from a mirror, and verifies it against the published SHA-256 checksum before installing.
 
 * Four install methods. Session, system installer, root, and Shizuku. Root and Shizuku install without a confirmation dialog for each app.
 
@@ -22,4 +22,4 @@ Features:
 
 * Free software. GPLv3, developed in the open.
 
-Shizu Store is not affiliated with the Shizuku project or the awesome-shizuku list.
+ShizuStore is not affiliated with the Shizuku project or the awesome-shizuku list.

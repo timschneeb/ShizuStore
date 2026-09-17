@@ -16,6 +16,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_cancel_all">Cancel all</string>
     <string name="action_clear">Clear</string>
+    <string name="action_close">Close</string>
     <string name="action_collapse">Collapse</string>
     <string name="action_expand">Expand</string>
     <string name="action_export">Export APK</string>
@@ -102,6 +103,15 @@
     </plurals>
     <string name="details_website">Website</string>
     <string name="details_fdroid" translatable="false">F-Droid</string>
+
+    <string name="donation_card_body">ShizuStore is free and open-source.\nDonations cover the server costs and keep the app and backend moving.</string>
+    <string name="donation_card_title">Support ShizuStore</string>
+    <string name="donation_dialog_message">Thank you for supporting the project! Every donation helps cover the server costs and gives me more time to keep developing the app, the backend and to keep the app list up-to-date. Tap on one of the links to support me.</string>
+    <string name="donation_dialog_title">Support ShizuStore</string>
+    <string name="donation_kofi_title" translatable="false">Ko-fi</string>
+    <string name="donation_kofi_value" translatable="false">ko-fi.com/thepbone</string>
+    <string name="donation_paypal_title" translatable="false">PayPal</string>
+    <string name="donation_paypal_value" translatable="false">paypal.me/timschneeberger</string>
 
     <string name="download_cancel_all">Cancel all</string>
     <string name="download_clear_all">Clear all</string>

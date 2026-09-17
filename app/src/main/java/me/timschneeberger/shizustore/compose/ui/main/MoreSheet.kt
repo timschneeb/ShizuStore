@@ -13,10 +13,15 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
+import me.timschneeberger.shizustore.compose.composable.DonationDialog
 import me.timschneeberger.shizustore.compose.composable.SheetActionItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
 
@@ -25,6 +30,12 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
     fun navigateAndDismiss(destination: Destination) {
         onNavigateTo(destination)
         onDismiss()
+    }
+
+    var showDonationDialog by remember { mutableStateOf(false) }
+
+    if (showDonationDialog) {
+        DonationDialog(onDismiss = { showDonationDialog = false })
     }
 
     ModalBottomSheet(
@@ -64,6 +75,11 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
             label = stringResource(R.string.title_settings),
             onClick = { navigateAndDismiss(Destination.Settings) },
             icon = R.drawable.ic_settings_outlined
+        )
+        SheetActionItem(
+            label = stringResource(R.string.donation_card_title),
+            onClick = { showDonationDialog = true },
+            icon = R.drawable.ic_favorite_checked
         )
         SheetActionItem(
             label = stringResource(R.string.title_about),

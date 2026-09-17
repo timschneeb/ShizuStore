@@ -28,6 +28,7 @@ import me.timschneeberger.shizustore.data.helper.SourceLauncher
 @Composable
 fun AboutScreen(modifier: Modifier = Modifier, onNavigateTo: (Destination) -> Unit = {}) {
     val context = LocalContext.current
+
     Scaffold(
         modifier = modifier,
         topBar = {

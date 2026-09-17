@@ -88,7 +88,7 @@ fun NetworkPreferencesScreen(
             AuroraListItem(
                 headline = stringResource(R.string.settings_install_reporting_title),
                 supporting = stringResource(R.string.settings_install_reporting_subtitle),
-                supportingMaxLines = 2,
+                supportingMaxLines = 3,
                 trailing = {
                     Switch(
                         checked = installReportingEnabled,

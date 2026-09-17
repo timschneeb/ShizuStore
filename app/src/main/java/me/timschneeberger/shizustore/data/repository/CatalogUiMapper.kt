@@ -27,7 +27,7 @@ class CatalogUiMapper @Inject constructor() {
         return if (app.availability == Availability.PLAY_REDIRECT) {
             "play"
         } else {
-            app.sourceKind?.name?.lowercase() ?: "Shizu Store"
+            app.sourceKind?.name?.lowercase() ?: "ShizuStore"
         }
     }
 
@@ -155,7 +155,7 @@ class CatalogUiMapper @Inject constructor() {
         // build and an F-Droid build signed by different keys.
         repoName = candidate.source?.displayName()
             ?: app.sourceName?.takeIf { it.isNotBlank() }
-            ?: "Shizu Store",
+            ?: "ShizuStore",
         name = app.name,
         summary = app.description,
         iconUrl = ShizuUrls.icon(ServerConfig.baseUrl, app.iconHash),

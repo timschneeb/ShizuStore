@@ -1,19 +1,19 @@
 <img src="https://i.imgur.com/kSApIjL.png" height="128" alt="Aurora Logo"><br/><img src="https://www.gnu.org/graphics/gplv3-88x31.png" alt="GPL v3 Logo">
 
-# Shizu Store
+# ShizuStore
 
-> **Fork notice.** Shizu Store is a fork of
+> **Fork notice.** ShizuStore is a fork of
 > [Aurora Droid](https://gitlab.com/AuroraOSS/auroradroid) (GPL-3.0-or-later,
 > upstream HEAD `32385c8`). The F-Droid multi-repo index sync and repository
 > management have been replaced by the `ShizuAppStoreServer` `/v1/*` REST API.
 > The browse, search, details, download and installer flows, including the
 > session, root and Shizuku installers, are inherited from Aurora Droid.
 
-*Shizu Store* is a sideloaded store for [Shizuku](https://shizuku.rikka.app/)
+*ShizuStore* is a sideloaded store for [Shizuku](https://shizuku.rikka.app/)
 apps. It indexes the awesome-shizuku list through the Shizu backend and installs
 APKs from their upstream sources.
 
-Shizu Store is not affiliated with Aurora OSS.
+ShizuStore is not affiliated with Aurora OSS.
 
 ## Screenshots
 
@@ -170,7 +170,7 @@ custom base URL. Release builds always use the production `API_BASE_URL`.
 
 ## Setting up the Shizuku installer
 
-[Shizuku](https://shizuku.rikka.app/) lends Shizu Store the system privileges it needs to install
+[Shizuku](https://shizuku.rikka.app/) lends ShizuStore the system privileges it needs to install
 apps without a confirmation dialog, on a device with no root. It is what makes fully automatic
 updates possible on a stock phone.
 
@@ -186,13 +186,13 @@ device allows:
   enable Wireless debugging, and follow the pairing steps Shizuku walks you through.
 * **ADB from a computer** - enable USB debugging, plug in, and run the command Shizuku shows you.
 * **Root** - tap Start, grant superuser access, and you are done. If you are rooted, installing
-  [Sui](https://github.com/RikkaApps/Sui) instead is smoother; Shizu Store treats it exactly like
+  [Sui](https://github.com/RikkaApps/Sui) instead is smoother; ShizuStore treats it exactly like
   Shizuku.
 
 Started over ADB or wireless debugging, Shizuku stops at every reboot and has to be started again.
 Started with root or Sui, it comes back on its own.
 
-**2. Point Shizu Store at it.**
+**2. Point ShizuStore at it.**
 
 Settings → App installer → Shizuku installer.
 
@@ -211,7 +211,7 @@ start the service again.
 
 ## Credits
 
-Shizu Store reuses code from these projects, all GPL-3.0-or-later. Individual files carry the
+ShizuStore reuses code from these projects, all GPL-3.0-or-later. Individual files carry the
 attribution in their header.
 
 * [Aurora Droid](https://gitlab.com/AuroraOSS/auroradroid) - the browse, search, details, download
