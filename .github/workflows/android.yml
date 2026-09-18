@@ -1,0 +1,52 @@
+name: Build app
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v6
+      with:
+        java-version: 21
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    - name: Write signing config
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+      run: |
+        if [ -z "${{ secrets.SIGNING_KEY }}" ]; then
+          echo "SIGNING_KEY secret is not set" >&2
+          exit 1
+        fi
+        printf '%s\n' \
+          "KEY_ALIAS=${{ secrets.ALIAS }}" \
+          "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" \
+          "STORE_PASSWORD=${{ secrets.KEY_STORE_PASSWORD }}" \
+          "STORE_FILE=../key.jks" > signing.properties
+        echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > key.jks
+
+    - name: Build with Gradle (debug)
+      if: github.event_name == 'pull_request' || github.ref != 'refs/heads/master'
+      run: ./gradlew assembleDebug
+
+    - name: Build with Gradle (signed)
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+      run: ./gradlew assembleRelease
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: App bundle
+        path: app/build/outputs/apk
+        if-no-files-found: error
