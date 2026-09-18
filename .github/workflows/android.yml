@@ -3,6 +3,7 @@ name: Build app
 on:
   push:
     branches: [ master ]
+    tags: [ '*' ]
   pull_request:
   workflow_dispatch:
 
@@ -10,6 +11,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout
@@ -23,7 +27,7 @@ jobs:
         cache: 'gradle'
 
     - name: Write signing config
-      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
       run: |
         if [ -z "${{ secrets.SIGNING_KEY }}" ]; then
           echo "SIGNING_KEY secret is not set" >&2
@@ -37,12 +41,24 @@ jobs:
         echo "${{ secrets.SIGNING_KEY }}" | base64 --decode > key.jks
 
     - name: Build with Gradle (debug)
-      if: github.event_name == 'pull_request' || github.ref != 'refs/heads/master'
+      if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/'))
       run: ./gradlew assembleDebug
 
     - name: Build with Gradle (signed)
-      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+      if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
       run: ./gradlew assembleRelease
+
+    - name: Create draft release and attach APK
+      if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/')
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+          echo "release for $GITHUB_REF_NAME already exists"
+        else
+          gh release create "$GITHUB_REF_NAME" --draft --generate-notes
+        fi
+        gh release upload "$GITHUB_REF_NAME" app/build/outputs/apk/release/*.apk --clobber
 
     - name: Upload artifact
       uses: actions/upload-artifact@v7
