@@ -1,25 +1,9 @@
-ShizuStore is a catalogue of Android apps that make the most of Shizuku.
+ShizuStore is an app store for Shizuku apps with automatic update support.
 
-Shizuku lets apps use system APIs without root, but finding apps that support it means digging through lists and forums. ShizuStore gathers them from the awesome-shizuku project into one searchable catalogue, with icons, descriptions, screenshots, signatures and download links.
+- Based on my curated awesome-shizuku list on GitHub.
+- Apps are organized by category and sortable by recently added, recently updated, most starred and most downloaded!
+- Can silently install apps using Shizuku.
+- Scheduled update checks every 6 hours to weekly, with optional automatic installs and Wi-Fi-only background activity.
+- Shows app descriptions, GitHub/GitLab star counts, update changelogs, requested app permissions and screenshots (if available).
 
-Features:
-
-* A curated catalogue. Listings come from the awesome-shizuku list, so every app shown is one that uses Shizuku.
-
-* Direct downloads. When an app publishes APKs, ShizuStore downloads the file from the upstream server, never from a mirror, and verifies it against the published SHA-256 checksum before installing.
-
-* Four install methods. Session, system installer, root, and Shizuku. Root and Shizuku install without a confirmation dialog for each app.
-
-* Signature checks. The installed certificate is compared against the fingerprints published for each app, and a version signed with a different key is never offered as an update.
-
-* Links when downloads are not available. Apps that only ship on Google Play open their Play listing, and apps without a public APK open their website.
-
-* Updates. Check for new versions on an interval of your choosing, and download and install them automatically where silent installs are available.
-
-* Favourites, blacklist and ignored updates. Mark the apps you follow, hide packages you never want to see, and skip a specific version of an individual app.
-
-* No tracking. No analytics, no accounts, no third-party services. The catalogue server is public and unauthenticated.
-
-* Free software. GPLv3, developed in the open.
-
-ShizuStore is not affiliated with the Shizuku project or the awesome-shizuku list.
+**APKs are downloaded directly from the official developers** via GitHub, GitLab, F-Droid, IzzyDroid, or other primary sources like Codeberg. APKs are not rehosted or redistributed by me.

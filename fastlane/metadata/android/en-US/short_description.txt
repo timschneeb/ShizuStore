@@ -1,1 +1,1 @@
-Browse and install Android apps that make the most of Shizuku
+App store for Shizuku apps. Based on the awesome-shizuku list and installs APKs straight from their upstream sources.
