@@ -15,8 +15,8 @@ val lastCommitHash = providers.exec {
     isIgnoreExitValue = true
 }.standardOutput.asText.map { it.trim() }
 
-val appVersionName = "1.0.1"
-val appVersionCode = 101
+val appVersionName = "1.0.2"
+val appVersionCode = 102
 
 val hasReleaseKey = File("signing.properties").exists()
 
@@ -126,6 +126,13 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+
+    dependenciesInfo {
+        // AGP would embed a Google-encrypted dependency list in the signing
+        // block; F-Droid's APK scanner rejects it.
+        includeInApk = false
+        includeInBundle = false
     }
 
     compileOptions {

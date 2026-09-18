@@ -1,0 +1,1 @@
+Release APKs no longer contain the Google-encrypted dependency metadata block, which F-Droid's scanner rejects. No functional changes.
