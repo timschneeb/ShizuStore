@@ -5,5 +5,6 @@ ShizuStore is an app store for Shizuku apps with automatic update support.
 - Can silently install apps using Shizuku.
 - Scheduled update checks every 6 hours to weekly, with optional automatic installs and Wi-Fi-only background activity.
 - Shows app descriptions, GitHub/GitLab star counts, update changelogs, requested app permissions and screenshots (if available).
+- The catalog server can be changed in Settings, including self-hosted ones.
 
 **APKs are downloaded directly from the official developers** via GitHub, GitLab, F-Droid, IzzyDroid, or other primary sources like Codeberg. APKs are not rehosted or redistributed by me.

@@ -1,0 +1,6 @@
+Initial release.
+
+- Browse and search a curated catalog of Shizuku apps.
+- Install and update apps silently via Shizuku.
+- Update checks every 6 hours to weekly, with optional automatic installs.
+- APKs come straight from the developers' upstream sources.

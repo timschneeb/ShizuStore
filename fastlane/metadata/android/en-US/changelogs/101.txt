@@ -1,0 +1,2 @@
+- The catalog server URL can now be changed in Settings on all builds, including release builds.
+- Point the app at a self-hosted ShizuStoreServer instance.
