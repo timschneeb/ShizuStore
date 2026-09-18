@@ -1,6 +1,8 @@
-<img src="artwork/web/icon-512.png" height="128" alt="ShizuStore icon">
+<p align="center">
+  <img src="artwork/web/icon-512.png" height="128" alt="ShizuStore icon">
+</p>
 
-# ShizuStore
+<h1 align="center">ShizuStore</h1>
 
 **ShizuStore** is an app store for [Shizuku](https://shizuku.rikka.app/)
 apps with automatic update support.
@@ -16,7 +18,7 @@ apps with automatic update support.
   installs and Wi-Fi-only background activity.
 - Shows app descriptions, GitHub/GitLab star counts, update changelogs, requested app permissions and screenshots (if available).
 
-The backend server indexes the [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku) and collects metadata by analyzing repositories and APK files.
+The [backend server](https://github.com/timschneeb/ShizuStoreServer) indexes the [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku) and collects metadata by analyzing repositories and APK files.
 
 ## Screenshots
 
