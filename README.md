@@ -9,6 +9,8 @@ apps with automatic update support.
 
 **APKs are downloaded directly from the official developers** via GitHub, GitLab, F-Droid, IzzyDroid, or other primary sources like Codeberg. APKs are not rehosted or redistributed by me.
 
+[<img alt="Get it on GitHub" src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" width="240">](https://github.com/timschneeb/ShizuStore/releases/latest)
+
 ## Features
 
 - Based on my curated [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku).
@@ -28,6 +30,10 @@ The [backend server](https://github.com/timschneeb/ShizuStoreServer) indexes the
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="24%" alt="App details with screenshots and changelog">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" width="24%" alt="App details with developer and category suggestions">
 </p>
+
+## Downloads
+
+You can find APKs in the release section: https://github.com/timschneeb/ShizuStore/releases/latest
 
 ## Credits
 
