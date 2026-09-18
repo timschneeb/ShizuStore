@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import me.timschneeberger.shizustore.BuildConfig
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
 import me.timschneeberger.shizustore.compose.composable.DonationCard
@@ -53,8 +52,6 @@ fun SettingsScreen(modifier: Modifier = Modifier, onNavigateTo: (Destination) ->
         val resources = LocalResources.current
         val groups = remember(resources) {
             SettingsGroup.entries
-                // Server override is a dev tool, so keep it out of release builds.
-                .filter { it != SettingsGroup.SERVER || BuildConfig.DEBUG }
                 .sortedBy { resources.getString(it.titleRes).lowercase() }
         }
 
