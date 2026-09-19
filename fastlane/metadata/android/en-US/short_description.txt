@@ -1,1 +1,1 @@
-App store for Shizuku apps that installs APKs straight from their upstream sources.
+App store for Shizuku apps that installs APKs from their upstream sources.

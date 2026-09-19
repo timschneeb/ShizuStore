@@ -1,0 +1,1 @@
+Store listing text update only. No functional changes.
