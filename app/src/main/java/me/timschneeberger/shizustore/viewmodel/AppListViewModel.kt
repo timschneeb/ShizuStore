@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -37,6 +38,10 @@ import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.util.SearchHistoryStore
+
+/** Row the list was on when its screen went off screen. Identified by key because
+ * paging refreshes rebase item indices while the detail screen is open. */
+data class ScrollAnchor(val slug: String, val offset: Int)
 
 /** One list for search, category, recently added/updated and the other sort presets. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -82,6 +87,9 @@ class AppListViewModel @Inject constructor(
         _args,
         appRepository.observePopularityFlag()
     ) { args, flag -> args to flag }
+        // Equal inputs must not recreate the Pager: a new generation drops the
+        // cached pages, which clamps the restored scroll position back to the top.
+        .distinctUntilChanged()
         .flatMapLatest { (args, flag) ->
             Pager(PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false)) {
                 appRepository.pagedApps(args, flag)
@@ -105,6 +113,17 @@ class AppListViewModel @Inject constructor(
         initialized = true
         _args.value = args
     }
+
+    private var pendingScrollAnchor: ScrollAnchor? = null
+
+    /** Records the first visible row so the list can find it again after the paging
+     * source was refreshed while a detail screen covered this one. */
+    fun rememberScrollAnchor(slug: String, offset: Int) {
+        pendingScrollAnchor = ScrollAnchor(slug, offset)
+    }
+
+    /** Consumes the anchor; only the first composition after returning should restore it. */
+    fun takeScrollAnchor(): ScrollAnchor? = pendingScrollAnchor.also { pendingScrollAnchor = null }
 
     fun setQuery(query: String) {
         // A blank query never leaves the search home: the back button clears the

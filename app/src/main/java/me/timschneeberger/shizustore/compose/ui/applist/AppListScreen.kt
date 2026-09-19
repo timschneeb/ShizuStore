@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +74,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.categoryIcon
 import me.timschneeberger.shizustore.compose.composable.AppRowSkeleton
@@ -134,6 +136,33 @@ fun AppListScreen(
             listState.scrollToItem(0)
         }
         appliedArgs = currentArgs
+    }
+
+    // Opening a detail screen can write to the app table, refreshing the paging
+    // source and rebasing item indices while this screen is off screen. Remember
+    // the first visible row and find it by key again on return.
+    val pendingScrollAnchor = remember { viewModel.takeScrollAnchor() }
+    DisposableEffect(listState) {
+        onDispose {
+            val slug = listState.layoutInfo.visibleItemsInfo.firstOrNull()?.key as? String
+            if (slug != null) {
+                viewModel.rememberScrollAnchor(slug, listState.firstVisibleItemScrollOffset)
+            }
+        }
+    }
+    LaunchedEffect(pendingScrollAnchor) {
+        val anchor = pendingScrollAnchor ?: return@LaunchedEffect
+        val restoreArgs = currentArgs
+        snapshotFlow { apps.itemCount to apps.loadState.refresh }
+            .first { (count, refresh) ->
+                refresh is LoadState.NotLoading ||
+                    (count > 0 && (0 until count).any { apps.peek(it)?.slug == anchor.slug })
+            }
+        // A filter change while the refresh was in flight must keep its own reset.
+        if (currentArgs != restoreArgs) return@LaunchedEffect
+        val index = (0 until apps.itemCount)
+            .firstOrNull { apps.peek(it)?.slug == anchor.slug }
+        if (index != null) listState.scrollToItem(index, anchor.offset)
     }
 
     LaunchedEffect(searchFocusRequest) {

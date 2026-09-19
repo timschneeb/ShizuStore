@@ -10,11 +10,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.room.AppListQueryBuilder
+import me.timschneeberger.shizustore.data.room.WindowAwarePagingSource
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
@@ -35,16 +37,21 @@ class AppRepository @Inject constructor(
     fun pagedApps(
         args: AppListArgs,
         useInstallCountsForPopularity: Boolean = false
-    ): PagingSource<Int, AppEntity> = appDao.pagedFiltered(
-        AppListQueryBuilder.build(
-            args,
-            useInstallCountsForPopularity,
-            excludePackage = SHIZU_STORE_PACKAGE
+    ): PagingSource<Int, AppEntity> = WindowAwarePagingSource(
+        appDao.pagedFiltered(
+            AppListQueryBuilder.build(
+                args,
+                useInstallCountsForPopularity,
+                excludePackage = SHIZU_STORE_PACKAGE
+            )
         )
     )
 
-    fun observePopularityFlag(): Flow<Boolean> =
-        syncStateDao.observe().map { it?.useInstallCountsForPopularity == true }
+    // Room re-emits on every sync_state write; the flag must not rebuild the Pager
+    // when its value is unchanged, or the cached paging window is lost.
+    fun observePopularityFlag(): Flow<Boolean> = syncStateDao.observe()
+        .map { it?.useInstallCountsForPopularity == true }
+        .distinctUntilChanged()
 
     fun pagedInstalled(): PagingSource<Int, AppEntity> = appDao.pagedInstalled()
 
