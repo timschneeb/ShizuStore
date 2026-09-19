@@ -14,6 +14,7 @@ import me.timschneeberger.shizustore.R
 @DrawableRes
 fun categoryIcon(slug: String): Int = when (slug) {
     "ai-agents" -> R.drawable.ic_smart_toy
+    "android-auto" -> R.drawable.ic_car
     "android-tv" -> R.drawable.ic_tv
     "audio" -> R.drawable.ic_graphic_eq
     "automation" -> R.drawable.ic_precision_manufacturing
@@ -34,6 +35,7 @@ fun categoryIcon(slug: String): Int = when (slug) {
     "privacy" -> R.drawable.ic_encrypted
     "productivity" -> R.drawable.ic_task_alt
     "quick-settings" -> R.drawable.ic_tune
+    "shizuku-implementations" -> R.drawable.ic_shizuku_icon
     "software-management" -> R.drawable.ic_deployed_code
     "task-manager" -> R.drawable.ic_memory
     "terminals" -> R.drawable.ic_terminal_2
