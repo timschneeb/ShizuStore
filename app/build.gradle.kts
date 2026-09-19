@@ -114,6 +114,12 @@ android {
             if (hasReleaseKey) {
                 signingConfig = signingConfigs.getByName("release")
             }
+            // AGP would embed the build commit in META-INF/version-control-info
+            // .textproto, so the binary would change on every fastlane-only
+            // commit and break F-Droid's reference APK comparison.
+            vcsInfo {
+                include = false
+            }
         }
 
         register("nightly") {
