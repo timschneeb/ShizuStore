@@ -138,7 +138,12 @@ private const val PAYPAL_URL = "https://paypal.me/timschneeberger"
 private const val KOFI_URL = "https://ko-fi.com/thepbone"
 private val OUTLINE_WIDTH = 1.dp
 private val OUTLINE_OFFSETS = listOf(
-    -1 to -1, 0 to -1, 1 to -1,
-    -1 to 0, 1 to 0,
-    -1 to 1, 0 to 1, 1 to 1
+    -1 to -1,
+    0 to -1,
+    1 to -1,
+    -1 to 0,
+    1 to 0,
+    -1 to 1,
+    0 to 1,
+    1 to 1
 )

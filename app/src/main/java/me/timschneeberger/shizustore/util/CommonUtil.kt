@@ -167,12 +167,19 @@ object CommonUtil {
         ageMillis < MONTH_MILLIS -> AgeBucket(AgeUnit.WEEKS, ageMillis / WEEK_MILLIS)
         // A 30-day month runs out just short of a year; keep 360-364 days at 11
         // months instead of a one-off "12 months ago".
-        ageMillis < YEAR_MILLIS -> AgeBucket(AgeUnit.MONTHS, (ageMillis / MONTH_MILLIS).coerceAtMost(11))
+        ageMillis < YEAR_MILLIS -> AgeBucket(
+            AgeUnit.MONTHS,
+            (ageMillis / MONTH_MILLIS).coerceAtMost(11)
+        )
         else -> AgeBucket(AgeUnit.YEARS, ageMillis / YEAR_MILLIS)
     }
 
     /** Bucketed age for list rows, e.g. "3 days ago"; future stamps read as "just now". */
-    fun relativeAge(context: Context, epochMillis: Long, now: Long = System.currentTimeMillis()): String {
+    fun relativeAge(
+        context: Context,
+        epochMillis: Long,
+        now: Long = System.currentTimeMillis()
+    ): String {
         val age = ageBucket((now - epochMillis).coerceAtLeast(0L))
         val count = age.count.toInt()
         return when (age.unit) {
