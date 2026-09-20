@@ -99,7 +99,7 @@ fun PermissionList(
             .toSortedMap()
             .forEach { (optional, group) ->
                 item(key = "divider-$optional") {
-                    TextDivider(
+                    SectionHeader(
                         title = stringResource(
                             if (optional) R.string.item_optional else R.string.item_required
                         )

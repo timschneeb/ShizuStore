@@ -116,6 +116,15 @@ class SettingsViewModel @Inject constructor(
     private val _selectedInstaller = MutableStateFlow<Installer?>(null)
     val selectedInstaller: StateFlow<Installer?> = _selectedInstaller.asStateFlow()
 
+    private val _customInstallerSourceEnabled = MutableStateFlow(false)
+    val customInstallerSourceEnabled: StateFlow<Boolean> =
+        _customInstallerSourceEnabled.asStateFlow()
+
+    private val _customInstallerSourcePackage =
+        MutableStateFlow(Preferences.DEFAULT_INSTALLER_SOURCE_PACKAGE)
+    val customInstallerSourcePackage: StateFlow<String> =
+        _customInstallerSourcePackage.asStateFlow()
+
     private val initialLoad: Job = viewModelScope.launch {
         _themeStyle.value = Preferences.readInteger(
             context,
@@ -140,6 +149,15 @@ class SettingsViewModel @Inject constructor(
             context,
             Preferences.PREFERENCE_UPDATES_UNATTENDED
         )
+        _customInstallerSourceEnabled.value = Preferences.readBoolean(
+            context,
+            Preferences.PREFERENCE_INSTALLER_CUSTOM_SOURCE
+        )
+        _customInstallerSourcePackage.value = Preferences.readString(
+            context,
+            Preferences.PREFERENCE_INSTALLER_CUSTOM_SOURCE_PACKAGE,
+            Preferences.DEFAULT_INSTALLER_SOURCE_PACKAGE
+        )
     }
 
     init {
@@ -163,6 +181,35 @@ class SettingsViewModel @Inject constructor(
             Preferences.putInteger(context, Preferences.PREFERENCE_INSTALLER_ID, installer.ordinal)
             refreshUnattendedPausedReason()
         }
+    }
+
+    fun setCustomInstallerSourceEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            initialLoad.join()
+            _customInstallerSourceEnabled.value = enabled
+            Preferences.putBoolean(
+                context,
+                Preferences.PREFERENCE_INSTALLER_CUSTOM_SOURCE,
+                enabled
+            )
+        }
+    }
+
+    /** Returns false when [value] is not a plausible package name. */
+    fun setCustomInstallerSourcePackage(value: String): Boolean {
+        val trimmed = value.trim()
+        if (!PACKAGE_NAME_PATTERN.matches(trimmed)) return false
+
+        viewModelScope.launch {
+            initialLoad.join()
+            _customInstallerSourcePackage.value = trimmed
+            Preferences.putString(
+                context,
+                Preferences.PREFERENCE_INSTALLER_CUSTOM_SOURCE_PACKAGE,
+                trimmed
+            )
+        }
+        return true
     }
 
     fun refreshUnattendedState() {
@@ -207,5 +254,8 @@ class SettingsViewModel @Inject constructor(
 
     private companion object {
         const val THEME_STYLE_SYSTEM = 0
+
+        // At least two dot-separated segments, which every real Android package name has.
+        val PACKAGE_NAME_PATTERN = Regex("[A-Za-z0-9_]+(\\.[A-Za-z0-9_]+)+")
     }
 }

@@ -37,6 +37,7 @@ import me.timschneeberger.shizustore.data.room.dao.DownloadDao
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.extensions.isOAndAbove
 import me.timschneeberger.shizustore.extensions.isSAndAbove
+import me.timschneeberger.shizustore.util.Preferences
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.ShizukuProvider
@@ -51,15 +52,15 @@ open class ShizukuInstaller @Inject constructor(
 ) : InstallerBase(context, downloadDao, installReporter) {
     private val stagedSessions = ConcurrentHashMap<String, Int>()
 
-    private val packageInstaller: PackageInstaller? by lazy {
+    private fun packageInstaller(installerPackageName: String): PackageInstaller? {
         val userId = Process.myUid() / PER_USER_RANGE
-        when {
+        return when {
             isSAndAbove -> Refine.unsafeCast(
-                PackageInstallerHidden(iPackageInstaller, context.packageName, null, userId)
+                PackageInstallerHidden(iPackageInstaller, installerPackageName, null, userId)
             )
 
             isOAndAbove -> Refine.unsafeCast(
-                PackageInstallerHidden(iPackageInstaller, context.packageName, userId)
+                PackageInstallerHidden(iPackageInstaller, installerPackageName, userId)
             )
 
             else -> null
@@ -75,7 +76,7 @@ open class ShizukuInstaller @Inject constructor(
         }
     }
 
-    private fun runInstall(download: Download) {
+    private suspend fun runInstall(download: Download) {
         val packageName = download.packageName
 
         if (!isAvailable(context) || !hasPermission()) {
@@ -85,10 +86,13 @@ open class ShizukuInstaller @Inject constructor(
         }
 
         val apkFile = requireApkFile(download) ?: return
+        val installerPackageName = resolveInstallerPackage()
 
         Log.i(TAG, "Received shizuku install request for $packageName")
 
-        val (sessionId, session) = runCatching { openPrivilegedSession(packageName) }
+        val (sessionId, session) = runCatching {
+            openPrivilegedSession(packageName, installerPackageName)
+        }
             .getOrElse { failure ->
                 Log.e(TAG, "Could not open a privileged session for $packageName", failure)
                 postError(packageName, typedFailure(packageName, failure))
@@ -137,7 +141,10 @@ open class ShizukuInstaller @Inject constructor(
         removeFromInstallQueue(packageName)
     }
 
-    private fun openPrivilegedSession(packageName: String): Pair<Int, PackageInstaller.Session> {
+    private fun openPrivilegedSession(
+        packageName: String,
+        installerPackageName: String
+    ): Pair<Int, PackageInstaller.Session> {
         val params = SessionParams(SessionParams.MODE_FULL_INSTALL).apply {
             setAppPackageName(packageName)
         }
@@ -146,7 +153,7 @@ open class ShizukuInstaller @Inject constructor(
         hiddenParams.installFlags =
             hiddenParams.installFlags or PackageManagerHidden.INSTALL_REPLACE_EXISTING
 
-        val installer = checkNotNull(packageInstaller) {
+        val installer = checkNotNull(packageInstaller(installerPackageName)) {
             "Shizuku installs need API 26 or newer"
         }
 
@@ -159,6 +166,19 @@ open class ShizukuInstaller @Inject constructor(
             PackageInstallerHidden.SessionHidden(iSession)
         )
     }
+
+    private suspend fun resolveInstallerPackage(): String = effectiveInstallerSourcePackage(
+        fallbackPackage = context.packageName,
+        customSourceEnabled = Preferences.readBoolean(
+            context,
+            Preferences.PREFERENCE_INSTALLER_CUSTOM_SOURCE
+        ),
+        customSourcePackage = Preferences.readString(
+            context,
+            Preferences.PREFERENCE_INSTALLER_CUSTOM_SOURCE_PACKAGE,
+            Preferences.DEFAULT_INSTALLER_SOURCE_PACKAGE
+        )
+    )
 
     private fun callbackIntent(sessionId: Int, download: Download): PendingIntent {
         val callBackIntent = Intent(context, InstallerStatusReceiver::class.java).apply {
@@ -276,4 +296,15 @@ open class ShizukuInstaller @Inject constructor(
                 false
             }
     }
+}
+
+// Top level so tests can exercise it without loading the installer's hidden-API class references.
+internal fun effectiveInstallerSourcePackage(
+    fallbackPackage: String,
+    customSourceEnabled: Boolean,
+    customSourcePackage: String
+): String = if (customSourceEnabled && customSourcePackage.isNotBlank()) {
+    customSourcePackage
+} else {
+    fallbackPackage
 }

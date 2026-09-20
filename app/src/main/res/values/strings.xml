@@ -279,6 +279,12 @@
     <string name="settings_group_updates_title">Updates</string>
     <string name="settings_install_reporting_subtitle">Sends an anonymous install count to the server when an app is installed. Feeds the popularity ranking.</string>
     <string name="settings_install_reporting_title">Report installs</string>
+    <string name="settings_installer_custom_source_hint">Package name</string>
+    <string name="settings_installer_custom_source_invalid">Enter a valid package name</string>
+    <string name="settings_installer_custom_source_saved">Package name saved</string>
+    <string name="settings_installer_custom_source_section">Installer source</string>
+    <string name="settings_installer_custom_source_subtitle">Reports the package below as the installer. Applies to the Shizuku installer only.</string>
+    <string name="settings_installer_custom_source_title">Use custom installer source</string>
     <string name="settings_installer_summary">Which installer applies downloaded packages</string>
     <string name="settings_installer_title">App installer</string>
     <string name="settings_network_summary">HTTP or SOCKS proxy and privacy</string>

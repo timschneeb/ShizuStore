@@ -260,6 +260,12 @@
     <string name="settings_group_updates_title">更新</string>
     <string name="settings_install_reporting_subtitle">在应用完成安装时向服务器发送匿名的安装次数统计。用于生成受欢迎程度排名。</string>
     <string name="settings_install_reporting_title">报告安装情况</string>
+    <string name="settings_installer_custom_source_hint">包名</string>
+    <string name="settings_installer_custom_source_invalid">请输入有效的包名</string>
+    <string name="settings_installer_custom_source_saved">包名已保存</string>
+    <string name="settings_installer_custom_source_section">安装来源</string>
+    <string name="settings_installer_custom_source_subtitle">将以下包报告为安装来源。仅适用于 Shizuku 安装器。</string>
+    <string name="settings_installer_custom_source_title">使用自定义安装来源</string>
     <string name="settings_installer_summary">选择用于安装已下载应用包的安装器</string>
     <string name="settings_installer_title">应用安装器</string>
     <string name="settings_network_summary">HTTP 或 SOCKS 代理及隐私设置</string>
