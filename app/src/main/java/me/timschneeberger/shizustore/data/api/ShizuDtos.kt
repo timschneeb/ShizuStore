@@ -147,7 +147,10 @@ data class ChangesDto(
     val removed: List<RemovedAppDto> = emptyList(),
     // Delta counts applied directly onto stored rows, never as summaries, so a
     // popular app cannot force a detail refetch.
-    val installsUpdated: Map<String, Long> = emptyMap()
+    val installsUpdated: Map<String, Long> = emptyMap(),
+    // Operator high-water mark for remote catalog purges; older or absent
+    // means no purge. Raw ISO string, parsed only when compared.
+    val catalogPurgeRequestedAt: String? = null
 )
 
 @Serializable

@@ -23,6 +23,7 @@ import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
 import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
+import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.Preferences
 
 /** Failure classes the sync worker and UI can act on. */
@@ -76,11 +77,29 @@ class CatalogSyncer @Inject constructor(
      */
     suspend fun clearCatalog() {
         mutex.withLock {
-            syncStateDao.clear()
-            categoryDao.clear()
-            // app_download rows cascade with their app.
-            appDao.clear()
+            clearCatalogLocked()
         }
+    }
+
+    private suspend fun clearCatalogLocked() {
+        syncStateDao.clear()
+        categoryDao.clear()
+        // app_download rows cascade with their app.
+        appDao.clear()
+    }
+
+    /**
+     * Remote purge: record the applied timestamp first, then drop the catalog
+     * tables. Favourites and the blocklist are user data and never touched; the
+     * marker lives in DataStore so it survives this wipe.
+     */
+    private suspend fun purgeCatalogLocked(requestedAtMillis: Long) {
+        Preferences.putLong(
+            context,
+            Preferences.PREFERENCE_LAST_CATALOG_PURGE_AT,
+            requestedAtMillis
+        )
+        clearCatalogLocked()
     }
 
     /**
@@ -101,19 +120,33 @@ class CatalogSyncer @Inject constructor(
     private suspend fun run(): CatalogSyncOutcome {
         val state = syncStateDao.get()
         val listing = listingParam()
+        var purged = false
         val counts = if (state?.cursor.isNullOrBlank()) {
             when (val result = bootstrap(listing)) {
                 is StepResult.Failed -> return result.outcome
                 is StepResult.Ok -> result.counts
+                is StepResult.Purge -> error("bootstrap never requests a purge")
             }
         } else {
             when (val result = incremental(state.cursor, listing)) {
                 is StepResult.Failed -> return result.outcome
                 is StepResult.Ok -> result.counts
+                is StepResult.Purge -> {
+                    purgeCatalogLocked(result.requestedAtMillis)
+                    purged = true
+                    when (val fresh = bootstrap(listing)) {
+                        is StepResult.Failed -> return fresh.outcome
+                        is StepResult.Ok -> fresh.counts
+                        is StepResult.Purge -> error("bootstrap never requests a purge")
+                    }
+                }
             }
         }
 
-        val categoriesEtag = refreshCategories(state?.categoriesEtag, listing)
+        // A purge emptied the category table; reusing the old ETag could 304
+        // and leave it empty.
+        val categoriesEtag =
+            refreshCategories(if (purged) null else state?.categoriesEtag, listing)
         val meta = when (val result = api.meta()) {
             is ApiResult.Success -> result.value
             is ApiResult.Failure -> return result.error.toOutcome()
@@ -174,6 +207,13 @@ class CatalogSyncer @Inject constructor(
             is ApiResult.Failure -> return StepResult.Failed(result.error.toOutcome())
         }
 
+        // A newer operator purge wins over the deltas: they describe a catalog
+        // the client is about to drop, and a bootstrap is the only complete refill.
+        val purgeAt = CommonUtil.parseIsoUtcMillis(changes.catalogPurgeRequestedAt)
+        if (purgeAt != null && purgeAt > lastPurgeApplied()) {
+            return StepResult.Purge(purgeAt)
+        }
+
         val now = System.currentTimeMillis()
         val upserts = (changes.added + changes.updated).map { it.toEntity(now) }
         if (upserts.isNotEmpty()) appDao.upsertSummaries(upserts)
@@ -208,6 +248,9 @@ class CatalogSyncer @Inject constructor(
         data class Ok(val counts: Counts) : StepResult
 
         data class Failed(val outcome: CatalogSyncOutcome) : StepResult
+
+        /** The server requested a purge newer than the one applied locally. */
+        data class Purge(val requestedAtMillis: Long) : StepResult
     }
 
     private data class Counts(val added: Int = 0, val updated: Int = 0, val removed: Int = 0)
@@ -222,6 +265,9 @@ class CatalogSyncer @Inject constructor(
         },
         message = message
     )
+
+    private suspend fun lastPurgeApplied(): Long =
+        Preferences.readLong(context, Preferences.PREFERENCE_LAST_CATALOG_PURGE_AT, 0L)
 
     private suspend fun listingParam(): String =
         if (Preferences.readBoolean(context, Preferences.PREFERENCE_SHOW_CLOSED_SOURCE, false)) {
