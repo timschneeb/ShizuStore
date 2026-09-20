@@ -18,8 +18,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -72,7 +75,13 @@ fun AppCarousel(
 
 @Composable
 private fun AppTileStrip(apps: List<ResolvedApp>, onAppClick: (ResolvedApp) -> Unit) {
+    val listState = rememberLazyListState()
+    // Keyed rows keep the previously first visible tile anchored when the list
+    // reorders, which hides newly ranked apps off the left edge. Reset to the start
+    // whenever the leading tile changes.
+    LaunchedEffect(apps.firstOrNull()?.slug) { listState.scrollToItem(0) }
     LazyRow(
+        state = listState,
         contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.spacing_large)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
     ) {
@@ -92,7 +101,11 @@ private fun AppCarouselStrip(
     modifier: Modifier = Modifier,
     showStars: Boolean = false
 ) {
+    val gridState = rememberLazyGridState()
+    // Same keyed-row anchoring as the tile strip; keep the new ranking visible.
+    LaunchedEffect(apps.firstOrNull()?.slug) { gridState.scrollToItem(0) }
     LazyHorizontalGrid(
+        state = gridState,
         rows = GridCells.Fixed(CAROUSEL_GRID_ROWS),
         modifier = modifier.height(carouselGridHeight()),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),

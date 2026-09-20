@@ -107,14 +107,16 @@ fun AppsScreen(
                         onAction = if (syncFailure != null) viewModel::retrySync else null
                     )
 
-                    ContentPhase.Loaded -> AppCarousel(
-                        groups = known.orEmpty(),
-                        contentPadding = listPadding,
-                        onGroupClick = { group ->
-                            group.moreDestination()?.let(onNavigateTo)
-                        },
-                        onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
-                    )
+                    ContentPhase.Loaded -> {
+                        AppCarousel(
+                            groups = known.orEmpty(),
+                            contentPadding = listPadding,
+                            onGroupClick = { group ->
+                                group.moreDestination()?.let(onNavigateTo)
+                            },
+                            onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
+                        )
+                    }
                 }
             }
         }

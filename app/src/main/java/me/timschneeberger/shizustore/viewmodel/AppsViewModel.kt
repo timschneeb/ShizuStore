@@ -15,6 +15,7 @@ import java.util.Calendar
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -47,7 +48,13 @@ class AppsViewModel @Inject constructor(
     val syncFailure: StateFlow<CatalogSyncFailure?> = syncHelper.failure
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
-    fun retrySync() = syncHelper.refresh()
+    fun retrySync() {
+        // Reseed so a user refresh visibly rotates the curated rows; background syncs
+        // keep the current order.
+        recommendedSeed.value = Random.nextLong()
+        randomSeed.value = Random.nextLong()
+        syncHelper.refresh()
+    }
 
     val shizukuCardDismissed: StateFlow<Boolean> =
         Preferences.booleanFlow(context, Preferences.PREFERENCE_SHIZUKU_CARD_DISMISSED)
@@ -59,25 +66,24 @@ class AppsViewModel @Inject constructor(
         }
     }
 
-    // Seeded per ViewModel (app launch): the row varies between launches but does not
-    // reshuffle on every catalog emission while a sync writes to Room.
-    private val recommendedSeed = Random.nextLong()
+    // Seeded per ViewModel (app launch) and reseeded on a user refresh: the rows vary
+    // between launches but do not reshuffle on every catalog emission while a sync
+    // writes to Room.
+    private val recommendedSeed = MutableStateFlow(Random.nextLong())
+    private val randomSeed = MutableStateFlow(daySeed())
 
     private val recommendedPicks: Flow<List<ResolvedApp>> =
-        appRepository.observeRecommendedPool()
-            .map { pool ->
-                pool.sortedBy { it.slug }
-                    .shuffled(Random(recommendedSeed))
-                    .take(AppRepository.CAROUSEL_LIMIT)
-                    .map(mapper::toResolvedApp)
-            }
-
-    private val randomPicks: Flow<List<ResolvedApp>> = appRepository.observeRandomPool()
-        .map { pool ->
-            // Stable per day: the pool arrives slug-ordered so catalog writes during a
-            // sync do not reshuffle the carousel on every emission.
+        combine(appRepository.observeRecommendedPool(), recommendedSeed) { pool, seed ->
             pool.sortedBy { it.slug }
-                .shuffled(Random(daySeed()))
+                .shuffled(Random(seed))
+                .take(AppRepository.CAROUSEL_LIMIT)
+                .map(mapper::toResolvedApp)
+        }
+
+    private val randomPicks: Flow<List<ResolvedApp>> =
+        combine(appRepository.observeRandomPool(), randomSeed) { pool, seed ->
+            pool.sortedBy { it.slug }
+                .shuffled(Random(seed))
                 .take(AppRepository.CAROUSEL_LIMIT)
                 .map(mapper::toResolvedApp)
         }
