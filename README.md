@@ -11,6 +11,10 @@ apps with automatic update support.
 
 [<img alt="Get it on GitHub" src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" width="240">](https://github.com/timschneeb/ShizuStore/releases/latest)
 
+
+### You can find APK downloads [in the release section](https://github.com/timschneeb/ShizuStore/releases/latest).
+
+
 ## Features
 
 - Based on my curated [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku).
