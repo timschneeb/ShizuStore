@@ -1,0 +1,2 @@
+- Fixed the app list losing its scroll position when returning from an app's details page.
+- Added icons for the new categories.
