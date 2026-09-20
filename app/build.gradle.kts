@@ -15,8 +15,8 @@ val lastCommitHash = providers.exec {
     isIgnoreExitValue = true
 }.standardOutput.asText.map { it.trim() }
 
-val appVersionName = "1.1.0"
-val appVersionCode = 110
+val appVersionName = "1.2.0"
+val appVersionCode = 120
 
 val hasReleaseKey = File("signing.properties").exists()
 
