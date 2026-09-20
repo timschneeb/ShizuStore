@@ -134,6 +134,12 @@ android {
         compose = true
     }
 
+    androidResources {
+        // AGP derives LocaleConfig from the values-* folders, so a new
+        // translation only needs its resource folder and no manual entry.
+        generateLocaleConfig = true
+    }
+
     dependenciesInfo {
         // AGP would embed a Google-encrypted dependency list in the signing
         // block; F-Droid's APK scanner rejects it.
