@@ -1,0 +1,358 @@
+<resources xmlns:tools="http://schemas.android.com/tools"
+    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="about_licence_title">许可协议</string>
+    <string name="about_licence_value">GNU 通用公共许可协议 v3.0 或更高版本</string>
+    <string name="about_version">版本 <xliff:g id="version_name">%1$s</xliff:g> (<xliff:g id="version_code">%2$d</xliff:g>)</string>
+    <string name="about_developer_title">开发者</string>
+    <string name="about_github_title">源代码</string>
+    <string name="about_auroradroid_value">基于 Aurora OSS 的 AuroraDroid</string>
+
+    <string name="action_add_to_home">添加到主屏幕</string>
+    <string name="action_app_info">应用信息</string>
+    <string name="action_app_menu">此应用的更多选项</string>
+    <string name="action_back">返回</string>
+    <string name="action_blacklist">加入黑名单</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_cancel_all">全部取消</string>
+    <string name="action_clear">清除</string>
+    <string name="action_close">关闭</string>
+    <string name="action_collapse">折叠</string>
+    <string name="action_expand">展开</string>
+    <string name="action_export">导出 APK</string>
+    <string name="action_favourite">添加到收藏</string>
+    <string name="action_grant">授予</string>
+    <string name="action_granted">已授予</string>
+    <string name="action_ignore_all">忽略所有更新</string>
+    <string name="action_ignore_version">忽略版本 <xliff:g id="version_name">%1$s</xliff:g></string>
+    <string name="action_install">安装</string>
+    <string name="action_installing">安装中</string>
+    <string name="action_more">更多</string>
+    <string name="action_open">打开</string>
+    <string name="action_open_external">在外部打开</string>
+    <string name="action_open_in_browser">在浏览器中打开</string>
+    <string name="action_open_play">在 Play 商店中查看</string>
+    <string name="action_open_link">查看网站</string>
+    <string name="action_retry">重试</string>
+    <string name="action_save">保存</string>
+    <string name="action_scroll_down">向下滚动</string>
+    <string name="action_search">搜索</string>
+    <string name="action_share">分享</string>
+    <string name="action_stop_ignoring_all">停止忽略所有更新</string>
+    <string name="action_stop_ignoring_version">停止忽略此版本</string>
+    <string name="action_unblacklist">从黑名单中移除</string>
+    <string name="action_unfavourite">取消收藏</string>
+    <string name="action_uninstall">卸载</string>
+    <string name="action_update">更新</string>
+    <string name="action_update_all">全部更新</string>
+
+    <string name="apps_empty">暂无应用</string>
+    <string name="apps_empty_detail">应用目录会自动同步</string>
+    <string name="apps_empty_syncing">正在同步应用目录…</string>
+    <string name="apps_sync_failed">无法连接到服务器。正在浏览本地缓存。请检查您的网络连接并重试。</string>
+    <string name="apps_random_picks">随机推荐</string>
+    <string name="apps_recommended">推荐应用</string>
+    <string name="apps_recently_added">最近添加</string>
+    <string name="apps_recently_updated">最近更新</string>
+    <string name="apps_most_starred">GitHub 上最多星标</string>
+
+    <string name="blacklist_empty">黑名单为空</string>
+    <string name="blacklist_empty_detail">在应用菜单中将其加入黑名单后会显示在这里</string>
+    <string name="blacklist_unavailable">没有可显示的黑名单应用</string>
+
+    <string name="details_changelog">更新日志</string>
+    <string name="details_changelog_subtitle">%1$s 版本的新功能</string>
+    <string name="details_changelog_empty">暂无更新日志</string>
+    <string name="details_more_about">关于此应用的更多信息</string>
+    <string name="details_more_from_author">此开发者的更多应用</string>
+    <string name="details_more_from_category">此分类下的更多应用</string>
+    <string name="details_not_found">应用已下架或不再可用</string>
+    <string name="details_load_failed">无法连接到服务器。请检查您的网络连接并重试。</string>
+    <string name="details_permissions">权限</string>
+    <plurals name="details_permissions_count">
+        <item quantity="one">请求了 %1$d 项权限</item>
+        <item quantity="other">请求了 %1$d 项权限</item>
+    </plurals>
+    <string name="details_permissions_custom">自定义权限</string>
+    <string name="details_permissions_dangerous">危险权限</string>
+    <string name="details_permissions_known">其他权限</string>
+    <string name="details_permissions_none">未请求任何权限</string>
+    <string name="details_source_code">源代码</string>
+    <string name="details_store">应用商店</string>
+    <string name="details_play_store_notice">此应用仅在 Google Play 提供。点击打开详情页面。</string>
+    <string name="details_closed_source_notice">此应用为闭源软件。它的代码是不公开的，因此社区无法轻易验证其行为。</string>
+    <string name="details_incompatible_notice">此应用需要 Android %1$s 或更高版本。当前设备运行的是 Android %2$s。</string>
+    <string name="details_version_incompatible">不兼容</string>
+    <string name="details_version_installed">已安装</string>
+    <string name="details_version_repo_other_signer"><xliff:g id="repository">%1$s</xliff:g> · 不同的签名密钥</string>
+    <string name="details_version_selected">已选</string>
+    <string name="details_sources">来源</string>
+    <plurals name="details_sources_count">
+        <item quantity="one">%1$d 个来源</item>
+        <item quantity="other">%1$d 个来源</item>
+    </plurals>
+    <string name="details_website">网站</string>
+
+    <string name="donation_card_body">ShizuStore 是免费且开源的。\n您的捐助将用于支付服务器费用，并支持应用和后端的持续开发。</string>
+    <string name="donation_card_title">支持 ShizuStore</string>
+    <string name="donation_dialog_message">感谢您对本项目的支持！每一笔捐款都将帮助我支付服务器费用，让我有更多时间持续开发应用及后端，并保持应用列表处于最新状态。点击以下任一链接即可支持我。</string>
+    <string name="donation_dialog_title">支持 ShizuStore</string>
+
+    <string name="download_cancel_all">全部取消</string>
+    <string name="download_clear_all">全部清除</string>
+    <string name="download_clear_finished">清除已完成</string>
+    <string name="download_eta_calculating">计算中…</string>
+    <string name="download_eta_hrs">剩余 <xliff:g id="hours">%1$d</xliff:g>小时 <xliff:g id="minutes">%2$d</xliff:g>分钟 <xliff:g id="seconds">%3$d</xliff:g>秒</string>
+    <string name="download_eta_min">剩余 <xliff:g id="minutes">%1$d</xliff:g>分钟 <xliff:g id="seconds">%2$d</xliff:g>秒</string>
+    <string name="download_eta_sec">剩余 <xliff:g id="seconds">%1$d</xliff:g>秒</string>
+    <string name="download_export_done">APK 已导出</string>
+    <string name="download_export_failed">无法导出 APK</string>
+    <string name="download_status_awaiting_confirmation">等待确认</string>
+    <string name="download_status_cancelled">已取消</string>
+    <string name="download_status_completed">已下载</string>
+    <string name="download_status_downloading">下载中… <xliff:g id="percent">%1$d</xliff:g>%%</string>
+    <string name="download_status_downloading_plain">下载中…</string>
+    <string name="download_status_failed">失败</string>
+    <string name="download_status_installed">已安装</string>
+    <string name="download_status_installing">安装中… <xliff:g id="percent">%1$d</xliff:g>%%</string>
+    <string name="download_status_installing_plain">安装中…</string>
+    <string name="download_status_queued">排队中</string>
+    <string name="download_status_unavailable">不可用</string>
+    <string name="download_status_verifying">验证中…</string>
+    <string name="downloads_empty">暂无下载</string>
+    <string name="downloads_empty_detail">您下载的应用会显示在这里</string>
+
+    <string name="error_download_archive">无法解压下载的文件。请稍后重试。</string>
+    <string name="error_download_http">软件源拒绝了下载请求。请稍后重试。</string>
+    <string name="error_download_insufficient_storage">存储空间不足，无法下载此应用。请释放一些空间后重试。</string>
+    <string name="error_download_network">无法连接到软件源来下载此应用。请检查您的网络连接。</string>
+    <string name="error_hash_mismatch">下载的文件与软件源签名不匹配，已被丢弃。</string>
+    <string name="error_install_aborted">安装已取消。</string>
+    <string name="error_install_apk_missing">下载的文件不再存在于磁盘上。请重新下载。</string>
+    <string name="error_install_blocked">另一个应用或设备策略阻止了此次安装。</string>
+    <string name="error_install_conflict">这与已安装的版本存在冲突。请先卸载现有的版本。</string>
+    <string name="error_install_incompatible">此应用与此设备不兼容。</string>
+    <string name="error_install_interrupted">安装未完成，该应用未被安装。请重试。</string>
+    <string name="error_install_invalid">安装包无效或已损坏。请重新下载。</string>
+    <string name="error_install_root_unavailable">没有 Root 权限。请授予 ShizuStore 超级用户权限，或者在设置中选择其他安装器。</string>
+    <string name="error_install_session_failure">安装会话失败。请重试。</string>
+    <string name="error_install_shizuku_unavailable">Shizuku 未运行，或尚未向 ShizuStore 授权。请打开并启动 Shizuku，然后允许 ShizuStore 的访问。</string>
+    <string name="error_install_signer_mismatch">此版本的签名密钥与您已安装副本的密钥不同，因此无法覆盖替换。</string>
+    <string name="error_install_storage_full">存储空间不足，无法安装。请释放一些空间后重试。</string>
+
+    <string name="favourites_empty">暂无收藏</string>
+    <string name="favourites_empty_detail">点击应用旁的星标，将其保存在这里</string>
+    <string name="favourites_unavailable">没有可显示的收藏应用</string>
+
+    <string name="ignored_all">已忽略所有更新</string>
+    <string name="ignored_updates_empty">没有忽略的更新</string>
+    <string name="ignored_updates_empty_detail">在忽略某项应用的更新后，它会显示在这里</string>
+    <string name="ignored_updates_unavailable">没有可显示的已忽略更新</string>
+    <string name="ignored_version" tools:ignore="PluralsCandidate">忽略 v<xliff:g id="version_code">%1$d</xliff:g> 及更早版本</string>
+
+    <string name="install_refused">暂时无法安装 - <xliff:g id="reason">%1$s</xliff:g></string>
+    <string name="install_refused_no_download">暂时无法安装 - 该版本尚未完成下载。</string>
+    <string name="installed_empty">没有已安装的应用</string>
+    <string name="installer_native_desc">为每个应用调出 Android 原生安装界面。始终需要您手动确认，在会话安装器受阻时可作为备用。</string>
+    <string name="installer_native_subtitle">交由系统对话框处理</string>
+    <string name="installer_native_title">系统安装器</string>
+    <string name="installer_root_desc">以 Root 权限静默运行系统的安装命令，不会弹出确认对话框。要求设备已 Root 并向 ShizuStore 授予了超级用户权限。</string>
+    <string name="installer_root_subtitle">通过 Root Shell 执行静默安装</string>
+    <string name="installer_root_title">Root 安装器</string>
+    <string name="installer_session_desc">使用 Android 自带的软件包安装程序服务。无需任何额外设置；Android 仍可能会要求您逐个确认安装。</string>
+    <string name="installer_session_subtitle">默认选项，无需 Root 即可使用</string>
+    <string name="installer_session_title">会话安装器</string>
+    <string name="installer_shizuku_desc">通过 Shizuku 的 ADB 或 Root 服务调用系统 API。需要后台运行 Shizuku 或 Sui，并向 ShizuStore 授权。</string>
+    <string name="installer_shizuku_subtitle">通过 Shizuku 或 Sui 实行静默安装</string>
+    <string name="installer_shizuku_title">Shizuku 安装器</string>
+
+    <string name="shizuku_card_title">设置 Shizuku</string>
+    <string name="shizuku_card_install_body">未安装 Shizuku。请安装它，以便 ShizuStore 可以在没有 Root 的情况下在后台安装应用。</string>
+    <string name="shizuku_card_grant_body">Shizuku 已安装。请允许 ShizuStore 通过它安装应用。</string>
+    <string name="shizuku_card_start_body">Shizuku 已安装但未运行。请启动 Shizuku，然后允许 ShizuStore 的访问。</string>
+    <string name="shizuku_card_install_action">获取 Shizuku</string>
+    <string name="shizuku_card_grant_action">允许访问</string>
+    <string name="shizuku_card_start_action">启动 Shizuku</string>
+    <string name="shizuku_card_dismiss">不再提示</string>
+
+    <string name="item_optional">可选</string>
+    <string name="item_required">必需</string>
+    <string name="loading">正在加载</string>
+
+    <string name="notification_channel_alerts">需要注意</string>
+    <string name="notification_channel_download">下载</string>
+    <string name="notification_channel_install">安装</string>
+    <string name="notification_channel_update">更新检查</string>
+    <string name="notification_confirm_install">点击以安装 <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_confirm_install_text">Android 需要您确认此次安装操作。</string>
+    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> 已下载</string>
+    <string name="notification_group_activity">活动</string>
+    <string name="notification_group_alerts">需要注意</string>
+    <string name="notification_download_failed">无法下载 <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_downloading">正在下载 <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> 已安装</string>
+    <string name="notification_install_failed">无法安装 <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_installing">正在安装 <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused">无法安装 <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused_text">另一个安装任务仍在进行中。请在它完成后重试。</string>
+    <plurals name="notification_failed_summary">
+        <item quantity="one">有 <xliff:g id="count">%1$d</xliff:g> 个应用需要注意</item>
+        <item quantity="other">有 <xliff:g id="count">%1$d</xliff:g> 个应用需要注意</item>
+    </plurals>
+    <plurals name="notification_installed_summary">
+        <item quantity="one">已安装 <xliff:g id="count">%1$d</xliff:g> 个应用</item>
+        <item quantity="other">已安装 <xliff:g id="count">%1$d</xliff:g> 个应用</item>
+    </plurals>
+    <plurals name="notification_download_summary">
+        <item quantity="one">正在下载 <xliff:g id="count">%1$d</xliff:g> 个应用</item>
+        <item quantity="other">正在下载 <xliff:g id="count">%1$d</xliff:g> 个应用</item>
+    </plurals>
+    <plurals name="notification_updates_available">
+        <item quantity="one">有 %1$d 个可用更新</item>
+        <item quantity="other">有 %1$d 个可用更新</item>
+    </plurals>
+    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> 和 <xliff:g id="second">%2$s</xliff:g></string>
+    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>、<xliff:g id="second">%2$s</xliff:g> 和 <xliff:g id="third">%3$s</xliff:g></string>
+    <plurals name="notification_updates_available_desc_more">
+        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>、<xliff:g id="second">%2$s</xliff:g>、<xliff:g id="third">%3$s</xliff:g> 以及另外 <xliff:g id="count">%4$d</xliff:g> 个应用</item>
+        <item quantity="other"><xliff:g id="first">%1$s</xliff:g>、<xliff:g id="second">%2$s</xliff:g>、<xliff:g id="third">%3$s</xliff:g> 以及另外 <xliff:g id="count">%4$d</xliff:g> 个应用</item>
+    </plurals>
+    <string name="notification_updates_available_text">打开 ShizuStore 查看并安装。</string>
+
+    <string name="permission_doze">忽略电池优化</string>
+    <string name="permission_doze_desc">让 ShizuStore 即使在后台运行也能保持下载，并确保更新检查按时进行。</string>
+    <string name="permission_install">安装未知应用</string>
+    <string name="permission_install_desc">ShizuStore 安装任何应用前所需的必需权限。除非您使用 Root 或 Shizuku，否则 Android 仍会要求确认每次安装。</string>
+    <string name="permission_notifications">通知</string>
+    <string name="permission_notifications_desc">显示软件源同步、下载和安装进度，并在更新准备就绪时提醒您。</string>
+
+    <string name="search_hint">搜索应用</string>
+    <string name="search_no_results">未找到与搜索匹配的应用</string>
+    <string name="search_history">最近搜索</string>
+    <string name="search_sort_name">名称</string>
+    <string name="search_sort_stars">最多星标</string>
+    <string name="search_sort_popularity">受欢迎程度</string>
+    <string name="search_sort_size">体积从大到小</string>
+    <string name="filter_all">全部</string>
+    <string name="filter_price">价格</string>
+    <string name="filter_free">免费</string>
+    <string name="filter_iap">应用内购买</string>
+    <string name="filter_iap_or_paid">应用内购买或付费</string>
+    <string name="filter_iap_short">含内购</string>
+    <string name="filter_iap_or_paid_short">内购或付费</string>
+    <string name="filter_title_category">按分类筛选</string>
+    <string name="filter_title_price">按价格筛选</string>
+    <string name="filter_title_sort">排序方式</string>
+    <string name="app_badge_paid">付费</string>
+    <string name="app_badge_iap">含内购</string>
+    <string name="app_indicator_installed">已安装</string>
+    <string name="app_indicator_update">有可用更新</string>
+    <string name="details_billing_paid">这是一个付费应用。</string>
+    <string name="details_billing_iap">此应用提供应用内购买项目。</string>
+    <string name="details_billing_paid_iap">这是一个包含应用内购买项目的付费应用。</string>
+
+    <string name="settings_appearance_summary">浅色或深色主题，以及基于壁纸的配色</string>
+    <string name="settings_appearance_title">外观</string>
+    <string name="settings_black_night_subtitle">开启夜间模式时使用纯黑主题</string>
+    <string name="settings_black_night_title">纯黑夜间主题</string>
+    <string name="settings_dynamic_color_subtitle">从您的壁纸中提取颜色。需要 Android 12 及更高版本。</string>
+    <string name="settings_dynamic_color_title">动态配色</string>
+    <string name="settings_group_updates_summary">检查计划、网络限制和自动安装</string>
+    <string name="settings_group_updates_title">更新</string>
+    <string name="settings_install_reporting_subtitle">在应用完成安装时向服务器发送匿名的安装次数统计。用于生成受欢迎程度排名。</string>
+    <string name="settings_install_reporting_title">报告安装情况</string>
+    <string name="settings_installer_summary">选择用于安装已下载应用包的安装器</string>
+    <string name="settings_installer_title">应用安装器</string>
+    <string name="settings_network_summary">HTTP 或 SOCKS 代理及隐私设置</string>
+    <string name="settings_network_title">网络</string>
+    <string name="settings_permissions_summary">安装、通知和电池权限</string>
+    <string name="settings_permissions_title">权限</string>
+    <string name="settings_proxy_clear">清除</string>
+    <string name="settings_proxy_dialog_message">将在下一次网络连接时生效；无需重启应用。清除此选项会将代理控制权交还给设备自身的网络设置，而不是彻底关闭代理。</string>
+    <string name="settings_proxy_invalid">请以 protocol://host:port 格式输入代理地址，也可选在主机名前加上 user:password@。支持 http、https、socks 和 socks5。</string>
+    <string name="settings_proxy_summary_none">未设置。软件源流量将遵循此设备的系统网络设置。</string>
+    <string name="settings_proxy_title">代理</string>
+    <string name="settings_server_active">当前使用的服务器</string>
+    <string name="settings_server_custom">自定义服务器</string>
+    <string name="settings_server_invalid">请输入有效的 http 或 https URL。</string>
+    <string name="settings_server_maintenance">维护中</string>
+    <string name="settings_server_not_configured">未配置</string>
+    <string name="settings_server_production">生产环境</string>
+    <string name="settings_server_reset">清除本地数据库</string>
+    <string name="settings_server_reset_message">是否清除已缓存的应用目录并重新从当前服务器拉取所有内容？您的收藏和已安装应用记录将被保留。</string>
+    <string name="settings_server_reset_summary">删除缓存的应用目录并从当前使用的服务器重新下载。您的收藏和已安装应用记录将被保留。</string>
+    <string name="settings_server_status_checking">检查中...</string>
+    <string name="settings_server_status_reachable">可连接</string>
+    <string name="settings_server_status_unknown">未检查</string>
+    <string name="settings_server_status_unreachable">无法连接</string>
+    <string name="settings_server_summary">应用目录服务器地址</string>
+    <string name="settings_server_title">服务器</string>
+    <string name="settings_show_closed_source_subtitle">同时同步上游闭源列表中的应用。这些应用是专有软件，默认不显示。</string>
+    <string name="settings_show_closed_source_title">显示闭源应用</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_system">系统默认</string>
+    <string name="settings_theme_title">主题</string>
+    <string name="settings_unattended_paused_checks_off">已暂停。上方的后台检查设置为“从不”，因此不会运行任何安装任务。请选择一个时间间隔以启动它们。</string>
+    <string name="settings_unattended_paused_confirmation">已暂停。您当前使用的安装器需要您确认每一次安装，因此仅在有更新可用时通知您。如果您的设备支持 Root 或 Shizuku，可以使用它们来跳过确认步骤。</string>
+    <string name="settings_unattended_paused_root">已暂停。没有 Root 权限 - 请向 ShizuStore 授予超级用户权限，或在“应用安装器”下选择其他选项。</string>
+    <string name="settings_unattended_paused_shizuku">已暂停。此设备当前无法通过 Shizuku 进行安装。请检查 Shizuku 是否已安装、正在运行并向 ShizuStore 授予了访问权限；如果已就绪，请在“应用安装器”下选择其他选项。</string>
+    <string name="settings_unattended_section_title">自动安装</string>
+    <string name="settings_unattended_subtitle">在后台自动下载并安装新版本，无需每次手动确认。</string>
+    <string name="settings_unattended_title">自动安装更新</string>
+    <string name="settings_update_interval_daily">每天</string>
+    <string name="settings_update_interval_never">从不</string>
+    <string name="settings_update_interval_six_hours">每 6 小时</string>
+    <string name="settings_update_interval_twelve_hours">每 12 小时</string>
+    <string name="settings_update_interval_weekly">每周</string>
+    <string name="settings_updates_subtitle">检查已启用的软件源是否有新版本的频率。</string>
+    <string name="settings_updates_title">更新检查</string>
+    <string name="settings_wifi_only_subtitle">后台检查和自动下载将等待连接至不计费（Wi-Fi）网络时进行。</string>
+    <string name="settings_wifi_only_title">仅在 Wi-Fi 下检查</string>
+
+    <string name="time_just_now">刚刚</string>
+    <plurals name="time_minutes_ago">
+        <item quantity="one">%1$d 分钟前</item>
+        <item quantity="other">%1$d 分钟前</item>
+    </plurals>
+    <plurals name="time_hours_ago">
+        <item quantity="one">%1$d 小时前</item>
+        <item quantity="other">%1$d 小时前</item>
+    </plurals>
+    <plurals name="time_days_ago">
+        <item quantity="one">%1$d 天前</item>
+        <item quantity="other">%1$d 天前</item>
+    </plurals>
+    <plurals name="time_weeks_ago">
+        <item quantity="one">%1$d 周前</item>
+        <item quantity="other">%1$d 周前</item>
+    </plurals>
+    <plurals name="time_months_ago">
+        <item quantity="one">%1$d 个月前</item>
+        <item quantity="other">%1$d 个月前</item>
+    </plurals>
+    <plurals name="time_years_ago">
+        <item quantity="one">%1$d 年前</item>
+        <item quantity="other">%1$d 年前</item>
+    </plurals>
+
+    <string name="title_about">关于</string>
+    <string name="title_apps">应用</string>
+    <string name="title_blacklist">黑名单</string>
+    <string name="title_categories">分类</string>
+    <string name="title_search">搜索</string>
+    <string name="title_donate">捐助</string>
+    <string name="title_downloads">下载</string>
+    <string name="title_favourites">收藏</string>
+    <string name="title_ignored_updates">忽略的更新</string>
+    <string name="title_my_apps">我的应用</string>
+    <string name="title_settings">设置</string>
+    <string name="title_updates">更新</string>
+
+    <string name="updates_app_details">详情</string>
+    <plurals name="updates_available_count">
+        <item quantity="one">有 %1$d 个可用更新</item>
+        <item quantity="other">有 %1$d 个可用更新</item>
+    </plurals>
+    <string name="updates_empty">所有应用均为最新版本</string>
+
+</resources>
