@@ -37,7 +37,7 @@ You can find APKs in the release section: https://github.com/timschneeb/ShizuSto
 
 ## Publishing an app
 
-Add the app to [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku); the app store will automatically pick it up from there. To get listed, follow the [contribution guide](https://github.com/timschneeb/awesome-shizuku/blob/master/CONTRIBUTING.md) or open an issue in [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku) with the app/source code link.
+Add the app to [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku); the app store will automatically pick it up from there. To get listed, follow the [contribution guide](https://github.com/timschneeb/awesome-shizuku/blob/master/CONTRIBUTING.md) or open an issue in the [awesome-shizuku](https://github.com/timschneeb/awesome-shizuku) repo.
 
 How the store discovers your releases and displays your app is documented in the server's [listing and metadata documentation](https://github.com/timschneeb/ShizuStoreServer/blob/master/docs/listing-and-metadata.md).
 
