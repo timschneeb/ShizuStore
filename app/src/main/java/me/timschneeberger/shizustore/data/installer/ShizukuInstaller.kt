@@ -39,6 +39,7 @@ import me.timschneeberger.shizustore.extensions.isOAndAbove
 import me.timschneeberger.shizustore.extensions.isSAndAbove
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.ShizukuProvider
 import rikka.shizuku.SystemServiceHelper
 import rikka.sui.Sui
 
@@ -236,12 +237,35 @@ open class ShizukuInstaller @Inject constructor(
         fun isRunning(): Boolean = runCatching { Shizuku.pingBinder() }
             .getOrElse { false }
 
-        const val SHIZUKU_PACKAGE_NAME = "moe.shizuku.privileged.api"
+        // Detects a Shizuku manager by the permissions it declares instead of by package name:
+        // forks ship under different packages (or hide themselves from package enumeration), while
+        // permission names are shared and live in a global namespace. Stock first so installs that
+        // declare both keep resolving to the same package as before.
+        internal const val SHIZUKU_PLUS_PERMISSION = "af.shizuku.plus.permission.API_V23"
+
+        internal val MANAGER_PERMISSIONS = listOf(
+            ShizukuProvider.PERMISSION,
+            SHIZUKU_PLUS_PERMISSION
+        )
+
+        /** Packages declaring a Shizuku manager permission, stock first; empty when none is installed. */
+        fun managerPackages(context: Context): List<String> =
+            MANAGER_PERMISSIONS.mapNotNull { resolvePermissionOwner(context, it) }.distinct()
+
+        private fun resolvePermissionOwner(context: Context, permission: String): String? = try {
+            context.packageManager.getPermissionInfo(permission, 0).packageName
+                ?.takeUnless { it.isBlank() }
+        } catch (exception: PackageManager.NameNotFoundException) {
+            null
+        } catch (exception: Exception) {
+            Log.w(TAG, "Could not resolve the owner of $permission", exception)
+            null
+        }
 
         val installer = Installer.SHIZUKU
 
         private val DEFAULT_AVAILABILITY_PROBE: (Context) -> Boolean = { context ->
-            isOAndAbove && (isPackagePresent(context, SHIZUKU_PACKAGE_NAME) || Sui.isSui())
+            isOAndAbove && (managerPackages(context).isNotEmpty() || Sui.isSui())
         }
 
         private val availabilityProbe: (Context) -> Boolean = DEFAULT_AVAILABILITY_PROBE
@@ -251,8 +275,5 @@ open class ShizukuInstaller @Inject constructor(
                 Log.w(TAG, "Shizuku availability probe failed, assuming absent", failure)
                 false
             }
-
-        private fun isPackagePresent(context: Context, packageName: String): Boolean =
-            runCatching { context.packageManager.getPackageInfo(packageName, 0) }.isSuccess
     }
 }

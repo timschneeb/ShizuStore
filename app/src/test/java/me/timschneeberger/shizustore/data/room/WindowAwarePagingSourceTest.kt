@@ -65,13 +65,10 @@ class WindowAwarePagingSourceTest {
         assertEquals(listOf("row"), (result as LoadResult.Page).data)
     }
 
-    private fun wrapped(): WindowAwarePagingSource<String> =
-        WindowAwarePagingSource(FakeSource())
+    private fun wrapped(): WindowAwarePagingSource<String> = WindowAwarePagingSource(FakeSource())
 
-    private fun state(
-        anchorPosition: Int?,
-        pages: List<LoadResult.Page<Int, String>>
-    ) = PagingState(pages, anchorPosition, config, 0)
+    private fun state(anchorPosition: Int?, pages: List<LoadResult.Page<Int, String>>) =
+        PagingState(pages, anchorPosition, config, 0)
 
     private fun page(prevKey: Int?): LoadResult.Page<Int, String> =
         LoadResult.Page(data = listOf("row"), prevKey = prevKey, nextKey = 100)
