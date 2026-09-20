@@ -116,7 +116,8 @@ fun InstallationPreferencesScreen(
                 }
 
                 SectionHeader(
-                    title = stringResource(R.string.settings_installer_custom_source_section)
+                    title = stringResource(R.string.settings_installer_custom_source_section),
+                    titleColor = MaterialTheme.colorScheme.primary
                 )
 
                 AuroraListItem(

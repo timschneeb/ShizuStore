@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -67,7 +68,8 @@ fun UpdatePreferencesScreen(
         ) {
             SectionHeader(
                 title = stringResource(R.string.settings_updates_title),
-                subtitle = stringResource(R.string.settings_updates_subtitle)
+                subtitle = stringResource(R.string.settings_updates_subtitle),
+                titleColor = MaterialTheme.colorScheme.primary
             )
 
             UpdateIntervalOption.entries.forEach { option ->
@@ -100,7 +102,10 @@ fun UpdatePreferencesScreen(
                 selection = ItemSelection.Switch(syncOnWifiOnly)
             )
 
-            SectionHeader(title = stringResource(R.string.settings_unattended_section_title))
+            SectionHeader(
+                title = stringResource(R.string.settings_unattended_section_title),
+                titleColor = MaterialTheme.colorScheme.primary
+            )
 
             AuroraListItem(
                 headline = stringResource(R.string.settings_unattended_title),

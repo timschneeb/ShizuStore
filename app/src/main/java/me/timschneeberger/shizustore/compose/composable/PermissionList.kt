@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -102,7 +103,8 @@ fun PermissionList(
                     SectionHeader(
                         title = stringResource(
                             if (optional) R.string.item_optional else R.string.item_required
-                        )
+                        ),
+                        titleColor = MaterialTheme.colorScheme.primary
                     )
                 }
 

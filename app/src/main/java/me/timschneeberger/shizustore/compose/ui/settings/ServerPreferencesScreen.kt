@@ -93,7 +93,10 @@ fun ServerPreferencesScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            SectionHeader(title = stringResource(R.string.settings_server_title))
+            SectionHeader(
+                title = stringResource(R.string.settings_server_title),
+                titleColor = MaterialTheme.colorScheme.primary
+            )
 
             AuroraListItem(
                 headline = stringResource(R.string.settings_server_production),
@@ -131,7 +134,10 @@ fun ServerPreferencesScreen(
                 supportingMaxLines = 2
             )
 
-            SectionHeader(title = stringResource(R.string.settings_server_maintenance))
+            SectionHeader(
+                title = stringResource(R.string.settings_server_maintenance),
+                titleColor = MaterialTheme.colorScheme.primary
+            )
 
             AuroraListItem(
                 headline = stringResource(R.string.settings_server_reset),
