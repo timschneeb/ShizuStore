@@ -1,12 +1,11 @@
-<resources xmlns:tools="http://schemas.android.com/tools"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="about_licence_title">授權條款</string>
     <string name="about_licence_value">GNU 通用公共授權條款 v3.0 或更新版本</string>
     <string name="about_version">版本 <xliff:g id="version_name">%1$s</xliff:g> (<xliff:g id="version_code">%2$d</xliff:g>)</string>
     <string name="about_developer_title">開發者</string>
     <string name="about_github_title">原始碼</string>
     <string name="about_auroradroid_value">基於 Aurora OSS 的 AuroraDroid</string>
-
     <string name="action_add_to_home">新增至主螢幕</string>
     <string name="action_app_info">應用程式資訊</string>
     <string name="action_app_menu">此應用程式的更多選項</string>
@@ -44,7 +43,8 @@
     <string name="action_uninstall">解除安裝</string>
     <string name="action_update">更新</string>
     <string name="action_update_all">全部更新</string>
-
+    <!-- Double spaces are \u0020 escapes: aapt collapses literal
+        repeated whitespace in string resources into one. -->
     <string name="apps_empty">暫無應用程式</string>
     <string name="apps_empty_detail">應用程式目錄會自動同步</string>
     <string name="apps_empty_syncing">正在同步目錄…</string>
@@ -54,11 +54,9 @@
     <string name="apps_recently_added">最近新增</string>
     <string name="apps_recently_updated">最近更新</string>
     <string name="apps_most_starred">GitHub 上最多星號</string>
-
     <string name="blacklist_empty">黑名單為空</string>
     <string name="blacklist_empty_detail">在應用程式選單中將其加入黑名單後會顯示於此</string>
     <string name="blacklist_unavailable">沒有可顯示的黑名單應用程式</string>
-
     <string name="details_changelog">更新日誌</string>
     <string name="details_changelog_subtitle">%1$s 版本的新功能</string>
     <string name="details_changelog_empty">暫無更新日誌</string>
@@ -69,7 +67,6 @@
     <string name="details_load_failed">無法連線至伺服器。請檢查您的網路連線並重試。</string>
     <string name="details_permissions">權限</string>
     <plurals name="details_permissions_count">
-        <item quantity="one">請求了 %1$d 項權限</item>
         <item quantity="other">請求了 %1$d 項權限</item>
     </plurals>
     <string name="details_permissions_custom">自訂權限</string>
@@ -87,16 +84,13 @@
     <string name="details_version_selected">已選取</string>
     <string name="details_sources">來源</string>
     <plurals name="details_sources_count">
-        <item quantity="one">%1$d 個來源</item>
         <item quantity="other">%1$d 個來源</item>
     </plurals>
     <string name="details_website">網站</string>
-
     <string name="donation_card_body">ShizuStore 是免費且開源的。\n您的贊助將用於支付伺服器費用，並支持應用程式和後端的持續開發。</string>
     <string name="donation_card_title">支持 ShizuStore</string>
     <string name="donation_dialog_message">感謝您對本專案的支持！每一筆贊助都將幫助我支付伺服器費用，讓我能有更多時間持續開發應用程式及後端，並保持應用程式清單處於最新狀態。點擊以下任一連結即可支持我。</string>
     <string name="donation_dialog_title">支持 ShizuStore</string>
-
     <string name="download_cancel_all">全部取消</string>
     <string name="download_clear_all">全部清除</string>
     <string name="download_clear_finished">清除已完成</string>
@@ -120,7 +114,6 @@
     <string name="download_status_verifying">驗證中…</string>
     <string name="downloads_empty">暫無下載</string>
     <string name="downloads_empty_detail">您下載的應用程式會顯示於此</string>
-
     <string name="error_download_archive">無法解壓縮下載的檔案。請稍後重試。</string>
     <string name="error_download_http">軟體來源拒絕了下載請求。請稍後重試。</string>
     <string name="error_download_insufficient_storage">儲存空間不足，無法下載此應用程式。請釋放一些空間後重試。</string>
@@ -138,17 +131,14 @@
     <string name="error_install_shizuku_unavailable">Shizuku 未執行，或尚未向 ShizuStore 授權。請開啟並啟動 Shizuku，然後允許 ShizuStore 存取。</string>
     <string name="error_install_signer_mismatch">此版本的簽名金鑰與您已安裝副本的金鑰不同，因此無法取代它。</string>
     <string name="error_install_storage_full">儲存空間不足，無法安裝。請釋放一些空間後重試。</string>
-
     <string name="favourites_empty">暫無收藏</string>
     <string name="favourites_empty_detail">點擊應用程式旁的星號，將其儲存於此</string>
     <string name="favourites_unavailable">沒有可顯示的收藏應用程式</string>
-
     <string name="ignored_all">已忽略所有更新</string>
     <string name="ignored_updates_empty">沒有被忽略的更新</string>
     <string name="ignored_updates_empty_detail">忽略某個應用程式的更新後，它會顯示於此</string>
     <string name="ignored_updates_unavailable">沒有可顯示的已忽略更新</string>
     <string name="ignored_version" tools:ignore="PluralsCandidate">忽略 v<xliff:g id="version_code">%1$d</xliff:g> 及更早版本</string>
-
     <string name="install_refused">暫時無法安裝 - <xliff:g id="reason">%1$s</xliff:g></string>
     <string name="install_refused_no_download">暫時無法安裝 - 尚未完成下載該版本。</string>
     <string name="installed_empty">沒有已安裝的應用程式</string>
@@ -164,7 +154,6 @@
     <string name="installer_shizuku_desc">透過 Shizuku 的 ADB 或 Root 服務呼叫系統 API。需要在背景執行 Shizuku 或 Sui，並向 ShizuStore 授權。</string>
     <string name="installer_shizuku_subtitle">透過 Shizuku 或 Sui 執行靜默安裝</string>
     <string name="installer_shizuku_title">Shizuku 安裝程式</string>
-
     <string name="shizuku_card_title">設定 Shizuku</string>
     <string name="shizuku_card_install_body">未安裝 Shizuku。請安裝它，以便 ShizuStore 可以在沒有 Root 的情況下在背景安裝應用程式。</string>
     <string name="shizuku_card_grant_body">Shizuku 已安裝。請允許 ShizuStore 透過它安裝應用程式。</string>
@@ -173,11 +162,9 @@
     <string name="shizuku_card_grant_action">允許存取</string>
     <string name="shizuku_card_start_action">啟動 Shizuku</string>
     <string name="shizuku_card_dismiss">不再提示</string>
-
     <string name="item_optional">可選</string>
     <string name="item_required">必需</string>
     <string name="loading">正在載入</string>
-
     <string name="notification_channel_alerts">需要注意</string>
     <string name="notification_channel_download">下載</string>
     <string name="notification_channel_install">安裝</string>
@@ -195,36 +182,29 @@
     <string name="notification_install_refused">無法安裝 <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_install_refused_text">另一個安裝任務仍在進行中。請在其完成後重試。</string>
     <plurals name="notification_failed_summary">
-        <item quantity="one">有 <xliff:g id="count">%1$d</xliff:g> 個應用程式需要注意</item>
         <item quantity="other">有 <xliff:g id="count">%1$d</xliff:g> 個應用程式需要注意</item>
     </plurals>
     <plurals name="notification_installed_summary">
-        <item quantity="one">已安裝 <xliff:g id="count">%1$d</xliff:g> 個應用程式</item>
         <item quantity="other">已安裝 <xliff:g id="count">%1$d</xliff:g> 個應用程式</item>
     </plurals>
     <plurals name="notification_download_summary">
-        <item quantity="one">正在下載 <xliff:g id="count">%1$d</xliff:g> 個應用程式</item>
         <item quantity="other">正在下載 <xliff:g id="count">%1$d</xliff:g> 個應用程式</item>
     </plurals>
     <plurals name="notification_updates_available">
-        <item quantity="one">有 %1$d 個可用更新</item>
         <item quantity="other">有 %1$d 個可用更新</item>
     </plurals>
     <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> 和 <xliff:g id="second">%2$s</xliff:g></string>
     <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>、<xliff:g id="second">%2$s</xliff:g> 和 <xliff:g id="third">%3$s</xliff:g></string>
     <plurals name="notification_updates_available_desc_more">
-        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>、<xliff:g id="second">%2$s</xliff:g>、<xliff:g id="third">%3$s</xliff:g> 以及另外 <xliff:g id="count">%4$d</xliff:g> 個應用程式</item>
         <item quantity="other"><xliff:g id="first">%1$s</xliff:g>、<xliff:g id="second">%2$s</xliff:g>、<xliff:g id="third">%3$s</xliff:g> 以及另外 <xliff:g id="count">%4$d</xliff:g> 個應用程式</item>
     </plurals>
     <string name="notification_updates_available_text">開啟 ShizuStore 查看並安裝。</string>
-
     <string name="permission_doze">忽略電池最佳化</string>
     <string name="permission_doze_desc">讓 ShizuStore 即使在背景執行也能保持下載，並確保更新檢查按時進行。</string>
     <string name="permission_install">安裝未知應用程式</string>
     <string name="permission_install_desc">ShizuStore 安裝任何應用程式前所需的必要權限。除非您使用 Root 或 Shizuku，否則 Android 仍會要求確認每次安裝。</string>
     <string name="permission_notifications">通知</string>
     <string name="permission_notifications_desc">顯示軟體來源同步、下載和安裝進度，並在更新準備就緒時提醒您。</string>
-
     <string name="search_hint">搜尋應用程式</string>
     <string name="search_no_results">未找到與搜尋相符的應用程式</string>
     <string name="search_history">最近搜尋</string>
@@ -249,7 +229,6 @@
     <string name="details_billing_paid">這是一個付費應用程式。</string>
     <string name="details_billing_iap">此應用程式提供應用程式內購買項目。</string>
     <string name="details_billing_paid_iap">這是一個包含應用程式內購買項目的付費應用程式。</string>
-
     <string name="settings_appearance_summary">淺色或深色主題，以及基於桌布的配色</string>
     <string name="settings_appearance_title">外觀</string>
     <string name="settings_black_night_subtitle">開啟夜間模式時使用純黑主題</string>
@@ -314,33 +293,25 @@
     <string name="settings_updates_title">更新檢查</string>
     <string name="settings_wifi_only_subtitle">背景檢查和自動下載將等待連線至不計費 (Wi-Fi) 網路時進行。</string>
     <string name="settings_wifi_only_title">僅在 Wi-Fi 下檢查</string>
-
     <string name="time_just_now">剛剛</string>
     <plurals name="time_minutes_ago">
-        <item quantity="one">%1$d 分鐘前</item>
         <item quantity="other">%1$d 分鐘前</item>
     </plurals>
     <plurals name="time_hours_ago">
-        <item quantity="one">%1$d 小時前</item>
         <item quantity="other">%1$d 小時前</item>
     </plurals>
     <plurals name="time_days_ago">
-        <item quantity="one">%1$d 天前</item>
         <item quantity="other">%1$d 天前</item>
     </plurals>
     <plurals name="time_weeks_ago">
-        <item quantity="one">%1$d 週前</item>
         <item quantity="other">%1$d 週前</item>
     </plurals>
     <plurals name="time_months_ago">
-        <item quantity="one">%1$d 個月前</item>
         <item quantity="other">%1$d 個月前</item>
     </plurals>
     <plurals name="time_years_ago">
-        <item quantity="one">%1$d 年前</item>
         <item quantity="other">%1$d 年前</item>
     </plurals>
-
     <string name="title_about">關於</string>
     <string name="title_apps">應用程式</string>
     <string name="title_blacklist">黑名單</string>
@@ -353,12 +324,9 @@
     <string name="title_my_apps">我的應用程式</string>
     <string name="title_settings">設定</string>
     <string name="title_updates">更新</string>
-
     <string name="updates_app_details">詳情</string>
     <plurals name="updates_available_count">
-        <item quantity="one">有 %1$d 個可用更新</item>
         <item quantity="other">有 %1$d 個可用更新</item>
     </plurals>
     <string name="updates_empty">所有應用程式均為最新版</string>
-
 </resources>
