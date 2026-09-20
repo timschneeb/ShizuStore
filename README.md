@@ -41,6 +41,22 @@ Add the app to [awesome-shizuku list](https://github.com/timschneeb/awesome-shiz
 
 How the store discovers your releases and displays your app is documented in the server's [listing and metadata documentation](https://github.com/timschneeb/ShizuStoreServer/blob/master/docs/listing-and-metadata.md).
 
+## Translations
+
+Do you want to help translate ShizuStore? You can help at [Crowdin](https://crowdin.com/project/shizustore)! Thank you!
+
+
+<a href="https://crowdin.com/project/shizustore">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://badges.crowdin.net/badge/light/crowdin-on-dark@2x.png" width="150px">
+    <source media="(prefers-color-scheme: light)" srcset="https://badges.crowdin.net/badge/dark/crowdin-on-light@2x.png" width="150px">
+    <img alt="Crowdin logo" src="https://badges.crowdin.net/badge/light/crowdin-on-dark@2x.png" width="150px">
+  </picture>
+</a>
+
+
+<https://crowdin.com/project/shizustore>
+
 ## Credits
 
 ShizuStore is based on [Aurora Droid](https://gitlab.com/AuroraOSS/auroradroid) developed by Aurora OSS, licensed under GPL-3.0-or-later. 
