@@ -1,0 +1,5 @@
+- Added support for server-requested catalog refreshes, which clean up a stale app list without touching your favourites.
+- Added a custom installer source option for the Shizuku installer.
+- Shizuku forks are now detected properly.
+- Fixed the Apps tab not reloading and some colour issues.
+- Added German and Chinese translations.

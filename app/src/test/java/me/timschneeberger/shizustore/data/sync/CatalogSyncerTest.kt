@@ -12,9 +12,12 @@ import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.helper.SyncStatusStore
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.BlacklistEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
+import me.timschneeberger.shizustore.data.room.entity.FavouriteEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
+import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.Preferences
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -163,6 +166,111 @@ class CatalogSyncerTest : ApiTestBase() {
     }
 
     @Test
+    fun remotePurgeWipesCatalogAndBootstrapsPreservingUserData() = runTest {
+        setLastPurgeApplied(0L)
+        db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR, categoriesEtag = "etag-1"))
+        db.appDao().upsert(AppEntity(slug = "gone", name = "Gone"))
+        db.appDownloadDao().upsertAll(
+            listOf(
+                AppDownloadEntity(appSlug = "gone", apkUrl = "https://x/gone.apk", sigKey = "k")
+            )
+        )
+        db.categoryDao().upsertAll(listOf(CategoryEntity(slug = "stale", name = "Stale")))
+        db.favouriteDao().insert(FavouriteEntity("com.gone"))
+        db.blacklistDao().insert(BlacklistEntity("com.blocked"))
+
+        server.dispatcher = routes(
+            "/v1/changes" to json(CHANGES_WITH_PURGE),
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to json(CATEGORIES)
+        )
+
+        val outcome = syncer.sync()
+
+        assertTrue(outcome is CatalogSyncOutcome.Success)
+        assertEquals(2, db.appDao().count())
+        assertNull(db.appDao().get("gone"))
+        // The delta entry for "dead" is dropped: a purge refills via bootstrap.
+        assertNull(db.appDao().get("dead"))
+        assertEquals(0, db.appDownloadDao().count())
+        assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
+        assertEquals(listOf("com.gone"), db.favouriteDao().observeAll().first())
+        assertEquals(listOf("com.blocked"), db.blacklistDao().observeAll().first())
+        assertEquals(PURGE_AT_MILLIS, lastPurgeApplied())
+        assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
+
+        // The purge dropped the old ETag, so categories must be refetched in full.
+        server.takeRequest()
+        server.takeRequest()
+        val categoriesRequest = server.takeRequest()
+        assertTrue(categoriesRequest.path!!.startsWith("/v1/categories"))
+        assertNull(categoriesRequest.getHeader("If-None-Match"))
+    }
+
+    @Test
+    fun remotePurgeAppliesOnceThenSyncsIncrementally() = runTest {
+        setLastPurgeApplied(0L)
+        db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
+        db.appDao().upsert(AppEntity(slug = "gone", name = "Gone"))
+
+        server.dispatcher = routes(
+            "/v1/changes" to json(CHANGES_WITH_PURGE),
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to json(CATEGORIES)
+        )
+        assertTrue(syncer.sync() is CatalogSyncOutcome.Success)
+        assertEquals(PURGE_AT_MILLIS, lastPurgeApplied())
+
+        // Same high-water mark on the next sync: incremental path, no /v1/apps
+        // route on this dispatcher, so a second purge would fail the sync.
+        server.dispatcher = routes(
+            "/v1/changes" to json(CHANGES_WITH_PURGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to MockResponse().setResponseCode(304)
+        )
+        val outcome = syncer.sync() as CatalogSyncOutcome.Success
+
+        assertEquals(1, outcome.updated)
+        assertEquals("Dead", db.appDao().get("dead")!!.name)
+    }
+
+    @Test
+    fun olderPurgeTimestampIsIgnored() = runTest {
+        setLastPurgeApplied(PURGE_AT_MILLIS + 60_000)
+        db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
+        db.appDao().upsert(AppEntity(slug = "keep", name = "Keep"))
+
+        server.dispatcher = routes(
+            "/v1/changes" to json(CHANGES_PURGE_ONLY),
+            "/v1/meta" to json(META),
+            "/v1/categories" to MockResponse().setResponseCode(304)
+        )
+
+        assertTrue(syncer.sync() is CatalogSyncOutcome.Success)
+        assertNotNull(db.appDao().get("keep"))
+        assertEquals(PURGE_AT_MILLIS + 60_000, lastPurgeApplied())
+    }
+
+    @Test
+    fun malformedPurgeTimestampIsIgnored() = runTest {
+        setLastPurgeApplied(0L)
+        db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
+        db.appDao().upsert(AppEntity(slug = "keep", name = "Keep"))
+
+        server.dispatcher = routes(
+            "/v1/changes" to json(CHANGES_WITH_BAD_PURGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to MockResponse().setResponseCode(304)
+        )
+
+        assertTrue(syncer.sync() is CatalogSyncOutcome.Success)
+        assertNotNull(db.appDao().get("keep"))
+        assertEquals(0L, lastPurgeApplied())
+    }
+
+    @Test
     fun rateLimitedResponseFailsWithoutAdvancingCursor() = runTest {
         db.syncStateDao().upsert(SyncStateEntity(cursor = OLD_CURSOR))
         server.dispatcher = routes(
@@ -254,6 +362,18 @@ class CatalogSyncerTest : ApiTestBase() {
         assertNull(db.syncStateDao().get()!!.cursor)
     }
 
+    private suspend fun lastPurgeApplied(): Long = Preferences.readLong(
+        RuntimeEnvironment.getApplication(),
+        Preferences.PREFERENCE_LAST_CATALOG_PURGE_AT,
+        0L
+    )
+
+    private suspend fun setLastPurgeApplied(value: Long) = Preferences.putLong(
+        RuntimeEnvironment.getApplication(),
+        Preferences.PREFERENCE_LAST_CATALOG_PURGE_AT,
+        value
+    )
+
     private fun routes(vararg pairs: Pair<String, MockResponse>): Dispatcher {
         val map = pairs.toMap()
         return object : Dispatcher() {
@@ -339,6 +459,44 @@ class CatalogSyncerTest : ApiTestBase() {
               "updated": [],
               "removed": [],
               "installsUpdated": { "alpha": 9, "ghost": 3 }
+            }
+        """.trimIndent()
+
+        const val PURGE_AT = "2026-06-15T00:00:00+00:00"
+        val PURGE_AT_MILLIS = CommonUtil.parseIsoUtcMillis(PURGE_AT)!!
+
+        val CHANGES_WITH_PURGE = """
+            {
+              "added": [],
+              "updated": [
+                {
+                  "slug": "dead", "name": "Dead", "description": "stale",
+                  "listing": "main", "type": "app", "availability": "link_only",
+                  "categorySlug": "tools", "updatedAt": "2026-05-03T00:00:00+00:00"
+                }
+              ],
+              "removed": [
+                { "slug": "gone", "name": "Gone", "removedAt": "2026-05-20T00:00:00+00:00" }
+              ],
+              "catalogPurgeRequestedAt": "$PURGE_AT"
+            }
+        """.trimIndent()
+
+        val CHANGES_PURGE_ONLY = """
+            {
+              "added": [],
+              "updated": [],
+              "removed": [],
+              "catalogPurgeRequestedAt": "$PURGE_AT"
+            }
+        """.trimIndent()
+
+        val CHANGES_WITH_BAD_PURGE = """
+            {
+              "added": [],
+              "updated": [],
+              "removed": [],
+              "catalogPurgeRequestedAt": "not-a-date"
             }
         """.trimIndent()
 

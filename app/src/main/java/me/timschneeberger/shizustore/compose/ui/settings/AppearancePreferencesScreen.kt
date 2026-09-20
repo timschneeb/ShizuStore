@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -54,7 +55,10 @@ fun AppearancePreferencesScreen(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            SectionHeader(title = stringResource(R.string.settings_theme_title))
+            SectionHeader(
+                title = stringResource(R.string.settings_theme_title),
+                titleColor = MaterialTheme.colorScheme.primary
+            )
 
             ThemeOption.entries.forEach { option ->
                 AuroraListItem(

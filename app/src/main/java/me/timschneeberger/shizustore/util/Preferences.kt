@@ -17,6 +17,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStoreFile
 import java.io.File
@@ -35,7 +36,12 @@ object Preferences {
     val dynamicColorsDefault: Boolean
         get() = !isOneUI
 
+    const val DEFAULT_INSTALLER_SOURCE_PACKAGE = "com.android.vending"
+
     const val PREFERENCE_INSTALLER_ID = "PREFERENCE_INSTALLER_ID"
+    const val PREFERENCE_INSTALLER_CUSTOM_SOURCE = "PREFERENCE_INSTALLER_CUSTOM_SOURCE"
+    const val PREFERENCE_INSTALLER_CUSTOM_SOURCE_PACKAGE =
+        "PREFERENCE_INSTALLER_CUSTOM_SOURCE_PACKAGE"
     const val PREFERENCE_THEME_STYLE = "PREFERENCE_THEME_STYLE"
     const val PREFERENCE_DYNAMIC_COLORS = "PREFERENCE_DYNAMIC_COLORS"
     const val PREFERENCE_BLACK_NIGHT = "PREFERENCE_BLACK_NIGHT"
@@ -48,6 +54,9 @@ object Preferences {
     const val PREFERENCE_INSTALL_REPORTING = "PREFERENCE_INSTALL_REPORTING"
 
     const val PREFERENCE_SHOW_CLOSED_SOURCE = "PREFERENCE_SHOW_CLOSED_SOURCE"
+
+    /** Server purge high-water mark already applied locally; DataStore survives catalog wipes. */
+    const val PREFERENCE_LAST_CATALOG_PURGE_AT = "PREFERENCE_LAST_CATALOG_PURGE_AT"
 
     const val PREFERENCE_SHIZUKU_CARD_DISMISSED = "PREFERENCE_SHIZUKU_CARD_DISMISSED"
 
@@ -114,6 +123,9 @@ object Preferences {
     fun integerFlow(context: Context, key: String, default: Int = 0): Flow<Int> =
         data(context).map { it[intPreferencesKey(key)] ?: default }
 
+    fun longFlow(context: Context, key: String, default: Long = 0L): Flow<Long> =
+        data(context).map { it[longPreferencesKey(key)] ?: default }
+
     fun stringFlow(context: Context, key: String, default: String = ""): Flow<String> =
         data(context).map { it[stringPreferencesKey(key)] ?: default }
 
@@ -123,6 +135,9 @@ object Preferences {
     suspend fun readInteger(context: Context, key: String, default: Int = 0): Int =
         integerFlow(context, key, default).first()
 
+    suspend fun readLong(context: Context, key: String, default: Long = 0L): Long =
+        longFlow(context, key, default).first()
+
     suspend fun readString(context: Context, key: String, default: String = ""): String =
         stringFlow(context, key, default).first()
 
@@ -131,6 +146,9 @@ object Preferences {
 
     suspend fun putInteger(context: Context, key: String, value: Int) =
         write(context) { it[intPreferencesKey(key)] = value }
+
+    suspend fun putLong(context: Context, key: String, value: Long) =
+        write(context) { it[longPreferencesKey(key)] = value }
 
     suspend fun putString(context: Context, key: String, value: String) =
         write(context) { it[stringPreferencesKey(key)] = value }

@@ -45,6 +45,7 @@ import me.timschneeberger.shizustore.data.installer.probeShizukuPrompt
 import me.timschneeberger.shizustore.data.model.Installer
 import me.timschneeberger.shizustore.extensions.viewExternal
 import me.timschneeberger.shizustore.util.Preferences
+import rikka.shizuku.ShizukuProvider
 
 /** Walks the user through installing, starting or granting the Shizuku installer; re-probes on
  * resume so returning from Play, Shizuku or the permission dialog refreshes the card. */
@@ -162,13 +163,16 @@ fun ShizukuPromptCard(onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
-/** Opening Shizuku is the only way to start its service; fall back to the listing when absent. */
+/** Opening the manager is the only way to start its service; fall back to the stock listing
+ * when no manager app is launchable. */
 private fun openShizukuApp(context: Context) {
-    val intent = context.packageManager
-        .getLaunchIntentForPackage(ShizukuInstaller.SHIZUKU_PACKAGE_NAME)
-    val started = intent?.let {
-        runCatching { context.startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess
-    } ?: false
+    val started = ShizukuInstaller.managerPackages(context).any { managerPackage ->
+        val intent = context.packageManager.getLaunchIntentForPackage(managerPackage)
+        intent != null &&
+            runCatching {
+                context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }.isSuccess
+    }
     if (!started) {
         openShizukuOnPlay(context)
     }
@@ -176,7 +180,7 @@ private fun openShizukuApp(context: Context) {
 
 /** Play first, browser fallback; devices without Play still reach the listing. */
 private fun openShizukuOnPlay(context: Context) {
-    val packageName = ShizukuInstaller.SHIZUKU_PACKAGE_NAME
+    val packageName = ShizukuProvider.MANAGER_APPLICATION_ID
     if (!context.viewExternal("market://details?id=$packageName")) {
         context.viewExternal("https://play.google.com/store/apps/details?id=$packageName")
     }

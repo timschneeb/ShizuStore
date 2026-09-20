@@ -62,7 +62,9 @@ fun AppListItem(
     val ageText = remember(age, context, app.listUpdatedAtMillis, app.versionUpdatedAtMillis) {
         when (age) {
             AppAge.LISTED -> app.listUpdatedAtMillis?.let { CommonUtil.relativeAge(context, it) }
-            AppAge.RELEASED -> app.versionUpdatedAtMillis?.let { CommonUtil.relativeAge(context, it) }
+            AppAge.RELEASED -> app.versionUpdatedAtMillis?.let {
+                CommonUtil.relativeAge(context, it)
+            }
             null -> null
         }
     }
