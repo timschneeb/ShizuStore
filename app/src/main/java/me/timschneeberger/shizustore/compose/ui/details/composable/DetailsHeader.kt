@@ -99,7 +99,7 @@ fun DetailsHeader(
                     details.versionName.takeIf { it.isNotBlank() },
                     details.repoName.takeIf { it.isNotBlank() },
                     details.versionUpdatedAtMillis?.let {
-                        stringResource(R.string.details_updated, CommonUtil.formatDate(it))
+                        stringResource(R.string.details_updated, CommonUtil.relativeAge(context, it))
                     }
                 ).joinToString(" · ")
 
