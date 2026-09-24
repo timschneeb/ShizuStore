@@ -269,12 +269,16 @@
     <string name="app_badge_paid">Paid</string>
     <string name="app_badge_iap">IAP</string>
     <string name="app_badge_ads">Ads</string>
+    <string name="app_badge_trackers">Trackers</string>
     <string name="app_indicator_installed">Installed</string>
     <string name="app_indicator_update">Update available</string>
     <string name="details_billing_paid">This is a paid app.</string>
     <string name="details_billing_iap">This app offers in-app purchases.</string>
     <string name="details_billing_paid_iap">This is a paid app with in-app purchases.</string>
     <string name="details_ads">This app contains ads.</string>
+    <string name="details_dhizuku">Dhizuku</string>
+    <string name="details_trackers_title">Detected trackers (%1$d)</string>
+    <string name="details_trackers_note">Matched by Exodus Privacy code signatures. Not a complete list.</string>
 
     <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>
     <string name="settings_appearance_title">Appearance</string>

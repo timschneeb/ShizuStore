@@ -64,6 +64,7 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.LinkList
 import me.timschneeberger.shizustore.compose.ui.details.composable.ScreenshotGallery
 import me.timschneeberger.shizustore.compose.ui.details.composable.SourceList
 import me.timschneeberger.shizustore.compose.ui.details.composable.StoreNotice
+import me.timschneeberger.shizustore.compose.ui.details.composable.TrackersNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.installButtonState
 import me.timschneeberger.shizustore.compose.ui.details.composable.installRefusalText
 import me.timschneeberger.shizustore.compose.ui.details.composable.linkButtonState
@@ -277,6 +278,8 @@ fun AppDetailsScreen(
                                 hasIap = state.details.hasIap,
                                 hasAds = state.details.hasAds
                             )
+
+                            TrackersNotice(trackers = state.details.trackers)
 
                             ClosedSourceNotice(listing = state.details.listing)
 

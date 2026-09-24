@@ -45,7 +45,10 @@ data class AppSummaryDto(
     val listUpdatedAt: String? = null,
     val authorKey: String? = null,
     val authorName: String? = null,
-    val sourceName: String? = null
+    val sourceName: String? = null,
+    // APK analysis signals from the primary download; empty until the server analyzed it.
+    val dhizukuDeclared: Boolean = false,
+    val trackers: List<String> = emptyList()
 )
 
 @Serializable
@@ -117,7 +120,10 @@ data class AppDetailDto(
     val changelog: String? = null,
     val changelogUrl: String? = null,
     val screenshots: List<String> = emptyList(),
-    val sourceName: String? = null
+    val sourceName: String? = null,
+    // APK analysis signals from the primary download; empty until the server analyzed it.
+    val dhizukuDeclared: Boolean = false,
+    val trackers: List<String> = emptyList()
 )
 
 @Serializable

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.LabelChip
 import me.timschneeberger.shizustore.data.model.AppDetails
@@ -37,6 +38,11 @@ internal sealed interface DetailTag {
     data class MinSdk(val apiLevel: Int) : DetailTag {
         override val key: String get() = "minSdk:$apiLevel"
     }
+
+    /** Declared Dhizuku permission; the app can run under Dhizuku instead of Shizuku. */
+    data object Dhizuku : DetailTag {
+        override val key: String get() = "dhizuku"
+    }
 }
 
 internal fun detailTags(details: AppDetails): List<DetailTag> = buildList {
@@ -45,6 +51,8 @@ internal fun detailTags(details: AppDetails): List<DetailTag> = buildList {
     if (details.minSdk > 0) add(DetailTag.MinSdk(details.minSdk))
 
     details.license.takeIf { it.isNotBlank() }?.let { add(DetailTag.Text(it)) }
+
+    if (details.dhizukuDeclared) add(DetailTag.Dhizuku)
 }
 
 @Composable
@@ -70,6 +78,7 @@ fun DetailsTags(
                 text = when (tag) {
                     is DetailTag.Text -> tag.value
                     is DetailTag.MinSdk -> minSdkLabel(context, tag.apiLevel)
+                    DetailTag.Dhizuku -> stringResource(R.string.details_dhizuku)
                 },
                 container = MaterialTheme.colorScheme.secondaryContainer,
                 content = MaterialTheme.colorScheme.onSecondaryContainer,

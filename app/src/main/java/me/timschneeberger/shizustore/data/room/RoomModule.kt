@@ -8,6 +8,8 @@ package me.timschneeberger.shizustore.data.room
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.SQLiteDriver
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import dagger.Module
@@ -39,7 +41,35 @@ object RoomModule {
     internal fun buildDatabase(context: Context, driver: SQLiteDriver): ShizuStoreDatabase =
         Room.databaseBuilder(context, ShizuStoreDatabase::class.java, DATABASE_NAME)
             .setDriver(driver)
+            .addMigrations(MIGRATION_1_2)
             .build()
+
+    /**
+     * APK analysis signals added to `app`. The catalog cache is disposable but
+     * favourites and install state are not, so this must never be destructive.
+     */
+    internal val MIGRATION_1_2 = object : Migration(1, 2) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN dhizukuDeclared INTEGER NOT NULL DEFAULT 0"
+            )
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN trackers TEXT NOT NULL DEFAULT '[]'"
+            )
+        }
+    }
+
+    /** Driver-mode migrations use the raw connection, not SupportSQLiteDatabase. */
+    private fun execSql(connection: SQLiteConnection, sql: String) {
+        val statement = connection.prepare(sql)
+        try {
+            statement.step()
+        } finally {
+            statement.close()
+        }
+    }
 
     @Provides
     fun providesAppDao(db: ShizuStoreDatabase): AppDao = db.appDao()

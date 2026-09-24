@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.data.room.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -35,6 +36,12 @@ data class AppEntity(
     val hasPaid: Boolean = false,
     val hasIap: Boolean = false,
     val hasAds: Boolean = false,
+    /** Declared Dhizuku permission, read from the primary APK by the server. */
+    @ColumnInfo(defaultValue = "0")
+    val dhizukuDeclared: Boolean = false,
+    /** Exodus tracker names matched in the primary APK's code signatures. */
+    @ColumnInfo(defaultValue = "[]")
+    val trackers: List<String> = emptyList(),
     val trialDays: Int? = null,
     val requiresRoot: Boolean = false,
     val availability: Availability = Availability.LINK_ONLY,

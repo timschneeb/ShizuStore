@@ -230,12 +230,16 @@
     <string name="app_badge_paid">付费</string>
     <string name="app_badge_iap">含内购</string>
     <string name="app_badge_ads">含广告</string>
+    <string name="app_badge_trackers">跟踪器</string>
     <string name="app_indicator_installed">已安装</string>
     <string name="app_indicator_update">有可用更新</string>
     <string name="details_billing_paid">这是一个付费应用。</string>
     <string name="details_billing_iap">此应用提供应用内购买项目。</string>
     <string name="details_billing_paid_iap">这是一个包含应用内购买项目的付费应用。</string>
     <string name="details_ads">此应用包含广告。</string>
+    <string name="details_dhizuku">Dhizuku</string>
+    <string name="details_trackers_title">检测到的跟踪器（%1$d）</string>
+    <string name="details_trackers_note">通过 Exodus Privacy 代码签名匹配，并非完整列表。</string>
     <string name="settings_appearance_summary">浅色或深色主题，以及基于壁纸的配色</string>
     <string name="settings_appearance_title">外观</string>
     <string name="settings_black_night_subtitle">开启夜间模式时使用纯黑主题</string>

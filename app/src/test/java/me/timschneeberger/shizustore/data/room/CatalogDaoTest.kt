@@ -75,6 +75,23 @@ class CatalogDaoTest : RobolectricTestBase() {
     }
 
     @Test
+    fun analysisSignalsRoundTrip() = runTest {
+        val appDao = db.appDao()
+        appDao.upsert(
+            app("foo", "Foo").copy(
+                dhizukuDeclared = true,
+                trackers = listOf("AppLovin", "Google Analytics")
+            )
+        )
+
+        val stored = appDao.get("foo")
+
+        assertNotNull(stored)
+        assertTrue(stored!!.dhizukuDeclared)
+        assertEquals(listOf("AppLovin", "Google Analytics"), stored.trackers)
+    }
+
+    @Test
     fun downloadsAreOrderedAndCascadeOnAppDelete() = runTest {
         val appDao = db.appDao()
         val downloadDao = db.appDownloadDao()

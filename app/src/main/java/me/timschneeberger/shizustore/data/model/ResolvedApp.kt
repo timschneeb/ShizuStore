@@ -35,6 +35,8 @@ data class ResolvedApp(
     val hasPaid: Boolean = false,
     val hasIap: Boolean = false,
     val hasAds: Boolean = false,
+    val dhizukuDeclared: Boolean = false,
+    val trackers: List<String> = emptyList(),
     val stars: Int? = null,
     val installCount: Long = 0,
     val downloadTotal: Long? = null,

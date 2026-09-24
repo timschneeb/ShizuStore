@@ -220,6 +220,19 @@ class CatalogUiMapperTest {
     }
 
     @Test
+    fun resolvedAppCarriesAnalysisSignals() {
+        val app = app().copy(
+            dhizukuDeclared = true,
+            trackers = listOf("AppLovin", "Google Analytics")
+        )
+
+        val resolved = mapper.toResolvedApp(app)
+
+        assertEquals(true, resolved.dhizukuDeclared)
+        assertEquals(listOf("AppLovin", "Google Analytics"), resolved.trackers)
+    }
+
+    @Test
     fun appDetailsCarriesCountsAndAds() {
         val app = app().copy(
             hasAds = true,
@@ -234,6 +247,19 @@ class CatalogUiMapperTest {
         assertEquals(42L, details.installCount)
         assertEquals(12345L, details.downloadTotal)
         assertEquals(1_777_593_600_000L, details.versionUpdatedAtMillis)
+    }
+
+    @Test
+    fun appDetailsCarriesAnalysisSignals() {
+        val app = app().copy(
+            dhizukuDeclared = true,
+            trackers = listOf("AppLovin")
+        )
+
+        val details = mapper.toAppDetails(DetailedApp(app, emptyList()))
+
+        assertEquals(true, details.dhizukuDeclared)
+        assertEquals(listOf("AppLovin"), details.trackers)
     }
 
     @Test

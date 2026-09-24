@@ -417,6 +417,17 @@ through the pure `resolveInstallType`, so failures degrade to unknown; the
 `(package, versionCode)` once-guard is unchanged, and the server defaults a
 missing body to `0`/`unknown`. Tests: `InstallReporterTest`.
 
+APK analysis signals. The server now analyzes each APK's declared permissions and
+DEX against the Exodus tracker code signatures and exposes `dhizukuDeclared` and
+`trackers` on summaries, details and downloads. `AppEntity` gained
+`dhizukuDeclared`/`trackers` (Room v2, additive `MIGRATION_1_2`), the DTOs and
+`CatalogMappers` carry them, and `ResolvedApp`/`AppDetails` surface them. List
+rows show a "Trackers" badge when the primary APK matched any signature, the
+details chip row adds a "Dhizuku" chip when the app declares the Dhizuku
+permission, and `TrackersNotice` lists the matched tracker names with a note that
+detection is code-signature based (not a complete list). Tests:
+`CatalogUiMapperTest`.
+
 ## Compose performance pass (September 2026)
 
 A source-level recomposition audit (no compiler stability reports are enabled;
