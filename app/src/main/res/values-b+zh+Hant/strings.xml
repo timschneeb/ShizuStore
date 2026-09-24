@@ -60,6 +60,11 @@
     <string name="details_changelog">更新日誌</string>
     <string name="details_changelog_subtitle">%1$s 版本的新功能</string>
     <string name="details_changelog_empty">暫無更新日誌</string>
+    <string name="details_stats_installs">安裝量</string>
+    <string name="details_stats_downloads">下載量</string>
+    <string name="details_stats_stars">星標</string>
+    <string name="details_stats_size">大小</string>
+    <string name="details_updated">更新於 %1$s</string>
     <string name="details_more_about">關於此應用程式的更多資訊</string>
     <string name="details_more_from_author">此開發者的更多應用程式</string>
     <string name="details_more_from_category">此分類下的更多應用程式</string>
@@ -224,11 +229,13 @@
     <string name="filter_title_sort">排序方式</string>
     <string name="app_badge_paid">付費</string>
     <string name="app_badge_iap">含內購</string>
+    <string name="app_badge_ads">含廣告</string>
     <string name="app_indicator_installed">已安裝</string>
     <string name="app_indicator_update">有可用更新</string>
     <string name="details_billing_paid">這是一個付費應用程式。</string>
     <string name="details_billing_iap">此應用程式提供應用程式內購買項目。</string>
     <string name="details_billing_paid_iap">這是一個包含應用程式內購買項目的付費應用程式。</string>
+    <string name="details_ads">此應用程式包含廣告。</string>
     <string name="settings_appearance_summary">淺色或深色主題，以及基於桌布的配色</string>
     <string name="settings_appearance_title">外觀</string>
     <string name="settings_black_night_subtitle">開啟夜間模式時使用純黑主題</string>

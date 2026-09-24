@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.DetailedApp
+import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.room.AppListQueryBuilder
 import me.timschneeberger.shizustore.data.room.WindowAwarePagingSource
 import me.timschneeberger.shizustore.data.room.dao.AppDao
@@ -32,7 +33,8 @@ class AppRepository @Inject constructor(
     private val appDownloadDao: AppDownloadDao,
     private val categoryDao: CategoryDao,
     private val syncStateDao: SyncStateDao,
-    private val installedDao: InstalledDao
+    private val installedDao: InstalledDao,
+    private val mapper: CatalogUiMapper
 ) {
     fun pagedApps(
         args: AppListArgs,
@@ -124,6 +126,10 @@ class AppRepository @Inject constructor(
     }
 
     fun observeCategories(): Flow<List<CategoryEntity>> = categoryDao.observeAll()
+
+    /** Whole catalog for the home category sections; self-filtered like the pools. */
+    fun observeAllApps(): Flow<List<ResolvedApp>> =
+        appDao.observeAll().hideSelf().map { apps -> apps.map(mapper::toResolvedApp) }
 
     private fun Flow<List<AppEntity>>.hideSelf(): Flow<List<AppEntity>> =
         map { apps -> apps.filterNot { it.packageName == SHIZU_STORE_PACKAGE } }

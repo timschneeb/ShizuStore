@@ -16,6 +16,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.CacheControl
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -80,8 +81,20 @@ class OkHttpShizuApi @Inject constructor(
         json.decodeFromString(HealthDto.serializer(), body)
     }
 
-    override suspend fun reportInstall(slug: String): ApiResult<InstallRecordedDto> =
-        decode(post("/v1/apps/$slug/installs")) { body ->
+    override suspend fun reportInstall(
+        slug: String,
+        versionCode: Long,
+        installType: InstallType
+    ): ApiResult<InstallRecordedDto> =
+        decode(
+            post(
+                "/v1/apps/$slug/installs",
+                json.encodeToString(
+                    InstallReportDto.serializer(),
+                    InstallReportDto(versionCode = versionCode, installType = installType.wire)
+                )
+            )
+        ) { body ->
             json.decodeFromString(InstallRecordedDto.serializer(), body)
         }
 
@@ -105,7 +118,7 @@ class OkHttpShizuApi @Inject constructor(
         return perform(request)
     }
 
-    private suspend fun post(path: String): ApiResult<RawResponse> {
+    private suspend fun post(path: String, jsonBody: String? = null): ApiResult<RawResponse> {
         val base = baseUrlProvider.current()
         val url = base.takeIf { it.isNotBlank() }?.let { buildUrl(it, path, emptyList()) }
             ?: return ApiResult.Failure(ApiError.NotConfigured)
@@ -115,7 +128,7 @@ class OkHttpShizuApi @Inject constructor(
             .url(url)
             .cacheControl(CacheControl.FORCE_NETWORK)
             .header("Accept", "application/json")
-            .post(ByteArray(0).toRequestBody())
+            .post(jsonBody?.toRequestBody("application/json".toMediaType()) ?: ByteArray(0).toRequestBody())
             .build()
 
         return perform(request)

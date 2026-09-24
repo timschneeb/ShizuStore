@@ -26,7 +26,6 @@ import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.LabelChip
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.util.AndroidVersion
-import me.timschneeberger.shizustore.util.CommonUtil
 
 internal sealed interface DetailTag {
     val key: String
@@ -40,20 +39,8 @@ internal sealed interface DetailTag {
     }
 }
 
-internal fun detailTags(context: Context, details: AppDetails): List<DetailTag> = buildList {
-    details.stars?.let {
-        add(
-            DetailTag.Text(
-                context.getString(R.string.app_stars, CommonUtil.formatCount(it.toLong()))
-            )
-        )
-    }
-
-    if (details.lastUpdated > 0L) add(DetailTag.Text(CommonUtil.formatDate(details.lastUpdated)))
-
+internal fun detailTags(details: AppDetails): List<DetailTag> = buildList {
     details.categories.firstOrNull()?.takeIf { it.isNotBlank() }?.let { add(DetailTag.Text(it)) }
-
-    if (details.size > 0L) add(DetailTag.Text(CommonUtil.addSiPrefix(details.size)))
 
     if (details.minSdk > 0) add(DetailTag.MinSdk(details.minSdk))
 
@@ -67,7 +54,7 @@ fun DetailsTags(
     onCategoryClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    val tags = remember(context, details) { detailTags(context, details) }
+    val tags = remember(details) { detailTags(details) }
     val category = details.categories.firstOrNull()?.takeIf { it.isNotBlank() }
 
     if (tags.isEmpty()) return

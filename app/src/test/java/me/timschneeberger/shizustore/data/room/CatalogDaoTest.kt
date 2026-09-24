@@ -16,6 +16,7 @@ import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.repository.AppRepository
+import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
@@ -160,7 +161,8 @@ class CatalogDaoTest : RobolectricTestBase() {
             db.appDownloadDao(),
             db.categoryDao(),
             db.syncStateDao(),
-            db.installedDao()
+            db.installedDao(),
+            CatalogUiMapper()
         )
 
         assertNull(repository.installedPackageFor("mihon"))

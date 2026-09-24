@@ -25,11 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.app.AnimatedAppIcon
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.extensions.viewExternal
+import me.timschneeberger.shizustore.util.CommonUtil
 
 @Composable
 fun DetailsHeader(
@@ -95,7 +97,10 @@ fun DetailsHeader(
             ) { key ->
                 val versionLine = listOfNotNull(
                     details.versionName.takeIf { it.isNotBlank() },
-                    details.repoName.takeIf { it.isNotBlank() }
+                    details.repoName.takeIf { it.isNotBlank() },
+                    details.versionUpdatedAtMillis?.let {
+                        stringResource(R.string.details_updated, CommonUtil.formatDate(it))
+                    }
                 ).joinToString(" · ")
 
                 val line = when (key) {

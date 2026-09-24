@@ -13,14 +13,14 @@ import me.timschneeberger.shizustore.viewmodel.AppGroup
 import me.timschneeberger.shizustore.viewmodel.AppGroupKind
 
 @Composable
-fun appGroupTitle(kind: AppGroupKind, category: String? = null): String = when (kind) {
+fun appGroupTitle(kind: AppGroupKind, title: String? = null): String = when (kind) {
     AppGroupKind.RECOMMENDED -> stringResource(R.string.apps_recommended)
     AppGroupKind.RECENTLY_ADDED -> stringResource(R.string.apps_recently_added)
     AppGroupKind.RECENTLY_UPDATED -> stringResource(R.string.apps_recently_updated)
     AppGroupKind.MOST_STARRED -> stringResource(R.string.apps_most_starred)
     AppGroupKind.RANDOM_PICKS -> stringResource(R.string.apps_random_picks)
-    AppGroupKind.CATEGORY -> category.orEmpty()
+    AppGroupKind.CATEGORY -> title.orEmpty()
 }
 
 @Composable
-fun appGroupTitle(group: AppGroup): String = appGroupTitle(group.kind, group.category)
+fun appGroupTitle(group: AppGroup): String = appGroupTitle(group.kind, group.title)

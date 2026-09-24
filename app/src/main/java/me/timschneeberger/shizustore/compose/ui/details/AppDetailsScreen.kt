@@ -56,6 +56,7 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.ClosedSourceN
 import me.timschneeberger.shizustore.compose.ui.details.composable.CompatibilityNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsCarousel
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsHeader
+import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsStats
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsTags
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallAction
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallActions
@@ -258,6 +259,8 @@ fun AppDetailsScreen(
                                 }
                             )
 
+                            DetailsStats(details = state.details)
+
                             CompatibilityNotice(minSdk = state.details.minSdk)
 
                             DetailsTags(
@@ -271,7 +274,8 @@ fun AppDetailsScreen(
 
                             BillingNotice(
                                 hasPaid = state.details.hasPaid,
-                                hasIap = state.details.hasIap
+                                hasIap = state.details.hasIap,
+                                hasAds = state.details.hasAds
                             )
 
                             ClosedSourceNotice(listing = state.details.listing)

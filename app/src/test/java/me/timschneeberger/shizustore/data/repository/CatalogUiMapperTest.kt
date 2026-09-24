@@ -205,6 +205,38 @@ class CatalogUiMapperTest {
     }
 
     @Test
+    fun resolvedAppCarriesCategoryAndMonetizationFields() {
+        val app = app().copy(
+            hasAds = true,
+            downloadTotal = 1234,
+            categorySlug = "tool"
+        )
+
+        val resolved = mapper.toResolvedApp(app)
+
+        assertEquals(true, resolved.hasAds)
+        assertEquals(1234L, resolved.downloadTotal)
+        assertEquals("tool", resolved.categorySlug)
+    }
+
+    @Test
+    fun appDetailsCarriesCountsAndAds() {
+        val app = app().copy(
+            hasAds = true,
+            installCount = 42,
+            downloadTotal = 12345,
+            versionUpdatedAt = "2026-05-01T00:00:00+00:00"
+        )
+
+        val details = mapper.toAppDetails(DetailedApp(app, emptyList()))
+
+        assertEquals(true, details.hasAds)
+        assertEquals(42L, details.installCount)
+        assertEquals(12345L, details.downloadTotal)
+        assertEquals(1_777_593_600_000L, details.versionUpdatedAtMillis)
+    }
+
+    @Test
     fun appDetailsCarriesListing() {
         val closed = app().copy(listing = Listing.CLOSED_SOURCE)
 

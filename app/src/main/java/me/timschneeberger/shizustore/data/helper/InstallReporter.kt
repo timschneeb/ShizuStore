@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.api.ApiResult
+import me.timschneeberger.shizustore.data.api.InstallType
 import me.timschneeberger.shizustore.data.api.ShizuApi
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.util.Preferences
@@ -47,7 +48,12 @@ class InstallReporter @Inject constructor(
             return
         }
 
-        when (val result = runCatching { api.reportInstall(slug) }.getOrNull()) {
+        val installType = runCatching {
+            val info = context.packageManager.getPackageInfo(packageName, 0)
+            resolveInstallType(info.firstInstallTime, info.lastUpdateTime)
+        }.getOrDefault(InstallType.UNKNOWN)
+
+        when (val result = runCatching { api.reportInstall(slug, versionCode, installType) }.getOrNull()) {
             is ApiResult.Success -> Log.i(
                 TAG,
                 "Reported install of $slug; server total is now ${result.value.installCount}"
@@ -59,4 +65,15 @@ class InstallReporter @Inject constructor(
     private companion object {
         const val TAG = "InstallReporter"
     }
+}
+
+/**
+ * PackageManager stamps [lastUpdateTime] on updates, so identical install times
+ * mean a fresh install. Zeroed times (missing record or test double) read as
+ * unknown rather than pretending to be fresh.
+ */
+internal fun resolveInstallType(firstInstallTime: Long, lastUpdateTime: Long): InstallType = when {
+    firstInstallTime <= 0L || lastUpdateTime <= 0L -> InstallType.UNKNOWN
+    firstInstallTime != lastUpdateTime -> InstallType.UPDATE
+    else -> InstallType.FRESH
 }

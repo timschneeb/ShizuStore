@@ -61,8 +61,11 @@ class CatalogUiMapper @Inject constructor() {
         updateAvailable = app.updateAvailable,
         hasPaid = app.hasPaid,
         hasIap = app.hasIap,
+        hasAds = app.hasAds,
         stars = app.stars,
         installCount = app.installCount,
+        downloadTotal = app.downloadTotal,
+        categorySlug = app.categorySlug,
         listUpdatedAtMillis = CommonUtil.parseIsoUtcMillis(app.listUpdatedAt),
         versionUpdatedAtMillis = CommonUtil.parseIsoUtcMillis(app.versionUpdatedAt)
     )
@@ -98,7 +101,11 @@ class CatalogUiMapper @Inject constructor() {
             authorUrl = app.authorUrl,
             hasPaid = app.hasPaid,
             hasIap = app.hasIap,
+            hasAds = app.hasAds,
             stars = app.stars,
+            installCount = app.installCount,
+            downloadTotal = app.downloadTotal,
+            versionUpdatedAtMillis = CommonUtil.parseIsoUtcMillis(app.versionUpdatedAt),
             listing = app.listing
         )
     }

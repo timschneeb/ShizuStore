@@ -131,7 +131,7 @@ fun AppListItem(
         app.isInstalled -> R.drawable.ic_check_circle
         else -> null
     }
-    val showBadges = installedIcon != null || app.hasPaid || app.hasIap
+    val showBadges = installedIcon != null || app.hasPaid || app.hasIap || app.hasAds
 
     AuroraListItem(
         modifier = modifier,
@@ -173,6 +173,13 @@ fun AppListItem(
                             text = stringResource(R.string.app_badge_paid),
                             container = MaterialTheme.colorScheme.tertiaryContainer,
                             content = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                    if (app.hasAds) {
+                        LabelChip(
+                            text = stringResource(R.string.app_badge_ads),
+                            container = MaterialTheme.colorScheme.surfaceVariant,
+                            content = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

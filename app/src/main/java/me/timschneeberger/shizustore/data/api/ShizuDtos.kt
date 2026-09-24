@@ -170,3 +170,17 @@ data class InstallRecordedDto(
     val slug: String = "",
     val installCount: Long = 0
 )
+
+/** Install kinds the server accepts in an install report. */
+enum class InstallType(val wire: String) {
+    FRESH("fresh"),
+    UPDATE("update"),
+    UNKNOWN("unknown")
+}
+
+/** Request body for `POST /v1/apps/{slug}/installs`; no defaults so both fields always encode. */
+@Serializable
+data class InstallReportDto(
+    val versionCode: Long,
+    val installType: String
+)

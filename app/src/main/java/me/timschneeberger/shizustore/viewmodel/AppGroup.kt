@@ -26,7 +26,9 @@ enum class AppGroupKind(
 data class AppGroup(
     val kind: AppGroupKind,
     val apps: List<ResolvedApp>,
-    val category: String? = null
+    val category: String? = null,
+    /** Category display name; [category] carries the slug for navigation. */
+    val title: String? = null
 ) {
     val key: String get() = "${kind.name}:${category.orEmpty()}"
 }

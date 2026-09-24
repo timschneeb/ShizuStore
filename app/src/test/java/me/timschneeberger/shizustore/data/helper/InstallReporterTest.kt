@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.data.helper
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import me.timschneeberger.shizustore.ApiTestBase
+import me.timschneeberger.shizustore.data.api.InstallType
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.util.Preferences
 import okhttp3.mockwebserver.MockResponse
@@ -53,6 +54,8 @@ class InstallReporterTest : ApiTestBase() {
         val request = server.takeRequest()
         assertEquals("/v1/apps/micup/installs", request.path)
         assertEquals("POST", request.method)
+        // Robolectric has no such package, so the type falls back to unknown.
+        assertEquals("""{"versionCode":42,"installType":"unknown"}""", request.body.readUtf8())
         assertEquals(1, server.requestCount)
     }
 
@@ -118,5 +121,13 @@ class InstallReporterTest : ApiTestBase() {
         reporter.reportInstalled("com.example.micup", 42L)
 
         assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun resolvesInstallTypeFromPackageTimestamps() {
+        assertEquals(InstallType.FRESH, resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 5_000L))
+        assertEquals(InstallType.UPDATE, resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 9_000L))
+        assertEquals(InstallType.UNKNOWN, resolveInstallType(firstInstallTime = 0L, lastUpdateTime = 9_000L))
+        assertEquals(InstallType.UNKNOWN, resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 0L))
     }
 }

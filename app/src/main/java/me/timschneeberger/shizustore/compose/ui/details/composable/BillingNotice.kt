@@ -23,14 +23,22 @@ import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 
 @Composable
-fun BillingNotice(hasPaid: Boolean, hasIap: Boolean, modifier: Modifier = Modifier) {
-    if (!hasPaid && !hasIap) return
-
-    val message = when {
-        hasPaid && hasIap -> stringResource(R.string.details_billing_paid_iap)
-        hasPaid -> stringResource(R.string.details_billing_paid)
-        else -> stringResource(R.string.details_billing_iap)
+fun BillingNotice(
+    hasPaid: Boolean,
+    hasIap: Boolean,
+    hasAds: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val parts = mutableListOf<String>()
+    when {
+        hasPaid && hasIap -> parts += stringResource(R.string.details_billing_paid_iap)
+        hasPaid -> parts += stringResource(R.string.details_billing_paid)
+        hasIap -> parts += stringResource(R.string.details_billing_iap)
     }
+    if (hasAds) parts += stringResource(R.string.details_ads)
+    if (parts.isEmpty()) return
+
+    val message = parts.joinToString(" ")
 
     Surface(
         color = MaterialTheme.colorScheme.tertiaryContainer,

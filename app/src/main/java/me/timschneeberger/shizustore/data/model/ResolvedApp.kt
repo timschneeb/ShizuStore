@@ -34,8 +34,11 @@ data class ResolvedApp(
     val candidateId: Long? = null,
     val hasPaid: Boolean = false,
     val hasIap: Boolean = false,
+    val hasAds: Boolean = false,
     val stars: Int? = null,
     val installCount: Long = 0,
+    val downloadTotal: Long? = null,
+    val categorySlug: String? = null,
     /** Parsed from the ISO-8601 wire strings; null when the source has no date. */
     val listUpdatedAtMillis: Long? = null,
     val versionUpdatedAtMillis: Long? = null

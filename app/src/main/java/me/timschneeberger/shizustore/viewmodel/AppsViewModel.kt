@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.data.helper.SyncHelper
+import me.timschneeberger.shizustore.data.model.CategoryTagTree
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
@@ -88,7 +89,7 @@ class AppsViewModel @Inject constructor(
                 .map(mapper::toResolvedApp)
         }
 
-    val groups: StateFlow<List<AppGroup>?> = combine(
+    private val curatedGroups: Flow<List<AppGroup>> = combine(
         recommendedPicks,
         appRepository.observeRecentlyAdded().map { it.map(mapper::toResolvedApp) },
         appRepository.observeRecentlyUpdated().map { it.map(mapper::toResolvedApp) },
@@ -102,6 +103,20 @@ class AppsViewModel @Inject constructor(
             AppGroup(AppGroupKind.MOST_STARRED, mostStarred),
             AppGroup(AppGroupKind.RANDOM_PICKS, picks)
         ).filter { it.apps.isNotEmpty() }
+    }
+
+    /** Curated rows first, then one strip per qualifying top-level category. */
+    val groups: StateFlow<List<AppGroup>?> = combine(
+        curatedGroups,
+        appRepository.observeAllApps(),
+        appRepository.observeCategories(),
+        appRepository.observePopularityFlag()
+    ) { curated, apps, categories, useInstallCounts ->
+        curated + CategorySections.build(
+            categories = CategoryTagTree.build(categories),
+            apps = apps,
+            useInstallCounts = useInstallCounts
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     private companion object {
