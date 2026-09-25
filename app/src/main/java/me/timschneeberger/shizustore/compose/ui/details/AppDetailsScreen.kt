@@ -12,6 +12,8 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,8 +31,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -69,20 +73,26 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.TrackersNotic
 import me.timschneeberger.shizustore.compose.ui.details.composable.installButtonState
 import me.timschneeberger.shizustore.compose.ui.details.composable.installRefusalText
 import me.timschneeberger.shizustore.compose.ui.details.composable.linkButtonState
+import me.timschneeberger.shizustore.compose.ui.details.composable.obtainiumDeepLink
+import me.timschneeberger.shizustore.compose.ui.details.composable.obtainiumRedirectUrl
 import me.timschneeberger.shizustore.compose.ui.details.composable.requiresUnknownSourcesSettings
 import me.timschneeberger.shizustore.data.api.Availability
+import me.timschneeberger.shizustore.data.download.ApkSaver
 import me.timschneeberger.shizustore.data.helper.SourceLauncher
 import me.timschneeberger.shizustore.data.installer.AppInstaller
 import me.timschneeberger.shizustore.data.model.AppDetails
+import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.extensions.appInfo
 import me.timschneeberger.shizustore.extensions.isOAndAbove
 import me.timschneeberger.shizustore.extensions.shareApp
 import me.timschneeberger.shizustore.extensions.uninstallPackage
+import me.timschneeberger.shizustore.extensions.viewExternal
 import me.timschneeberger.shizustore.util.ShortcutUtil
 import me.timschneeberger.shizustore.viewmodel.AppDetailsUiState
 import me.timschneeberger.shizustore.viewmodel.AppDetailsViewModel
+import me.timschneeberger.shizustore.viewmodel.SaveApkEvent
 
 @Composable
 fun AppDetailsScreen(
@@ -101,6 +111,8 @@ fun AppDetailsScreen(
     val moreFromCategory by viewModel.moreFromCategory.collectAsStateWithLifecycle()
     val categorySlug by viewModel.categorySlug.collectAsStateWithLifecycle()
     val showTrackerInfo by viewModel.showTrackerInfo.collectAsStateWithLifecycle()
+    val obtainiumUrl by viewModel.obtainiumUrl.collectAsStateWithLifecycle()
+    val obtainiumInstalled by viewModel.obtainiumInstalled.collectAsStateWithLifecycle()
     val loadedState = uiState as? AppDetailsUiState.Loaded
     // Installed-app actions must target the flavor the user installed, not the
     // catalog's canonical package.
@@ -118,6 +130,36 @@ fun AppDetailsScreen(
     LaunchedEffect(viewModel) {
         viewModel.refusals.collect {
             snackbarHostState.showSnackbar(installRefusalText(context, it))
+        }
+    }
+
+    // Set only while the SAF picker is open, so the result can be routed back
+    // to the package that was saved.
+    var pendingExport by remember { mutableStateOf<Pair<String, Long>?>(null) }
+    val saveLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(ApkSaver.APK_MIME_TYPE)
+    ) { uri ->
+        pendingExport?.let { (pkg, version) ->
+            if (uri != null) viewModel.exportTo(pkg, version, uri)
+        }
+        pendingExport = null
+    }
+
+    val savedText = stringResource(R.string.download_saved)
+    val saveFailedText = stringResource(R.string.download_save_failed)
+
+    LaunchedEffect(viewModel) {
+        viewModel.saveApk.collect { event ->
+            when (event) {
+                SaveApkEvent.Saved ->
+                    snackbarHostState.showSnackbar(savedText)
+                SaveApkEvent.Failed ->
+                    snackbarHostState.showSnackbar(saveFailedText)
+                is SaveApkEvent.Export -> {
+                    pendingExport = event.packageName to event.versionCode
+                    saveLauncher.launch(event.fileName)
+                }
+            }
         }
     }
 
@@ -164,6 +206,18 @@ fun AppDetailsScreen(
                         )
                     }
 
+                    val obtainiumTarget = obtainiumUrl
+                    if (obtainiumTarget != null && obtainiumInstalled) {
+                        IconButton(
+                            onClick = { context.viewExternal(obtainiumDeepLink(obtainiumTarget)) }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_obtainium),
+                                contentDescription = stringResource(R.string.details_obtainium)
+                            )
+                        }
+                    }
+
                     val resolved = loadedState?.resolved
                     AppExclusionMenu(
                         isBlacklisted = isBlacklisted,
@@ -171,6 +225,8 @@ fun AppDetailsScreen(
                         ignoresEveryVersion = ignoredUpdate?.versionCode == null,
                         updateVersionName = resolved?.takeIf { it.hasUpdate }?.versionName,
                         canIgnoreUpdates = resolved?.isInstalled == true,
+                        canSaveApk =
+                        loadedState?.sources?.any { it.app.candidateId != null } == true,
                         onToggleBlacklist = viewModel::toggleBlacklist,
                         onIgnoreAllUpdates = viewModel::ignoreAllUpdates,
                         onIgnoreThisVersion = viewModel::ignoreThisVersion,
@@ -178,6 +234,10 @@ fun AppDetailsScreen(
                         onAppInfo = { context.appInfo(actionablePackage) },
                         onAddToHome = canAddToHome.takeIf { it }?.let {
                             { ShortcutUtil.requestPinShortcut(context, actionablePackage) }
+                        },
+                        onSaveApk = viewModel::saveApk,
+                        onObtainium = obtainiumUrl?.takeIf { !obtainiumInstalled }?.let { url ->
+                            { context.viewExternal(obtainiumRedirectUrl(url)) }
                         }
                     )
                 }
@@ -419,7 +479,9 @@ private fun InstallSection(
         progress = actions?.bar?.percent ?: 0F,
         status = actions?.caption,
         statusIsError = actions?.captionIsError == true,
-        statusKey = download?.status
+        // A completed download without an install is just a saved APK; the
+        // version line stays visible and the button caption carries the state.
+        statusKey = download?.status?.takeIf { it != DownloadStatus.COMPLETED }
     )
 
     // Play-only apps show the store card above the action row so the install

@@ -22,6 +22,7 @@
     <string name="action_collapse">Collapse</string>
     <string name="action_expand">Expand</string>
     <string name="action_export">Export APK</string>
+    <string name="action_save_apk">Save APK</string>
     <string name="action_favourite">Add to favourites</string>
     <string name="action_grant">Grant</string>
     <string name="action_granted">Granted</string>
@@ -97,6 +98,7 @@
     <string name="details_permissions_known">Other permissions</string>
     <string name="details_permissions_none">No permissions requested</string>
     <string name="details_source_code">Source code</string>
+    <string name="details_obtainium">Add to Obtainium</string>
     <string name="details_store">Store</string>
     <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
     <string name="details_closed_source_notice">This app is closed source. Its code is not public, so the community cannot easily verify what it does.</string>
@@ -131,6 +133,8 @@
     <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
     <string name="download_export_done">APK exported</string>
     <string name="download_export_failed">Could not export the APK</string>
+    <string name="download_saved">APK saved to Downloads</string>
+    <string name="download_save_failed">Could not save the APK</string>
     <string name="download_percent" translatable="false">%1$d%%</string>
     <string name="download_status_awaiting_confirmation">Waiting for confirmation</string>
     <string name="download_status_cancelled">Cancelled</string>

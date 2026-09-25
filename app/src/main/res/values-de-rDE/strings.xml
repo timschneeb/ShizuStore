@@ -18,6 +18,7 @@
     <string name="action_collapse">Einklappen</string>
     <string name="action_expand">Ausklappen</string>
     <string name="action_export">APK exportieren</string>
+    <string name="action_save_apk">APK speichern</string>
     <string name="action_favourite">Zu Favoriten hinzufügen</string>
     <string name="action_grant">Gewähren</string>
     <string name="action_granted">Gewährt</string>
@@ -82,6 +83,7 @@
     <string name="details_permissions_known">Andere Berechtigungen</string>
     <string name="details_permissions_none">Keine Berechtigungen angefordert</string>
     <string name="details_source_code">Quellcode</string>
+    <string name="details_obtainium">Zu Obtainium hinzufügen</string>
     <string name="details_store">Store</string>
     <string name="details_play_store_notice">Diese App ist nur bei Google Play verfügbar. Tippen, um den Eintrag zu öffnen.</string>
     <string name="details_closed_source_notice">Diese App ist nicht quelloffen. Der Code ist nicht öffentlich, daher kann die Community nicht einfach überprüfen, was sie tut.</string>
@@ -109,6 +111,8 @@
     <string name="download_eta_sec">Noch <xliff:g id="seconds">%1$d</xliff:g>s</string>
     <string name="download_export_done">APK exportiert</string>
     <string name="download_export_failed">Die APK konnte nicht exportiert werden</string>
+    <string name="download_saved">APK in Downloads gespeichert</string>
+    <string name="download_save_failed">Die APK konnte nicht gespeichert werden</string>
     <string name="download_status_awaiting_confirmation">Warten auf Bestätigung</string>
     <string name="download_status_cancelled">Abgebrochen</string>
     <string name="download_status_completed">Heruntergeladen</string>

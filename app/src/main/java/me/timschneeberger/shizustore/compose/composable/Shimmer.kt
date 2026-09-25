@@ -159,6 +159,11 @@ internal fun ShimmerSectionHeader(clickable: Boolean = true) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        ShimmerBlock(
+            modifier = Modifier
+                .padding(end = dimensionResource(R.dimen.spacing_large))
+                .size(dimensionResource(R.dimen.icon_size_default))
+        )
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
             Text(text = "", style = MaterialTheme.typography.titleMedium)
             ShimmerBlock(

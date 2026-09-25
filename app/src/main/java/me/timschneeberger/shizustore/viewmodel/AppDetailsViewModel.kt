@@ -7,12 +7,15 @@
 package me.timschneeberger.shizustore.viewmodel
 
 import android.content.Context
+import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -23,18 +26,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import me.timschneeberger.shizustore.compose.ui.details.composable.canHandleObtainium
+import me.timschneeberger.shizustore.compose.ui.details.composable.obtainiumRepoUrl
+import me.timschneeberger.shizustore.data.download.ApkSaver
 import me.timschneeberger.shizustore.data.helper.DownloadHelper
 import me.timschneeberger.shizustore.data.helper.InstallDispatcher
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.data.model.AppSource
 import me.timschneeberger.shizustore.data.model.CertFingerprint
+import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallDispatch
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
@@ -49,6 +59,7 @@ import me.timschneeberger.shizustore.data.repository.InstalledRepository
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
+import me.timschneeberger.shizustore.util.PathUtil
 import me.timschneeberger.shizustore.util.Preferences
 
 sealed interface AppDetailsUiState {
@@ -72,6 +83,21 @@ sealed interface AppDetailsUiState {
         /** The package to act on for installed-app actions, falling back to the catalog key. */
         val actionablePackage: String get() = installedPackage ?: details.packageName
     }
+}
+
+/**
+ * One-shot feedback for "Save APK". [Export] means the platform needs the user
+ * to pick a destination (below API 29 there is no permission-free Downloads
+ * write), so the screen opens the SAF picker and calls back into [exportTo].
+ */
+sealed interface SaveApkEvent {
+    data class Export(
+        val packageName: String,
+        val versionCode: Long,
+        val fileName: String
+    ) : SaveApkEvent
+    data object Saved : SaveApkEvent
+    data object Failed : SaveApkEvent
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -105,6 +131,9 @@ class AppDetailsViewModel @Inject constructor(
 
     private val _refusals = Channel<InstallDispatch.Refused>(Channel.BUFFERED)
     val refusals: Flow<InstallDispatch.Refused> = _refusals.receiveAsFlow()
+
+    private val _saveApk = Channel<SaveApkEvent>(Channel.BUFFERED)
+    val saveApk: Flow<SaveApkEvent> = _saveApk.receiveAsFlow()
 
     val uiState: StateFlow<AppDetailsUiState> = slug
         .filterNotNull()
@@ -176,6 +205,30 @@ class AppDetailsViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
             null
         )
+
+    /**
+     * Read from the cached catalog row so the action bar does not shift once
+     * the network detail fetch lands; null until a repository URL is known.
+     */
+    val obtainiumUrl: StateFlow<String?> = slug
+        .filterNotNull()
+        .distinctUntilChanged()
+        .flatMapLatest { currentSlug -> appRepository.observeDetail(currentSlug) }
+        .map { detailed ->
+            detailed?.app?.let { app ->
+                obtainiumRepoUrl(app.availability, app.sourceUrl, app.url)
+            }
+        }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
+    /**
+     * Package queries can be slow on devices with many apps, so the lookup runs
+     * off the main thread; the details screen must never block on it.
+     */
+    val obtainiumInstalled: StateFlow<Boolean> = flow {
+        emit(withContext(Dispatchers.IO) { canHandleObtainium(context) })
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     /** Catalog preference: when off, the details page hides the tracker card. */
     val showTrackerInfo: StateFlow<Boolean> = Preferences.booleanFlow(
@@ -315,6 +368,70 @@ class AppDetailsViewModel @Inject constructor(
             val entity = appRepository.get(source.slug) ?: return@launch
             val candidate = source.candidateId?.let { appRepository.candidate(it) } ?: return@launch
             downloadHelper.enqueueAndInstall(entity, candidate)
+        }
+    }
+
+    /** Stages the verified APK into the public Downloads folder without installing it. */
+    fun saveApk() {
+        val loaded = uiState.value as? AppDetailsUiState.Loaded ?: return
+        val source = loaded.sources.firstOrNull { it.installedPackageMatch }
+            ?: loaded.sources.firstOrNull { it.signerMatch }
+            ?: loaded.sources.firstOrNull { it.app.candidateId != null }
+            ?: return
+        val app = source.app
+
+        viewModelScope.launch {
+            val stored = downloadHelper.getDownload(app.packageName)
+            if (stored != null &&
+                stored.versionCode == app.versionCode &&
+                downloadHelper.hasApk(stored)
+            ) {
+                emitSaved(stored)
+                return@launch
+            }
+
+            val entity = appRepository.get(app.slug) ?: return@launch
+            val candidate = app.candidateId?.let { appRepository.candidate(it) } ?: return@launch
+            downloadHelper.enqueue(entity, candidate)
+
+            val settled = downloadHelper.downloads
+                .map { rows -> rows.firstOrNull { it.packageName == app.packageName } }
+                .filterNotNull()
+                .first { it.isFinished }
+            if (settled.status == DownloadStatus.COMPLETED && downloadHelper.hasApk(settled)) {
+                emitSaved(settled)
+            } else {
+                _saveApk.send(SaveApkEvent.Failed)
+            }
+        }
+    }
+
+    /** Copies a staged APK into the SAF destination the user picked. */
+    fun exportTo(packageName: String, versionCode: Long, target: Uri) {
+        viewModelScope.launch {
+            val file = PathUtil.getApkFile(context, packageName, versionCode)
+            val copied = withContext(Dispatchers.IO) {
+                runCatching {
+                    val output = context.contentResolver.openOutputStream(target)
+                        ?: return@runCatching false
+                    output.use { stream ->
+                        file.inputStream().use { input -> input.copyTo(stream) }
+                    }
+                    true
+                }.getOrDefault(false)
+            }
+            _saveApk.send(if (copied) SaveApkEvent.Saved else SaveApkEvent.Failed)
+        }
+    }
+
+    private suspend fun emitSaved(download: Download) {
+        val file = PathUtil.getApkFile(context, download.packageName, download.versionCode)
+        val name = ApkSaver.fileName(download.packageName, download.versionCode)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val saved = ApkSaver.saveToDownloads(context, file, name)
+            _saveApk.send(if (saved) SaveApkEvent.Saved else SaveApkEvent.Failed)
+        } else {
+            _saveApk.send(SaveApkEvent.Export(download.packageName, download.versionCode, name))
         }
     }
 

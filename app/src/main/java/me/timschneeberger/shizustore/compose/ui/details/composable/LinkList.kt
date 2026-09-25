@@ -25,7 +25,11 @@ import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.extensions.viewExternal
 
-private data class LinkRow(val label: String, val url: String, val icon: Int)
+private data class LinkRow(
+    val label: String,
+    val url: String,
+    val icon: Int
+)
 
 @Composable
 fun LinkList(details: AppDetails, modifier: Modifier = Modifier) {

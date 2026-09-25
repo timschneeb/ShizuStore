@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import me.timschneeberger.shizustore.R
+import me.timschneeberger.shizustore.compose.appGroupIcon
 import me.timschneeberger.shizustore.compose.appGroupTitle
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
 import me.timschneeberger.shizustore.compose.composable.app.AppTile
@@ -58,7 +59,11 @@ fun AppCarousel(
                     null
                 }
 
-                SectionHeader(title = appGroupTitle(group), onClick = openMore)
+                SectionHeader(
+                    title = appGroupTitle(group),
+                    icon = appGroupIcon(group),
+                    onClick = openMore
+                )
                 if (group.kind.isTileStrip) {
                     AppTileStrip(apps = group.apps, onAppClick = onAppClick)
                 } else {

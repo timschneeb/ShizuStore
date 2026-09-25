@@ -6,6 +6,7 @@
 
 package me.timschneeberger.shizustore.compose
 
+import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
@@ -24,3 +25,13 @@ fun appGroupTitle(kind: AppGroupKind, title: String? = null): String = when (kin
 
 @Composable
 fun appGroupTitle(group: AppGroup): String = appGroupTitle(group.kind, group.title)
+
+@DrawableRes
+fun appGroupIcon(group: AppGroup): Int = when (group.kind) {
+    AppGroupKind.RECOMMENDED -> R.drawable.ic_editor_choice
+    AppGroupKind.RECENTLY_ADDED -> R.drawable.ic_schedule
+    AppGroupKind.RECENTLY_UPDATED -> R.drawable.ic_updates
+    AppGroupKind.MOST_STARRED -> R.drawable.ic_star
+    AppGroupKind.RANDOM_PICKS -> R.drawable.ic_redeem
+    AppGroupKind.CATEGORY -> categoryIcon(group.category.orEmpty())
+}

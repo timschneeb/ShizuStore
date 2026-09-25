@@ -223,6 +223,22 @@ headers. Link rows now carry their icon, and the legacy
 `AppDetails.issueTracker`/`translation`/`donate` fields (always null or empty
 from the mapper) were removed together with their strings and `LinkList` rows.
 
+Obtainium and Save APK. The details top bar gains an Obtainium action icon
+(monochrome `ic_obtainium` from the app's launcher foreground) for entries whose
+`sourceUrl` (then `url`) is a forge or F-Droid URL (`obtainiumRepoUrl`);
+`link_only` never shows it. Tapping opens
+`https://apps.obtainium.imranr.dev/redirect?r=<encoded obtainium://add/<repo>>`,
+so the Obtainium app picks it up when installed and the browser otherwise. The
+share and favourite icons stay in the bar; the overflow keeps the app menu.
+Tests: `LinkListTest` (gating, source preference, deep-link encoding). The
+details overflow menu gains "Save APK" whenever a candidate exists:
+`AppDetailsViewModel.saveApk` reuses a finished staged download or runs the
+download-only `DownloadHelper.enqueue`, then on API 29+ copies the verified APK
+into the public Downloads collection through `ApkSaver` (`download_saved`
+snackbar); below 29 it launches the SAF `CreateDocument` picker instead and
+`exportTo` writes the picked Uri. The staged file stays in `filesDir/apk`, so
+the install pipeline is unaffected.
+
 Screenshots. The server collects a detail-only `screenshots` list from the
 F-Droid and Izzy `index-v2.json` (matched by every package name an app
 publishes, primary plus variants) and sends it on `GET /v1/apps/{slug}`. The

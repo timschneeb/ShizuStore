@@ -18,6 +18,7 @@
     <string name="action_collapse">折叠</string>
     <string name="action_expand">展开</string>
     <string name="action_export">导出 APK</string>
+    <string name="action_save_apk">保存 APK</string>
     <string name="action_favourite">添加到收藏</string>
     <string name="action_grant">授予</string>
     <string name="action_granted">已授予</string>
@@ -81,6 +82,7 @@
     <string name="details_permissions_known">其他权限</string>
     <string name="details_permissions_none">未请求任何权限</string>
     <string name="details_source_code">源代码</string>
+    <string name="details_obtainium">添加到 Obtainium</string>
     <string name="details_store">应用商店</string>
     <string name="details_play_store_notice">此应用仅在 Google Play 提供。点击打开详情页面。</string>
     <string name="details_closed_source_notice">此应用为闭源软件。它的代码是不公开的，因此社区无法轻易验证其行为。</string>
@@ -107,6 +109,8 @@
     <string name="download_eta_sec">剩余 <xliff:g id="seconds">%1$d</xliff:g>秒</string>
     <string name="download_export_done">APK 已导出</string>
     <string name="download_export_failed">无法导出 APK</string>
+    <string name="download_saved">APK 已保存到下载目录</string>
+    <string name="download_save_failed">无法保存 APK</string>
     <string name="download_status_awaiting_confirmation">等待确认</string>
     <string name="download_status_cancelled">已取消</string>
     <string name="download_status_completed">已下载</string>

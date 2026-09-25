@@ -29,12 +29,15 @@ fun AppExclusionMenu(
     ignoresEveryVersion: Boolean,
     updateVersionName: String?,
     canIgnoreUpdates: Boolean,
+    canSaveApk: Boolean,
     onToggleBlacklist: () -> Unit,
     onIgnoreAllUpdates: () -> Unit,
     onIgnoreThisVersion: () -> Unit,
     onStopIgnoring: () -> Unit,
     onAppInfo: () -> Unit,
     onAddToHome: (() -> Unit)?,
+    onSaveApk: () -> Unit,
+    onObtainium: (() -> Unit)?,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -62,6 +65,20 @@ fun AppExclusionMenu(
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.action_add_to_home)) },
                     onClick = { choose(addToHome) }
+                )
+            }
+
+            if (canSaveApk) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.action_save_apk)) },
+                    onClick = { choose(onSaveApk) }
+                )
+            }
+
+            onObtainium?.let { obtainium ->
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.details_obtainium)) },
+                    onClick = { choose(obtainium) }
                 )
             }
 

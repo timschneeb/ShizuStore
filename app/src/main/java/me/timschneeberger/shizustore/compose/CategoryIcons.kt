@@ -36,6 +36,7 @@ fun categoryIcon(slug: String): Int = when (slug) {
     "privacy" -> R.drawable.ic_encrypted
     "productivity" -> R.drawable.ic_task_alt
     "quick-settings" -> R.drawable.ic_tune
+    "root" -> R.drawable.ic_terminal_2
     "shizuku-implementations" -> R.drawable.ic_shizuku_icon
     "software-management" -> R.drawable.ic_deployed_code
     "task-manager" -> R.drawable.ic_memory
