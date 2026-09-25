@@ -136,7 +136,7 @@ fun AppListItem(
 
     AuroraListItem(
         modifier = modifier,
-        headline = app.name.ifBlank { app.packageName },
+        headline = app.displayName,
         supporting = supporting?.takeIf { it.isNotBlank() },
         tertiary = tertiaryText,
         tertiaryInlineContent = tertiaryInlineContent,

@@ -61,6 +61,13 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(2, db.appDao().count())
         assertEquals("Alpha", db.appDao().get("alpha")!!.name)
         assertEquals("com.alpha", db.appDao().get("alpha")!!.packageName)
+        val alpha = db.appDao().get("alpha")!!
+        assertEquals(34, alpha.targetSdk)
+        assertEquals(35, alpha.compileSdk)
+        assertEquals(3, alpha.localeCount)
+        assertEquals(listOf("arm64-v8a"), alpha.abis)
+        assertEquals(mapOf("de" to "Alpha DE"), alpha.localizedLabels)
+        assertEquals(listOf("shizuku"), alpha.managers)
         assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
         assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
     }
@@ -89,6 +96,13 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(1, outcome.removed)
         assertNotNull(db.appDao().get("beta"))
         assertNull(db.appDao().get("gone"))
+        val alpha = db.appDao().get("alpha")!!
+        assertEquals(35, alpha.targetSdk)
+        assertEquals(36, alpha.compileSdk)
+        assertEquals(2, alpha.localeCount)
+        assertEquals(listOf("arm64-v8a", "armeabi-v7a"), alpha.abis)
+        assertEquals(mapOf("de" to "Alpha DE", "zh" to "Alpha 中文"), alpha.localizedLabels)
+        assertEquals(listOf("shizuku", "root"), alpha.managers)
         assertEquals(0, db.appDownloadDao().count())
         assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
         assertEquals("etag-1", db.syncStateDao().get()!!.categoriesEtag)
@@ -401,7 +415,11 @@ class CatalogSyncerTest : ApiTestBase() {
                   "listing": "main", "type": "app", "availability": "direct_apk",
                   "packageName": "com.alpha", "versionCode": 5, "versionName": "1.0",
                   "categorySlug": "tools", "updatedAt": "2026-05-01T00:00:00+00:00",
-                  "iconHash": "aa", "sigSha256": "AAA BBB", "sigMd5": "ccc"
+                  "iconHash": "aa", "sigSha256": "AAA BBB", "sigMd5": "ccc",
+                  "targetSdk": 34, "compileSdk": 35, "localeCount": 3,
+                  "abis": ["arm64-v8a"],
+                  "localizedLabels": {"de": "Alpha DE"},
+                  "managers": ["shizuku"]
                 },
                 {
                   "slug": "beta", "name": "Beta", "description": "second",
@@ -427,6 +445,10 @@ class CatalogSyncerTest : ApiTestBase() {
                   "slug": "alpha", "name": "Alpha", "description": "first",
                   "listing": "main", "type": "app", "availability": "direct_apk",
                   "packageName": "com.alpha", "versionCode": 6,
+                  "targetSdk": 35, "compileSdk": 36, "localeCount": 2,
+                  "abis": ["arm64-v8a", "armeabi-v7a"],
+                  "localizedLabels": {"de": "Alpha DE", "zh": "Alpha 中文"},
+                  "managers": ["shizuku", "root"],
                   "updatedAt": "2026-05-03T00:00:00+00:00"
                 }
               ],

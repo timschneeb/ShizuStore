@@ -37,6 +37,10 @@ data class ResolvedApp(
     val hasAds: Boolean = false,
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
+    /** Shizuku managers the primary APK supports (shizuku/dhizuku/sui/root). */
+    val managers: List<String> = emptyList(),
+    /** Locale label that differs from [name], when the APK ships one for a device locale. */
+    val localizedName: String? = null,
     val stars: Int? = null,
     val installCount: Long = 0,
     val downloadTotal: Long? = null,
@@ -51,6 +55,10 @@ data class ResolvedApp(
     private val candidateFingerprint: Set<String> = parseFingerprintSet(signer)
 
     val isInstalled: Boolean get() = installedVersionCode != null
+
+    /** Localized name when the APK ships one, else the catalog name or package. */
+    val displayName: String
+        get() = localizedName?.takeIf { it.isNotBlank() } ?: name.ifBlank { packageName }
 
     /** The candidate shares the installed signing identity (set intersection, not equality). */
     private val signerMatchesInstalled: Boolean

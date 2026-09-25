@@ -19,6 +19,7 @@ import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
@@ -100,6 +101,92 @@ class CatalogDaoTest : RobolectricTestBase() {
                 TrackerTag("Google Analytics", listOf("Analytics"))
             ),
             stored.trackerTags
+        )
+    }
+
+    @Test
+    fun apkFactsRoundTrip() = runTest {
+        val appDao = db.appDao()
+        val downloadDao = db.appDownloadDao()
+        appDao.upsert(
+            app("foo", "Foo").copy(
+                targetSdk = 35,
+                compileSdk = 36,
+                localeCount = 2,
+                abis = listOf("arm64-v8a", "armeabi-v7a"),
+                localizedLabels = mapOf("de" to "Foo DE")
+            )
+        )
+        downloadDao.replaceForApp(
+            "foo",
+            listOf(
+                AppDownloadEntity(
+                    appSlug = "foo",
+                    source = SourceKind.GITHUB,
+                    apkUrl = "https://example.com/foo.apk",
+                    sigKey = "aaa",
+                    isPrimary = true,
+                    targetSdk = 35,
+                    compileSdk = 36,
+                    locales = listOf("en", "de"),
+                    abis = listOf("arm64-v8a"),
+                    localizedLabels = mapOf("en" to "Foo", "de" to "Foo DE"),
+                    signerDn = "CN=Foo",
+                    signerScheme = "v2+v3",
+                    signerKeyAlgorithm = "RSA 2048"
+                )
+            )
+        )
+
+        val storedApp = appDao.get("foo")!!
+        assertEquals(35, storedApp.targetSdk)
+        assertEquals(36, storedApp.compileSdk)
+        assertEquals(2, storedApp.localeCount)
+        assertEquals(listOf("arm64-v8a", "armeabi-v7a"), storedApp.abis)
+        assertEquals(mapOf("de" to "Foo DE"), storedApp.localizedLabels)
+
+        val storedDownload = downloadDao.forApp("foo").single()
+        assertEquals(35, storedDownload.targetSdk)
+        assertEquals(36, storedDownload.compileSdk)
+        assertEquals(listOf("en", "de"), storedDownload.locales)
+        assertEquals(listOf("arm64-v8a"), storedDownload.abis)
+        assertEquals(mapOf("en" to "Foo", "de" to "Foo DE"), storedDownload.localizedLabels)
+        assertEquals("CN=Foo", storedDownload.signerDn)
+        assertEquals("v2+v3", storedDownload.signerScheme)
+        assertEquals("RSA 2048", storedDownload.signerKeyAlgorithm)
+    }
+
+    @Test
+    fun usageSignalsRoundTrip() = runTest {
+        val appDao = db.appDao()
+        appDao.upsert(
+            app("foo", "Foo").copy(
+                managers = listOf("shizuku", "root"),
+                apiForm = "user_service",
+                capabilities = listOf("install", "freeze"),
+                usageOptional = true,
+                usageSummary = "This app can use Shizuku to install or update apps.",
+                signals = listOf(
+                    AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong"),
+                    AppSignal("command", "pm install", "strong")
+                )
+            )
+        )
+
+        val stored = appDao.get("foo")
+
+        assertNotNull(stored)
+        assertEquals(listOf("shizuku", "root"), stored!!.managers)
+        assertEquals("user_service", stored.apiForm)
+        assertEquals(listOf("install", "freeze"), stored.capabilities)
+        assertTrue(stored.usageOptional)
+        assertEquals("This app can use Shizuku to install or update apps.", stored.usageSummary)
+        assertEquals(
+            listOf(
+                AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong"),
+                AppSignal("command", "pm install", "strong")
+            ),
+            stored.signals
         )
     }
 

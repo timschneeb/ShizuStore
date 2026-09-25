@@ -10,6 +10,7 @@ import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
+import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 
 @Immutable
@@ -29,6 +30,25 @@ data class AppDetails(
     val versionName: String,
     val size: Long,
     val minSdk: Int,
+    /** Badging and signer facts from the primary APK; empty on link-only or pre-analysis entries. */
+    val targetSdk: Int? = null,
+    val compileSdk: Int? = null,
+    val localeCount: Int? = null,
+    val locales: List<String> = emptyList(),
+    val localizedLabels: Map<String, String> = emptyMap(),
+    /** [name] translated into one of the current device locales, when the APK ships one. */
+    val localizedName: String? = null,
+    val abis: List<String> = emptyList(),
+    val signerDn: String? = null,
+    val signerScheme: String? = null,
+    val signerKeyAlgorithm: String? = null,
+    /** Shizuku usage classification from the primary APK and its source; empty on pre-analysis entries. */
+    val managers: List<String> = emptyList(),
+    val apiForm: String? = null,
+    val capabilities: List<String> = emptyList(),
+    val usageOptional: Boolean = false,
+    val usageSummary: String? = null,
+    val signals: List<AppSignal> = emptyList(),
     val permissions: List<String>,
     val installedVersionCode: Long?,
     val availability: Availability = Availability.DIRECT_APK,

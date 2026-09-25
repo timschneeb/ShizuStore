@@ -51,7 +51,7 @@ fun AppUpdateSheet(
                 .verticalScroll(rememberScrollState())
         ) {
             SheetAppHeader(
-                title = app.name.ifBlank { app.packageName },
+                title = app.displayName,
                 packageName = app.packageName,
                 iconUrl = app.iconUrl.orEmpty(),
                 lines = listOf(

@@ -24,6 +24,14 @@ data class AppCandidate(
     val sigMd5: String?,
     val minSdk: Int?,
     val abi: String? = null,
+    val targetSdk: Int? = null,
+    val compileSdk: Int? = null,
+    val locales: List<String> = emptyList(),
+    val abis: List<String> = emptyList(),
+    val localizedLabels: Map<String, String> = emptyMap(),
+    val signerDn: String? = null,
+    val signerScheme: String? = null,
+    val signerKeyAlgorithm: String? = null,
     val isPrimary: Boolean
 ) {
     /** Only a candidate whose signing set contains the installed fingerprint is installable. */
@@ -74,6 +82,14 @@ data class AppCandidate(
             sigMd5 = entity.sigMd5,
             minSdk = entity.minSdk,
             abi = entity.abi,
+            targetSdk = entity.targetSdk,
+            compileSdk = entity.compileSdk,
+            locales = entity.locales,
+            abis = entity.abis,
+            localizedLabels = entity.localizedLabels,
+            signerDn = entity.signerDn,
+            signerScheme = entity.signerScheme,
+            signerKeyAlgorithm = entity.signerKeyAlgorithm,
             isPrimary = entity.isPrimary
         )
     }

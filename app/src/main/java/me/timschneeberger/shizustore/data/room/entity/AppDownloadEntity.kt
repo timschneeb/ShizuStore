@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.data.room.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -46,6 +47,18 @@ data class AppDownloadEntity(
     val sigMd5: String? = null,
     val minSdk: Int? = null,
     val abi: String? = null,
+    /** Analyzed APK facts; null/empty on index-only rows or pre-analysis versions. */
+    val targetSdk: Int? = null,
+    val compileSdk: Int? = null,
+    @ColumnInfo(defaultValue = "[]")
+    val locales: List<String> = emptyList(),
+    @ColumnInfo(defaultValue = "[]")
+    val abis: List<String> = emptyList(),
+    @ColumnInfo(defaultValue = "{}")
+    val localizedLabels: Map<String, String> = emptyMap(),
+    val signerDn: String? = null,
+    val signerScheme: String? = null,
+    val signerKeyAlgorithm: String? = null,
     val isPrimary: Boolean = false,
     val sigKey: String
 ) {

@@ -572,6 +572,9 @@ private fun listTitle(args: AppListArgs, categories: List<CategoryTag>): String 
         if (SyntheticCategory.isDhizuku(slug)) {
             return stringResource(R.string.category_dhizuku)
         }
+        if (SyntheticCategory.isRoot(slug)) {
+            return stringResource(R.string.category_root)
+        }
         return flatCategories.firstOrNull { it.slug == slug }?.name ?: slug
     }
     return when {

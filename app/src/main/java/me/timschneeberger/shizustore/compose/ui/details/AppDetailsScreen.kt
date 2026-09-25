@@ -62,6 +62,7 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.InstallAction
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallActions
 import me.timschneeberger.shizustore.compose.ui.details.composable.LinkList
 import me.timschneeberger.shizustore.compose.ui.details.composable.ScreenshotGallery
+import me.timschneeberger.shizustore.compose.ui.details.composable.ShizukuUsageRow
 import me.timschneeberger.shizustore.compose.ui.details.composable.SourceList
 import me.timschneeberger.shizustore.compose.ui.details.composable.StoreNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.TrackersNotice
@@ -261,7 +262,6 @@ fun AppDetailsScreen(
                                 }
                             )
 
-
                             CompatibilityNotice(minSdk = state.details.minSdk)
 
                             DetailsTags(
@@ -297,6 +297,8 @@ fun AppDetailsScreen(
                                 icon = R.drawable.ic_info_outlined,
                                 onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
                             )
+
+                            ShizukuUsageRow(details = state.details)
 
                             if (!state.details.changelog.isNullOrBlank()) {
                                 SectionHeader(

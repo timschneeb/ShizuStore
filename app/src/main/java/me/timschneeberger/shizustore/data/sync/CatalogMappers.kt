@@ -16,6 +16,7 @@ import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
@@ -43,6 +44,12 @@ fun AppSummaryDto.toEntity(syncedAt: Long): AppEntity = AppEntity(
     versionCode = versionCode,
     versionName = versionName,
     minSdk = minSdk,
+    targetSdk = targetSdk,
+    compileSdk = compileSdk,
+    localeCount = localeCount,
+    abis = abis,
+    localizedLabels = localizedLabels,
+    managers = managers,
     size = size,
     iconHash = iconHash,
     iconAdaptive = iconAdaptive,
@@ -87,6 +94,12 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         versionCode = detail.versionCode,
         versionName = detail.versionName,
         minSdk = detail.minSdk,
+        targetSdk = detail.targetSdk ?: targetSdk,
+        compileSdk = detail.compileSdk ?: compileSdk,
+        localeCount = detail.localeCount ?: localeCount,
+        abis = detail.abis.ifEmpty { abis },
+        localizedLabels = primary?.localizedLabels?.takeIf { it.isNotEmpty() } ?: localizedLabels,
+        managers = detail.managers.ifEmpty { managers },
         size = primary?.size ?: size,
         iconHash = detail.iconHash,
         iconAdaptive = detail.iconAdaptive,
@@ -112,7 +125,12 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         categoryPath = detail.categoryPath.map { CategoryPath(it.slug, it.name) },
         addedAt = detail.addedAt.ifBlank { null },
         lastCheckedAt = detail.lastCheckedAt,
-        detailsFetchedAt = fetchedAt
+        detailsFetchedAt = fetchedAt,
+        apiForm = detail.apiForm,
+        capabilities = detail.capabilities,
+        usageOptional = detail.usageOptional,
+        usageSummary = detail.usageSummary,
+        signals = detail.signals.map { AppSignal(it.kind, it.value, it.confidence) }
     )
 }
 
@@ -130,6 +148,14 @@ fun DownloadDto.toEntity(appSlug: String): AppDownloadEntity = AppDownloadEntity
     sigMd5 = sigMd5,
     minSdk = minSdk,
     abi = abi,
+    targetSdk = targetSdk,
+    compileSdk = compileSdk,
+    locales = locales,
+    abis = abis,
+    localizedLabels = localizedLabels,
+    signerDn = signerDn,
+    signerScheme = signerScheme,
+    signerKeyAlgorithm = signerKeyAlgorithm,
     isPrimary = primary,
     sigKey = AppDownloadEntity.sigKeyOf(sigSha256, sigMd5, apkUrl, abi)
 )

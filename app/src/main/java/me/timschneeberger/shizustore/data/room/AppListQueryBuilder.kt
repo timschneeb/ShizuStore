@@ -29,7 +29,8 @@ object AppListQueryBuilder {
 
         val categorySlug = args.categorySlug?.takeIf { it.isNotBlank() }
         val syntheticDhizuku = SyntheticCategory.isDhizuku(categorySlug)
-        if (categorySlug != null && !syntheticDhizuku) {
+        val syntheticRoot = SyntheticCategory.isRoot(categorySlug)
+        if (categorySlug != null && !syntheticDhizuku && !syntheticRoot) {
             // Subtree selection: a category's apps include all of its descendants.
             head.append(
                 "WITH RECURSIVE tree(slug) AS (" +
@@ -54,6 +55,8 @@ object AppListQueryBuilder {
             // Synthetic categories have no rows in the category tree; their slug
             // maps to a flag filter instead.
             where += "dhizukuDeclared = 1"
+        } else if (syntheticRoot) {
+            where += "managers LIKE '%\"root\"%'"
         } else if (categorySlug != null) {
             where += "categorySlug IN (SELECT slug FROM tree)"
         }

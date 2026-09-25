@@ -7,6 +7,7 @@ package me.timschneeberger.shizustore.data.model
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SyntheticCategoryTest {
@@ -46,5 +47,48 @@ class SyntheticCategoryTest {
         val merged = SyntheticCategory.insertDhizuku(emptyList(), "Dhizuku-compatible")
 
         assertEquals(listOf("dhizuku"), merged.map { it.slug })
+    }
+
+    @Test
+    fun insertRootAddsLeafAtAlphabeticalPosition() {
+        val tree = listOf(
+            CategoryTag(slug = "settings", name = "Settings", appCount = 3),
+            CategoryTag(slug = "tools", name = "Tools", appCount = 1)
+        )
+
+        val merged = SyntheticCategory.insertRoot(tree, "Root-capable")
+
+        assertEquals(listOf("root", "settings", "tools"), merged.map { it.slug })
+        val root = merged[0]
+        assertEquals("Root-capable", root.name)
+        assertFalse(root.isContainer)
+        assertEquals(0, root.appCount)
+        assertEquals(merged, merged.flatten())
+    }
+
+    @Test
+    fun insertRootAppendsWhenTitleSortsLast() {
+        val tree = listOf(
+            CategoryTag(slug = "audio", name = "Audio", appCount = 3),
+            CategoryTag(slug = "network", name = "Network", appCount = 1)
+        )
+
+        val merged = SyntheticCategory.insertRoot(tree, "Zeta")
+
+        assertEquals(listOf("audio", "network", "root"), merged.map { it.slug })
+    }
+
+    @Test
+    fun insertRootHandlesAnEmptyTree() {
+        val merged = SyntheticCategory.insertRoot(emptyList(), "Root-capable")
+
+        assertEquals(listOf("root"), merged.map { it.slug })
+    }
+
+    @Test
+    fun isRootMatchesOnlyTheRootSlug() {
+        assertTrue(SyntheticCategory.isRoot("root"))
+        assertFalse(SyntheticCategory.isRoot("dhizuku"))
+        assertFalse(SyntheticCategory.isRoot(null))
     }
 }

@@ -15,6 +15,7 @@ import me.timschneeberger.shizustore.data.api.ShizuJson
 import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.model.DownloadFailure
 import me.timschneeberger.shizustore.data.model.DownloadStatus
+import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 
@@ -26,6 +27,14 @@ class Converters {
     @TypeConverter
     fun toStringList(value: String): List<String> =
         runCatching { Json.decodeFromString<List<String>>(value) }.getOrDefault(emptyList())
+
+    @TypeConverter
+    fun fromStringMap(value: Map<String, String>): String = ShizuJson.encodeToString(value)
+
+    @TypeConverter
+    fun toStringMap(value: String): Map<String, String> =
+        runCatching { ShizuJson.decodeFromString<Map<String, String>>(value) }
+            .getOrDefault(emptyMap())
 
     @TypeConverter
     fun fromCategoryPathList(value: List<CategoryPath>): String = ShizuJson.encodeToString(value)
@@ -41,6 +50,14 @@ class Converters {
     @TypeConverter
     fun toTrackerTagList(value: String): List<TrackerTag> = runCatching {
         ShizuJson.decodeFromString<List<TrackerTag>>(value)
+    }.getOrDefault(emptyList())
+
+    @TypeConverter
+    fun fromAppSignalList(value: List<AppSignal>): String = ShizuJson.encodeToString(value)
+
+    @TypeConverter
+    fun toAppSignalList(value: String): List<AppSignal> = runCatching {
+        ShizuJson.decodeFromString<List<AppSignal>>(value)
     }.getOrDefault(emptyList())
 
     @TypeConverter

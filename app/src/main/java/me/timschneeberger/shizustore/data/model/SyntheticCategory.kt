@@ -13,14 +13,34 @@ package me.timschneeberger.shizustore.data.model
 object SyntheticCategory {
 
     const val DHIZUKU_SLUG = "dhizuku"
+    const val ROOT_SLUG = "root"
 
     fun isDhizuku(slug: String?): Boolean = slug == DHIZUKU_SLUG
 
+    fun isRoot(slug: String?): Boolean = slug == ROOT_SLUG
+
     /** Inserts the Dhizuku tag at its alphabetical slot so the filter sheet and
      * the search tag cloud offer it in line with the real categories. */
-    fun insertDhizuku(categories: List<CategoryTag>, title: String): List<CategoryTag> {
-        val tag = CategoryTag(slug = DHIZUKU_SLUG, name = title, appCount = 0)
+    fun insertDhizuku(categories: List<CategoryTag>, title: String): List<CategoryTag> =
+        insert(categories, DHIZUKU_SLUG, title)
+
+    /** Inserts the root tag at its alphabetical slot, like [insertDhizuku]. */
+    fun insertRoot(categories: List<CategoryTag>, title: String): List<CategoryTag> =
+        insert(categories, ROOT_SLUG, title)
+
+    private fun insert(
+        categories: List<CategoryTag>,
+        slug: String,
+        title: String
+    ): List<CategoryTag> {
+        val tag = CategoryTag(slug = slug, name = title, appCount = 0)
         val index = categories.indexOfFirst { it.name > title }
-        return if (index < 0) categories + tag else categories.toMutableList().apply { add(index, tag) }
+        return if (index <
+            0
+        ) {
+            categories + tag
+        } else {
+            categories.toMutableList().apply { add(index, tag) }
+        }
     }
 }

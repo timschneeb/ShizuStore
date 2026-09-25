@@ -41,7 +41,13 @@ object RoomModule {
     internal fun buildDatabase(context: Context, driver: SQLiteDriver): ShizuStoreDatabase =
         Room.databaseBuilder(context, ShizuStoreDatabase::class.java, DATABASE_NAME)
             .setDriver(driver)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(
+                MIGRATION_1_2,
+                MIGRATION_2_3,
+                MIGRATION_3_4,
+                MIGRATION_4_5,
+                MIGRATION_5_6
+            )
             .build()
 
     /**
@@ -70,6 +76,70 @@ object RoomModule {
             execSql(
                 connection,
                 "ALTER TABLE app ADD COLUMN trackerTags TEXT NOT NULL DEFAULT '[]'"
+            )
+        }
+    }
+
+    /**
+     * Badging and signer facts added to `app` and `app_download`. Additive like
+     * the previous migrations: the catalog cache is disposable but user state is not.
+     */
+    internal val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(connection, "ALTER TABLE app ADD COLUMN targetSdk INTEGER")
+            execSql(connection, "ALTER TABLE app ADD COLUMN compileSdk INTEGER")
+            execSql(connection, "ALTER TABLE app ADD COLUMN localeCount INTEGER")
+            execSql(connection, "ALTER TABLE app ADD COLUMN abis TEXT NOT NULL DEFAULT '[]'")
+            execSql(connection, "ALTER TABLE app_download ADD COLUMN targetSdk INTEGER")
+            execSql(connection, "ALTER TABLE app_download ADD COLUMN compileSdk INTEGER")
+            execSql(
+                connection,
+                "ALTER TABLE app_download ADD COLUMN locales TEXT NOT NULL DEFAULT '[]'"
+            )
+            execSql(
+                connection,
+                "ALTER TABLE app_download ADD COLUMN abis TEXT NOT NULL DEFAULT '[]'"
+            )
+            execSql(
+                connection,
+                "ALTER TABLE app_download ADD COLUMN localizedLabels TEXT NOT NULL DEFAULT '{}'"
+            )
+            execSql(connection, "ALTER TABLE app_download ADD COLUMN signerDn TEXT")
+            execSql(connection, "ALTER TABLE app_download ADD COLUMN signerScheme TEXT")
+            execSql(connection, "ALTER TABLE app_download ADD COLUMN signerKeyAlgorithm TEXT")
+        }
+    }
+
+    /**
+     * Shizuku usage classification added to `app`. Additive like the previous
+     * migrations: the catalog cache is disposable but user state is not.
+     */
+    internal val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(connection, "ALTER TABLE app ADD COLUMN managers TEXT NOT NULL DEFAULT '[]'")
+            execSql(connection, "ALTER TABLE app ADD COLUMN apiForm TEXT")
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN capabilities TEXT NOT NULL DEFAULT '[]'"
+            )
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN usageOptional INTEGER NOT NULL DEFAULT 0"
+            )
+            execSql(connection, "ALTER TABLE app ADD COLUMN usageSummary TEXT")
+            execSql(connection, "ALTER TABLE app ADD COLUMN signals TEXT NOT NULL DEFAULT '[]'")
+        }
+    }
+
+    /**
+     * Locale labels added to `app` so lists can show the APK's own name for the
+     * device locale. Additive like the previous migrations.
+     */
+    internal val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN localizedLabels TEXT NOT NULL DEFAULT '{}'"
             )
         }
     }

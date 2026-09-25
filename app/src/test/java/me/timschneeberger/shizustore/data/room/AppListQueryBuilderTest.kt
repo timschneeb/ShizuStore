@@ -98,6 +98,17 @@ class AppListQueryBuilderTest {
     }
 
     @Test
+    fun syntheticRootCategoryFiltersByManagerWithoutTheCategoryTree() {
+        val query = AppListQueryBuilder.build(
+            AppListArgs(categorySlug = SyntheticCategory.ROOT_SLUG)
+        )
+
+        assertTrue(query.sql.contains("managers LIKE '%\"root\"%'"))
+        assertFalse(query.sql.contains("WITH RECURSIVE"))
+        assertEquals(0, query.argCount)
+    }
+
+    @Test
     fun priceFilterEmitsTheRightBucket() {
         val free = AppListQueryBuilder.build(AppListArgs(price = AppPrice.FREE))
         assertTrue(free.sql.contains("hasPaid = 0 AND hasIap = 0"))

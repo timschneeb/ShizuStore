@@ -16,6 +16,7 @@ import me.timschneeberger.shizustore.data.model.AppSource
 import me.timschneeberger.shizustore.data.model.CertFingerprint
 import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.model.pickLocalizedLabel
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.ServerConfig
@@ -64,6 +65,8 @@ class CatalogUiMapper @Inject constructor() {
         hasAds = app.hasAds,
         dhizukuDeclared = app.dhizukuDeclared,
         trackers = app.trackers,
+        managers = app.managers,
+        localizedName = pickLocalizedLabel(app.localizedLabels)?.takeIf { it != app.name },
         stars = app.stars,
         installCount = app.installCount,
         downloadTotal = app.downloadTotal,
@@ -75,6 +78,7 @@ class CatalogUiMapper @Inject constructor() {
     fun toAppDetails(detailed: DetailedApp): AppDetails {
         val app = detailed.app
         val primary = detailed.primaryCandidate
+        val localizedLabels = app.localizedLabels.ifEmpty { primary?.localizedLabels.orEmpty() }
         return AppDetails(
             packageName = app.packageName ?: app.slug,
             repoName = displayRepoName(app),
@@ -93,6 +97,22 @@ class CatalogUiMapper @Inject constructor() {
             versionName = app.versionName.orEmpty(),
             size = primary?.size ?: 0L,
             minSdk = app.minSdk ?: 0,
+            targetSdk = app.targetSdk ?: primary?.targetSdk,
+            compileSdk = app.compileSdk ?: primary?.compileSdk,
+            localeCount = app.localeCount ?: primary?.locales?.size,
+            locales = primary?.locales.orEmpty(),
+            localizedLabels = localizedLabels,
+            localizedName = pickLocalizedLabel(localizedLabels)?.takeIf { it != app.name },
+            abis = app.abis.ifEmpty { primary?.abis.orEmpty() },
+            signerDn = primary?.signerDn,
+            signerScheme = primary?.signerScheme,
+            signerKeyAlgorithm = primary?.signerKeyAlgorithm,
+            managers = app.managers,
+            apiForm = app.apiForm,
+            capabilities = app.capabilities,
+            usageOptional = app.usageOptional,
+            usageSummary = app.usageSummary,
+            signals = app.signals,
             permissions = app.permissions.filterNot { it.endsWith(DYNAMIC_RECEIVER_SUFFIX) },
             installedVersionCode = app.installedVersionCode,
             availability = app.availability,

@@ -125,9 +125,21 @@ class InstallReporterTest : ApiTestBase() {
 
     @Test
     fun resolvesInstallTypeFromPackageTimestamps() {
-        assertEquals(InstallType.FRESH, resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 5_000L))
-        assertEquals(InstallType.UPDATE, resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 9_000L))
-        assertEquals(InstallType.UNKNOWN, resolveInstallType(firstInstallTime = 0L, lastUpdateTime = 9_000L))
-        assertEquals(InstallType.UNKNOWN, resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 0L))
+        assertEquals(
+            InstallType.FRESH,
+            resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 5_000L)
+        )
+        assertEquals(
+            InstallType.UPDATE,
+            resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 9_000L)
+        )
+        assertEquals(
+            InstallType.UNKNOWN,
+            resolveInstallType(firstInstallTime = 0L, lastUpdateTime = 9_000L)
+        )
+        assertEquals(
+            InstallType.UNKNOWN,
+            resolveInstallType(firstInstallTime = 5_000L, lastUpdateTime = 0L)
+        )
     }
 }

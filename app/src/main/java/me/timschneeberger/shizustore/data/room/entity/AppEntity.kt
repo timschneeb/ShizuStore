@@ -52,6 +52,18 @@ data class AppEntity(
     val versionCode: Long? = null,
     val versionName: String? = null,
     val minSdk: Int? = null,
+    /** Badging facts from the primary APK; null/empty until the server analyzed it. */
+    val targetSdk: Int? = null,
+    val compileSdk: Int? = null,
+    val localeCount: Int? = null,
+    @ColumnInfo(defaultValue = "[]")
+    val abis: List<String> = emptyList(),
+    /** Locale labels that differ from the app name, for device-locale display. */
+    @ColumnInfo(defaultValue = "{}")
+    val localizedLabels: Map<String, String> = emptyMap(),
+    /** Shizuku manager support (shizuku/dhizuku/sui/root), from the primary APK. */
+    @ColumnInfo(defaultValue = "[]")
+    val managers: List<String> = emptyList(),
     val size: Long? = null,
     val iconHash: String? = null,
     val iconAdaptive: Boolean = false,
@@ -83,7 +95,16 @@ data class AppEntity(
     val installedVersionCode: Long? = null,
     val updateAvailable: Boolean = false,
     val updateCandidateId: Long? = null,
-    val syncedAt: Long = 0L
+    val syncedAt: Long = 0L,
+    /** Detail-only Shizuku usage classification; see `UsageSummary`. */
+    val apiForm: String? = null,
+    @ColumnInfo(defaultValue = "[]")
+    val capabilities: List<String> = emptyList(),
+    @ColumnInfo(defaultValue = "0")
+    val usageOptional: Boolean = false,
+    val usageSummary: String? = null,
+    @ColumnInfo(defaultValue = "[]")
+    val signals: List<AppSignal> = emptyList()
 )
 
 /** One detected tracker with its Exodus category tags. */
@@ -91,6 +112,14 @@ data class AppEntity(
 data class TrackerTag(
     val name: String,
     val tags: List<String> = emptyList()
+)
+
+/** One evidence row behind the Shizuku usage classification (detail dialog). */
+@Serializable
+data class AppSignal(
+    val kind: String = "",
+    val value: String = "",
+    val confidence: String = ""
 )
 
 /** Keeps detail columns when a summary upsert refreshes the row, so `/v1/changes` never discards them. */
@@ -112,6 +141,11 @@ fun AppEntity.mergeDetailFrom(existing: AppEntity?): AppEntity = if (existing ==
         detailsFetchedAt = existing.detailsFetchedAt,
         installedVersionCode = existing.installedVersionCode,
         updateAvailable = existing.updateAvailable,
-        updateCandidateId = existing.updateCandidateId
+        updateCandidateId = existing.updateCandidateId,
+        apiForm = existing.apiForm,
+        capabilities = existing.capabilities,
+        usageOptional = existing.usageOptional,
+        usageSummary = existing.usageSummary,
+        signals = existing.signals
     )
 }

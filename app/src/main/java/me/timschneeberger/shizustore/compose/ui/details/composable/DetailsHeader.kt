@@ -64,7 +64,8 @@ fun DetailsHeader(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall))
         ) {
             Text(
-                text = details.name.ifBlank { details.packageName },
+                text = details.localizedName?.takeIf { it.isNotBlank() }
+                    ?: details.name.ifBlank { details.packageName },
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis

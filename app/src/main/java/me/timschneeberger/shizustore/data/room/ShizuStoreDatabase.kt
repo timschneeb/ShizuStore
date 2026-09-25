@@ -29,7 +29,7 @@ import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
 
 @Database(
-    version = 3,
+    version = 6,
     exportSchema = true,
     entities = [
         AppEntity::class,

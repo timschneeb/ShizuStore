@@ -53,7 +53,11 @@ class InstallReporter @Inject constructor(
             resolveInstallType(info.firstInstallTime, info.lastUpdateTime)
         }.getOrDefault(InstallType.UNKNOWN)
 
-        when (val result = runCatching { api.reportInstall(slug, versionCode, installType) }.getOrNull()) {
+        when (
+            val result = runCatching {
+                api.reportInstall(slug, versionCode, installType)
+            }.getOrNull()
+        ) {
             is ApiResult.Success -> Log.i(
                 TAG,
                 "Reported install of $slug; server total is now ${result.value.installCount}"

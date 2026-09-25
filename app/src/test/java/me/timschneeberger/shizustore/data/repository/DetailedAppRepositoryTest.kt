@@ -8,6 +8,7 @@ package me.timschneeberger.shizustore.data.repository
 import kotlinx.coroutines.test.runTest
 import me.timschneeberger.shizustore.ApiTestBase
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import okhttp3.mockwebserver.MockResponse
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -40,14 +41,39 @@ class DetailedAppRepositoryTest : ApiTestBase() {
         val result = repository.fetchAndPersist("alpha") as DetailedAppResult.Success
 
         assertEquals(2, result.downloads.size)
-        assertEquals("https://example.com/alpha", db.appDao().get("alpha")!!.url)
-        assertTrue(db.appDao().get("alpha")!!.iconAdaptive)
+        val storedApp = db.appDao().get("alpha")!!
+        assertEquals("https://example.com/alpha", storedApp.url)
+        assertTrue(storedApp.iconAdaptive)
+        assertEquals(35, storedApp.targetSdk)
+        assertEquals(36, storedApp.compileSdk)
+        assertEquals(2, storedApp.localeCount)
+        assertEquals(listOf("arm64-v8a"), storedApp.abis)
+        assertEquals(listOf("shizuku", "root"), storedApp.managers)
+        assertEquals("user_service", storedApp.apiForm)
+        assertEquals(listOf("install"), storedApp.capabilities)
+        assertTrue(storedApp.usageOptional)
+        assertEquals("This app can use Shizuku.", storedApp.usageSummary)
+        assertEquals(
+            listOf(AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong")),
+            storedApp.signals
+        )
 
         val candidates = db.appDownloadDao().forApp("alpha")
         assertEquals(2, candidates.size)
         assertEquals("github", candidates.first().source!!.wire)
         assertTrue(candidates.first().isPrimary)
         assertEquals("https://example.com/alpha.apk", candidates.first().apkUrl)
+        assertEquals(35, candidates.first().targetSdk)
+        assertEquals(36, candidates.first().compileSdk)
+        assertEquals(listOf("en", "de"), candidates.first().locales)
+        assertEquals(listOf("arm64-v8a"), candidates.first().abis)
+        assertEquals(
+            mapOf("en" to "Alpha", "de" to "Alpha DE"),
+            candidates.first().localizedLabels
+        )
+        assertEquals("CN=Alpha", candidates.first().signerDn)
+        assertEquals("v2+v3", candidates.first().signerScheme)
+        assertEquals("RSA 2048", candidates.first().signerKeyAlgorithm)
         assertEquals("# Alpha readme", repository.fullDescription("alpha"))
         assertEquals("## 1.0\n- First release", repository.changelog("alpha"))
         assertEquals(
@@ -74,13 +100,30 @@ class DetailedAppRepositoryTest : ApiTestBase() {
               "packageName": "com.alpha", "versionCode": 5, "versionName": "1.0",
               "iconHash": "aa", "iconAdaptive": true, "categorySlug": "tools",
               "updatedAt": "2026-05-01T00:00:00+00:00",
+              "targetSdk": 35, "compileSdk": 36, "localeCount": 2,
+              "abis": ["arm64-v8a"],
+              "managers": ["shizuku", "root"], "apiForm": "user_service",
+              "capabilities": ["install"], "usageOptional": true,
+              "usageSummary": "This app can use Shizuku.",
+              "signals": [
+                {
+                  "kind": "permission",
+                  "value": "moe.shizuku.manager.permission.API_V23",
+                  "confidence": "strong"
+                }
+              ],
               "url": "https://example.com/alpha", "sourceUrl": null, "sourceKind": "github",
               "downloads": [
                 {
                   "source": "github", "apkUrl": "https://example.com/alpha.apk",
                   "versionCode": 5, "versionName": "1.0", "size": 123,
                   "sha256": "deadbeef", "sigSha256": "AAA BBB", "sigMd5": "ccc",
-                  "minSdk": 24, "primary": true
+                  "minSdk": 24, "primary": true,
+                  "targetSdk": 35, "compileSdk": 36,
+                  "locales": ["en", "de"], "abis": ["arm64-v8a"],
+                  "localizedLabels": { "en": "Alpha", "de": "Alpha DE" },
+                  "signerDn": "CN=Alpha", "signerScheme": "v2+v3",
+                  "signerKeyAlgorithm": "RSA 2048"
                 },
                 {
                   "source": "fdroid", "apkUrl": "https://f-droid.org/alpha.apk",

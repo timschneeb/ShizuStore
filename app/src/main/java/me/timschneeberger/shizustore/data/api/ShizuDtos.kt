@@ -46,6 +46,15 @@ data class AppSummaryDto(
     val authorKey: String? = null,
     val authorName: String? = null,
     val sourceName: String? = null,
+    // Badging facts from the primary download; null/empty until the server analyzed it.
+    val targetSdk: Int? = null,
+    val compileSdk: Int? = null,
+    val localeCount: Int? = null,
+    val abis: List<String> = emptyList(),
+    // Locale labels that differ from the display name; empty when the APK ships none.
+    val localizedLabels: Map<String, String> = emptyMap(),
+    // Shizuku manager support from the primary APK (shizuku/dhizuku/sui/root).
+    val managers: List<String> = emptyList(),
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
@@ -67,7 +76,17 @@ data class DownloadDto(
     val sigMd5: String? = null,
     val minSdk: Int? = null,
     val abi: String? = null,
-    val primary: Boolean = false
+    val primary: Boolean = false,
+    // Analyzed APK facts; null/empty on index-only rows or pre-analysis versions.
+    val targetSdk: Int? = null,
+    val compileSdk: Int? = null,
+    val locales: List<String> = emptyList(),
+    val abis: List<String> = emptyList(),
+    // locale -> localized application label (aapt2 `application-label-<locale>`).
+    val localizedLabels: Map<String, String> = emptyMap(),
+    val signerDn: String? = null,
+    val signerScheme: String? = null,
+    val signerKeyAlgorithm: String? = null
 )
 
 @Serializable
@@ -128,10 +147,30 @@ data class AppDetailDto(
     val changelogUrl: String? = null,
     val screenshots: List<String> = emptyList(),
     val sourceName: String? = null,
+    // Badging facts from the primary download; the detail adds the full locale list.
+    val targetSdk: Int? = null,
+    val compileSdk: Int? = null,
+    val localeCount: Int? = null,
+    val locales: List<String> = emptyList(),
+    val abis: List<String> = emptyList(),
+    // Shizuku usage classification from the primary APK; detail-only beyond managers.
+    val managers: List<String> = emptyList(),
+    val apiForm: String? = null,
+    val capabilities: List<String> = emptyList(),
+    val usageOptional: Boolean = false,
+    val usageSummary: String? = null,
+    val signals: List<AppSignalDto> = emptyList(),
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
     val trackerTags: List<TrackerTagDto> = emptyList()
+)
+
+@Serializable
+data class AppSignalDto(
+    val kind: String = "",
+    val value: String = "",
+    val confidence: String = ""
 )
 
 @Serializable

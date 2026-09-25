@@ -451,6 +451,59 @@ a tracker item opens a Google search for its name in a Custom Tab
 (`SourceLauncher.open`). The app list intentionally has no trackers badge.
 Tests: `CatalogUiMapperTest`, `CatalogDaoTest`.
 
+APK facts and localized labels. The server now exposes more badging and signer
+facts from the analyzed primary APK: `targetSdk`, `compileSdk`, `localeCount`,
+`abis` (every native-code ABI, while `abi` stays the per-download identity key),
+per-download `locales`, `localizedLabels` (`locale` -> `application-label-<locale>`
+string) and the signer details `signerDn`, `signerScheme` (`v1`..`v4` joined with
+`+`) and `signerKeyAlgorithm` (for example `RSA 2048`). Client side: `AppEntity`
+gained `targetSdk`/`compileSdk`/`localeCount`/`abis`, `AppDownloadEntity` gained
+the per-download facts plus the localized label map (Room v4, additive
+`MIGRATION_3_4`; `Converters` carries the new `Map<String,String>` converter),
+the DTOs and `CatalogMappers` carry them, and `AppCandidate`/`AppDetails` expose
+them. `AppDetails` gains `localizedName`: `data/model/LocalizedLabel.kt` picks the
+label for the current device locales (`pickLocalizedLabel`, `DeviceLocales.current`
+from `LocaleList.getAdjustedDefault()`), matching normalized aapt2 qualifiers
+(lowercase, `b+` prefix stripped, `+`/`_` to `-`, `-rREGION` folded) against full
+tag, script, region and language candidates in device order. Summaries carry
+only the `localizedLabels` entries that differ from the display name, so
+`AppEntity` gained `localizedLabels` (Room v6, additive `MIGRATION_5_6`) and
+`ResolvedApp` computes `localizedName`/`displayName`; every list card
+(`AppListItem`, `AppTile`, `AppUpdateItem`, `AppUpdateSheet`) and `DetailsHeader`
+shows the localized name before the catalog name. List ordering still uses the
+stored catalog name, so a localized label does not move rows. The SDK, language count, ABI and signer
+facts stay stored and mapped but are not displayed: resource variant counts
+overstate real translation coverage (AndroidX alone ships dozens of locales), and
+the SDK numbers rarely change a user decision, so the APK details card and the
+Targets/languages chips were dropped. Signer details stay display-only: candidate
+selection still matches `sigSha256`/`sigMd5` sets. Strings live in all four locale
+files. Tests: `LocalizedLabelTest`, `CatalogDaoTest.apkFactsRoundTrip`,
+`CatalogUiMapperTest` fallback and precedence cases, `DetailedAppRepositoryTest`
+and `CatalogSyncerTest` fixtures.
+
+Shizuku usage intelligence. The server now classifies each analyzed primary APK
+and its public source for Shizuku usage and serves the result on the catalog.
+`AppEntity` gained `managers` (summary level) plus detail-only `apiForm`,
+`capabilities`, `usageOptional`, `usageSummary` and `signals` (Room v5, additive
+`MIGRATION_4_5`); `AppSignal(kind, value, confidence)` is the evidence row type
+and `Converters` carries its list converter. DTOs, `CatalogMappers`,
+`CatalogUiMapper`, `AppDetails` and `ResolvedApp` carry the fields. `AppDetails`
+surfaces them through `ShizukuUsageRow`: a plain section row below "More about
+this app" whose subtitle is the server's summary text; tapping opens a dialog
+with the manager names, the integration form, the capability hints, the optional
+hint, the raw evidence rows and the "can, not does" note. Managers are shizuku/dhizuku/sui/root; capabilities are
+install/uninstall/freeze/appops/system settings/process/diagnostics/reboot/
+wireless ADB/compile; the summary is a deterministic server template unless an
+AI endpoint is configured (then every claim must cite validated evidence ids).
+The app list gains a synthetic "Works with root" filter and home section
+(`SyntheticCategory.ROOT_SLUG`, `AppListQueryBuilder` matches
+`managers LIKE '%"root"%'`, `CategorySections` root section) next to the existing
+Dhizuku one; `category_root` and 18 `details_shizuku_*` strings live in all four
+locale files. Tests: `CatalogDaoTest.usageSignalsRoundTrip`,
+`CatalogUiMapperTest.appDetailsCarriesShizukuUsage`, `SyntheticCategoryTest`,
+`AppListQueryBuilderTest` and `CategorySectionsTest` root cases,
+`CatalogSyncerTest`/`DetailedAppRepositoryTest` fixtures.
+
 Catalog settings. Settings gained a Catalog subscreen
 (`CatalogPreferencesScreen`/`CatalogPreferencesViewModel`): the closed-source
 toggle moved there from Network, together with a new "Show tracker info"
@@ -547,11 +600,14 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 
 ## Gotchas
 
-- The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), reset
-  to version 1 with no migrations: fresh installs create the full catalog schema
-  in one step and there is no upgrade path from the pre-release builds. Old
-  `AuroraDatabase` migrations and schemas are gone; export schemas to
-  `app/schemas/` as usual.
+- The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), now at
+  version 6 with additive migrations `MIGRATION_1_2` (analysis signals),
+  `MIGRATION_2_3` (tracker tags), `MIGRATION_3_4` (badging and signer facts),
+  `MIGRATION_4_5` (Shizuku usage classification) and `MIGRATION_5_6` (localized
+  list names). They only add columns with
+  defaults, so a fresh install creates the full schema in one step and cached
+  catalogs upgrade in place. Old `AuroraDatabase` migrations and schemas are
+  gone; export schemas to `app/schemas/` as usual and keep the generated JSON.
 - When `candidate.archiveEntry` is set the server `sha256`/`size` describe the
   archive, not the APK. Verify the archive hash first, then extract the entry; both
   the `.apk` and the staged `.archive` are cleaned up on failure or cancel.
@@ -582,7 +638,7 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 ## Known deviations
 
 Tracked in `TODO.md`. In short: the `ResolvedApp`/`AppDetails`/`AppSource`
-presentation shim is retained and filled by `CatalogUiMapper`, and the database
-stays at version 1 with the legacy write-only columns (the unused `Download`
-columns and the `AppEntity`/`CategoryEntity`/`SyncStateEntity` leftovers listed
-in `TODO.md`) still in place to avoid a Room schema bump.
+presentation shim is retained and filled by `CatalogUiMapper`, and the archived
+legacy write-only columns (the unused `Download` columns and the
+`AppEntity`/`CategoryEntity`/`SyncStateEntity` leftovers listed in `TODO.md`) are
+still in place unless a migration already replaced them.

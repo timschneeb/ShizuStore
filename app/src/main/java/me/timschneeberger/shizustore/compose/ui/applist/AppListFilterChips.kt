@@ -75,10 +75,10 @@ fun AppListFilterChips(
     ) {
         val categoryName = args.categorySlug
             ?.let { slug ->
-                if (SyntheticCategory.isDhizuku(slug)) {
-                    stringResource(R.string.category_dhizuku)
-                } else {
-                    flatCategories.firstOrNull { it.slug == slug }?.name
+                when {
+                    SyntheticCategory.isDhizuku(slug) -> stringResource(R.string.category_dhizuku)
+                    SyntheticCategory.isRoot(slug) -> stringResource(R.string.category_root)
+                    else -> flatCategories.firstOrNull { it.slug == slug }?.name
                 }
             }
             ?: stringResource(R.string.filter_all)

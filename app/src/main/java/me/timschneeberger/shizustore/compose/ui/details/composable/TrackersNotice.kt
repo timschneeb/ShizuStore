@@ -92,7 +92,9 @@ fun TrackersNotice(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_medium)
+                )
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_fingerprint),
@@ -126,7 +128,9 @@ private fun TrackersDialog(trackers: List<TrackerTag>, onDismiss: () -> Unit) {
         title = { Text(stringResource(R.string.details_trackers_title, trackers.size)) },
         text = {
             Column(
-                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
+                verticalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_small)
+                ),
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
                 trackers.forEach { tracker ->

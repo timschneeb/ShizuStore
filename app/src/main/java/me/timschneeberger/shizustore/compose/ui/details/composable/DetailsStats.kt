@@ -67,10 +67,7 @@ private val StatMinWidth = 64.dp
 
 /** Four-metric strip under the install section; unknown or zero metrics are omitted. */
 @Composable
-fun DetailsStats(
-    details: AppDetails,
-    modifier: Modifier = Modifier
-) {
+fun DetailsStats(details: AppDetails, modifier: Modifier = Modifier) {
     // Non-installable entries carry no download metrics; their star count is
     // shown as a chip in the chip row instead.
     if (details.availability != Availability.DIRECT_APK) return
@@ -156,7 +153,9 @@ fun DetailsStats(
                         start = dimensionResource(R.dimen.spacing_large),
                         end = dimensionResource(R.dimen.spacing_large)
                     ),
-                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_small)
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 stats.forEachIndexed { index, stat ->
@@ -184,11 +183,7 @@ fun DetailsStats(
 /** One metric cell; tapping a cell with a tooltip explains where its count comes from. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun StatCell(
-    stat: DetailStat,
-    onOverflow: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun StatCell(stat: DetailStat, onOverflow: () -> Unit, modifier: Modifier = Modifier) {
     val tooltipState = rememberTooltipState()
     val scope = rememberCoroutineScope()
 

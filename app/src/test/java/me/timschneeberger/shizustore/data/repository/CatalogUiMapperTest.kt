@@ -12,9 +12,11 @@ import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -234,6 +236,29 @@ class CatalogUiMapperTest {
     }
 
     @Test
+    fun resolvedAppPrefersLocalizedSummaryName() {
+        val app = app().copy(
+            localizedLabels = mapOf(
+                "en" to "Mihon English",
+                "de" to "Mihon Deutsch"
+            )
+        )
+
+        val resolved = mapper.toResolvedApp(app)
+
+        assertEquals("Mihon English", resolved.localizedName)
+        assertEquals("Mihon English", resolved.displayName)
+    }
+
+    @Test
+    fun resolvedAppFallsBackToTheCatalogNameWithoutLabels() {
+        val resolved = mapper.toResolvedApp(app())
+
+        assertNull(resolved.localizedName)
+        assertEquals("Mihon", resolved.displayName)
+    }
+
+    @Test
     fun appDetailsCarriesCountsAndAds() {
         val app = app().copy(
             hasAds = true,
@@ -277,6 +302,93 @@ class CatalogUiMapperTest {
         assertEquals(Listing.CLOSED_SOURCE, details.listing)
     }
 
+    @Test
+    fun appDetailsFallsBackToPrimaryApkFacts() {
+        val primary = candidate(
+            download(
+                id = 1,
+                packageName = "app.mihon",
+                primary = true,
+                targetSdk = 35,
+                compileSdk = 36,
+                locales = listOf("en", "de"),
+                abis = listOf("arm64-v8a", "armeabi-v7a"),
+                localizedLabels = mapOf("en" to "Mihon English", "de" to "Mihon Deutsch"),
+                signerDn = "CN=Mihon",
+                signerScheme = "v2+v3",
+                signerKeyAlgorithm = "RSA 2048",
+                url = "base"
+            )
+        )
+
+        val details = mapper.toAppDetails(DetailedApp(app(), listOf(primary)))
+
+        assertEquals(35, details.targetSdk)
+        assertEquals(36, details.compileSdk)
+        assertEquals(2, details.localeCount)
+        assertEquals(listOf("en", "de"), details.locales)
+        assertEquals(listOf("arm64-v8a", "armeabi-v7a"), details.abis)
+        assertEquals("Mihon English", details.localizedName)
+        assertEquals("CN=Mihon", details.signerDn)
+        assertEquals("v2+v3", details.signerScheme)
+        assertEquals("RSA 2048", details.signerKeyAlgorithm)
+    }
+
+    @Test
+    fun appSummaryFactsWinOverPrimaryFallback() {
+        val app = app().copy(
+            targetSdk = 34,
+            compileSdk = 35,
+            localeCount = 5,
+            abis = listOf("x86_64")
+        )
+        val primary = candidate(
+            download(
+                id = 1,
+                packageName = "app.mihon",
+                primary = true,
+                targetSdk = 35,
+                compileSdk = 36,
+                locales = listOf("en", "de"),
+                abis = listOf("arm64-v8a"),
+                url = "base"
+            )
+        )
+
+        val details = mapper.toAppDetails(DetailedApp(app, listOf(primary)))
+
+        assertEquals(34, details.targetSdk)
+        assertEquals(35, details.compileSdk)
+        assertEquals(5, details.localeCount)
+        assertEquals(listOf("x86_64"), details.abis)
+    }
+
+    @Test
+    fun appDetailsCarriesShizukuUsage() {
+        val app = app().copy(
+            managers = listOf("shizuku", "root"),
+            apiForm = "user_service",
+            capabilities = listOf("install", "freeze"),
+            usageOptional = true,
+            usageSummary = "This app can use Shizuku to install or update apps.",
+            signals = listOf(
+                AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong")
+            )
+        )
+
+        val details = mapper.toAppDetails(DetailedApp(app, emptyList()))
+
+        assertEquals(listOf("shizuku", "root"), details.managers)
+        assertEquals("user_service", details.apiForm)
+        assertEquals(listOf("install", "freeze"), details.capabilities)
+        assertTrue(details.usageOptional)
+        assertEquals("This app can use Shizuku to install or update apps.", details.usageSummary)
+        assertEquals(
+            listOf(AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong")),
+            details.signals
+        )
+    }
+
     private fun app(): AppEntity =
         AppEntity(slug = "mihon", name = "Mihon", packageName = "app.mihon", versionCode = 29)
 
@@ -290,6 +402,14 @@ class CatalogUiMapperTest {
         versionCode: Long = 29,
         versionName: String? = null,
         primary: Boolean = false,
+        targetSdk: Int? = null,
+        compileSdk: Int? = null,
+        locales: List<String> = emptyList(),
+        abis: List<String> = emptyList(),
+        localizedLabels: Map<String, String> = emptyMap(),
+        signerDn: String? = null,
+        signerScheme: String? = null,
+        signerKeyAlgorithm: String? = null,
         url: String
     ): AppDownloadEntity = AppDownloadEntity(
         id = id,
@@ -301,6 +421,14 @@ class CatalogUiMapperTest {
         sigSha256 = sigSha256,
         abi = abi,
         isPrimary = primary,
+        targetSdk = targetSdk,
+        compileSdk = compileSdk,
+        locales = locales,
+        abis = abis,
+        localizedLabels = localizedLabels,
+        signerDn = signerDn,
+        signerScheme = signerScheme,
+        signerKeyAlgorithm = signerKeyAlgorithm,
         sigKey = AppDownloadEntity.sigKeyOf(sigSha256, null, "https://example/$url.apk", abi)
     )
 }

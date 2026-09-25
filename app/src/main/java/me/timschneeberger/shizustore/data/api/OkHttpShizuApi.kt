@@ -85,18 +85,17 @@ class OkHttpShizuApi @Inject constructor(
         slug: String,
         versionCode: Long,
         installType: InstallType
-    ): ApiResult<InstallRecordedDto> =
-        decode(
-            post(
-                "/v1/apps/$slug/installs",
-                json.encodeToString(
-                    InstallReportDto.serializer(),
-                    InstallReportDto(versionCode = versionCode, installType = installType.wire)
-                )
+    ): ApiResult<InstallRecordedDto> = decode(
+        post(
+            "/v1/apps/$slug/installs",
+            json.encodeToString(
+                InstallReportDto.serializer(),
+                InstallReportDto(versionCode = versionCode, installType = installType.wire)
             )
-        ) { body ->
-            json.decodeFromString(InstallRecordedDto.serializer(), body)
-        }
+        )
+    ) { body ->
+        json.decodeFromString(InstallRecordedDto.serializer(), body)
+    }
 
     private suspend fun execute(
         path: String,
@@ -128,7 +127,10 @@ class OkHttpShizuApi @Inject constructor(
             .url(url)
             .cacheControl(CacheControl.FORCE_NETWORK)
             .header("Accept", "application/json")
-            .post(jsonBody?.toRequestBody("application/json".toMediaType()) ?: ByteArray(0).toRequestBody())
+            .post(
+                jsonBody?.toRequestBody("application/json".toMediaType())
+                    ?: ByteArray(0).toRequestBody()
+            )
             .build()
 
         return perform(request)

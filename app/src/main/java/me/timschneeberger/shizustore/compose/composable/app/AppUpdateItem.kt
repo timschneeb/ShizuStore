@@ -46,7 +46,7 @@ internal fun AppUpdateItem(
 
     AuroraListItem(
         modifier = modifier,
-        headline = app.name.ifBlank { app.packageName },
+        headline = app.displayName,
         supporting = null,
         tertiary = AnnotatedString(tertiaryText),
         headlineStyle = MaterialTheme.typography.bodyMedium,
