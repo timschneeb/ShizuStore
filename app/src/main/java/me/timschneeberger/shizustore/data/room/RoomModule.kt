@@ -41,7 +41,7 @@ object RoomModule {
     internal fun buildDatabase(context: Context, driver: SQLiteDriver): ShizuStoreDatabase =
         Room.databaseBuilder(context, ShizuStoreDatabase::class.java, DATABASE_NAME)
             .setDriver(driver)
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     /**
@@ -57,6 +57,19 @@ object RoomModule {
             execSql(
                 connection,
                 "ALTER TABLE app ADD COLUMN trackers TEXT NOT NULL DEFAULT '[]'"
+            )
+        }
+    }
+
+    /**
+     * Per-tracker category tags added to `app`. Additive like MIGRATION_1_2:
+     * the catalog cache is disposable but user state is not.
+     */
+    internal val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN trackerTags TEXT NOT NULL DEFAULT '[]'"
             )
         }
     }

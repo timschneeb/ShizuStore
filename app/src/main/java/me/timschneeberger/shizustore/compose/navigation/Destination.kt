@@ -19,6 +19,7 @@ sealed class Destination {
     data object Settings : Destination()
 
     data object AppearancePreferences : Destination()
+    data object CatalogPreferences : Destination()
     data object UpdatePreferences : Destination()
     data object InstallationPreferences : Destination()
     data object NetworkPreferences : Destination()

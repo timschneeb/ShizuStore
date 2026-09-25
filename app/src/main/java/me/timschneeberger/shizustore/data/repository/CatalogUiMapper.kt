@@ -106,6 +106,7 @@ class CatalogUiMapper @Inject constructor() {
             hasAds = app.hasAds,
             dhizukuDeclared = app.dhizukuDeclared,
             trackers = app.trackers,
+            trackerTags = app.trackerTags,
             stars = app.stars,
             installCount = app.installCount,
             downloadTotal = app.downloadTotal,

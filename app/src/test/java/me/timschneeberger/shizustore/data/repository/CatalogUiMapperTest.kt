@@ -12,6 +12,7 @@ import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -253,13 +254,18 @@ class CatalogUiMapperTest {
     fun appDetailsCarriesAnalysisSignals() {
         val app = app().copy(
             dhizukuDeclared = true,
-            trackers = listOf("AppLovin")
+            trackers = listOf("AppLovin"),
+            trackerTags = listOf(TrackerTag("AppLovin", listOf("Analytics", "Advertisement")))
         )
 
         val details = mapper.toAppDetails(DetailedApp(app, emptyList()))
 
         assertEquals(true, details.dhizukuDeclared)
         assertEquals(listOf("AppLovin"), details.trackers)
+        assertEquals(
+            listOf(TrackerTag("AppLovin", listOf("Analytics", "Advertisement"))),
+            details.trackerTags
+        )
     }
 
     @Test

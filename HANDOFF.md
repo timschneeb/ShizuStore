@@ -400,8 +400,8 @@ Ads and detail counts. `ResolvedApp.hasAds` and `AppDetails.hasAds` come from th
 sync DTOs and drive a new "Ads" badge on list rows and the
 `BillingNotice`/`details_ads` sentence on the details card (which now covers
 paid, IAP and ads). `DetailsStats` renders up to four metric cells (installs,
-downloads, stars, size) between the install section and the compatibility notice,
-omitting zero or unknown values. The chip row keeps only category, license and
+downloads, stars, size) as rounded cards between the install section and the
+compatibility notice, omitting zero or unknown values. The chip row keeps only category, license and
 Android version, and the updated date moves into the header version line
 (`details_updated`). `AppDetails` gained `installCount`/`downloadTotal`/
 `versionUpdatedAtMillis`. Strings were added to all four locale files; tests:
@@ -418,15 +418,26 @@ through the pure `resolveInstallType`, so failures degrade to unknown; the
 missing body to `0`/`unknown`. Tests: `InstallReporterTest`.
 
 APK analysis signals. The server now analyzes each APK's declared permissions and
-DEX against the Exodus tracker code signatures and exposes `dhizukuDeclared` and
-`trackers` on summaries, details and downloads. `AppEntity` gained
-`dhizukuDeclared`/`trackers` (Room v2, additive `MIGRATION_1_2`), the DTOs and
-`CatalogMappers` carry them, and `ResolvedApp`/`AppDetails` surface them. List
-rows show a "Trackers" badge when the primary APK matched any signature, the
-details chip row adds a "Dhizuku" chip when the app declares the Dhizuku
-permission, and `TrackersNotice` lists the matched tracker names with a note that
-detection is code-signature based (not a complete list). Tests:
-`CatalogUiMapperTest`.
+DEX against the Exodus tracker code signatures and exposes `dhizukuDeclared`,
+`trackers` and per-tracker `trackerTags` on summaries, details and downloads.
+`AppEntity` gained `dhizukuDeclared`/`trackers` (Room v2, additive
+`MIGRATION_1_2`) and `trackerTags` (Room v3, additive `MIGRATION_2_3`), the DTOs
+and `CatalogMappers` carry them, and `AppDetails` surfaces them. The details chip
+row adds a "Dhizuku" chip when the app declares the Dhizuku permission, and
+`TrackersNotice` (secondaryContainer card, primary fingerprint icon) lists the
+matched tracker names (a single tracker shows its tags inline in parentheses)
+and taps open a dialog with one tertiaryContainer item per tracker and its
+Exodus category tags as the subtitle; trackers without tags keep an empty
+subtitle and the code-signature caveat note lives at the dialog bottom. Tapping
+a tracker item opens a Google search for its name in a Custom Tab
+(`SourceLauncher.open`). The app list intentionally has no trackers badge.
+Tests: `CatalogUiMapperTest`, `CatalogDaoTest`.
+
+Catalog settings. Settings gained a Catalog subscreen
+(`CatalogPreferencesScreen`/`CatalogPreferencesViewModel`): the closed-source
+toggle moved there from Network, together with a new "Show tracker info"
+preference (`PREFERENCE_SHOW_TRACKER_INFO`, default on) that hides the
+`TrackersNotice` card on details when off.
 
 ## Compose performance pass (September 2026)
 

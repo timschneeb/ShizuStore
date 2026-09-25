@@ -68,7 +68,10 @@ fun DetailsTags(
     if (tags.isEmpty()) return
 
     LazyRow(
-        modifier = modifier.padding(vertical = dimensionResource(R.dimen.spacing_small)),
+        modifier = modifier.padding(
+            top = dimensionResource(R.dimen.spacing_xsmall),
+            bottom = dimensionResource(R.dimen.spacing_small)
+        ),
         contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.spacing_large)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {

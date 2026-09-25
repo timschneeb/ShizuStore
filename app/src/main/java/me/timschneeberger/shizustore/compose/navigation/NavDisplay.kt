@@ -42,6 +42,7 @@ import me.timschneeberger.shizustore.compose.ui.ignored.IgnoredUpdatesScreen
 import me.timschneeberger.shizustore.compose.ui.installed.InstalledScreen
 import me.timschneeberger.shizustore.compose.ui.main.MainScreen
 import me.timschneeberger.shizustore.compose.ui.settings.AppearancePreferencesScreen
+import me.timschneeberger.shizustore.compose.ui.settings.CatalogPreferencesScreen
 import me.timschneeberger.shizustore.compose.ui.settings.InstallationPreferencesScreen
 import me.timschneeberger.shizustore.compose.ui.settings.NetworkPreferencesScreen
 import me.timschneeberger.shizustore.compose.ui.settings.PermissionPreferencesScreen
@@ -83,6 +84,7 @@ fun ShizuNavDisplay(
             is Destination.Settings -> backStack.add(Screen.Settings)
             is Destination.AppearancePreferences ->
                 backStack.add(Screen.AppearancePreferences)
+            is Destination.CatalogPreferences -> backStack.add(Screen.CatalogPreferences)
             is Destination.UpdatePreferences -> backStack.add(Screen.UpdatePreferences)
             is Destination.InstallationPreferences ->
                 backStack.add(Screen.InstallationPreferences)
@@ -150,6 +152,9 @@ fun ShizuNavDisplay(
             }
             entry<Screen.AppearancePreferences> {
                 AppearancePreferencesScreen(onNavigateTo = ::navigate)
+            }
+            entry<Screen.CatalogPreferences> {
+                CatalogPreferencesScreen(onNavigateTo = ::navigate)
             }
             entry<Screen.UpdatePreferences> {
                 UpdatePreferencesScreen(onNavigateTo = ::navigate)

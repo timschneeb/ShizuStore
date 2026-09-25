@@ -43,6 +43,9 @@ sealed class Screen : NavKey, Parcelable {
     data object AppearancePreferences : Screen()
 
     @Serializable
+    data object CatalogPreferences : Screen()
+
+    @Serializable
     data object UpdatePreferences : Screen()
 
     @Serializable

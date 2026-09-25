@@ -55,6 +55,8 @@ object Preferences {
 
     const val PREFERENCE_SHOW_CLOSED_SOURCE = "PREFERENCE_SHOW_CLOSED_SOURCE"
 
+    const val PREFERENCE_SHOW_TRACKER_INFO = "PREFERENCE_SHOW_TRACKER_INFO"
+
     /** Server purge high-water mark already applied locally; DataStore survives catalog wipes. */
     const val PREFERENCE_LAST_CATALOG_PURGE_AT = "PREFERENCE_LAST_CATALOG_PURGE_AT"
 

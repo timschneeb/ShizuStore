@@ -34,8 +34,10 @@ fun CompatibilityNotice(minSdk: Int, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = dimensionResource(R.dimen.spacing_large),
-                vertical = dimensionResource(R.dimen.spacing_small)
+                start = dimensionResource(R.dimen.spacing_large),
+                top = dimensionResource(R.dimen.spacing_xsmall),
+                end = dimensionResource(R.dimen.spacing_large),
+                bottom = dimensionResource(R.dimen.spacing_small)
             )
     ) {
         Row(

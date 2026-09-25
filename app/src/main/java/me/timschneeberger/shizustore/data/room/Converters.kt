@@ -16,6 +16,7 @@ import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.model.DownloadFailure
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
+import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 
 class Converters {
 
@@ -32,6 +33,14 @@ class Converters {
     @TypeConverter
     fun toCategoryPathList(value: String): List<CategoryPath> = runCatching {
         ShizuJson.decodeFromString<List<CategoryPath>>(value)
+    }.getOrDefault(emptyList())
+
+    @TypeConverter
+    fun fromTrackerTagList(value: List<TrackerTag>): String = ShizuJson.encodeToString(value)
+
+    @TypeConverter
+    fun toTrackerTagList(value: String): List<TrackerTag> = runCatching {
+        ShizuJson.decodeFromString<List<TrackerTag>>(value)
     }.getOrDefault(emptyList())
 
     @TypeConverter

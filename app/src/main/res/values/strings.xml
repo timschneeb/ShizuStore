@@ -269,7 +269,6 @@
     <string name="app_badge_paid">Paid</string>
     <string name="app_badge_iap">IAP</string>
     <string name="app_badge_ads">Ads</string>
-    <string name="app_badge_trackers">Trackers</string>
     <string name="app_indicator_installed">Installed</string>
     <string name="app_indicator_update">Update available</string>
     <string name="details_billing_paid">This is a paid app.</string>
@@ -284,6 +283,8 @@
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_black_night_subtitle">Use the pure black theme if night mode is enabled</string>
     <string name="settings_black_night_title">Black night theme</string>
+    <string name="settings_catalog_summary">Listings and app analysis</string>
+    <string name="settings_catalog_title">Catalog</string>
     <string name="settings_dynamic_color_subtitle">Draws the palette from your wallpaper. Android 12 and later.</string>
     <string name="settings_dynamic_color_title">Dynamic colour</string>
     <string name="settings_group_updates_summary">Check schedule, network limits and automatic installs</string>
@@ -326,6 +327,8 @@
     <string name="settings_server_title">Server</string>
     <string name="settings_show_closed_source_subtitle">Also syncs apps from the upstream closed-source list. These apps are proprietary and off by default.</string>
     <string name="settings_show_closed_source_title">Show closed-source apps</string>
+    <string name="settings_show_tracker_info_subtitle">Shows trackers detected in an app\'s APK (Exodus Privacy code signatures) on its details page.</string>
+    <string name="settings_show_tracker_info_title">Show tracker info</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_system">System default</string>

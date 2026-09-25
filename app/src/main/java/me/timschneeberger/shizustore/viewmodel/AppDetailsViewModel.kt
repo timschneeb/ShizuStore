@@ -6,10 +6,12 @@
 
 package me.timschneeberger.shizustore.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -47,6 +49,7 @@ import me.timschneeberger.shizustore.data.repository.InstalledRepository
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
+import me.timschneeberger.shizustore.util.Preferences
 
 sealed interface AppDetailsUiState {
     data object Loading : AppDetailsUiState
@@ -82,7 +85,8 @@ class AppDetailsViewModel @Inject constructor(
     private val favouriteRepository: FavouriteRepository,
     private val blacklistRepository: BlacklistRepository,
     private val ignoredUpdateRepository: IgnoredUpdateRepository,
-    private val installedRepository: InstalledRepository
+    private val installedRepository: InstalledRepository,
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
     /** The navigation key: a real package name when known, otherwise the catalog slug. */
     private val identity = MutableStateFlow<String?>(null)
@@ -172,6 +176,13 @@ class AppDetailsViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
             null
         )
+
+    /** Catalog preference: when off, the details page hides the tracker card. */
+    val showTrackerInfo: StateFlow<Boolean> = Preferences.booleanFlow(
+        context,
+        Preferences.PREFERENCE_SHOW_TRACKER_INFO,
+        true
+    ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
     // Other apps in the same category; empty until a profile is known.
     val moreFromCategory: StateFlow<List<ResolvedApp>> = slug

@@ -9,6 +9,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 import me.timschneeberger.shizustore.data.api.AppType
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.Listing
@@ -42,6 +43,9 @@ data class AppEntity(
     /** Exodus tracker names matched in the primary APK's code signatures. */
     @ColumnInfo(defaultValue = "[]")
     val trackers: List<String> = emptyList(),
+    /** The same trackers with their Exodus category tags, for the detail dialog. */
+    @ColumnInfo(defaultValue = "[]")
+    val trackerTags: List<TrackerTag> = emptyList(),
     val trialDays: Int? = null,
     val requiresRoot: Boolean = false,
     val availability: Availability = Availability.LINK_ONLY,
@@ -80,6 +84,13 @@ data class AppEntity(
     val updateAvailable: Boolean = false,
     val updateCandidateId: Long? = null,
     val syncedAt: Long = 0L
+)
+
+/** One detected tracker with its Exodus category tags. */
+@Serializable
+data class TrackerTag(
+    val name: String,
+    val tags: List<String> = emptyList()
 )
 
 /** Keeps detail columns when a summary upsert refreshes the row, so `/v1/changes` never discards them. */

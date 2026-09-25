@@ -10,6 +10,7 @@ import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
+import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 
 @Immutable
 data class AppDetails(
@@ -39,6 +40,7 @@ data class AppDetails(
     val hasAds: Boolean = false,
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
+    val trackerTags: List<TrackerTag> = emptyList(),
     val stars: Int? = null,
     val installCount: Long = 0,
     val downloadTotal: Long? = null,

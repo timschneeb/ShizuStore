@@ -94,6 +94,12 @@ private enum class SettingsGroup(
         iconRes = R.drawable.ic_palette,
         destination = Destination.AppearancePreferences
     ),
+    CATALOG(
+        titleRes = R.string.settings_catalog_title,
+        summaryRes = R.string.settings_catalog_summary,
+        iconRes = R.drawable.ic_category,
+        destination = Destination.CatalogPreferences
+    ),
     UPDATES(
         titleRes = R.string.settings_group_updates_title,
         summaryRes = R.string.settings_group_updates_summary,

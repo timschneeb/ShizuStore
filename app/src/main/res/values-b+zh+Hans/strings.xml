@@ -230,7 +230,6 @@
     <string name="app_badge_paid">付费</string>
     <string name="app_badge_iap">含内购</string>
     <string name="app_badge_ads">含广告</string>
-    <string name="app_badge_trackers">跟踪器</string>
     <string name="app_indicator_installed">已安装</string>
     <string name="app_indicator_update">有可用更新</string>
     <string name="details_billing_paid">这是一个付费应用。</string>
@@ -244,6 +243,8 @@
     <string name="settings_appearance_title">外观</string>
     <string name="settings_black_night_subtitle">开启夜间模式时使用纯黑主题</string>
     <string name="settings_black_night_title">纯黑夜间主题</string>
+    <string name="settings_catalog_summary">列表与应用分析</string>
+    <string name="settings_catalog_title">目录</string>
     <string name="settings_dynamic_color_subtitle">从您的壁纸中提取颜色。需要 Android 12 及更高版本。</string>
     <string name="settings_dynamic_color_title">动态配色</string>
     <string name="settings_group_updates_summary">检查计划、网络限制和自动安装</string>
@@ -284,6 +285,8 @@
     <string name="settings_server_title">服务器</string>
     <string name="settings_show_closed_source_subtitle">同时同步上游闭源列表中的应用。这些应用是专有软件，默认不显示。</string>
     <string name="settings_show_closed_source_title">显示闭源应用</string>
+    <string name="settings_show_tracker_info_subtitle">在应用详情页显示 APK 中检测到的跟踪器（Exodus Privacy 代码签名）。</string>
+    <string name="settings_show_tracker_info_title">显示跟踪器信息</string>
     <string name="settings_theme_dark">深色</string>
     <string name="settings_theme_light">浅色</string>
     <string name="settings_theme_system">系统默认</string>

@@ -99,6 +99,7 @@ fun AppDetailsScreen(
     val moreFromAuthor by viewModel.moreFromAuthor.collectAsStateWithLifecycle()
     val moreFromCategory by viewModel.moreFromCategory.collectAsStateWithLifecycle()
     val categorySlug by viewModel.categorySlug.collectAsStateWithLifecycle()
+    val showTrackerInfo by viewModel.showTrackerInfo.collectAsStateWithLifecycle()
     val loadedState = uiState as? AppDetailsUiState.Loaded
     // Installed-app actions must target the flavor the user installed, not the
     // catalog's canonical package.
@@ -260,7 +261,6 @@ fun AppDetailsScreen(
                                 }
                             )
 
-                            DetailsStats(details = state.details)
 
                             CompatibilityNotice(minSdk = state.details.minSdk)
 
@@ -273,15 +273,22 @@ fun AppDetailsScreen(
                                 }
                             )
 
+                            DetailsStats(details = state.details)
+
                             BillingNotice(
                                 hasPaid = state.details.hasPaid,
                                 hasIap = state.details.hasIap,
                                 hasAds = state.details.hasAds
                             )
 
-                            TrackersNotice(trackers = state.details.trackers)
-
                             ClosedSourceNotice(listing = state.details.listing)
+
+                            if (showTrackerInfo) {
+                                TrackersNotice(
+                                    trackers = state.details.trackers,
+                                    trackerTags = state.details.trackerTags
+                                )
+                            }
 
                             SectionHeader(
                                 title = stringResource(R.string.details_more_about),

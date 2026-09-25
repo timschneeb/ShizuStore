@@ -22,6 +22,7 @@ import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
+import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -80,7 +81,11 @@ class CatalogDaoTest : RobolectricTestBase() {
         appDao.upsert(
             app("foo", "Foo").copy(
                 dhizukuDeclared = true,
-                trackers = listOf("AppLovin", "Google Analytics")
+                trackers = listOf("AppLovin", "Google Analytics"),
+                trackerTags = listOf(
+                    TrackerTag("AppLovin", listOf("Analytics", "Advertisement")),
+                    TrackerTag("Google Analytics", listOf("Analytics"))
+                )
             )
         )
 
@@ -89,6 +94,13 @@ class CatalogDaoTest : RobolectricTestBase() {
         assertNotNull(stored)
         assertTrue(stored!!.dhizukuDeclared)
         assertEquals(listOf("AppLovin", "Google Analytics"), stored.trackers)
+        assertEquals(
+            listOf(
+                TrackerTag("AppLovin", listOf("Analytics", "Advertisement")),
+                TrackerTag("Google Analytics", listOf("Analytics"))
+            ),
+            stored.trackerTags
+        )
     }
 
     @Test

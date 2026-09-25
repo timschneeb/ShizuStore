@@ -18,6 +18,7 @@ import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
+import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 
 /** Enums fall back to entity defaults for unknown server values, so an addition never drops a row. */
 
@@ -35,6 +36,7 @@ fun AppSummaryDto.toEntity(syncedAt: Long): AppEntity = AppEntity(
     hasAds = hasAds,
     dhizukuDeclared = dhizukuDeclared,
     trackers = trackers,
+    trackerTags = trackerTags.map { TrackerTag(it.name, it.tags) },
     trialDays = trialDays,
     requiresRoot = requiresRoot,
     availability = Availability.fromWire(availability) ?: Availability.LINK_ONLY,
@@ -78,6 +80,7 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         hasAds = detail.hasAds,
         dhizukuDeclared = detail.dhizukuDeclared,
         trackers = detail.trackers,
+        trackerTags = detail.trackerTags.map { TrackerTag(it.name, it.tags) },
         trialDays = detail.trialDays,
         requiresRoot = detail.requiresRoot,
         availability = Availability.fromWire(detail.availability) ?: availability,

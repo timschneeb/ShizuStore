@@ -237,7 +237,6 @@
     <string name="app_badge_paid">Kostenpflichtig</string>
     <string name="app_badge_iap">IAP</string>
     <string name="app_badge_ads">Werbung</string>
-    <string name="app_badge_trackers">Tracker</string>
     <string name="app_indicator_installed">Installiert</string>
     <string name="app_indicator_update">Update verfügbar</string>
     <string name="details_billing_paid">Dies ist eine kostenpflichtige App.</string>
@@ -251,6 +250,8 @@
     <string name="settings_appearance_title">Erscheinungsbild</string>
     <string name="settings_black_night_subtitle">Reines Schwarz verwenden, wenn der Nachtmodus aktiviert ist</string>
     <string name="settings_black_night_title">Schwarzes Nachtdesign</string>
+    <string name="settings_catalog_summary">Listings und App-Analyse</string>
+    <string name="settings_catalog_title">Katalog</string>
     <string name="settings_dynamic_color_subtitle">Bezieht die Farbpalette aus deinem Hintergrundbild. Android 12 und neuer.</string>
     <string name="settings_dynamic_color_title">Dynamische Farben</string>
     <string name="settings_group_updates_summary">Überprüfungszeitplan, Netzwerkbeschränkungen und automatische Installationen</string>
@@ -291,6 +292,8 @@
     <string name="settings_server_title">Server</string>
     <string name="settings_show_closed_source_subtitle">Synchronisiert auch Apps aus der Closed-Source-Liste des Backends. Diese Apps sind proprietär und standardmäßig deaktiviert.</string>
     <string name="settings_show_closed_source_title">Closed-Source-Apps anzeigen</string>
+    <string name="settings_show_tracker_info_subtitle">Zeigt im APK erkannte Tracker (Code-Signaturen von Exodus Privacy) auf der Detailseite an.</string>
+    <string name="settings_show_tracker_info_title">Tracker-Infos anzeigen</string>
     <string name="settings_theme_dark">Dunkel</string>
     <string name="settings_theme_light">Hell</string>
     <string name="settings_theme_system">Systemstandard</string>

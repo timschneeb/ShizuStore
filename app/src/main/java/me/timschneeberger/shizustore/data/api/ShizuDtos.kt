@@ -48,7 +48,8 @@ data class AppSummaryDto(
     val sourceName: String? = null,
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
-    val trackers: List<String> = emptyList()
+    val trackers: List<String> = emptyList(),
+    val trackerTags: List<TrackerTagDto> = emptyList()
 )
 
 @Serializable
@@ -73,6 +74,12 @@ data class DownloadDto(
 data class CategoryPathDto(
     val slug: String,
     val name: String = ""
+)
+
+@Serializable
+data class TrackerTagDto(
+    val name: String = "",
+    val tags: List<String> = emptyList()
 )
 
 @Serializable
@@ -123,7 +130,8 @@ data class AppDetailDto(
     val sourceName: String? = null,
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
-    val trackers: List<String> = emptyList()
+    val trackers: List<String> = emptyList(),
+    val trackerTags: List<TrackerTagDto> = emptyList()
 )
 
 @Serializable
