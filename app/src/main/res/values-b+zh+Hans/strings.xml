@@ -60,10 +60,13 @@
     <string name="details_changelog">更新日志</string>
     <string name="details_changelog_subtitle">%1$s 版本的新功能</string>
     <string name="details_changelog_empty">暂无更新日志</string>
-    <string name="details_stats_installs">安装量</string>
     <string name="details_stats_downloads">下载量</string>
+    <string name="details_stats_downloads_tooltip">在 %1$s 上统计的下载次数。</string>
+    <string name="details_stats_installs_tooltip">其他 ShizuStore 用户报告的安装次数。</string>
     <string name="details_stats_stars">星标</string>
+    <string name="details_stats_stars_tooltip">源代码仓库的星标数。</string>
     <string name="details_stats_size">大小</string>
+    <string name="details_stats_size_tooltip">APK 文件的下载大小。</string>
     <string name="details_more_about">关于此应用的更多信息</string>
     <string name="details_more_from_author">此开发者的更多应用</string>
     <string name="details_more_from_category">此分类下的更多应用</string>

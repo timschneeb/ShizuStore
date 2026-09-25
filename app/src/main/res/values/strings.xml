@@ -74,10 +74,14 @@
     <string name="details_min_sdk" translatable="false">API %1$d+</string>
     <string name="details_min_android" translatable="false">%1$s+</string>
     <string name="details_api_level" translatable="false">API %1$d</string>
-    <string name="details_stats_installs">Installs</string>
     <string name="details_stats_downloads">Downloads</string>
+    <string name="details_stats_downloads_tooltip">Number of downloads counted at %1$s.</string>
+    <string name="details_stats_installs_tooltip">Number of installs reported by other ShizuStore users.</string>
     <string name="details_stats_stars">Stars</string>
+    <string name="details_stats_stars_tooltip">Number of stars on the source code repository.</string>
     <string name="details_stats_size">Size</string>
+    <string name="details_stats_size_tooltip">Download size of the APK file.</string>
+    <string name="details_stats_store" translatable="false">ShizuStore</string>
     <string name="details_more_about">More about this app</string>
     <string name="details_more_from_author">More apps from this developer</string>
     <string name="details_more_from_category">More from this category</string>

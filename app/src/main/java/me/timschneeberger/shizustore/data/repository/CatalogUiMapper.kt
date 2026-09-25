@@ -100,6 +100,7 @@ class CatalogUiMapper @Inject constructor() {
             url = app.url,
             sourceUrl = app.sourceUrl,
             sourceKind = app.sourceKind,
+            sourceName = app.sourceName,
             authorUrl = app.authorUrl,
             hasPaid = app.hasPaid,
             hasIap = app.hasIap,

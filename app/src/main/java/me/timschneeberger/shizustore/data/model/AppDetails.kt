@@ -47,6 +47,7 @@ data class AppDetails(
     val versionUpdatedAtMillis: Long? = null,
     val fullDescription: String? = null,
     val sourceKind: SourceKind? = null,
+    val sourceName: String? = null,
     val changelogUrl: String? = null,
     val listing: Listing = Listing.MAIN
 ) {

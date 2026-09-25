@@ -403,7 +403,13 @@ paid, IAP and ads). `DetailsStats` renders up to four metric cells (installs,
 downloads, stars, size) between the install section and the compatibility
 notice, separated by vertical dividers and omitting zero or unknown values; it
 is hidden entirely for non-`direct_apk` entries, whose star count moves to the
-first chip of the chip row. The chip row keeps category, Android version, updated age and
+first chip of the chip row. The strip falls back to a horizontally scrollable,
+wrap-content row when a value would clip or an equal cell would be
+narrower than 64dp, and re-probes on width changes so multi-window resizes
+adapt live; labels may wrap over multiple lines instead of triggering the
+fallback. The installs cell is labeled with the store name and the downloads
+cell with the upstream source (`sourceName`, e.g. GitHub/GitLab, both with the
+download icon); tapping either cell shows a plain tooltip explaining the count. The chip row keeps category, Android version, updated age and
 license: the category chip carries the same `categoryIcon(slug)` as the list
 filters, and the updated chip shows the update icon plus the relative age
 before the license chip. The header version line is back to
