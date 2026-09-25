@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -47,6 +48,9 @@ fun AppTile(app: ResolvedApp, onClick: () -> Unit, modifier: Modifier = Modifier
     Column(
         modifier = modifier
             .width(dimensionResource(R.dimen.icon_size_cluster))
+            // Clip outside clickable so the ripple rounds off and covers the
+            // whole tile instead of a sharp rectangle.
+            .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
             .clickable(onClick = onClick)
             .padding(dimensionResource(R.dimen.spacing_xsmall)),
         horizontalAlignment = Alignment.CenterHorizontally,
