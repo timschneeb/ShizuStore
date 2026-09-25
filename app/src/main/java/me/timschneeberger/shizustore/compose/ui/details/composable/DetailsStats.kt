@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
+import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.util.CommonUtil
 
@@ -36,6 +37,10 @@ fun DetailsStats(
     details: AppDetails,
     modifier: Modifier = Modifier
 ) {
+    // Non-installable entries carry no download metrics; their star count is
+    // shown as a chip in the chip row instead.
+    if (details.availability != Availability.DIRECT_APK) return
+
     val stats = buildList {
         if (details.installCount > 0L) {
             add(

@@ -64,7 +64,6 @@
     <string name="details_stats_downloads">下载量</string>
     <string name="details_stats_stars">星标</string>
     <string name="details_stats_size">大小</string>
-    <string name="details_updated">更新于 %1$s</string>
     <string name="details_more_about">关于此应用的更多信息</string>
     <string name="details_more_from_author">此开发者的更多应用</string>
     <string name="details_more_from_category">此分类下的更多应用</string>

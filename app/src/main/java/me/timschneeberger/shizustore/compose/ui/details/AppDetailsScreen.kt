@@ -266,6 +266,7 @@ fun AppDetailsScreen(
 
                             DetailsTags(
                                 details = state.details,
+                                categorySlug = categorySlug,
                                 onCategoryClick = categorySlug?.takeIf {
                                     it.isNotBlank()
                                 }?.let { slug ->

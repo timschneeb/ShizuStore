@@ -401,11 +401,15 @@ sync DTOs and drive a new "Ads" badge on list rows and the
 `BillingNotice`/`details_ads` sentence on the details card (which now covers
 paid, IAP and ads). `DetailsStats` renders up to four metric cells (installs,
 downloads, stars, size) as rounded cards between the install section and the
-compatibility notice, omitting zero or unknown values. The chip row keeps only category, license and
-Android version, and the updated date moves into the header version line
-(`details_updated`). `AppDetails` gained `installCount`/`downloadTotal`/
-`versionUpdatedAtMillis`. Strings were added to all four locale files; tests:
-`CatalogUiMapperTest`.
+compatibility notice, omitting zero or unknown values; it is hidden entirely
+for non-`direct_apk` entries, whose star count moves to the first chip of the
+chip row. The chip row keeps category, Android version, updated age and
+license: the category chip carries the same `categoryIcon(slug)` as the list
+filters, and the updated chip shows the update icon plus the relative age
+before the license chip. The header version line is back to
+`versionName · repoName`. `AppDetails` gained
+`installCount`/`downloadTotal`/`versionUpdatedAtMillis`. Strings were added to
+all four locale files; tests: `CatalogUiMapperTest`.
 
 Install reporting with version and type. `POST /v1/apps/{slug}/installs` now
 sends `{"versionCode", "installType"}` (`InstallReportDto`, `InstallType` enum
