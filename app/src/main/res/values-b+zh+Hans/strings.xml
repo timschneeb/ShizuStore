@@ -229,6 +229,7 @@
     <string name="filter_title_category">按分类筛选</string>
     <string name="filter_title_price">按价格筛选</string>
     <string name="filter_title_sort">排序方式</string>
+    <string name="category_dhizuku">兼容 Dhizuku</string>
     <string name="app_badge_paid">付费</string>
     <string name="app_badge_iap">含内购</string>
     <string name="app_badge_ads">含广告</string>

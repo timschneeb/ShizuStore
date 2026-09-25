@@ -91,6 +91,7 @@ import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppSort
 import me.timschneeberger.shizustore.data.model.CategoryTag
 import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.data.model.flatten
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.viewmodel.AppListViewModel
@@ -568,6 +569,9 @@ private fun AppRows(
 private fun listTitle(args: AppListArgs, categories: List<CategoryTag>): String {
     val flatCategories = remember(categories) { categories.flatten() }
     args.categorySlug?.let { slug ->
+        if (SyntheticCategory.isDhizuku(slug)) {
+            return stringResource(R.string.category_dhizuku)
+        }
         return flatCategories.firstOrNull { it.slug == slug }?.name ?: slug
     }
     return when {

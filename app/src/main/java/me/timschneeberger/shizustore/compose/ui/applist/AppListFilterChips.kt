@@ -47,6 +47,7 @@ import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppPrice
 import me.timschneeberger.shizustore.data.model.AppSort
 import me.timschneeberger.shizustore.data.model.CategoryTag
+import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.data.model.flatten
 
 @Composable
@@ -73,7 +74,13 @@ fun AppListFilterChips(
         horizontalArrangement = Arrangement.spacedBy(gap)
     ) {
         val categoryName = args.categorySlug
-            ?.let { slug -> flatCategories.firstOrNull { it.slug == slug }?.name }
+            ?.let { slug ->
+                if (SyntheticCategory.isDhizuku(slug)) {
+                    stringResource(R.string.category_dhizuku)
+                } else {
+                    flatCategories.firstOrNull { it.slug == slug }?.name
+                }
+            }
             ?: stringResource(R.string.filter_all)
         FilterChip(
             selected = args.categorySlug != null,

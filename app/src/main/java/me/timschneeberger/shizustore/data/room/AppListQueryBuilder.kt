@@ -10,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteQuery
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppPrice
 import me.timschneeberger.shizustore.data.model.AppSort
+import me.timschneeberger.shizustore.data.model.SyntheticCategory
 
 /**
  * One raw query keeps every filter combination on a single Room path; values are always
@@ -27,7 +28,8 @@ object AppListQueryBuilder {
         val head = StringBuilder()
 
         val categorySlug = args.categorySlug?.takeIf { it.isNotBlank() }
-        if (categorySlug != null) {
+        val syntheticDhizuku = SyntheticCategory.isDhizuku(categorySlug)
+        if (categorySlug != null && !syntheticDhizuku) {
             // Subtree selection: a category's apps include all of its descendants.
             head.append(
                 "WITH RECURSIVE tree(slug) AS (" +
@@ -48,7 +50,11 @@ object AppListQueryBuilder {
             repeat(SEARCH_COLUMNS) { binds += pattern }
         }
 
-        if (categorySlug != null) {
+        if (syntheticDhizuku) {
+            // Synthetic categories have no rows in the category tree; their slug
+            // maps to a flag filter instead.
+            where += "dhizukuDeclared = 1"
+        } else if (categorySlug != null) {
             where += "categorySlug IN (SELECT slug FROM tree)"
         }
 

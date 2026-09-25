@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.data.helper.SyncHelper
+import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.model.CategoryTagTree
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.repository.AppRepository
@@ -115,7 +116,8 @@ class AppsViewModel @Inject constructor(
         curated + CategorySections.build(
             categories = CategoryTagTree.build(categories),
             apps = apps,
-            useInstallCounts = useInstallCounts
+            useInstallCounts = useInstallCounts,
+            dhizukuTitle = context.getString(R.string.category_dhizuku)
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 

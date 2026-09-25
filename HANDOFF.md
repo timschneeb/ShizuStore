@@ -394,7 +394,12 @@ name, sorts each section by install count when the popularity flag is on and
 category display name in a new `title` (the `category` field stays the slug for
 navigation). `AppRepository.observeAllApps()` supplies the self-filtered catalog;
 `ResolvedApp` gained `hasAds`/`downloadTotal`/`categorySlug` for this and the
-badges below. Tests: `CategorySectionsTest`.
+badges below. A synthetic "Dhizuku-compatible" section (slug `dhizuku`, no
+minimum because the declared flag is the curation) lists every `dhizukuDeclared`
+app and ranks with the real sections by member count; opening it filters the app
+list by `dhizukuDeclared = 1` instead of the category tree, and the filter chip
+and list title show the localized name. Tests: `CategorySectionsTest`,
+`AppListQueryBuilderTest`.
 
 Ads and detail counts. `ResolvedApp.hasAds` and `AppDetails.hasAds` come from the
 sync DTOs and drive a new "Ads" badge on list rows and the

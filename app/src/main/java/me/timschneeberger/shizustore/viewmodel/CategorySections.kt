@@ -7,12 +7,14 @@ package me.timschneeberger.shizustore.viewmodel
 
 import me.timschneeberger.shizustore.data.model.CategoryTag
 import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.data.model.flatten
 
 /**
  * Builds the home CATEGORY rows from the top-level category tree. Membership
  * includes descendants, and the count comes from real members so a category the
- * self filter or the sync left empty never produces a header.
+ * self filter or the sync left empty never produces a header. Synthetic
+ * sections (Dhizuku-compatible) join the same count-ordered list.
  */
 object CategorySections {
 
@@ -23,6 +25,7 @@ object CategorySections {
         categories: List<CategoryTag>,
         apps: List<ResolvedApp>,
         useInstallCounts: Boolean,
+        dhizukuTitle: String,
         minApps: Int = MIN_APPS,
         itemLimit: Int = ITEM_LIMIT
     ): List<AppGroup> {
@@ -30,26 +33,45 @@ object CategorySections {
             .filter { it.categorySlug != null }
             .groupBy { it.categorySlug.orEmpty() }
 
-        return categories
+        val realSections = categories
             .map { root ->
-                val members = listOf(root).flatten()
-                    .flatMap { byCategory[it.slug].orEmpty() }
-                root to members
+                Section(
+                    slug = root.slug,
+                    title = root.name,
+                    members = listOf(root).flatten().flatMap { byCategory[it.slug].orEmpty() }
+                )
             }
-            .filter { (_, members) -> members.size >= minApps }
+            .filter { it.members.size >= minApps }
+
+        // Dhizuku-compatible apps span every category; no minimum applies
+        // because the declared flag itself is the curation.
+        val dhizuku = apps.filter { it.dhizukuDeclared }
+        val synthetic = if (dhizuku.isEmpty()) {
+            emptyList()
+        } else {
+            listOf(Section(SyntheticCategory.DHIZUKU_SLUG, dhizukuTitle, dhizuku))
+        }
+
+        return (realSections + synthetic)
             .sortedWith(
-                compareByDescending<Pair<CategoryTag, List<ResolvedApp>>> { it.second.size }
-                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.first.name }
+                compareByDescending<Section> { it.members.size }
+                    .thenBy(String.CASE_INSENSITIVE_ORDER) { it.title }
             )
-            .map { (root, members) ->
+            .map { section ->
                 AppGroup(
                     kind = AppGroupKind.CATEGORY,
-                    apps = members.sortedWith(popularity(useInstallCounts)).take(itemLimit),
-                    category = root.slug,
-                    title = root.name
+                    apps = section.members.sortedWith(popularity(useInstallCounts)).take(itemLimit),
+                    category = section.slug,
+                    title = section.title
                 )
             }
     }
+
+    private data class Section(
+        val slug: String,
+        val title: String,
+        val members: List<ResolvedApp>
+    )
 
     private fun popularity(useInstallCounts: Boolean): Comparator<ResolvedApp> {
         val primary = if (useInstallCounts) {

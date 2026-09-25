@@ -269,6 +269,7 @@
     <string name="filter_title_category">Filter by category</string>
     <string name="filter_title_price">Filter by price</string>
     <string name="filter_title_sort">Sort by</string>
+    <string name="category_dhizuku">Dhizuku-compatible</string>
     <string name="app_badge_paid">Paid</string>
     <string name="app_badge_iap">IAP</string>
     <string name="app_badge_ads">Ads</string>

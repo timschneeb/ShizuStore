@@ -10,6 +10,8 @@ import me.timschneeberger.shizustore.data.model.ResolvedApp
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+private const val DHIZUKU_TITLE = "Dhizuku-compatible"
+
 class CategorySectionsTest {
 
     @Test
@@ -24,7 +26,8 @@ class CategorySectionsTest {
                 app("c", category = "shell"),
                 app("d", category = "tools")
             ),
-            useInstallCounts = false
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("tools"), sections.map { it.category })
@@ -45,7 +48,8 @@ class CategorySectionsTest {
                 app("f", category = "games"),
                 app("g", category = "games")
             ),
-            useInstallCounts = false
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("games"), sections.map { it.category })
@@ -60,7 +64,8 @@ class CategorySectionsTest {
                 tag("medium", "Alpha")
             ),
             apps = apps("small", 4) + apps("large", 6) + apps("medium", 4),
-            useInstallCounts = false
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("large", "medium", "small"), sections.map { it.category })
@@ -71,7 +76,8 @@ class CategorySectionsTest {
         val sections = CategorySections.build(
             categories = listOf(tag("tools", "Tools")),
             apps = apps("tools", 25),
-            useInstallCounts = false
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(20, sections.single().apps.size)
@@ -87,7 +93,8 @@ class CategorySectionsTest {
                 app("c", category = "tools", installCount = 30),
                 app("d", category = "tools", installCount = 20)
             ),
-            useInstallCounts = true
+            useInstallCounts = true,
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("b", "c", "d", "a"), sections.single().apps.map { it.slug })
@@ -103,7 +110,8 @@ class CategorySectionsTest {
                 app("c", "Gamma", category = "tools", downloadTotal = null),
                 app("d", "Delta", category = "tools", downloadTotal = 10)
             ),
-            useInstallCounts = false
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("b", "d", "a", "c"), sections.single().apps.map { it.slug })
@@ -114,10 +122,70 @@ class CategorySectionsTest {
         val sections = CategorySections.build(
             categories = listOf(tag("tools", "Tools")),
             apps = apps("tools", 4) + app("orphan", category = null),
-            useInstallCounts = false
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(4, sections.single().apps.size)
+    }
+
+    @Test
+    fun dhizukuSectionCollectsDeclaredAppsAcrossCategories() {
+        val sections = CategorySections.build(
+            categories = emptyList(),
+            apps = listOf(
+                app("a", category = "tools", dhizukuDeclared = true),
+                app("b", category = "games", dhizukuDeclared = true),
+                app("c", category = "tools")
+            ),
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
+        )
+
+        val section = sections.single()
+        assertEquals("dhizuku", section.category)
+        assertEquals(DHIZUKU_TITLE, section.title)
+        assertEquals(listOf("a", "b"), section.apps.map { it.slug })
+    }
+
+    @Test
+    fun dhizukuSectionIsOmittedWithoutDeclaredApps() {
+        val sections = CategorySections.build(
+            categories = listOf(tag("tools", "Tools")),
+            apps = apps("tools", 4),
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
+        )
+
+        assertEquals(listOf("tools"), sections.map { it.category })
+    }
+
+    @Test
+    fun dhizukuSectionRanksWithCatalogSectionsByMemberCount() {
+        val sections = CategorySections.build(
+            categories = listOf(tag("tools", "Tools")),
+            apps = apps("tools", 6) + listOf(
+                app("d1", dhizukuDeclared = true),
+                app("d2", dhizukuDeclared = true),
+                app("d3", dhizukuDeclared = true)
+            ),
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
+        )
+
+        assertEquals(listOf("tools", "dhizuku"), sections.map { it.category })
+    }
+
+    @Test
+    fun dhizukuSectionIsCappedPerSection() {
+        val sections = CategorySections.build(
+            categories = emptyList(),
+            apps = (1..25).map { app("d$it", dhizukuDeclared = true) },
+            useInstallCounts = false,
+            dhizukuTitle = DHIZUKU_TITLE
+        )
+
+        assertEquals(20, sections.single().apps.size)
     }
 
     private fun apps(category: String, count: Int): List<ResolvedApp> =
@@ -134,7 +202,8 @@ class CategorySectionsTest {
         name: String = slug,
         category: String? = null,
         installCount: Long = 0,
-        downloadTotal: Long? = null
+        downloadTotal: Long? = null,
+        dhizukuDeclared: Boolean = false
     ) = ResolvedApp(
         packageName = "pkg.$slug",
         repoName = "GitHub",
@@ -151,6 +220,7 @@ class CategorySectionsTest {
         slug = slug,
         categorySlug = category,
         installCount = installCount,
-        downloadTotal = downloadTotal
+        downloadTotal = downloadTotal,
+        dhizukuDeclared = dhizukuDeclared
     )
 }

@@ -40,9 +40,13 @@ fun categoryIcon(slug: String): Int = when (slug) {
     "task-manager" -> R.drawable.ic_memory
     "terminals" -> R.drawable.ic_terminal_2
     "vendor-specific" -> R.drawable.ic_devices
-    "vendor-specific-google-pixel" -> R.drawable.ic_mobile_2
-    "vendor-specific-miui" -> R.drawable.ic_mobile_2
-    "vendor-specific-samsung-oneui" -> R.drawable.ic_mobile_2
     "vendor-specific-other" -> R.drawable.ic_devices_other
-    else -> R.drawable.ic_category
+    else -> {
+        if (slug.startsWith("vendor-specific-")) {
+            // Default to the generic phone icon for vendor-specific subcategories
+            R.drawable.ic_mobile_2
+        } else {
+            R.drawable.ic_category
+        }
+    }
 }

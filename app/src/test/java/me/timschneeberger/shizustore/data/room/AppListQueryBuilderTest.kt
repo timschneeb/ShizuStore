@@ -8,8 +8,10 @@ package me.timschneeberger.shizustore.data.room
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppPrice
 import me.timschneeberger.shizustore.data.model.AppSort
+import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.util.SHIZU_STORE_PACKAGE
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -82,6 +84,17 @@ class AppListQueryBuilderTest {
         assertTrue(query.sql.startsWith("WITH RECURSIVE tree(slug) AS ("))
         assertTrue(query.sql.contains("categorySlug IN (SELECT slug FROM tree)"))
         assertEquals(1, query.argCount)
+    }
+
+    @Test
+    fun syntheticDhizukuCategoryFiltersByFlagWithoutTheCategoryTree() {
+        val query = AppListQueryBuilder.build(
+            AppListArgs(categorySlug = SyntheticCategory.DHIZUKU_SLUG)
+        )
+
+        assertTrue(query.sql.contains("dhizukuDeclared = 1"))
+        assertFalse(query.sql.contains("WITH RECURSIVE"))
+        assertEquals(0, query.argCount)
     }
 
     @Test
