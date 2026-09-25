@@ -398,8 +398,11 @@ badges below. A synthetic "Dhizuku-compatible" section (slug `dhizuku`, no
 minimum because the declared flag is the curation) lists every `dhizukuDeclared`
 app and ranks with the real sections by member count; opening it filters the app
 list by `dhizukuDeclared = 1` instead of the category tree, and the filter chip
-and list title show the localized name. Tests: `CategorySectionsTest`,
-`AppListQueryBuilderTest`.
+and list title show the localized name. `SyntheticCategory.insertDhizuku`
+inserts the tag at its alphabetical slot in `AppListViewModel.categories`, so the
+filter sheet and the search tag cloud offer it in line with the real categories,
+with the Shizuku icon. Tests: `CategorySectionsTest`,
+`AppListQueryBuilderTest`, `SyntheticCategoryTest`.
 
 Ads and detail counts. `ResolvedApp.hasAds` and `AppDetails.hasAds` come from the
 sync DTOs and drive a new "Ads" badge on list rows and the

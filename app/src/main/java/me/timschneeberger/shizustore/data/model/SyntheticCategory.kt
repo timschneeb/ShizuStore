@@ -15,4 +15,12 @@ object SyntheticCategory {
     const val DHIZUKU_SLUG = "dhizuku"
 
     fun isDhizuku(slug: String?): Boolean = slug == DHIZUKU_SLUG
+
+    /** Inserts the Dhizuku tag at its alphabetical slot so the filter sheet and
+     * the search tag cloud offer it in line with the real categories. */
+    fun insertDhizuku(categories: List<CategoryTag>, title: String): List<CategoryTag> {
+        val tag = CategoryTag(slug = DHIZUKU_SLUG, name = title, appCount = 0)
+        val index = categories.indexOfFirst { it.name > title }
+        return if (index < 0) categories + tag else categories.toMutableList().apply { add(index, tag) }
+    }
 }

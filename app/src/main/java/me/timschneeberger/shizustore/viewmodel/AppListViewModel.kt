@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -13,6 +14,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.helper.SyncHelper
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppPrice
@@ -34,6 +37,7 @@ import me.timschneeberger.shizustore.data.model.AppSort
 import me.timschneeberger.shizustore.data.model.CategoryTag
 import me.timschneeberger.shizustore.data.model.CategoryTagTree
 import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
@@ -50,7 +54,8 @@ class AppListViewModel @Inject constructor(
     private val appRepository: AppRepository,
     private val mapper: CatalogUiMapper,
     private val searchHistory: SearchHistoryStore,
-    private val syncHelper: SyncHelper
+    private val syncHelper: SyncHelper,
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _args = MutableStateFlow(AppListArgs())
@@ -77,7 +82,12 @@ class AppListViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     val categories: StateFlow<List<CategoryTag>?> = appRepository.observeCategories()
-        .map(CategoryTagTree::build)
+        .map { entities ->
+            SyntheticCategory.insertDhizuku(
+                CategoryTagTree.build(entities),
+                context.getString(R.string.category_dhizuku)
+            )
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     val history: StateFlow<List<String>> = searchHistory.history

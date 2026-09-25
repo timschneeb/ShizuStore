@@ -22,6 +22,7 @@ fun categoryIcon(slug: String): Int = when (slug) {
     "customization" -> R.drawable.ic_palette
     "development-utilities" -> R.drawable.ic_code
     "device-owner-dpm" -> R.drawable.ic_shield_person
+    "dhizuku" -> R.drawable.ic_shizuku_icon
     "display-management" -> R.drawable.ic_display_settings
     "entertainment" -> R.drawable.ic_movie
     "file-management" -> R.drawable.ic_folder
