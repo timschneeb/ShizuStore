@@ -400,10 +400,10 @@ Ads and detail counts. `ResolvedApp.hasAds` and `AppDetails.hasAds` come from th
 sync DTOs and drive a new "Ads" badge on list rows and the
 `BillingNotice`/`details_ads` sentence on the details card (which now covers
 paid, IAP and ads). `DetailsStats` renders up to four metric cells (installs,
-downloads, stars, size) as rounded cards between the install section and the
-compatibility notice, omitting zero or unknown values; it is hidden entirely
-for non-`direct_apk` entries, whose star count moves to the first chip of the
-chip row. The chip row keeps category, Android version, updated age and
+downloads, stars, size) between the install section and the compatibility
+notice, separated by vertical dividers and omitting zero or unknown values; it
+is hidden entirely for non-`direct_apk` entries, whose star count moves to the
+first chip of the chip row. The chip row keeps category, Android version, updated age and
 license: the category chip carries the same `categoryIcon(slug)` as the list
 filters, and the updated chip shows the update icon plus the relative age
 before the license chip. The header version line is back to

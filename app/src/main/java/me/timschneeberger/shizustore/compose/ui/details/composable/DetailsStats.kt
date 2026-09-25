@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +24,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.model.AppDetails
@@ -87,48 +88,45 @@ fun DetailsStats(
             .fillMaxWidth()
             .padding(
                 start = dimensionResource(R.dimen.spacing_large),
-                top = dimensionResource(R.dimen.spacing_xsmall),
+                // 2dp over the standard rhythm so the strip breathes a little.
+                top = dimensionResource(R.dimen.spacing_xsmall) + 2.dp,
                 end = dimensionResource(R.dimen.spacing_large),
-                bottom = dimensionResource(R.dimen.spacing_small)
+                bottom = dimensionResource(R.dimen.spacing_small) + 2.dp
             ),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        stats.forEach { stat ->
-            Surface(
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
+        stats.forEachIndexed { index, stat ->
+            if (index > 0) {
+                VerticalDivider(
+                    modifier = Modifier.height(40.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall)),
                 modifier = Modifier.weight(1f)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall)),
-                    modifier = Modifier.padding(
-                        horizontal = dimensionResource(R.dimen.spacing_small),
-                        vertical = dimensionResource(R.dimen.spacing_medium)
-                    )
-                ) {
-                    Icon(
-                        painter = painterResource(stat.iconRes),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_chip))
-                    )
-                    Text(
-                        text = stat.value,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = stat.label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                Icon(
+                    painter = painterResource(stat.iconRes),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(dimensionResource(R.dimen.icon_size_chip))
+                )
+                Text(
+                    text = stat.value,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = stat.label,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
