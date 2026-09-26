@@ -510,8 +510,12 @@ hidden until a report exists. Tapping it opens `ShizukuUsageScreen`, which
 renders the report with the same markdown styling as the full description and
 changelog screens (`repoBaseUrl` for relative images), shows a centered
 spinner while the report is being fetched and keeps the markdown hidden until
-it is loaded. The AI disclaimer rides inside the markdown as a `> [!NOTE]`
-alert at the end instead of a separate row. The details ViewModel refetches once when an analyzable app (a
+it is loaded. `usageShort` renders as a titled summary card
+(`details_shizuku_summary_title`, `primaryContainer`) above the markdown, and
+the AI disclaimer rides inside the markdown as a `> [!NOTE]` alert at the end
+instead of a separate row. The report screen tints bold text with the theme
+primary and renders blockquotes as container cards instead of the library's
+left bar; other screens keep the default markdown styling. The details ViewModel refetches once when an analyzable app (a
 GitHub/GitLab repo in `sourceUrl` or `url`) has no report yet. Tests:
 `CatalogDaoTest.usageReportRoundTrip`, `CatalogUiMapperTest` usage cases,
 `DetailedAppRepositoryTest` fixtures.

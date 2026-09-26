@@ -5,24 +5,34 @@
 
 package me.timschneeberger.shizustore.compose.ui.details
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextOverflow
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
+import com.mikepenz.markdown.compose.LocalMarkdownComponents
+import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.compose.components.markdownComponents
+import com.mikepenz.markdown.compose.elements.MarkdownBlockQuote
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeBlock
 import com.mikepenz.markdown.compose.elements.MarkdownHighlightedCodeFence
 import com.mikepenz.markdown.compose.elements.MarkdownTable
@@ -33,8 +43,13 @@ import com.mikepenz.markdown.m3.elements.MarkdownCheckBox
 import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.ImageData
 import com.mikepenz.markdown.model.ImageTransformer
+import com.mikepenz.markdown.model.markdownAnnotator
+import com.mikepenz.markdown.utils.getUnescapedTextInNode
 import java.net.URI
+import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.extensions.viewExternal
+import org.intellij.markdown.MarkdownElementTypes
+import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor
 import org.intellij.markdown.parser.MarkdownParser
 
@@ -48,6 +63,7 @@ internal fun MarkdownDescription(
     content: String,
     repoBaseUrl: String? = null,
     assumeHtml: Boolean = false,
+    accentColor: Color? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -72,7 +88,7 @@ internal fun MarkdownDescription(
             val rendered = remember(content, repoBaseUrl) {
                 normalizeReadmeImages(content, repoBaseUrl)
             }
-            RenderedMarkdown(rendered = rendered, modifier = modifier)
+            RenderedMarkdown(rendered = rendered, accentColor = accentColor, modifier = modifier)
         }
     }
 }
@@ -83,7 +99,7 @@ internal fun MarkdownDescription(
  * reparse the whole document).
  */
 @Composable
-private fun RenderedMarkdown(rendered: String, modifier: Modifier) {
+private fun RenderedMarkdown(rendered: String, accentColor: Color?, modifier: Modifier) {
     val flavour = remember { GFMFlavourDescriptor() }
     val parser = remember(flavour) { MarkdownParser(flavour) }
     // Shift the default heading scale down one step; the display sizes
@@ -96,6 +112,26 @@ private fun RenderedMarkdown(rendered: String, modifier: Modifier) {
         h5 = MaterialTheme.typography.titleLarge,
         h6 = MaterialTheme.typography.titleMedium
     )
+    // Bold spans inherit the body color by default. The accent re-appends the
+    // bold text with a color so only the screens that ask for it get tinted.
+    val annotator = remember(accentColor) {
+        if (accentColor == null) {
+            markdownAnnotator()
+        } else {
+            markdownAnnotator(annotate = { content, child ->
+                if (child.type == MarkdownTokenTypes.TEXT &&
+                    child.parent?.type == MarkdownElementTypes.STRONG
+                ) {
+                    pushStyle(SpanStyle(color = accentColor))
+                    append(child.getUnescapedTextInNode(content))
+                    pop()
+                    true
+                } else {
+                    false
+                }
+            })
+        }
+    }
     val components = markdownComponents(
         checkbox = { MarkdownCheckBox(it.content, it.node, it.typography.text) },
         codeBlock = {
@@ -132,6 +168,37 @@ private fun RenderedMarkdown(rendered: String, modifier: Modifier) {
                     )
                 }
             )
+        },
+        blockQuote = { model ->
+            if (accentColor == null) {
+                MarkdownBlockQuote(model.content, model.node, style = model.typography.quote)
+            } else {
+                // The usage report renders quotes as cards: no left bar, a
+                // Material container color and the default text color.
+                val components = LocalMarkdownComponents.current
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(
+                            horizontal = dimensionResource(R.dimen.spacing_medium),
+                            vertical = dimensionResource(R.dimen.spacing_small)
+                        )
+                    ) {
+                        model.node.children.forEach { child ->
+                            MarkdownElement(
+                                node = child,
+                                components = components,
+                                content = model.content,
+                                includeSpacer = false
+                            )
+                        }
+                    }
+                }
+            }
         }
     )
     Markdown(
@@ -141,6 +208,7 @@ private fun RenderedMarkdown(rendered: String, modifier: Modifier) {
         flavour = flavour,
         parser = parser,
         imageTransformer = NoCacheImageTransformer,
+        annotator = annotator,
         components = components
     )
 }

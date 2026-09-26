@@ -7,18 +7,30 @@ package me.timschneeberger.shizustore.compose.ui.details
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.timschneeberger.shizustore.R
@@ -74,8 +86,8 @@ fun ShizukuUsageScreen(
             )
 
             is AppDetailsUiState.Loaded -> {
-                // The AI note rides inside the markdown so it renders as a
-                // GitHub alert block instead of a separate row.
+                // The server composes the report; the AI disclaimer is appended
+                // here so it stays localized with the app.
                 val note = stringResource(R.string.details_shizuku_ai_note)
                 val body = state.details.usageMarkdown?.takeIf { it.isNotBlank() }
                     ?.let { "$it\n\n> [!NOTE]\n> $note" }
@@ -101,11 +113,15 @@ fun ShizukuUsageScreen(
                             dimensionResource(R.dimen.spacing_medium)
                         )
                     ) {
+                        state.details.usageShort?.takeIf { it.isNotBlank() }?.let { short ->
+                            UsageSummaryCard(text = short)
+                        }
                         MarkdownDescription(
                             content = body,
                             repoBaseUrl = githubRawBase(
                                 state.details.sourceUrl ?: state.details.url
                             ),
+                            accentColor = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(
                                 horizontal = dimensionResource(R.dimen.spacing_large),
                                 vertical = dimensionResource(R.dimen.spacing_small)
@@ -114,6 +130,46 @@ fun ShizukuUsageScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+/** One-line report summary as a titled container card above the markdown. */
+@Composable
+private fun UsageSummaryCard(text: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = dimensionResource(R.dimen.spacing_large),
+                end = dimensionResource(R.dimen.spacing_large),
+                top = dimensionResource(R.dimen.spacing_medium)
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    ) {
+        Column(modifier = Modifier.padding(dimensionResource(R.dimen.spacing_medium))) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_small)
+                )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_shizuku_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(dimensionResource(R.dimen.icon_size_default))
+                )
+                Text(
+                    text = stringResource(R.string.details_shizuku_summary_title),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(Modifier.height(dimensionResource(R.dimen.spacing_small)))
+            Text(text = text, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }

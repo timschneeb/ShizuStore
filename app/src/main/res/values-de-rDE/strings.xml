@@ -255,7 +255,8 @@
     <string name="details_trackers_note">Abgeglichen mit Code-Signaturen von Exodus Privacy. Keine vollständige Liste.</string>
     <string name="details_shizuku_title">Shizuku-Nutzung</string>
     <string name="details_shizuku_empty">Für diese App liegt kein Nutzungsbericht vor.</string>
-    <string name="details_shizuku_ai_note">Dieser Bericht wurde von KI aus dem öffentlichen Quellcode der App erstellt und erfasst möglicherweise nicht jede Nutzung.</string>
+    <string name="details_shizuku_ai_note">KI-gestützte Analyse der Shizuku-Nutzung im öffentlichen Quellcode der App. Sie ist eine Best-Effort-Analyse und erfasst möglicherweise nicht jede einzelne Nutzung.</string>
+    <string name="details_shizuku_summary_title">Zusammenfassung</string>
     <string name="settings_appearance_summary">Helles oder dunkles Design und Hintergrundfarben</string>
     <string name="settings_appearance_title">Erscheinungsbild</string>
     <string name="settings_black_night_subtitle">Reines Schwarz verwenden, wenn der Nachtmodus aktiviert ist</string>
