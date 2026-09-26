@@ -61,9 +61,6 @@ data class AppEntity(
     /** Locale labels that differ from the app name, for device-locale display. */
     @ColumnInfo(defaultValue = "{}")
     val localizedLabels: Map<String, String> = emptyMap(),
-    /** Shizuku manager support (shizuku/dhizuku/sui/root), from the primary APK. */
-    @ColumnInfo(defaultValue = "[]")
-    val managers: List<String> = emptyList(),
     val size: Long? = null,
     val iconHash: String? = null,
     val iconAdaptive: Boolean = false,
@@ -96,30 +93,22 @@ data class AppEntity(
     val updateAvailable: Boolean = false,
     val updateCandidateId: Long? = null,
     val syncedAt: Long = 0L,
-    /** Detail-only Shizuku usage classification; see `UsageSummary`. */
-    val apiForm: String? = null,
-    @ColumnInfo(defaultValue = "[]")
-    val capabilities: List<String> = emptyList(),
-    @ColumnInfo(defaultValue = "0")
-    val usageOptional: Boolean = false,
-    val usageSummary: String? = null,
-    @ColumnInfo(defaultValue = "[]")
-    val signals: List<AppSignal> = emptyList()
+    /** AI usage report from the server; null until the app was analyzed (SPEC 5.4). */
+    val usageShort: String? = null,
+    val usageMarkdown: String? = null,
+    val usageAnalyzedAt: String? = null,
+    /** Report format generation of the cached text; older rows refetch once. */
+    val usageReportVersion: Int? = null
 )
+
+/** Bump when the server changes the report layout so cached rows refetch once. */
+const val USAGE_REPORT_VERSION = 1
 
 /** One detected tracker with its Exodus category tags. */
 @Serializable
 data class TrackerTag(
     val name: String,
     val tags: List<String> = emptyList()
-)
-
-/** One evidence row behind the Shizuku usage classification (detail dialog). */
-@Serializable
-data class AppSignal(
-    val kind: String = "",
-    val value: String = "",
-    val confidence: String = ""
 )
 
 /** Keeps detail columns when a summary upsert refreshes the row, so `/v1/changes` never discards them. */
@@ -142,10 +131,9 @@ fun AppEntity.mergeDetailFrom(existing: AppEntity?): AppEntity = if (existing ==
         installedVersionCode = existing.installedVersionCode,
         updateAvailable = existing.updateAvailable,
         updateCandidateId = existing.updateCandidateId,
-        apiForm = existing.apiForm,
-        capabilities = existing.capabilities,
-        usageOptional = existing.usageOptional,
-        usageSummary = existing.usageSummary,
-        signals = existing.signals
+        usageShort = existing.usageShort,
+        usageMarkdown = existing.usageMarkdown,
+        usageAnalyzedAt = existing.usageAnalyzedAt,
+        usageReportVersion = existing.usageReportVersion
     )
 }

@@ -10,7 +10,6 @@ import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
-import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 
 @Immutable
@@ -42,13 +41,10 @@ data class AppDetails(
     val signerDn: String? = null,
     val signerScheme: String? = null,
     val signerKeyAlgorithm: String? = null,
-    /** Shizuku usage classification from the primary APK and its source; empty on pre-analysis entries. */
-    val managers: List<String> = emptyList(),
-    val apiForm: String? = null,
-    val capabilities: List<String> = emptyList(),
-    val usageOptional: Boolean = false,
-    val usageSummary: String? = null,
-    val signals: List<AppSignal> = emptyList(),
+    /** AI source analysis; null until the server analyzed the app (SPEC 5.4). */
+    val usageShort: String? = null,
+    val usageMarkdown: String? = null,
+    val usageAnalyzedAt: String? = null,
     val permissions: List<String>,
     val installedVersionCode: Long?,
     val availability: Availability = Availability.DIRECT_APK,

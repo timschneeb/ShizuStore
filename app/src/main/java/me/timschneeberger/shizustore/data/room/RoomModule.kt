@@ -46,7 +46,9 @@ object RoomModule {
                 MIGRATION_2_3,
                 MIGRATION_3_4,
                 MIGRATION_4_5,
-                MIGRATION_5_6
+                MIGRATION_5_6,
+                MIGRATION_6_7,
+                MIGRATION_7_8
             )
             .build()
 
@@ -141,6 +143,34 @@ object RoomModule {
                 connection,
                 "ALTER TABLE app ADD COLUMN localizedLabels TEXT NOT NULL DEFAULT '{}'"
             )
+        }
+    }
+
+    /**
+     * AI usage report replaces the marker classification. SQLite is bundled
+     * with the app, so DROP COLUMN is available regardless of the device OS.
+     */
+    internal val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(connection, "ALTER TABLE app DROP COLUMN managers")
+            execSql(connection, "ALTER TABLE app DROP COLUMN apiForm")
+            execSql(connection, "ALTER TABLE app DROP COLUMN capabilities")
+            execSql(connection, "ALTER TABLE app DROP COLUMN usageOptional")
+            execSql(connection, "ALTER TABLE app DROP COLUMN usageSummary")
+            execSql(connection, "ALTER TABLE app DROP COLUMN signals")
+            execSql(connection, "ALTER TABLE app ADD COLUMN usageShort TEXT")
+            execSql(connection, "ALTER TABLE app ADD COLUMN usageMarkdown TEXT")
+            execSql(connection, "ALTER TABLE app ADD COLUMN usageAnalyzedAt TEXT")
+        }
+    }
+
+    /**
+     * Report format generation for the cached AI usage text. Null rows were
+     * fetched before the server added the section headings and refetch once.
+     */
+    internal val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(connection, "ALTER TABLE app ADD COLUMN usageReportVersion INTEGER")
         }
     }
 

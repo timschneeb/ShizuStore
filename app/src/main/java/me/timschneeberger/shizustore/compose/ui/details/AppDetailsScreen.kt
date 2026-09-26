@@ -358,7 +358,12 @@ fun AppDetailsScreen(
                                 onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
                             )
 
-                            ShizukuUsageRow(details = state.details)
+                            ShizukuUsageRow(
+                                details = state.details,
+                                onClick = {
+                                    onNavigateTo(Destination.ShizukuUsage(packageName))
+                                }
+                            )
 
                             if (!state.details.changelog.isNullOrBlank()) {
                                 SectionHeader(

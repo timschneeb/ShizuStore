@@ -8,7 +8,6 @@ package me.timschneeberger.shizustore.data.repository
 import kotlinx.coroutines.test.runTest
 import me.timschneeberger.shizustore.ApiTestBase
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
-import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import okhttp3.mockwebserver.MockResponse
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -48,15 +47,9 @@ class DetailedAppRepositoryTest : ApiTestBase() {
         assertEquals(36, storedApp.compileSdk)
         assertEquals(2, storedApp.localeCount)
         assertEquals(listOf("arm64-v8a"), storedApp.abis)
-        assertEquals(listOf("shizuku", "root"), storedApp.managers)
-        assertEquals("user_service", storedApp.apiForm)
-        assertEquals(listOf("install"), storedApp.capabilities)
-        assertTrue(storedApp.usageOptional)
-        assertEquals("This app can use Shizuku.", storedApp.usageSummary)
-        assertEquals(
-            listOf(AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong")),
-            storedApp.signals
-        )
+        assertEquals("Can install apps using PackageManager.", storedApp.usageShort)
+        assertEquals("Installs via `PackageManager`.", storedApp.usageMarkdown)
+        assertEquals("2026-05-02T00:00:00+00:00", storedApp.usageAnalyzedAt)
 
         val candidates = db.appDownloadDao().forApp("alpha")
         assertEquals(2, candidates.size)
@@ -102,16 +95,9 @@ class DetailedAppRepositoryTest : ApiTestBase() {
               "updatedAt": "2026-05-01T00:00:00+00:00",
               "targetSdk": 35, "compileSdk": 36, "localeCount": 2,
               "abis": ["arm64-v8a"],
-              "managers": ["shizuku", "root"], "apiForm": "user_service",
-              "capabilities": ["install"], "usageOptional": true,
-              "usageSummary": "This app can use Shizuku.",
-              "signals": [
-                {
-                  "kind": "permission",
-                  "value": "moe.shizuku.manager.permission.API_V23",
-                  "confidence": "strong"
-                }
-              ],
+              "usageShort": "Can install apps using PackageManager.",
+              "usageMarkdown": "Installs via `PackageManager`.",
+              "usageAnalyzedAt": "2026-05-02T00:00:00+00:00",
               "url": "https://example.com/alpha", "sourceUrl": null, "sourceKind": "github",
               "downloads": [
                 {

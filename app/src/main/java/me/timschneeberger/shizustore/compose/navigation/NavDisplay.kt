@@ -36,6 +36,7 @@ import me.timschneeberger.shizustore.compose.ui.details.AppDetailsScreen
 import me.timschneeberger.shizustore.compose.ui.details.ChangelogScreen
 import me.timschneeberger.shizustore.compose.ui.details.MoreAboutScreen
 import me.timschneeberger.shizustore.compose.ui.details.PermissionsScreen
+import me.timschneeberger.shizustore.compose.ui.details.ShizukuUsageScreen
 import me.timschneeberger.shizustore.compose.ui.downloads.DownloadsScreen
 import me.timschneeberger.shizustore.compose.ui.favourites.FavouritesScreen
 import me.timschneeberger.shizustore.compose.ui.ignored.IgnoredUpdatesScreen
@@ -80,6 +81,8 @@ fun ShizuNavDisplay(
                 backStack.add(Screen.Permissions(destination.packageName))
             is Destination.MoreAbout -> backStack.add(Screen.MoreAbout(destination.packageName))
             is Destination.Changelog -> backStack.add(Screen.Changelog(destination.packageName))
+            is Destination.ShizukuUsage ->
+                backStack.add(Screen.ShizukuUsage(destination.packageName))
             is Destination.Downloads -> backStack.add(Screen.Downloads)
             is Destination.Settings -> backStack.add(Screen.Settings)
             is Destination.AppearancePreferences ->
@@ -143,6 +146,9 @@ fun ShizuNavDisplay(
             }
             entry<Screen.Changelog> { key ->
                 ChangelogScreen(packageName = key.packageName, onNavigateTo = ::navigate)
+            }
+            entry<Screen.ShizukuUsage> { key ->
+                ShizukuUsageScreen(packageName = key.packageName, onNavigateTo = ::navigate)
             }
             entry<Screen.Downloads> {
                 DownloadsScreen(onNavigateTo = ::navigate)

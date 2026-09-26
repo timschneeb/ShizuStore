@@ -497,28 +497,24 @@ files. Tests: `LocalizedLabelTest`, `CatalogDaoTest.apkFactsRoundTrip`,
 `CatalogUiMapperTest` fallback and precedence cases, `DetailedAppRepositoryTest`
 and `CatalogSyncerTest` fixtures.
 
-Shizuku usage intelligence. The server now classifies each analyzed primary APK
-and its public source for Shizuku usage and serves the result on the catalog.
-`AppEntity` gained `managers` (summary level) plus detail-only `apiForm`,
-`capabilities`, `usageOptional`, `usageSummary` and `signals` (Room v5, additive
-`MIGRATION_4_5`); `AppSignal(kind, value, confidence)` is the evidence row type
-and `Converters` carries its list converter. DTOs, `CatalogMappers`,
-`CatalogUiMapper`, `AppDetails` and `ResolvedApp` carry the fields. `AppDetails`
-surfaces them through `ShizukuUsageRow`: a plain section row below "More about
-this app" whose subtitle is the server's summary text; tapping opens a dialog
-with the manager names, the integration form, the capability hints, the optional
-hint, the raw evidence rows and the "can, not does" note. Managers are shizuku/dhizuku/sui/root; capabilities are
-install/uninstall/freeze/appops/system settings/process/diagnostics/reboot/
-wireless ADB/compile; the summary is a deterministic server template unless an
-AI endpoint is configured (then every claim must cite validated evidence ids).
-The app list gains a synthetic "Works with root" filter and home section
-(`SyntheticCategory.ROOT_SLUG`, `AppListQueryBuilder` matches
-`managers LIKE '%"root"%'`, `CategorySections` root section) next to the existing
-Dhizuku one; `category_root` and 18 `details_shizuku_*` strings live in all four
-locale files. Tests: `CatalogDaoTest.usageSignalsRoundTrip`,
-`CatalogUiMapperTest.appDetailsCarriesShizukuUsage`, `SyntheticCategoryTest`,
-`AppListQueryBuilderTest` and `CategorySectionsTest` root cases,
-`CatalogSyncerTest`/`DetailedAppRepositoryTest` fixtures.
+AI usage report. The server analyzes each direct-APK app's public repo
+(ShizuAppStoreServer SPEC 5.4) and serves a one-line `usageShort` plus the
+composed `usageMarkdown` report on the detail endpoint; summaries never carry
+them. `AppEntity` holds `usageShort`, `usageMarkdown` and `usageAnalyzedAt`
+(Room v7; `MIGRATION_6_7` drops the old heuristic `managers`/`apiForm`/
+`capabilities`/`usageOptional`/`usageSummary`/`signals` columns), and the
+DTOs, `CatalogMappers`, `CatalogUiMapper`, `AppDetails` and `ResolvedApp`
+carry the fields. `AppDetails` surfaces them through `ShizukuUsageRow`, a
+section row below "More about this app" whose subtitle is `usageShort`; it is
+hidden until a report exists. Tapping it opens `ShizukuUsageScreen`, which
+renders the report with the same markdown styling as the full description and
+changelog screens (`repoBaseUrl` for relative images), shows a centered
+spinner while the report is being fetched and keeps the markdown hidden until
+it is loaded. The AI disclaimer rides inside the markdown as a `> [!NOTE]`
+alert at the end instead of a separate row. The details ViewModel refetches once when an analyzable app (a
+GitHub/GitLab repo in `sourceUrl` or `url`) has no report yet. Tests:
+`CatalogDaoTest.usageReportRoundTrip`, `CatalogUiMapperTest` usage cases,
+`DetailedAppRepositoryTest` fixtures.
 
 Catalog settings. Settings gained a Catalog subscreen
 (`CatalogPreferencesScreen`/`CatalogPreferencesViewModel`): the closed-source

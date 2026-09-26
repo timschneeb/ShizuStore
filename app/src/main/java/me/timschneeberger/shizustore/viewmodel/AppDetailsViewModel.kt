@@ -58,6 +58,7 @@ import me.timschneeberger.shizustore.data.repository.IgnoredUpdateRepository
 import me.timschneeberger.shizustore.data.repository.InstalledRepository
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
+import me.timschneeberger.shizustore.data.room.entity.USAGE_REPORT_VERSION
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.util.PathUtil
 import me.timschneeberger.shizustore.util.Preferences
@@ -127,7 +128,10 @@ class AppDetailsViewModel @Inject constructor(
     val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
 
     /** Detail request in progress; the screen stays blank until it settles. */
-    private val detailFetching = MutableStateFlow(false)
+    private val _detailFetching = MutableStateFlow(false)
+
+    /** Exposed so screens can keep their content hidden until the request settles. */
+    val detailFetching: StateFlow<Boolean> = _detailFetching.asStateFlow()
 
     private val _refusals = Channel<InstallDispatch.Refused>(Channel.BUFFERED)
     val refusals: Flow<InstallDispatch.Refused> = _refusals.receiveAsFlow()
@@ -265,17 +269,43 @@ class AppDetailsViewModel @Inject constructor(
     fun load(packageName: String) {
         identity.value = packageName
         viewModelScope.launch {
-            val resolvedSlug = appRepository.getByPackage(packageName)?.slug ?: packageName
-            detailFetching.value = true
+            val stored = appRepository.getByPackage(packageName)
+            val resolvedSlug = stored?.slug ?: packageName
+            _detailFetching.value = true
             slug.value = resolvedSlug
-            if (detailedAppRepository.fullDescription(resolvedSlug).isNullOrBlank()) {
+            // The AI usage report lands on a detail fetch and can appear after
+            // the README was cached; refetch once for analyzable apps whose
+            // report is still missing. Apps without a forge repo never have
+            // one, so they keep using the cached detail.
+            val usageMissing = stored != null &&
+                stored.usageShort.isNullOrBlank() &&
+                stored.usageAnalyzedAt.isNullOrBlank() &&
+                (isAnalyzableSource(stored.sourceUrl) || isAnalyzableSource(stored.url))
+            // Cached reports from an older server layout refetch once so the
+            // section headings show up.
+            val usageStale = stored != null &&
+                !stored.usageShort.isNullOrBlank() &&
+                (stored.usageReportVersion ?: 0) < USAGE_REPORT_VERSION
+            if (detailedAppRepository.fullDescription(resolvedSlug).isNullOrBlank() ||
+                usageMissing ||
+                usageStale
+            ) {
                 fetchDetail(resolvedSlug)
             } else {
                 // A fresh ViewModel (e.g. the full-description screen) already
                 // holding the markdown must not refetch it over the network.
-                detailFetching.value = false
+                _detailFetching.value = false
             }
         }
+    }
+
+    /** Mirrors the server rule: only GitHub and GitLab repos are analyzed. */
+    private fun isAnalyzableSource(url: String?): Boolean {
+        val host = url?.let { runCatching { java.net.URI(it).host }.getOrNull() } ?: return false
+        return host.equals("github.com", ignoreCase = true) ||
+            host.equals("gitlab.com", ignoreCase = true) ||
+            host.endsWith(".github.com", ignoreCase = true) ||
+            host.endsWith(".gitlab.com", ignoreCase = true)
     }
 
     fun retry() {
@@ -291,7 +321,7 @@ class AppDetailsViewModel @Inject constructor(
     }
 
     private suspend fun fetchDetail(resolvedSlug: String) {
-        detailFetching.value = true
+        _detailFetching.value = true
         try {
             when (val result = detailedAppRepository.fetchAndPersist(resolvedSlug)) {
                 is DetailedAppResult.Success -> _detailError.value = null
@@ -302,7 +332,7 @@ class AppDetailsViewModel @Inject constructor(
                 }
             }
         } finally {
-            detailFetching.value = false
+            _detailFetching.value = false
         }
     }
 
@@ -485,7 +515,7 @@ class AppDetailsViewModel @Inject constructor(
         return combine(
             catalog,
             _detailError,
-            detailFetching
+            _detailFetching
         ) { catalogPair, error, fetching ->
             val (detailed, installed) = catalogPair
             when {

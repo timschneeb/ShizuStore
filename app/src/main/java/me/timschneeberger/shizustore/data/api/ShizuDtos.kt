@@ -53,8 +53,6 @@ data class AppSummaryDto(
     val abis: List<String> = emptyList(),
     // Locale labels that differ from the display name; empty when the APK ships none.
     val localizedLabels: Map<String, String> = emptyMap(),
-    // Shizuku manager support from the primary APK (shizuku/dhizuku/sui/root).
-    val managers: List<String> = emptyList(),
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
@@ -153,24 +151,14 @@ data class AppDetailDto(
     val localeCount: Int? = null,
     val locales: List<String> = emptyList(),
     val abis: List<String> = emptyList(),
-    // Shizuku usage classification from the primary APK; detail-only beyond managers.
-    val managers: List<String> = emptyList(),
-    val apiForm: String? = null,
-    val capabilities: List<String> = emptyList(),
-    val usageOptional: Boolean = false,
-    val usageSummary: String? = null,
-    val signals: List<AppSignalDto> = emptyList(),
+    // AI source analysis (server SPEC 5.4); null until the server analyzed the app.
+    val usageShort: String? = null,
+    val usageMarkdown: String? = null,
+    val usageAnalyzedAt: String? = null,
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
     val trackerTags: List<TrackerTagDto> = emptyList()
-)
-
-@Serializable
-data class AppSignalDto(
-    val kind: String = "",
-    val value: String = "",
-    val confidence: String = ""
 )
 
 @Serializable

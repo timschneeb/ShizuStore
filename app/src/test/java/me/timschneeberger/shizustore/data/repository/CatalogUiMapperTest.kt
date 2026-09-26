@@ -12,11 +12,9 @@ import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
-import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -364,29 +362,18 @@ class CatalogUiMapperTest {
     }
 
     @Test
-    fun appDetailsCarriesShizukuUsage() {
+    fun appDetailsCarriesAiUsageReport() {
         val app = app().copy(
-            managers = listOf("shizuku", "root"),
-            apiForm = "user_service",
-            capabilities = listOf("install", "freeze"),
-            usageOptional = true,
-            usageSummary = "This app can use Shizuku to install or update apps.",
-            signals = listOf(
-                AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong")
-            )
+            usageShort = "Can install apps using PackageManager.",
+            usageMarkdown = "Installs via `PackageManager` (`Installer.kt:3`).",
+            usageAnalyzedAt = "2026-05-02T00:00:00+00:00"
         )
 
         val details = mapper.toAppDetails(DetailedApp(app, emptyList()))
 
-        assertEquals(listOf("shizuku", "root"), details.managers)
-        assertEquals("user_service", details.apiForm)
-        assertEquals(listOf("install", "freeze"), details.capabilities)
-        assertTrue(details.usageOptional)
-        assertEquals("This app can use Shizuku to install or update apps.", details.usageSummary)
-        assertEquals(
-            listOf(AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong")),
-            details.signals
-        )
+        assertEquals("Can install apps using PackageManager.", details.usageShort)
+        assertEquals("Installs via `PackageManager` (`Installer.kt:3`).", details.usageMarkdown)
+        assertEquals("2026-05-02T00:00:00+00:00", details.usageAnalyzedAt)
     }
 
     private fun app(): AppEntity =

@@ -274,7 +274,6 @@
     <string name="filter_title_price">Filter by price</string>
     <string name="filter_title_sort">Sort by</string>
     <string name="category_dhizuku">Dhizuku-compatible</string>
-    <string name="category_root">Works with root</string>
     <string name="app_badge_paid">Paid</string>
     <string name="app_badge_iap">IAP</string>
     <string name="app_badge_ads">Ads</string>
@@ -288,23 +287,8 @@
     <string name="details_trackers_title">Detected trackers (%1$d)</string>
     <string name="details_trackers_note">Matched by Exodus Privacy code signatures. Not a complete list.</string>
     <string name="details_shizuku_title">Shizuku usage</string>
-    <string name="details_shizuku_managers">Managers: %1$s</string>
-    <string name="details_shizuku_api_user_service">Uses the modern user service</string>
-    <string name="details_shizuku_api_new_process">Starts a helper process</string>
-    <string name="details_shizuku_api_permission">Requests the Shizuku permission</string>
-    <string name="details_shizuku_capabilities">Can %1$s</string>
-    <string name="details_shizuku_optional">Shizuku looks optional; the app ships fallbacks.</string>
-    <string name="details_shizuku_note">Detected from the APK and its public source. A match shows what the app can do with a granted manager, not what it does.</string>
-    <string name="details_shizuku_capability_install">install or update apps</string>
-    <string name="details_shizuku_capability_uninstall">uninstall apps</string>
-    <string name="details_shizuku_capability_freeze">freeze or disable apps</string>
-    <string name="details_shizuku_capability_appops">change app permissions</string>
-    <string name="details_shizuku_capability_system_settings">change system and power settings</string>
-    <string name="details_shizuku_capability_process">control running processes</string>
-    <string name="details_shizuku_capability_diagnostics">read diagnostic system information</string>
-    <string name="details_shizuku_capability_reboot">reboot the device</string>
-    <string name="details_shizuku_capability_wireless_adb">pair over wireless ADB</string>
-    <string name="details_shizuku_capability_compile">recompile installed apps</string>
+    <string name="details_shizuku_empty">No usage report is available for this app.</string>
+    <string name="details_shizuku_ai_note">This report is AI generated from the app\'s public source and may not catch every usage.</string>
 
     <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>
     <string name="settings_appearance_title">Appearance</string>

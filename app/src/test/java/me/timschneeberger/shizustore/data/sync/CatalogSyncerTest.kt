@@ -67,7 +67,6 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(3, alpha.localeCount)
         assertEquals(listOf("arm64-v8a"), alpha.abis)
         assertEquals(mapOf("de" to "Alpha DE"), alpha.localizedLabels)
-        assertEquals(listOf("shizuku"), alpha.managers)
         assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
         assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
     }
@@ -102,7 +101,6 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(2, alpha.localeCount)
         assertEquals(listOf("arm64-v8a", "armeabi-v7a"), alpha.abis)
         assertEquals(mapOf("de" to "Alpha DE", "zh" to "Alpha 中文"), alpha.localizedLabels)
-        assertEquals(listOf("shizuku", "root"), alpha.managers)
         assertEquals(0, db.appDownloadDao().count())
         assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
         assertEquals("etag-1", db.syncStateDao().get()!!.categoriesEtag)

@@ -37,8 +37,6 @@ data class ResolvedApp(
     val hasAds: Boolean = false,
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
-    /** Shizuku managers the primary APK supports (shizuku/dhizuku/sui/root). */
-    val managers: List<String> = emptyList(),
     /** Locale label that differs from [name], when the APK ships one for a device locale. */
     val localizedName: String? = null,
     val stars: Int? = null,

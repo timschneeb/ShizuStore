@@ -11,7 +11,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 private const val DHIZUKU_TITLE = "Dhizuku-compatible"
-private const val ROOT_TITLE = "Root-capable"
 
 class CategorySectionsTest {
 
@@ -28,8 +27,7 @@ class CategorySectionsTest {
                 app("d", category = "tools")
             ),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("tools"), sections.map { it.category })
@@ -51,8 +49,7 @@ class CategorySectionsTest {
                 app("g", category = "games")
             ),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("games"), sections.map { it.category })
@@ -68,8 +65,7 @@ class CategorySectionsTest {
             ),
             apps = apps("small", 4) + apps("large", 6) + apps("medium", 4),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("large", "medium", "small"), sections.map { it.category })
@@ -81,8 +77,7 @@ class CategorySectionsTest {
             categories = listOf(tag("tools", "Tools")),
             apps = apps("tools", 25),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(20, sections.single().apps.size)
@@ -99,8 +94,7 @@ class CategorySectionsTest {
                 app("d", category = "tools", installCount = 20)
             ),
             useInstallCounts = true,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("b", "c", "d", "a"), sections.single().apps.map { it.slug })
@@ -117,8 +111,7 @@ class CategorySectionsTest {
                 app("d", "Delta", category = "tools", downloadTotal = 10)
             ),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("b", "d", "a", "c"), sections.single().apps.map { it.slug })
@@ -130,8 +123,7 @@ class CategorySectionsTest {
             categories = listOf(tag("tools", "Tools")),
             apps = apps("tools", 4) + app("orphan", category = null),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(4, sections.single().apps.size)
@@ -147,8 +139,7 @@ class CategorySectionsTest {
                 app("c", category = "tools")
             ),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         val section = sections.single()
@@ -163,8 +154,7 @@ class CategorySectionsTest {
             categories = listOf(tag("tools", "Tools")),
             apps = apps("tools", 4),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("tools"), sections.map { it.category })
@@ -180,8 +170,7 @@ class CategorySectionsTest {
                 app("d3", dhizukuDeclared = true)
             ),
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(listOf("tools", "dhizuku"), sections.map { it.category })
@@ -193,44 +182,10 @@ class CategorySectionsTest {
             categories = emptyList(),
             apps = (1..25).map { app("d$it", dhizukuDeclared = true) },
             useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
+            dhizukuTitle = DHIZUKU_TITLE
         )
 
         assertEquals(20, sections.single().apps.size)
-    }
-
-    @Test
-    fun rootSectionCollectsRootCapableAppsAcrossCategories() {
-        val sections = CategorySections.build(
-            categories = emptyList(),
-            apps = listOf(
-                app("a", category = "tools", managers = listOf("shizuku", "root")),
-                app("b", category = "games", managers = listOf("root")),
-                app("c", category = "tools", managers = listOf("shizuku"))
-            ),
-            useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
-        )
-
-        val section = sections.single()
-        assertEquals("root", section.category)
-        assertEquals(ROOT_TITLE, section.title)
-        assertEquals(listOf("a", "b"), section.apps.map { it.slug })
-    }
-
-    @Test
-    fun rootSectionIsOmittedWithoutRootApps() {
-        val sections = CategorySections.build(
-            categories = listOf(tag("tools", "Tools")),
-            apps = apps("tools", 4),
-            useInstallCounts = false,
-            dhizukuTitle = DHIZUKU_TITLE,
-            rootTitle = ROOT_TITLE
-        )
-
-        assertEquals(listOf("tools"), sections.map { it.category })
     }
 
     private fun apps(category: String, count: Int): List<ResolvedApp> =
@@ -245,8 +200,7 @@ class CategorySectionsTest {
         category: String? = null,
         installCount: Long = 0,
         downloadTotal: Long? = null,
-        dhizukuDeclared: Boolean = false,
-        managers: List<String> = emptyList()
+        dhizukuDeclared: Boolean = false
     ) = ResolvedApp(
         packageName = "pkg.$slug",
         repoName = "GitHub",
@@ -264,7 +218,6 @@ class CategorySectionsTest {
         categorySlug = category,
         installCount = installCount,
         downloadTotal = downloadTotal,
-        dhizukuDeclared = dhizukuDeclared,
-        managers = managers
+        dhizukuDeclared = dhizukuDeclared
     )
 }

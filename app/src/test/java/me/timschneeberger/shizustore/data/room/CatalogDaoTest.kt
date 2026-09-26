@@ -19,7 +19,6 @@ import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
-import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
@@ -157,37 +156,22 @@ class CatalogDaoTest : RobolectricTestBase() {
     }
 
     @Test
-    fun usageSignalsRoundTrip() = runTest {
+    fun usageReportRoundTrip() = runTest {
         val appDao = db.appDao()
         appDao.upsert(
             app("foo", "Foo").copy(
-                managers = listOf("shizuku", "root"),
-                apiForm = "user_service",
-                capabilities = listOf("install", "freeze"),
-                usageOptional = true,
-                usageSummary = "This app can use Shizuku to install or update apps.",
-                signals = listOf(
-                    AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong"),
-                    AppSignal("command", "pm install", "strong")
-                )
+                usageShort = "Can install apps using PackageManager.",
+                usageMarkdown = "Installs via `PackageManager`.",
+                usageAnalyzedAt = "2026-05-02T00:00:00+00:00"
             )
         )
 
         val stored = appDao.get("foo")
 
         assertNotNull(stored)
-        assertEquals(listOf("shizuku", "root"), stored!!.managers)
-        assertEquals("user_service", stored.apiForm)
-        assertEquals(listOf("install", "freeze"), stored.capabilities)
-        assertTrue(stored.usageOptional)
-        assertEquals("This app can use Shizuku to install or update apps.", stored.usageSummary)
-        assertEquals(
-            listOf(
-                AppSignal("permission", "moe.shizuku.manager.permission.API_V23", "strong"),
-                AppSignal("command", "pm install", "strong")
-            ),
-            stored.signals
-        )
+        assertEquals("Can install apps using PackageManager.", stored!!.usageShort)
+        assertEquals("Installs via `PackageManager`.", stored.usageMarkdown)
+        assertEquals("2026-05-02T00:00:00+00:00", stored.usageAnalyzedAt)
     }
 
     @Test

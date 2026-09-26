@@ -16,10 +16,10 @@ import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
-import me.timschneeberger.shizustore.data.room.entity.AppSignal
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
+import me.timschneeberger.shizustore.data.room.entity.USAGE_REPORT_VERSION
 
 /** Enums fall back to entity defaults for unknown server values, so an addition never drops a row. */
 
@@ -49,7 +49,6 @@ fun AppSummaryDto.toEntity(syncedAt: Long): AppEntity = AppEntity(
     localeCount = localeCount,
     abis = abis,
     localizedLabels = localizedLabels,
-    managers = managers,
     size = size,
     iconHash = iconHash,
     iconAdaptive = iconAdaptive,
@@ -99,7 +98,6 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         localeCount = detail.localeCount ?: localeCount,
         abis = detail.abis.ifEmpty { abis },
         localizedLabels = primary?.localizedLabels?.takeIf { it.isNotEmpty() } ?: localizedLabels,
-        managers = detail.managers.ifEmpty { managers },
         size = primary?.size ?: size,
         iconHash = detail.iconHash,
         iconAdaptive = detail.iconAdaptive,
@@ -126,11 +124,10 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         addedAt = detail.addedAt.ifBlank { null },
         lastCheckedAt = detail.lastCheckedAt,
         detailsFetchedAt = fetchedAt,
-        apiForm = detail.apiForm,
-        capabilities = detail.capabilities,
-        usageOptional = detail.usageOptional,
-        usageSummary = detail.usageSummary,
-        signals = detail.signals.map { AppSignal(it.kind, it.value, it.confidence) }
+        usageShort = detail.usageShort,
+        usageMarkdown = detail.usageMarkdown,
+        usageAnalyzedAt = detail.usageAnalyzedAt,
+        usageReportVersion = USAGE_REPORT_VERSION
     )
 }
 

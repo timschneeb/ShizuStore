@@ -77,7 +77,6 @@ fun AppListFilterChips(
             ?.let { slug ->
                 when {
                     SyntheticCategory.isDhizuku(slug) -> stringResource(R.string.category_dhizuku)
-                    SyntheticCategory.isRoot(slug) -> stringResource(R.string.category_root)
                     else -> flatCategories.firstOrNull { it.slug == slug }?.name
                 }
             }

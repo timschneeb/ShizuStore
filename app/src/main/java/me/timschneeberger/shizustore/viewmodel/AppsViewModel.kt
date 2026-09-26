@@ -117,8 +117,7 @@ class AppsViewModel @Inject constructor(
             categories = CategoryTagTree.build(categories),
             apps = apps,
             useInstallCounts = useInstallCounts,
-            dhizukuTitle = context.getString(R.string.category_dhizuku),
-            rootTitle = context.getString(R.string.category_root)
+            dhizukuTitle = context.getString(R.string.category_dhizuku)
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 

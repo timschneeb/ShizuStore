@@ -13,8 +13,8 @@ import me.timschneeberger.shizustore.data.model.flatten
 /**
  * Builds the home CATEGORY rows from the top-level category tree. Membership
  * includes descendants, and the count comes from real members so a category the
- * self filter or the sync left empty never produces a header. Synthetic
- * sections (Dhizuku-compatible, root-capable) join the same count-ordered list.
+ * self filter or the sync left empty never produces a header. The synthetic
+ * Dhizuku-compatible section joins the same count-ordered list.
  */
 object CategorySections {
 
@@ -26,7 +26,6 @@ object CategorySections {
         apps: List<ResolvedApp>,
         useInstallCounts: Boolean,
         dhizukuTitle: String,
-        rootTitle: String,
         minApps: Int = MIN_APPS,
         itemLimit: Int = ITEM_LIMIT
     ): List<AppGroup> {
@@ -47,13 +46,9 @@ object CategorySections {
         // Synthetic sections span every category; no minimum applies because
         // the flag itself is the curation.
         val dhizuku = apps.filter { it.dhizukuDeclared }
-        val root = apps.filter { it.managers.contains("root") }
         val synthetic = buildList {
             if (dhizuku.isNotEmpty()) {
                 add(Section(SyntheticCategory.DHIZUKU_SLUG, dhizukuTitle, dhizuku))
-            }
-            if (root.isNotEmpty()) {
-                add(Section(SyntheticCategory.ROOT_SLUG, rootTitle, root))
             }
         }
 

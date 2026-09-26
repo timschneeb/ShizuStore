@@ -83,12 +83,9 @@ class AppListViewModel @Inject constructor(
 
     val categories: StateFlow<List<CategoryTag>?> = appRepository.observeCategories()
         .map { entities ->
-            SyntheticCategory.insertRoot(
-                SyntheticCategory.insertDhizuku(
-                    CategoryTagTree.build(entities),
-                    context.getString(R.string.category_dhizuku)
-                ),
-                context.getString(R.string.category_root)
+            SyntheticCategory.insertDhizuku(
+                CategoryTagTree.build(entities),
+                context.getString(R.string.category_dhizuku)
             )
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
