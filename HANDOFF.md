@@ -63,7 +63,9 @@ markdown (`MarkdownInline`, synchronous parse so the one-liner never flashes
 empty), and `UsageReport` hoists the report parse state so one spinner covers
 the whole report area until the parse succeeds; the card no longer floats over
 an empty markdown body while parsing. `MarkdownDescription` exposes the hoisted
-`rememberReportMarkdownState` and `RenderedMarkdown(state = ...)` for this.
+`rememberReportMarkdownState` and `RenderedMarkdown(state = ...)` for this. The
+details row and the report screen share the `details_shizuku_title` label
+("How Shizuku is used").
 
 Release server override and F-Droid prep (September 2026): the Settings -> Server
 screen and its navigation entry are no longer gated by `BuildConfig.DEBUG`, so

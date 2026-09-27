@@ -246,7 +246,7 @@
     <string name="details_dhizuku">Dhizuku</string>
     <string name="details_trackers_title">检测到的跟踪器（%1$d）</string>
     <string name="details_trackers_note">通过 Exodus Privacy 代码签名匹配，并非完整列表。</string>
-    <string name="details_shizuku_title">Shizuku 使用情况</string>
+    <string name="details_shizuku_title">Shizuku 的使用方式</string>
     <string name="details_shizuku_empty">此应用暂无使用报告。</string>
     <string name="details_shizuku_ai_note">这是对应用公开源代码中 Shizuku 相关用法的 AI 辅助分析。此为尽力而为的分析，可能无法涵盖每一处用法。</string>
     <string name="details_shizuku_summary_title">摘要</string>
