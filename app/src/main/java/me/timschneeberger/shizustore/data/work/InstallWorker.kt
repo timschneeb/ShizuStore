@@ -18,11 +18,10 @@ import androidx.work.workDataOf
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlin.coroutines.cancellation.CancellationException
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import me.timschneeberger.shizustore.data.helper.InstallDispatcher
+import me.timschneeberger.shizustore.data.helper.InstallReconciler
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallDispatch
 import me.timschneeberger.shizustore.data.room.dao.DownloadDao
@@ -34,10 +33,14 @@ class InstallWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val installDispatcher: InstallDispatcher,
+    private val installReconciler: InstallReconciler,
     private val downloadDao: DownloadDao
 ) : CoroutineWorker(context, params) {
     @VisibleForTesting
     internal var settleTimeoutMs: Long = SETTLE_TIMEOUT_MS
+
+    @VisibleForTesting
+    internal var settlePollMs: Long = SETTLE_POLL_MS
 
     override suspend fun doWork(): Result {
         val packageName = inputData.getString(KEY_PACKAGE_NAME)
@@ -122,18 +125,38 @@ class InstallWorker @AssistedInject constructor(
         before: DownloadStatus?
     ): DownloadStatus? = withTimeoutOrNull(settleTimeoutMs) {
         var sawInstalling = false
+        var settled: DownloadStatus? = null
 
-        downloadDao.downloads()
-            .mapNotNull { rows -> rows.firstOrNull { it.packageName == packageName }?.status }
-            .distinctUntilChanged()
-            .first { status ->
+        while (settled == null) {
+            val row = downloadDao.getDownload(packageName)
+            val status = row?.status
+            if (status != null) {
                 if (status in DownloadStatus.installing) {
                     sawInstalling = true
-                    false
-                } else {
-                    sawInstalling || status != before
+                } else if (sawInstalling || status != before) {
+                    settled = status
+                    break
                 }
             }
+
+            // OEM freezers can drop the session callback broadcast while the app
+            // is backgrounded; verify against the package manager instead of
+            // waiting for a callback that may never arrive.
+            if (
+                sawInstalling &&
+                row != null &&
+                row.versionCode != 0L &&
+                installedVersionCode(packageName) == row.versionCode
+            ) {
+                installReconciler.onPackageInstalled(packageName)
+                settled = downloadDao.getDownload(packageName)?.status ?: DownloadStatus.INSTALLED
+                break
+            }
+
+            delay(settlePollMs)
+        }
+
+        settled
     }
 
     private fun installedVersionCode(packageName: String): Long? = runCatching {
@@ -158,6 +181,9 @@ class InstallWorker @AssistedInject constructor(
 
         @VisibleForTesting
         internal const val SETTLE_TIMEOUT_MS = 5L * 60L * 1_000L
+
+        @VisibleForTesting
+        internal const val SETTLE_POLL_MS = 1_000L
 
         fun request(packageName: String): OneTimeWorkRequest =
             OneTimeWorkRequestBuilder<InstallWorker>()

@@ -37,6 +37,15 @@ open class InstallReconciler @Inject constructor(
         isolate(TAG, "abandon orphaned sessions") { sessionInstaller.abandonOrphanedSessions() }
     }
 
+    /**
+     * Foreground re-check: OEM freezers can drop the session callback broadcast
+     * while the app is backgrounded, so settle stranded rows whenever the UI
+     * comes back instead of waiting for the next process start.
+     */
+    open suspend fun reconcileOnForeground() {
+        isolate(TAG, "reconcile stranded installs") { reconcileStrandedInstalls() }
+    }
+
     open suspend fun onPackageInstalled(packageName: String) = withContext(Dispatchers.IO) {
         val download = downloadDao.getDownload(packageName) ?: return@withContext
         if (!download.isInstalling) return@withContext
@@ -64,7 +73,16 @@ open class InstallReconciler @Inject constructor(
         val stranded = downloadDao.downloads().first().filter { it.isInstalling }
 
         stranded.forEach { download ->
-            if (InstallerBase.wasDispatchedInThisProcess(download.packageName)) {
+            val installed = installedVersionCode(download.packageName)
+            val outcome = strandedInstallOutcome(
+                rowVersionCode = download.versionCode,
+                installedVersionCode = installed,
+                dispatchedInThisProcess = InstallerBase.wasDispatchedInThisProcess(
+                    download.packageName
+                )
+            )
+
+            if (outcome == null) {
                 Log.i(
                     TAG,
                     "${download.packageName} is ${download.status} from this process; " +
@@ -73,19 +91,19 @@ open class InstallReconciler @Inject constructor(
                 return@forEach
             }
 
-            val installed = installedVersionCode(download.packageName)
-            val landed = installed == download.versionCode
-            val settled = if (landed) DownloadStatus.INSTALLED else DownloadStatus.FAILED
-
             Log.i(
                 TAG,
                 "${download.packageName} was stranded at ${download.status} " +
-                    "(row ${download.versionCode}, installed $installed); settling as $settled"
+                    "(row ${download.versionCode}, installed $installed); settling as $outcome"
             )
             settle(
                 packageName = download.packageName,
-                status = settled,
-                error = if (landed) null else DownloadFailure.INSTALL_INTERRUPTED,
+                status = outcome,
+                error = if (outcome == DownloadStatus.INSTALLED) {
+                    null
+                } else {
+                    DownloadFailure.INSTALL_INTERRUPTED
+                },
                 expected = download.status,
                 versionCode = download.versionCode
             )
@@ -160,4 +178,21 @@ open class InstallReconciler @Inject constructor(
     private companion object {
         const val TAG = "InstallReconciler"
     }
+}
+
+/**
+ * Outcome for an installing row found by reconciliation. The row settles as
+ * INSTALLED when the device already carries its version, even when this process
+ * dispatched it: the landing proof beats the in-flight guard. An unlanded row
+ * dispatched by this process may still be in flight and is left alone; anything
+ * else is a failed install.
+ */
+internal fun strandedInstallOutcome(
+    rowVersionCode: Long,
+    installedVersionCode: Long?,
+    dispatchedInThisProcess: Boolean
+): DownloadStatus? = when {
+    installedVersionCode == rowVersionCode -> DownloadStatus.INSTALLED
+    dispatchedInThisProcess -> null
+    else -> DownloadStatus.FAILED
 }

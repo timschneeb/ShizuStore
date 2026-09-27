@@ -50,6 +50,14 @@ Feature complete against the server `/v1` contract. `assembleDebug`,
 the short list of known deviations. A September 2026 Compose performance pass
 followed and is described below.
 
+Stuck-install fix (September 2026): a Samsung One UI freeze dropped the install
+session broadcast while the app was backgrounded, leaving the haven row at
+`INSTALLING` until the next launch. `InstallReconciler.reconcileOnForeground()`
+now runs from `MainActivity.onStart`, `strandedInstallOutcome` settles a landed
+row even when this process dispatched it, and `InstallWorker.awaitSettled` polls
+the row and the installed version every second instead of waiting on a broadcast
+that may never arrive. Tests: `InstallReconcilerTest`.
+
 Release server override and F-Droid prep (September 2026): the Settings -> Server
 screen and its navigation entry are no longer gated by `BuildConfig.DEBUG`, so
 release builds can switch to a custom or self-hosted server too. Version bumped
@@ -579,8 +587,10 @@ bounded in-memory LRUs, never persisted to Room.
 **Install.** `DownloadHelper` stages a queue row from a candidate. `DownloadWorker`
 fetches the upstream `apkUrl`, verifies its hash, and extracts the named member
 first when the release ships the APK inside an archive. `InstallWorker` hands the
-file to the selected installer. APKs are removed once the package manager confirms
-the install, and `InstallReconciler` sweeps stranded rows and files.
+file to the selected installer, then polls the row and the installed version until
+it settles, so a dropped OEM broadcast cannot strand it. APKs are removed once the
+package manager confirms the install, and `InstallReconciler` sweeps stranded rows
+and files on launch, on foreground and after a settle timeout.
 
 **Self-update.** `SHIZU_STORE_PACKAGE` is excluded from `pagedApps`
 (`AppListQueryBuilder`) and every carousel in `AppRepository`, so the store
@@ -627,6 +637,12 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 - When `candidate.archiveEntry` is set the server `sha256`/`size` describe the
   archive, not the APK. Verify the archive hash first, then extract the entry; both
   the `.apk` and the staged `.archive` are cleaned up on failure or cancel.
+- Install completion cannot rely on the session broadcast alone: OEM freezers
+  (observed on Samsung One UI) can drop it while the app is backgrounded, leaving
+  the row `INSTALLING` until the next launch. `MainActivity.onStart` runs
+  `reconcileOnForeground()`, `InstallWorker` polls `getDownload` plus
+  `installedVersionCode` every second, and a landed version settles as `INSTALLED`
+  even when this process dispatched the install.
 - Update-state rewrites run `clearUpdateState()` plus every `setUpdateState()` in
   one `database.useWriterConnection { it.immediateTransaction { ... } }` so
   observers never see the cleared intermediate state. `withTransaction` needs a

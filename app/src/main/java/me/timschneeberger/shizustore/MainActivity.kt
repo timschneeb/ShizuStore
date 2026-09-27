@@ -94,6 +94,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.launch {
+            runCatching { installReconciler.reconcileOnForeground() }
+                .onFailure { Log.w(TAG, "Could not run the foreground reconciliation", it) }
+        }
+    }
+
     private fun initialScreens(intent: Intent?, tab: Int): List<Screen> {
         val target = intent
             ?.let { IntentCompat.getParcelableExtra(it, EXTRA_SCREEN, Screen::class.java) }
