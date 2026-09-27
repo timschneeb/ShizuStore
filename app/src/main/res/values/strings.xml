@@ -288,7 +288,7 @@
     <string name="details_trackers_note">Matched by Exodus Privacy code signatures. Not a complete list.</string>
     <string name="details_shizuku_title">Shizuku usage</string>
     <string name="details_shizuku_empty">No usage report is available for this app.</string>
-    <string name="details_shizuku_ai_note">AI-assisted analysis of Shizuku-related usages in the app\'s public source code. It is best effort, so it may not catch every single usage.</string>
+    <string name="details_shizuku_ai_note">This is an AI-assisted analysis of Shizuku-related usages in the app\'s public source code. It is best effort, so it may not catch every single usage.</string>
     <string name="details_shizuku_summary_title">Summary</string>
 
     <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>

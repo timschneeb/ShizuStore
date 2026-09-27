@@ -248,7 +248,7 @@
     <string name="details_trackers_note">透過 Exodus Privacy 程式碼簽章比對，並非完整清單。</string>
     <string name="details_shizuku_title">Shizuku 使用情形</string>
     <string name="details_shizuku_empty">此應用程式尚無使用報告。</string>
-    <string name="details_shizuku_ai_note">對應用程式公開原始碼中 Shizuku 相關用法的 AI 輔助分析。此為盡力而為的分析，可能無法涵蓋每一處用法。</string>
+    <string name="details_shizuku_ai_note">這是對應用程式公開原始碼中 Shizuku 相關用法的 AI 輔助分析。此為盡力而為的分析，可能無法涵蓋每一處用法。</string>
     <string name="details_shizuku_summary_title">摘要</string>
     <string name="settings_appearance_summary">淺色或深色主題，以及基於桌布的配色</string>
     <string name="settings_appearance_title">外觀</string>
