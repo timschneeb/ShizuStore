@@ -16,6 +16,7 @@ import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -88,6 +90,7 @@ class AppListViewModel @Inject constructor(
                 context.getString(R.string.category_dhizuku)
             )
         }
+        .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     val history: StateFlow<List<String>> = searchHistory.history
@@ -105,6 +108,9 @@ class AppListViewModel @Inject constructor(
                 appRepository.pagedApps(args, flag)
             }.flow.map { paging -> paging.map(mapper::toResolvedApp) }
         }
+        // Row mapping parses ISO dates and formats strings; keep it off the
+        // main thread that is busy scrolling and recomposing.
+        .flowOn(Dispatchers.Default)
         .cachedIn(viewModelScope)
 
     /**

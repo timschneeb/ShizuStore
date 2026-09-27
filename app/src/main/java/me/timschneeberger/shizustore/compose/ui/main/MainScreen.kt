@@ -145,6 +145,9 @@ fun MainScreen(
             HorizontalPager(
                 state = pagerState,
                 userScrollEnabled = false,
+                // Keep the neighbor tab composed so a tab switch does not pay for
+                // a full screen's first composition during the animation.
+                beyondViewportPageCount = 1,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 when (MainTab.entries[page]) {

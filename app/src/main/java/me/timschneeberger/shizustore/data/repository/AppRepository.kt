@@ -113,7 +113,9 @@ class AppRepository @Inject constructor(
                 download.packageName?.let { add(it) }
             }
         }
-        return packages.firstOrNull { installedDao.getByPackage(it) != null }
+        if (packages.isEmpty()) return null
+        val installed = installedDao.getPackages(packages.toList()).toHashSet()
+        return packages.firstOrNull { it in installed }
     }
 
     /** Updatable rows with a real package name, the only ones an install can target. */

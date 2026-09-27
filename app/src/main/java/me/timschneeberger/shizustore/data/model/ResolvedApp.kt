@@ -6,8 +6,12 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import androidx.compose.runtime.Immutable
 import me.timschneeberger.shizustore.data.api.Availability
 
+// Every field is set once at construction; the annotation lets list rows skip
+// recomposition instead of treating the List fields as unknown state.
+@Immutable
 data class ResolvedApp(
     val packageName: String,
     val repoName: String,

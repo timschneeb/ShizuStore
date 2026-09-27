@@ -16,11 +16,13 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -64,16 +66,22 @@ class UpdatesViewModel @Inject constructor(
                     installedPackage = appRepository.installedPackageFor(entity.slug)
                 )
             }
-        }.cachedIn(viewModelScope)
+        }
+            // The per-row installed-flavor lookup runs DB queries; keep them off the
+            // main thread that is scrolling and recomposing the list.
+            .flowOn(Dispatchers.Default)
+            .cachedIn(viewModelScope)
 
     val downloadsByPackage: StateFlow<Map<String, Download>> = downloadHelper.downloads
         .map { downloads -> downloads.associateBy { it.packageName } }
+        .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptyMap())
 
     val anyDownloadActive: StateFlow<Boolean> = downloadHelper.downloads
         .map { downloads ->
             downloads.any { it.isActive || it.isInstalling }
         }
+        .flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 
     val updateCount: StateFlow<Int> = appRepository.observeUpdatableCount()

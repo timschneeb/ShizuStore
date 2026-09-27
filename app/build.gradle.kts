@@ -2,6 +2,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.androidx.baselineprofile)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
@@ -127,6 +128,32 @@ android {
             applicationIdSuffix = ".nightly"
             versionNameSuffix = "-${lastCommitHash.get()}"
         }
+
+        // Release-identical (R8) build for Macrobenchmark and baseline profile
+        // generation; AOSP testkey so it installs here.
+        create("benchmark") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("aosp")
+            isDebuggable = false
+            isProfileable = true
+            matchingFallbacks += listOf("release")
+        }
+
+        // The baseline profile producer runs one variant per prefix. Reusing
+        // these build type names keeps its APKs AOSP-signed and installable
+        // without the release keystore.
+        create("benchmarkRelease") {
+            initWith(getByName("benchmark"))
+        }
+
+        // Profile generation leans on unobfuscated class names; AGP maps them
+        // through R8 when the real release build consumes the profile.
+        create("nonMinifiedRelease") {
+            initWith(getByName("release"))
+            signingConfig = signingConfigs.getByName("aosp")
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
     }
 
     buildFeatures {
@@ -174,6 +201,11 @@ ktlint {
     verbose = true
 }
 
+baselineProfile {
+    // Keep the generated profile in app/src/main so release builds pick it up.
+    saveInSrc = true
+}
+
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -184,6 +216,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.androidx.profileinstaller)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
@@ -230,6 +263,8 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.okhttp.mockwebserver)
+
+    baselineProfile(project(":baselineprofile"))
 }
 
 tasks.withType<Test>().configureEach {

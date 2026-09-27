@@ -41,6 +41,21 @@ adb -s 192.168.178.58:5555 install -r app/build/outputs/apk/debug/ShizuStore-1.2
 
 Adjust the device address if the phone reports a different one.
 
+Performance benchmarks are device-gated and not part of the inner loop:
+
+```bash
+./gradlew :app:generateReleaseBaselineProfile
+./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest
+```
+
+The first regenerates `app/src/release/generated/baselineProfiles/` (keep it in
+source); the second runs the frame-timing suite. Both use the release-like
+`benchmarkRelease`/`nonMinifiedRelease` variants signed with the AOSP testkey.
+Pre-install
+`app/build/outputs/apk/benchmarkRelease/ShizuStore-1.2.0-benchmarkRelease-unsigned.apk`,
+grant `POST_NOTIFICATIONS` and wake the screen first; the connected runner
+uninstalls the app at the end, and a dozing screen yields no frame stats.
+
 ## Layout
 
 Single `:app` module. Sources under `app/src/main/java/me/timschneeberger/shizustore/`:
@@ -53,6 +68,9 @@ Single `:app` module. Sources under `app/src/main/java/me/timschneeberger/shizus
   and install pipeline, inherited from AuroraDroid.
 - `compose/` - screens, navigation (Navigation 3), shared widgets, theme.
 - `viewmodel/` - per-screen ViewModels (Paging 3, Room-backed).
+
+Outside the app module, `baselineprofile/` is a device-gated `com.android.test`
+module with the Macrobenchmark suite and the baseline profile generator.
 
 ## Contract rules
 

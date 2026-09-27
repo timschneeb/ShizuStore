@@ -21,8 +21,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -104,23 +103,6 @@ fun AppDetailsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val detailError by viewModel.detailError.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val isFavourite by viewModel.isFavourite.collectAsStateWithLifecycle()
-    val isBlacklisted by viewModel.isBlacklisted.collectAsStateWithLifecycle()
-    val ignoredUpdate by viewModel.ignoredUpdate.collectAsStateWithLifecycle()
-    val moreFromAuthor by viewModel.moreFromAuthor.collectAsStateWithLifecycle()
-    val moreFromCategory by viewModel.moreFromCategory.collectAsStateWithLifecycle()
-    val categorySlug by viewModel.categorySlug.collectAsStateWithLifecycle()
-    val showTrackerInfo by viewModel.showTrackerInfo.collectAsStateWithLifecycle()
-    val obtainiumUrl by viewModel.obtainiumUrl.collectAsStateWithLifecycle()
-    val obtainiumInstalled by viewModel.obtainiumInstalled.collectAsStateWithLifecycle()
-    val loadedState = uiState as? AppDetailsUiState.Loaded
-    // Installed-app actions must target the flavor the user installed, not the
-    // catalog's canonical package.
-    val actionablePackage = loadedState?.actionablePackage ?: packageName
-    // Keyed on the installed flag instead of the download status: the launch
-    // intent only changes when installation settles, not on progress ticks.
-    val canAddToHome =
-        rememberCanOpen(actionablePackage, loadedState?.resolved?.isInstalled == true)
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -167,80 +149,11 @@ fun AppDetailsScreen(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = null,
-                onNavigateBack = { onNavigateTo(Destination.Back) },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            val details = (uiState as? AppDetailsUiState.Loaded)?.details
-                            context.shareApp(
-                                details?.name ?: packageName,
-                                packageName,
-                                url = details?.storeUrl ?: details?.url ?: details?.sourceUrl
-                            )
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_share),
-                            contentDescription = stringResource(R.string.action_share)
-                        )
-                    }
-
-                    IconButton(onClick = viewModel::toggleFavourite) {
-                        Icon(
-                            painter = painterResource(
-                                if (isFavourite) {
-                                    R.drawable.ic_favorite_checked
-                                } else {
-                                    R.drawable.ic_favorite_unchecked
-                                }
-                            ),
-                            contentDescription = stringResource(
-                                if (isFavourite) {
-                                    R.string.action_unfavourite
-                                } else {
-                                    R.string.action_favourite
-                                }
-                            )
-                        )
-                    }
-
-                    val obtainiumTarget = obtainiumUrl
-                    if (obtainiumTarget != null && obtainiumInstalled) {
-                        IconButton(
-                            onClick = { context.viewExternal(obtainiumDeepLink(obtainiumTarget)) }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_obtainium),
-                                contentDescription = stringResource(R.string.details_obtainium)
-                            )
-                        }
-                    }
-
-                    val resolved = loadedState?.resolved
-                    AppExclusionMenu(
-                        isBlacklisted = isBlacklisted,
-                        isIgnored = ignoredUpdate != null,
-                        ignoresEveryVersion = ignoredUpdate?.versionCode == null,
-                        updateVersionName = resolved?.takeIf { it.hasUpdate }?.versionName,
-                        canIgnoreUpdates = resolved?.isInstalled == true,
-                        canSaveApk =
-                        loadedState?.sources?.any { it.app.candidateId != null } == true,
-                        onToggleBlacklist = viewModel::toggleBlacklist,
-                        onIgnoreAllUpdates = viewModel::ignoreAllUpdates,
-                        onIgnoreThisVersion = viewModel::ignoreThisVersion,
-                        onStopIgnoring = viewModel::stopIgnoringUpdates,
-                        onAppInfo = { context.appInfo(actionablePackage) },
-                        onAddToHome = canAddToHome.takeIf { it }?.let {
-                            { ShortcutUtil.requestPinShortcut(context, actionablePackage) }
-                        },
-                        onSaveApk = viewModel::saveApk,
-                        onObtainium = obtainiumUrl?.takeIf { !obtainiumInstalled }?.let { url ->
-                            { context.viewExternal(obtainiumRedirectUrl(url)) }
-                        }
-                    )
-                }
+            DetailsTopBar(
+                packageName = packageName,
+                uiState = uiState,
+                viewModel = viewModel,
+                onNavigateTo = onNavigateTo
             )
         }
     ) { padding ->
@@ -282,159 +195,304 @@ fun AppDetailsScreen(
                             onAction = viewModel::retry
                         )
 
-                        is AppDetailsUiState.Loaded -> Column(
-                            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
-                        ) {
-                            val canOpen = rememberCanOpen(
-                                state.actionablePackage,
-                                state.resolved?.isInstalled == true
-                            )
-
-                            InstallSection(
-                                details = state.details,
-                                resolved = state.resolved,
-                                canOpen = canOpen,
-                                downloadFlow = viewModel.download,
-                                onAction = { action ->
-                                    when (action) {
-                                        InstallAction.INSTALL -> coroutineScope.launch {
-                                            installOrRequestPermission(context, viewModel)
-                                        }
-
-                                        InstallAction.CANCEL -> viewModel.cancel()
-                                        InstallAction.OPEN -> launchApp(
-                                            context,
-                                            state.actionablePackage
-                                        )
-
-                                        InstallAction.UNINSTALL ->
-                                            context.uninstallPackage(state.actionablePackage)
-
-                                        InstallAction.OPEN_STORE,
-                                        InstallAction.OPEN_LINK -> SourceLauncher.launch(
-                                            context = context,
-                                            availability = state.details.availability,
-                                            storeUrl = state.details.storeUrl,
-                                            url = state.details.url,
-                                            sourceUrl = state.details.sourceUrl
-                                        )
-                                    }
-                                }
-                            )
-
-                            CompatibilityNotice(minSdk = state.details.minSdk)
-
-                            DetailsTags(
-                                details = state.details,
-                                categorySlug = categorySlug,
-                                onCategoryClick = categorySlug?.takeIf {
-                                    it.isNotBlank()
-                                }?.let { slug ->
-                                    { onNavigateTo(Destination.AppList(categorySlug = slug)) }
-                                }
-                            )
-
-                            DetailsStats(details = state.details)
-
-                            BillingNotice(
-                                hasPaid = state.details.hasPaid,
-                                hasIap = state.details.hasIap,
-                                hasAds = state.details.hasAds
-                            )
-
-                            ClosedSourceNotice(listing = state.details.listing)
-
-                            if (showTrackerInfo) {
-                                TrackersNotice(
-                                    trackers = state.details.trackers,
-                                    trackerTags = state.details.trackerTags
-                                )
-                            }
-
-                            SectionHeader(
-                                title = stringResource(R.string.details_more_about),
-                                subtitle = state.details.description.takeIf { it.isNotBlank() },
-                                icon = R.drawable.ic_info_outlined,
-                                onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
-                            )
-
-                            ShizukuUsageRow(
-                                details = state.details,
-                                onClick = {
-                                    onNavigateTo(Destination.ShizukuUsage(packageName))
-                                }
-                            )
-
-                            if (!state.details.changelog.isNullOrBlank()) {
-                                SectionHeader(
-                                    title = stringResource(R.string.details_changelog),
-                                    subtitle = state.details.versionName
-                                        .takeIf { it.isNotBlank() }
-                                        ?.let {
-                                            stringResource(R.string.details_changelog_subtitle, it)
-                                        },
-                                    icon = R.drawable.ic_updates,
-                                    onClick = {
-                                        onNavigateTo(Destination.Changelog(packageName))
-                                    }
-                                )
-                            }
-
-                            if (state.details.screenshots.isNotEmpty()) {
-                                ScreenshotGallery(screenshots = state.details.screenshots)
-                            }
-
-                            LinkList(details = state.details)
-
-                            if (state.sources.isNotEmpty()) {
-                                SectionHeader(
-                                    title = stringResource(R.string.details_permissions),
-                                    subtitle = if (state.details.permissions.isEmpty()) {
-                                        stringResource(R.string.details_permissions_none)
-                                    } else {
-                                        pluralStringResource(
-                                            R.plurals.details_permissions_count,
-                                            state.details.permissions.size,
-                                            state.details.permissions.size
-                                        )
-                                    },
-                                    icon = R.drawable.ic_shield,
-                                    onClick = {
-                                        onNavigateTo(Destination.Permissions(packageName))
-                                    }
-                                )
-                            }
-
-                            SourceList(
-                                sources = state.sources,
-                                onSelect = { viewModel.installFrom(it.app) }
-                            )
-
-                            DetailsCarousel(
-                                title = stringResource(R.string.details_more_from_author),
-                                apps = moreFromAuthor,
-                                onAppClick = {
-                                    onNavigateTo(Destination.AppDetails(it.packageName))
-                                }
-                            )
-
-                            DetailsCarousel(
-                                title = stringResource(R.string.details_more_from_category),
-                                apps = moreFromCategory,
-                                modifier = Modifier.padding(bottom = 8.dp),
-                                onHeaderClick = categorySlug?.takeIf {
-                                    it.isNotBlank()
-                                }?.let { slug ->
-                                    { onNavigateTo(Destination.AppList(categorySlug = slug)) }
-                                },
-                                onAppClick = {
-                                    onNavigateTo(Destination.AppDetails(it.packageName))
-                                }
-                            )
-                        }
+                        is AppDetailsUiState.Loaded -> DetailsContent(
+                            state = state,
+                            packageName = packageName,
+                            viewModel = viewModel,
+                            onNavigateTo = onNavigateTo
+                        )
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * Owns the action bar state reads. They are kept out of the screen body so a
+ * favourite, blacklist or ignore toggle does not recompose the whole page.
+ */
+@Composable
+private fun DetailsTopBar(
+    packageName: String,
+    uiState: AppDetailsUiState,
+    viewModel: AppDetailsViewModel,
+    onNavigateTo: (Destination) -> Unit
+) {
+    val context = LocalContext.current
+    val isFavourite by viewModel.isFavourite.collectAsStateWithLifecycle()
+    val isBlacklisted by viewModel.isBlacklisted.collectAsStateWithLifecycle()
+    val ignoredUpdate by viewModel.ignoredUpdate.collectAsStateWithLifecycle()
+    val obtainiumUrl by viewModel.obtainiumUrl.collectAsStateWithLifecycle()
+    val obtainiumInstalled by viewModel.obtainiumInstalled.collectAsStateWithLifecycle()
+
+    val loadedState = uiState as? AppDetailsUiState.Loaded
+    // Installed-app actions must target the flavor the user installed, not the
+    // catalog's canonical package.
+    val actionablePackage = loadedState?.actionablePackage ?: packageName
+    // Keyed on the installed flag instead of the download status: the launch
+    // intent only changes when installation settles, not on progress ticks.
+    val canAddToHome =
+        rememberCanOpen(actionablePackage, loadedState?.resolved?.isInstalled == true)
+
+    TopAppBar(
+        title = null,
+        onNavigateBack = { onNavigateTo(Destination.Back) },
+        actions = {
+            IconButton(
+                onClick = {
+                    val details = (uiState as? AppDetailsUiState.Loaded)?.details
+                    context.shareApp(
+                        details?.name ?: packageName,
+                        packageName,
+                        url = details?.storeUrl ?: details?.url ?: details?.sourceUrl
+                    )
+                }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_share),
+                    contentDescription = stringResource(R.string.action_share)
+                )
+            }
+
+            IconButton(onClick = viewModel::toggleFavourite) {
+                Icon(
+                    painter = painterResource(
+                        if (isFavourite) {
+                            R.drawable.ic_favorite_checked
+                        } else {
+                            R.drawable.ic_favorite_unchecked
+                        }
+                    ),
+                    contentDescription = stringResource(
+                        if (isFavourite) {
+                            R.string.action_unfavourite
+                        } else {
+                            R.string.action_favourite
+                        }
+                    )
+                )
+            }
+
+            val obtainiumTarget = obtainiumUrl
+            if (obtainiumTarget != null && obtainiumInstalled) {
+                IconButton(
+                    onClick = { context.viewExternal(obtainiumDeepLink(obtainiumTarget)) }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_obtainium),
+                        contentDescription = stringResource(R.string.details_obtainium)
+                    )
+                }
+            }
+
+            val resolved = loadedState?.resolved
+            AppExclusionMenu(
+                isBlacklisted = isBlacklisted,
+                isIgnored = ignoredUpdate != null,
+                ignoresEveryVersion = ignoredUpdate?.versionCode == null,
+                updateVersionName = resolved?.takeIf { it.hasUpdate }?.versionName,
+                canIgnoreUpdates = resolved?.isInstalled == true,
+                canSaveApk = loadedState?.sources?.any { it.app.candidateId != null } == true,
+                onToggleBlacklist = viewModel::toggleBlacklist,
+                onIgnoreAllUpdates = viewModel::ignoreAllUpdates,
+                onIgnoreThisVersion = viewModel::ignoreThisVersion,
+                onStopIgnoring = viewModel::stopIgnoringUpdates,
+                onAppInfo = { context.appInfo(actionablePackage) },
+                onAddToHome = canAddToHome.takeIf { it }?.let {
+                    { ShortcutUtil.requestPinShortcut(context, actionablePackage) }
+                },
+                onSaveApk = viewModel::saveApk,
+                onObtainium = obtainiumUrl?.takeIf { !obtainiumInstalled }?.let { url ->
+                    { context.viewExternal(obtainiumRedirectUrl(url)) }
+                }
+            )
+        }
+    )
+}
+
+/**
+ * The loaded page is a lazy list so opening details composes and lays out only
+ * the visible sections; the previous scrolling column composed everything in
+ * the first frame. Auxiliary state reads live inside their item so an emission
+ * invalidates one section instead of the whole screen.
+ */
+@Composable
+private fun DetailsContent(
+    state: AppDetailsUiState.Loaded,
+    packageName: String,
+    viewModel: AppDetailsViewModel,
+    onNavigateTo: (Destination) -> Unit
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val canOpen = rememberCanOpen(state.actionablePackage, state.resolved?.isInstalled == true)
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item(key = "install") {
+            InstallSection(
+                details = state.details,
+                resolved = state.resolved,
+                canOpen = canOpen,
+                downloadFlow = viewModel.download,
+                onAction = { action ->
+                    when (action) {
+                        InstallAction.INSTALL -> coroutineScope.launch {
+                            installOrRequestPermission(context, viewModel)
+                        }
+
+                        InstallAction.CANCEL -> viewModel.cancel()
+                        InstallAction.OPEN -> launchApp(context, state.actionablePackage)
+
+                        InstallAction.UNINSTALL ->
+                            context.uninstallPackage(state.actionablePackage)
+
+                        InstallAction.OPEN_STORE,
+                        InstallAction.OPEN_LINK -> SourceLauncher.launch(
+                            context = context,
+                            availability = state.details.availability,
+                            storeUrl = state.details.storeUrl,
+                            url = state.details.url,
+                            sourceUrl = state.details.sourceUrl
+                        )
+                    }
+                }
+            )
+        }
+
+        item(key = "compatibility") {
+            CompatibilityNotice(minSdk = state.details.minSdk)
+        }
+
+        item(key = "tags") {
+            val categorySlug by viewModel.categorySlug.collectAsStateWithLifecycle()
+            DetailsTags(
+                details = state.details,
+                categorySlug = categorySlug,
+                onCategoryClick = categorySlug?.takeIf {
+                    it.isNotBlank()
+                }?.let { slug ->
+                    { onNavigateTo(Destination.AppList(categorySlug = slug)) }
+                }
+            )
+        }
+
+        item(key = "stats") {
+            DetailsStats(details = state.details)
+        }
+
+        item(key = "billing") {
+            BillingNotice(
+                hasPaid = state.details.hasPaid,
+                hasIap = state.details.hasIap,
+                hasAds = state.details.hasAds
+            )
+        }
+
+        item(key = "closed-source") {
+            ClosedSourceNotice(listing = state.details.listing)
+        }
+
+        item(key = "trackers") {
+            val showTrackerInfo by viewModel.showTrackerInfo.collectAsStateWithLifecycle()
+            if (showTrackerInfo) {
+                TrackersNotice(
+                    trackers = state.details.trackers,
+                    trackerTags = state.details.trackerTags
+                )
+            }
+        }
+
+        item(key = "more-about") {
+            SectionHeader(
+                title = stringResource(R.string.details_more_about),
+                subtitle = state.details.description.takeIf { it.isNotBlank() },
+                icon = R.drawable.ic_info_outlined,
+                onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
+            )
+        }
+
+        item(key = "shizuku-usage") {
+            ShizukuUsageRow(
+                details = state.details,
+                onClick = { onNavigateTo(Destination.ShizukuUsage(packageName)) }
+            )
+        }
+
+        item(key = "changelog") {
+            if (!state.details.changelog.isNullOrBlank()) {
+                SectionHeader(
+                    title = stringResource(R.string.details_changelog),
+                    subtitle = state.details.versionName
+                        .takeIf { it.isNotBlank() }
+                        ?.let {
+                            stringResource(R.string.details_changelog_subtitle, it)
+                        },
+                    icon = R.drawable.ic_updates,
+                    onClick = { onNavigateTo(Destination.Changelog(packageName)) }
+                )
+            }
+        }
+
+        item(key = "screenshots") {
+            if (state.details.screenshots.isNotEmpty()) {
+                ScreenshotGallery(screenshots = state.details.screenshots)
+            }
+        }
+
+        item(key = "links") {
+            LinkList(details = state.details)
+        }
+
+        item(key = "permissions") {
+            if (state.sources.isNotEmpty()) {
+                SectionHeader(
+                    title = stringResource(R.string.details_permissions),
+                    subtitle = if (state.details.permissions.isEmpty()) {
+                        stringResource(R.string.details_permissions_none)
+                    } else {
+                        pluralStringResource(
+                            R.plurals.details_permissions_count,
+                            state.details.permissions.size,
+                            state.details.permissions.size
+                        )
+                    },
+                    icon = R.drawable.ic_shield,
+                    onClick = { onNavigateTo(Destination.Permissions(packageName)) }
+                )
+            }
+        }
+
+        item(key = "sources") {
+            SourceList(
+                sources = state.sources,
+                onSelect = { viewModel.installFrom(it.app) }
+            )
+        }
+
+        item(key = "more-from-author") {
+            val moreFromAuthor by viewModel.moreFromAuthor.collectAsStateWithLifecycle()
+            DetailsCarousel(
+                title = stringResource(R.string.details_more_from_author),
+                apps = moreFromAuthor,
+                onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
+            )
+        }
+
+        item(key = "more-from-category") {
+            val categorySlug by viewModel.categorySlug.collectAsStateWithLifecycle()
+            val moreFromCategory by viewModel.moreFromCategory.collectAsStateWithLifecycle()
+            DetailsCarousel(
+                title = stringResource(R.string.details_more_from_category),
+                apps = moreFromCategory,
+                modifier = Modifier.padding(bottom = 8.dp),
+                onHeaderClick = categorySlug?.takeIf {
+                    it.isNotBlank()
+                }?.let { slug ->
+                    { onNavigateTo(Destination.AppList(categorySlug = slug)) }
+                },
+                onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
+            )
         }
     }
 }

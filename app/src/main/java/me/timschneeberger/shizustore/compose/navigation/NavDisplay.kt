@@ -61,6 +61,17 @@ private val navSlideSpec = spring<IntOffset>(
 
 private val navFadeSpec = spring<Float>(stiffness = 380f)
 
+/**
+ * Keeps the download state read out of the nav host body: the downloads table
+ * ticks during a download and must not invalidate navigation for it.
+ */
+@Composable
+private fun DownloadDozeExemption(viewModel: DownloadActivityViewModel) {
+    val isDownloading by viewModel.isDownloading.collectAsStateWithLifecycle()
+    val requestDozeExemption = rememberDozeExemptionRequest()
+    LaunchedEffect(isDownloading) { if (isDownloading) requestDozeExemption() }
+}
+
 @Composable
 fun ShizuNavDisplay(
     modifier: Modifier = Modifier,
@@ -69,9 +80,7 @@ fun ShizuNavDisplay(
 ) {
     val backStack = rememberNavBackStack(*initialScreens.toTypedArray())
 
-    val isDownloading by downloadActivityViewModel.isDownloading.collectAsStateWithLifecycle()
-    val requestDozeExemption = rememberDozeExemptionRequest()
-    LaunchedEffect(isDownloading) { if (isDownloading) requestDozeExemption() }
+    DownloadDozeExemption(downloadActivityViewModel)
 
     fun navigate(destination: Destination) {
         when (destination) {

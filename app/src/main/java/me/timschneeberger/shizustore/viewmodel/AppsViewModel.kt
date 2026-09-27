@@ -14,11 +14,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import javax.inject.Inject
 import kotlin.random.Random
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -119,7 +121,11 @@ class AppsViewModel @Inject constructor(
             useInstallCounts = useInstallCounts,
             dhizukuTitle = context.getString(R.string.category_dhizuku)
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+    }
+        // Mapping, shuffling and section building are catalog-sized; keep them off
+        // the main thread, which Room invalidations and recomposition share.
+        .flowOn(Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     private companion object {
         /** `Calendar`, not `LocalDate`: that is API 26, `minSdk` is 24 and desugaring is off. */

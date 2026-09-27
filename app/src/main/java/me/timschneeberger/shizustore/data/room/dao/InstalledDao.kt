@@ -26,6 +26,10 @@ interface InstalledDao {
     @Query("SELECT * FROM installed WHERE packageName = :packageName")
     suspend fun getByPackage(packageName: String): InstalledEntity?
 
+    /** Batch lookup for list rows; avoids one query per candidate package. */
+    @Query("SELECT packageName FROM installed WHERE packageName IN (:packages)")
+    suspend fun getPackages(packages: List<String>): List<String>
+
     @Upsert
     suspend fun upsert(installed: InstalledEntity)
 

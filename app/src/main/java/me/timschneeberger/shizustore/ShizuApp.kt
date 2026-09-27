@@ -22,7 +22,6 @@ import coil3.svg.SvgDecoder
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import me.timschneeberger.shizustore.data.installer.HiddenApiExemption
 import me.timschneeberger.shizustore.data.installer.ShizukuInstaller
 import me.timschneeberger.shizustore.data.model.Installer
@@ -70,7 +69,9 @@ class ShizuApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
         super.onCreate()
         exemptPackageManagerHiddenApis()
         NotificationUtil.createChannels(this)
-        runBlocking { UpdateWorker.schedule(this@ShizuApp) }
+        // Arming the periodic check reads DataStore and writes WorkManager state;
+        // doing that synchronously would extend every cold start.
+        appScope.launch { UpdateWorker.schedule(this@ShizuApp) }
         registerPackageManagerReceiver()
         selectShizukuInstallerOnFirstLaunch()
     }

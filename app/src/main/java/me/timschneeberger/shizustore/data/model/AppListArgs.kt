@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.data.model
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,6 +15,7 @@ enum class AppSort { NAME, RECENTLY_ADDED, RECENTLY_UPDATED, STARS, DOWNLOADS, S
 @Serializable
 enum class AppPrice { FREE, IAP, IAP_OR_PAID }
 
+@Immutable
 @Serializable
 data class AppListArgs(
     val query: String = "",

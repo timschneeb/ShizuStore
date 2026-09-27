@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -232,7 +233,7 @@ class AppDetailsViewModel @Inject constructor(
      */
     val obtainiumInstalled: StateFlow<Boolean> = flow {
         emit(withContext(Dispatchers.IO) { canHandleObtainium(context) })
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 
     /** Catalog preference: when off, the details page hides the tracker card. */
     val showTrackerInfo: StateFlow<Boolean> = Preferences.booleanFlow(
@@ -543,6 +544,9 @@ class AppDetailsViewModel @Inject constructor(
                 else -> AppDetailsUiState.NotFound
             }
         }
+            // Building the loaded state parses dates and maps sources; that work
+            // must not sit on the main thread while the details screen composes.
+            .flowOn(Dispatchers.Default)
     }
 
     private companion object {

@@ -35,3 +35,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ShizuAppStore"
 include(":app")
+include(":baselineprofile")
