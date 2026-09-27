@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,10 +41,14 @@ import com.mikepenz.markdown.compose.elements.MarkdownTableHeader
 import com.mikepenz.markdown.compose.elements.MarkdownTableRow
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.elements.MarkdownCheckBox
+import com.mikepenz.markdown.m3.markdownColor
 import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.ImageData
 import com.mikepenz.markdown.model.ImageTransformer
+import com.mikepenz.markdown.model.MarkdownState
 import com.mikepenz.markdown.model.markdownAnnotator
+import com.mikepenz.markdown.model.parseMarkdown
+import com.mikepenz.markdown.model.rememberMarkdownState
 import com.mikepenz.markdown.utils.getUnescapedTextInNode
 import java.net.URI
 import me.timschneeberger.shizustore.R
@@ -51,6 +56,7 @@ import me.timschneeberger.shizustore.extensions.viewExternal
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.flavours.gfm.GFMFlavourDescriptor
+import org.intellij.markdown.parser.CancellationToken
 import org.intellij.markdown.parser.MarkdownParser
 
 /**
@@ -85,23 +91,35 @@ internal fun MarkdownDescription(
                 style = MaterialTheme.typography.bodyMedium
             )
         } else {
-            val rendered = remember(content, repoBaseUrl) {
-                normalizeReadmeImages(content, repoBaseUrl)
-            }
-            RenderedMarkdown(rendered = rendered, accentColor = accentColor, modifier = modifier)
+            val state = rememberReportMarkdownState(content, repoBaseUrl)
+            RenderedMarkdown(state = state, accentColor = accentColor, modifier = modifier)
         }
     }
 }
 
 /**
- * Isolated so a parent restart with the same content does not rebuild the
- * typography/components or hand the renderer a fresh parser (which would
- * reparse the whole document).
+ * Parses report markdown in the background. Screens hoist the returned state so
+ * they can keep the whole report area in one loading state instead of letting
+ * parts of it appear while the parse is still running.
  */
 @Composable
-private fun RenderedMarkdown(rendered: String, accentColor: Color?, modifier: Modifier) {
+internal fun rememberReportMarkdownState(content: String, repoBaseUrl: String?): MarkdownState {
+    val rendered = remember(content, repoBaseUrl) {
+        normalizeReadmeImages(content, repoBaseUrl)
+    }
     val flavour = remember { GFMFlavourDescriptor() }
-    val parser = remember(flavour) { MarkdownParser(flavour) }
+    val parser = remember(flavour) {
+        MarkdownParser(flavour, cancellationToken = CancellationToken.NonCancellable)
+    }
+    return rememberMarkdownState(rendered, flavour = flavour, parser = parser)
+}
+
+/**
+ * Isolated so a parent restart with the same content does not rebuild the
+ * typography/components for an already parsed document.
+ */
+@Composable
+internal fun RenderedMarkdown(state: MarkdownState, accentColor: Color?, modifier: Modifier) {
     // Shift the default heading scale down one step; the display sizes
     // dominate a phone-sized screen.
     val typography = markdownTypography(
@@ -202,14 +220,38 @@ private fun RenderedMarkdown(rendered: String, accentColor: Color?, modifier: Mo
         }
     )
     Markdown(
-        content = rendered,
+        markdownState = state,
         modifier = modifier.fillMaxWidth(),
         typography = typography,
-        flavour = flavour,
-        parser = parser,
         imageTransformer = NoCacheImageTransformer,
         annotator = annotator,
         components = components
+    )
+}
+
+/**
+ * Synchronous parse for the short one-line summary in the usage card: it must
+ * never flash empty while the background parser warms up.
+ */
+@Composable
+internal fun MarkdownInline(content: String, modifier: Modifier = Modifier) {
+    val flavour = remember { GFMFlavourDescriptor() }
+    val parser = remember(flavour) {
+        MarkdownParser(flavour, cancellationToken = CancellationToken.NonCancellable)
+    }
+    val parsed = remember(content, flavour, parser) {
+        parseMarkdown(content, flavour = flavour, parser = parser)
+    }
+    val contentColor = LocalContentColor.current
+    Markdown(
+        state = parsed,
+        colors = markdownColor(
+            text = contentColor,
+            codeBackground = contentColor.copy(alpha = 0.1f),
+            inlineCodeBackground = contentColor.copy(alpha = 0.1f)
+        ),
+        typography = markdownTypography(),
+        modifier = modifier.fillMaxWidth()
     )
 }
 

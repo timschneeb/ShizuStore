@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mikepenz.markdown.model.State
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.LoadingIndicatorBox
 import me.timschneeberger.shizustore.compose.composable.Placeholder
@@ -53,7 +54,6 @@ fun ShizukuUsageScreen(
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val fetching by viewModel.detailFetching.collectAsStateWithLifecycle()
 
     LaunchedEffect(packageName) { viewModel.load(packageName) }
 
@@ -91,46 +91,59 @@ fun ShizukuUsageScreen(
                 val note = stringResource(R.string.details_shizuku_ai_note)
                 val body = state.details.usageMarkdown?.takeIf { it.isNotBlank() }
                     ?.let { "$it\n\n> [!NOTE]\n> $note" }
-                when {
-                    // Keep the markdown hidden until the report is fetched, so a
-                    // stale or empty document never flashes before the spinner.
-                    body.isNullOrBlank() && fetching -> LoadingIndicatorBox(
-                        modifier = Modifier.padding(padding)
-                    )
-
-                    body.isNullOrBlank() -> Placeholder(
+                if (body.isNullOrBlank()) {
+                    Placeholder(
                         modifier = Modifier.padding(padding),
                         painter = painterResource(R.drawable.ic_apps),
                         message = stringResource(R.string.details_shizuku_empty)
                     )
-
-                    else -> Column(
-                        modifier = Modifier
-                            .padding(padding)
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(
-                            dimensionResource(R.dimen.spacing_medium)
-                        )
-                    ) {
-                        state.details.usageShort?.takeIf { it.isNotBlank() }?.let { short ->
-                            UsageSummaryCard(text = short)
-                        }
-                        MarkdownDescription(
-                            content = body,
-                            repoBaseUrl = githubRawBase(
-                                state.details.sourceUrl ?: state.details.url
-                            ),
-                            accentColor = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(
-                                horizontal = dimensionResource(R.dimen.spacing_large),
-                                vertical = dimensionResource(R.dimen.spacing_small)
-                            )
-                        )
-                    }
+                } else {
+                    UsageReport(
+                        short = state.details.usageShort?.takeIf { it.isNotBlank() },
+                        body = body,
+                        repoBaseUrl = githubRawBase(state.details.sourceUrl ?: state.details.url),
+                        modifier = Modifier.padding(padding)
+                    )
                 }
             }
         }
+    }
+}
+
+/**
+ * Renders the summary card and the report as one unit: both wait for the
+ * background markdown parse, so the card never floats over an empty report.
+ */
+@Composable
+private fun UsageReport(
+    short: String?,
+    body: String,
+    repoBaseUrl: String?,
+    modifier: Modifier = Modifier
+) {
+    val markdownState = rememberReportMarkdownState(body, repoBaseUrl)
+    val parsed by markdownState.state.collectAsStateWithLifecycle()
+
+    if (parsed is State.Loading) {
+        LoadingIndicatorBox(modifier)
+        return
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
+    ) {
+        short?.let { UsageSummaryCard(text = it) }
+        RenderedMarkdown(
+            state = markdownState,
+            accentColor = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(
+                horizontal = dimensionResource(R.dimen.spacing_large),
+                vertical = dimensionResource(R.dimen.spacing_small)
+            )
+        )
     }
 }
 
@@ -169,7 +182,7 @@ private fun UsageSummaryCard(text: String) {
                 )
             }
             Spacer(Modifier.height(dimensionResource(R.dimen.spacing_small)))
-            Text(text = text, style = MaterialTheme.typography.bodyLarge)
+            MarkdownInline(content = text)
         }
     }
 }

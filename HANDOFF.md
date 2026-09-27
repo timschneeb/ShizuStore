@@ -58,6 +58,13 @@ row even when this process dispatched it, and `InstallWorker.awaitSettled` polls
 the row and the installed version every second instead of waiting on a broadcast
 that may never arrive. Tests: `InstallReconcilerTest`.
 
+Usage screen polish (September 2026): the summary card text now renders as
+markdown (`MarkdownInline`, synchronous parse so the one-liner never flashes
+empty), and `UsageReport` hoists the report parse state so one spinner covers
+the whole report area until the parse succeeds; the card no longer floats over
+an empty markdown body while parsing. `MarkdownDescription` exposes the hoisted
+`rememberReportMarkdownState` and `RenderedMarkdown(state = ...)` for this.
+
 Release server override and F-Droid prep (September 2026): the Settings -> Server
 screen and its navigation entry are no longer gated by `BuildConfig.DEBUG`, so
 release builds can switch to a custom or self-hosted server too. Version bumped
@@ -516,11 +523,14 @@ carry the fields. `AppDetails` surfaces them through `ShizukuUsageRow`, a
 section row below "More about this app" whose subtitle is `usageShort`; it is
 hidden until a report exists. Tapping it opens `ShizukuUsageScreen`, which
 renders the report with the same markdown styling as the full description and
-changelog screens (`repoBaseUrl` for relative images), shows a centered
-spinner while the report is being fetched and keeps the markdown hidden until
-it is loaded. `usageShort` renders as a titled summary card
-(`details_shizuku_summary_title`, `primaryContainer`) above the markdown, and
-the AI disclaimer rides inside the markdown as a `> [!NOTE]` alert at the end
+changelog screens (`repoBaseUrl` for relative images). The screen hoists the
+markdown parse state (`rememberReportMarkdownState`) and shows one centered
+spinner for the whole report area until the parse succeeds, so the summary card
+never floats over an empty report. `usageShort` renders as a titled summary
+card (`details_shizuku_summary_title`, `secondaryContainer`) above the
+markdown, and the card text is markdown too: `MarkdownInline` parses it
+synchronously so the short one-liner never flashes empty. The AI disclaimer
+rides inside the markdown as a `> [!NOTE]` alert at the end
 instead of a separate row. The report screen tints bold text with the theme
 primary and renders blockquotes as container cards instead of the library's
 left bar; other screens keep the default markdown styling. The details ViewModel refetches once when an analyzable app (a
