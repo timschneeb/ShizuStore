@@ -18,6 +18,7 @@
     <string name="action_collapse">摺疊</string>
     <string name="action_expand">展開</string>
     <string name="action_export">匯出 APK</string>
+    <string name="action_save_apk">儲存 APK</string>
     <string name="action_favourite">加入收藏</string>
     <string name="action_grant">授權</string>
     <string name="action_granted">已授權</string>
@@ -60,11 +61,13 @@
     <string name="details_changelog">更新日誌</string>
     <string name="details_changelog_subtitle">%1$s 版本的新功能</string>
     <string name="details_changelog_empty">暫無更新日誌</string>
-    <string name="details_stats_installs">安裝量</string>
     <string name="details_stats_downloads">下載量</string>
+    <string name="details_stats_downloads_tooltip">在 %1$s 上統計的下載次數。</string>
+    <string name="details_stats_installs_tooltip">其他 ShizuStore 使用者回報的安裝次數。</string>
     <string name="details_stats_stars">星標</string>
+    <string name="details_stats_stars_tooltip">原始碼倉庫的星標數。</string>
     <string name="details_stats_size">大小</string>
-    <string name="details_updated">更新於 %1$s</string>
+    <string name="details_stats_size_tooltip">APK 檔案的下載大小。</string>
     <string name="details_more_about">關於此應用程式的更多資訊</string>
     <string name="details_more_from_author">此開發者的更多應用程式</string>
     <string name="details_more_from_category">此分類下的更多應用程式</string>
@@ -79,6 +82,7 @@
     <string name="details_permissions_known">其他權限</string>
     <string name="details_permissions_none">未請求任何權限</string>
     <string name="details_source_code">原始碼</string>
+    <string name="details_obtainium">新增至 Obtainium</string>
     <string name="details_store">應用程式商店</string>
     <string name="details_play_store_notice">此應用程式僅在 Google Play 提供。點擊開啟詳情頁面。</string>
     <string name="details_closed_source_notice">此應用程式為封閉原始碼軟體。它的程式碼是不公開的，因此社群無法輕易驗證其行為。</string>
@@ -105,6 +109,8 @@
     <string name="download_eta_sec">剩餘 <xliff:g id="seconds">%1$d</xliff:g>秒</string>
     <string name="download_export_done">APK 已匯出</string>
     <string name="download_export_failed">無法匯出 APK</string>
+    <string name="download_saved">APK 已儲存至下載項目</string>
+    <string name="download_save_failed">無法儲存 APK</string>
     <string name="download_status_awaiting_confirmation">等待確認</string>
     <string name="download_status_cancelled">已取消</string>
     <string name="download_status_completed">已下載</string>
@@ -227,10 +233,10 @@
     <string name="filter_title_category">依分類篩選</string>
     <string name="filter_title_price">依價格篩選</string>
     <string name="filter_title_sort">排序方式</string>
+    <string name="category_dhizuku">相容 Dhizuku</string>
     <string name="app_badge_paid">付費</string>
     <string name="app_badge_iap">含內購</string>
     <string name="app_badge_ads">含廣告</string>
-    <string name="app_badge_trackers">追蹤器</string>
     <string name="app_indicator_installed">已安裝</string>
     <string name="app_indicator_update">有可用更新</string>
     <string name="details_billing_paid">這是一個付費應用程式。</string>
@@ -240,10 +246,16 @@
     <string name="details_dhizuku">Dhizuku</string>
     <string name="details_trackers_title">偵測到的追蹤器（%1$d）</string>
     <string name="details_trackers_note">透過 Exodus Privacy 程式碼簽章比對，並非完整清單。</string>
+    <string name="details_shizuku_title">Shizuku 的使用方式</string>
+    <string name="details_shizuku_empty">此應用程式尚無使用報告。</string>
+    <string name="details_shizuku_ai_note">這是對應用程式公開原始碼中 Shizuku 相關用法的 AI 輔助分析。此為盡力而為的分析，可能無法涵蓋每一處用法。</string>
+    <string name="details_shizuku_summary_title">摘要</string>
     <string name="settings_appearance_summary">淺色或深色主題，以及基於桌布的配色</string>
     <string name="settings_appearance_title">外觀</string>
     <string name="settings_black_night_subtitle">開啟夜間模式時使用純黑主題</string>
     <string name="settings_black_night_title">純黑夜間主題</string>
+    <string name="settings_catalog_summary">清單與應用程式分析</string>
+    <string name="settings_catalog_title">目錄</string>
     <string name="settings_dynamic_color_subtitle">從您的桌布中擷取色彩。需要 Android 12 及更新版本。</string>
     <string name="settings_dynamic_color_title">動態色彩</string>
     <string name="settings_group_updates_summary">檢查排程、網路限制和自動安裝</string>
@@ -284,6 +296,8 @@
     <string name="settings_server_title">伺服器</string>
     <string name="settings_show_closed_source_subtitle">同時同步上游閉源清單中的應用程式。這些應用程式是專有軟體，預設不顯示。</string>
     <string name="settings_show_closed_source_title">顯示閉源應用程式</string>
+    <string name="settings_show_tracker_info_subtitle">在應用程式詳情頁顯示 APK 中偵測到的追蹤器（Exodus Privacy 程式碼簽章）。</string>
+    <string name="settings_show_tracker_info_title">顯示追蹤器資訊</string>
     <string name="settings_theme_dark">深色</string>
     <string name="settings_theme_light">淺色</string>
     <string name="settings_theme_system">系統預設</string>
