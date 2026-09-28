@@ -343,6 +343,14 @@ query; a blank one must not flip the flag because the text field's debounced
 observer fires right after the back button clears it, which used to bounce the
 screen from the home to an empty list.
 
+Search history. The field filters live, so the debounced observer called
+`SearchHistoryStore.record` for every prefix of the query being typed and the
+recent list filled with `lin`, `link`, `linksheet`. Recording and reading now
+collapse prefix chains: a query a remembered longer query extends is ignored
+(backspacing must not evict it), a longer query drops the prefixes it
+supersedes, and `decode` prunes chains already stored so existing installs
+clean up on first read. Tests: `SearchHistoryStoreTest`.
+
 App list scroll restore. Returning from a detail screen sometimes landed the list
 near the top. Three layers were involved. Every successful sync upserts
 `sync_state`, and `observePopularityFlag()` re-emitted even when the flag value

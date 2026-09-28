@@ -32,12 +32,7 @@ class SearchHistoryStore @Inject constructor(
         if (trimmed.isEmpty()) return
 
         val current = decode(Preferences.readString(context, Preferences.PREFERENCE_SEARCH_HISTORY))
-        val updated = (
-            listOf(trimmed) + current.filterNot {
-                it.equals(trimmed, ignoreCase = true)
-            }
-            )
-            .take(MAX_ENTRIES)
+        val updated = merge(current, trimmed)
         Preferences.putString(context, Preferences.PREFERENCE_SEARCH_HISTORY, encode(updated))
     }
 
@@ -47,13 +42,43 @@ class SearchHistoryStore @Inject constructor(
 
     private fun decode(raw: String): List<String> {
         if (raw.isBlank()) return emptyList()
-        return runCatching { ShizuJson.decodeFromString(serializer, raw) }.getOrDefault(emptyList())
+        val values =
+            runCatching { ShizuJson.decodeFromString(serializer, raw) }.getOrDefault(emptyList())
+        return prune(values)
     }
 
     private fun encode(values: List<String>): String = ShizuJson.encodeToString(serializer, values)
 
-    private companion object {
+    internal companion object {
         const val MAX_ENTRIES = 3
         val serializer = ListSerializer(String.serializer())
+
+        /** Drops entries a longer entry extends, which cleans histories written
+         * before prefix chains were collapsed on record. */
+        fun prune(values: List<String>): List<String> = values.filterNot { candidate ->
+            values.any { other ->
+                other.length > candidate.length &&
+                    other.startsWith(candidate, ignoreCase = true)
+            }
+        }
+
+        /**
+         * The field filters live, so [record] sees every debounced prefix of the
+         * query being typed. A remembered query that extends the new one wins, and
+         * backspacing to a prefix must not evict it. Otherwise the new (longest)
+         * query goes to the front and the prefixes it supersedes are dropped.
+         */
+        fun merge(current: List<String>, query: String): List<String> {
+            if (current.any { it.length > query.length && it.startsWith(query, ignoreCase = true) }) {
+                return prune(current)
+            }
+            return (
+                listOf(query) + current.filterNot {
+                    it.equals(query, ignoreCase = true) ||
+                        (query.length > it.length && query.startsWith(it, ignoreCase = true))
+                }
+                )
+                .take(MAX_ENTRIES)
+        }
     }
 }
