@@ -1,0 +1,2 @@
+- Ignored updates are now actually skipped by the Updates tab, the update badge, notifications and automatic updates. You can still install an ignored update manually from the app's details page.
+- "Ignore all updates" now stays in effect for future versions until you stop ignoring it.
