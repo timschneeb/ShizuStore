@@ -10,7 +10,6 @@
     <string name="action_app_info">App-Info</string>
     <string name="action_app_menu">Weitere Optionen für diese App</string>
     <string name="action_back">Zurück</string>
-    <string name="action_blacklist">Auf die Blockliste</string>
     <string name="action_cancel">Abbrechen</string>
     <string name="action_cancel_all">Alle abbrechen</string>
     <string name="action_clear">Leeren</string>
@@ -39,7 +38,6 @@
     <string name="action_share">Teilen</string>
     <string name="action_stop_ignoring_all">Alle Updates nicht mehr ignorieren</string>
     <string name="action_stop_ignoring_version">Diese Version nicht mehr ignorieren</string>
-    <string name="action_unblacklist">Von der Blockliste entfernen</string>
     <string name="action_unfavourite">Aus Favoriten entfernen</string>
     <string name="action_uninstall">Deinstallieren</string>
     <string name="action_update">Aktualisieren</string>
@@ -55,9 +53,6 @@
     <string name="apps_recently_added">Kürzlich hinzugefügt</string>
     <string name="apps_recently_updated">Kürzlich aktualisiert</string>
     <string name="apps_most_starred">Die meisten Sterne auf GitHub</string>
-    <string name="blacklist_empty">Keine Apps auf der Blockliste</string>
-    <string name="blacklist_empty_detail">Setze eine App über ihr Menü auf die Blockliste, damit sie hier erscheint</string>
-    <string name="blacklist_unavailable">Keine blockierten Apps anzuzeigen</string>
     <string name="details_changelog">Änderungsprotokoll</string>
     <string name="details_changelog_subtitle">Was ist neu in Version %1$s</string>
     <string name="details_changelog_empty">Kein Änderungsprotokoll verfügbar</string>
@@ -352,7 +347,6 @@
     </plurals>
     <string name="title_about">Über</string>
     <string name="title_apps">Apps</string>
-    <string name="title_blacklist">Blockliste</string>
     <string name="title_categories">Kategorien</string>
     <string name="title_search">Suche</string>
     <string name="title_donate">Spenden</string>

@@ -210,7 +210,7 @@ fun AppDetailsScreen(
 
 /**
  * Owns the action bar state reads. They are kept out of the screen body so a
- * favourite, blacklist or ignore toggle does not recompose the whole page.
+ * favourite or ignore toggle does not recompose the whole page.
  */
 @Composable
 private fun DetailsTopBar(
@@ -221,7 +221,6 @@ private fun DetailsTopBar(
 ) {
     val context = LocalContext.current
     val isFavourite by viewModel.isFavourite.collectAsStateWithLifecycle()
-    val isBlacklisted by viewModel.isBlacklisted.collectAsStateWithLifecycle()
     val ignoredUpdate by viewModel.ignoredUpdate.collectAsStateWithLifecycle()
     val obtainiumUrl by viewModel.obtainiumUrl.collectAsStateWithLifecycle()
     val obtainiumInstalled by viewModel.obtainiumInstalled.collectAsStateWithLifecycle()
@@ -288,13 +287,11 @@ private fun DetailsTopBar(
 
             val resolved = loadedState?.resolved
             AppExclusionMenu(
-                isBlacklisted = isBlacklisted,
                 isIgnored = ignoredUpdate != null,
                 ignoresEveryVersion = ignoredUpdate?.versionCode == null,
                 updateVersionName = resolved?.takeIf { it.hasUpdate }?.versionName,
                 canIgnoreUpdates = resolved?.isInstalled == true,
                 canSaveApk = loadedState?.sources?.any { it.app.candidateId != null } == true,
-                onToggleBlacklist = viewModel::toggleBlacklist,
                 onIgnoreAllUpdates = viewModel::ignoreAllUpdates,
                 onIgnoreThisVersion = viewModel::ignoreThisVersion,
                 onStopIgnoring = viewModel::stopIgnoringUpdates,

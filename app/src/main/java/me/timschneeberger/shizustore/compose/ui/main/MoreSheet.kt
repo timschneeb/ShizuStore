@@ -59,11 +59,6 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
             icon = R.drawable.ic_favorite_unchecked
         )
         SheetActionItem(
-            label = stringResource(R.string.title_blacklist),
-            onClick = { navigateAndDismiss(Destination.Blacklist) },
-            icon = R.drawable.ic_block
-        )
-        SheetActionItem(
             label = stringResource(R.string.title_ignored_updates),
             onClick = { navigateAndDismiss(Destination.IgnoredUpdates) },
             icon = R.drawable.ic_update_disabled_outlined

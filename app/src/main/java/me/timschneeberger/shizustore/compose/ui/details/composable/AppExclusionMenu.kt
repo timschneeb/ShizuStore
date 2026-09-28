@@ -25,13 +25,11 @@ import me.timschneeberger.shizustore.R
 
 @Composable
 fun AppExclusionMenu(
-    isBlacklisted: Boolean,
     isIgnored: Boolean,
     ignoresEveryVersion: Boolean,
     updateVersionName: String?,
     canIgnoreUpdates: Boolean,
     canSaveApk: Boolean,
-    onToggleBlacklist: () -> Unit,
     onIgnoreAllUpdates: () -> Unit,
     onIgnoreThisVersion: () -> Unit,
     onStopIgnoring: () -> Unit,
@@ -86,22 +84,6 @@ fun AppExclusionMenu(
                     onClick = { choose(obtainium) }
                 )
             }
-
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        stringResource(
-                            if (isBlacklisted) {
-                                R.string.action_unblacklist
-                            } else {
-                                R.string.action_blacklist
-                            }
-                        )
-                    )
-                },
-                leadingIcon = { MenuItemIcon(R.drawable.ic_block) },
-                onClick = { choose(onToggleBlacklist) }
-            )
 
             if (isIgnored) {
                 DropdownMenuItem(

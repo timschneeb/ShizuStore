@@ -58,6 +58,12 @@ row even when this process dispatched it, and `InstallWorker.awaitSettled` polls
 the row and the installed version every second instead of waiting on a broadcast
 that may never arrive. Tests: `InstallReconcilerTest`.
 
+Blacklist removal (September 2026): the client-only blacklist surface is gone
+(screen, DAO, entity, repository, ViewModel, overflow and update-sheet entries,
+strings and `ic_block`); nothing ever enforced it. Room moved to v9 with
+`MIGRATION_8_9` dropping the `blacklist` table. Favourites and ignored updates
+are now the only preserved user lists.
+
 Usage screen polish (September 2026): the summary card text now renders as
 markdown (`MarkdownInline`, synchronous parse so the one-liner never flashes
 empty), and `UsageReport` hoists the report parse state so one spinner covers
@@ -263,8 +269,8 @@ Details overflow menu icons. September 2026: every `DropdownMenuItem` in
 `AppExclusionMenu` now carries a leading icon through a shared `MenuItemIcon`
 helper: app info `ic_info_outlined`, add to home `ic_add_to_home` (new drawable,
 Material `add_to_home_screen`), save APK `ic_download_manager`, Obtainium
-`ic_obtainium`, blacklist/unblacklist `ic_block`, ignore actions
-`ic_update_disabled_outlined`, stop ignoring `ic_updates`.
+`ic_obtainium`, ignore actions `ic_update_disabled_outlined`, stop ignoring
+`ic_updates`.
 
 Screenshots. The server collects a detail-only `screenshots` list from the
 F-Droid and Izzy `index-v2.json` (matched by every package name an app
@@ -311,8 +317,8 @@ is strictly newer than `PREFERENCE_LAST_CATALOG_PURGE_AT` (DataStore, so it
 survives the wipe), `CatalogSyncer` records the marker first, drops `app`
 (cascades `app_download`), `category` and `sync_state`, skips that delta payload
 and bootstraps in the same run. The category ETag is not reused after a purge or
-a 304 could leave the tree empty. Favourites, the blacklist and ignored updates
-are user data and are never touched. Tests:
+a 304 could leave the tree empty. Favourites and ignored updates are user data
+and are never touched. Tests:
 `CatalogSyncerTest.remotePurgeWipesCatalogAndBootstrapsPreservingUserData`,
 `remotePurgeAppliesOnceThenSyncsIncrementally`, `olderPurgeTimestampIsIgnored`,
 `malformedPurgeTimestampIsIgnored`.
@@ -700,13 +706,15 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 ## Gotchas
 
 - The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), now at
-  version 6 with additive migrations `MIGRATION_1_2` (analysis signals),
-  `MIGRATION_2_3` (tracker tags), `MIGRATION_3_4` (badging and signer facts),
-  `MIGRATION_4_5` (Shizuku usage classification) and `MIGRATION_5_6` (localized
-  list names). They only add columns with
-  defaults, so a fresh install creates the full schema in one step and cached
-  catalogs upgrade in place. Old `AuroraDatabase` migrations and schemas are
-  gone; export schemas to `app/schemas/` as usual and keep the generated JSON.
+  version 9. Migrations `MIGRATION_1_2` (analysis signals), `MIGRATION_2_3`
+  (tracker tags), `MIGRATION_3_4` (badging and signer facts), `MIGRATION_4_5`
+  (Shizuku usage classification) and `MIGRATION_5_6` (localized list names) only
+  add columns with defaults; `MIGRATION_6_7` swaps the marker classification for
+  the AI usage report fields, `MIGRATION_7_8` adds `usageReportVersion` and
+  `MIGRATION_8_9` drops the removed `blacklist` table. A fresh install creates
+  the full schema in one step and cached catalogs upgrade in place. Old
+  `AuroraDatabase` migrations and schemas are gone; export schemas to
+  `app/schemas/` as usual and keep the generated JSON.
 - When `candidate.archiveEntry` is set the server `sha256`/`size` describe the
   archive, not the APK. Verify the archive hash first, then extract the entry; both
   the `.apk` and the staged `.archive` are cleaned up on failure or cancel.

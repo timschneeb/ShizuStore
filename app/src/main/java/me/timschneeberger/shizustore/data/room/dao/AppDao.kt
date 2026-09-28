@@ -157,12 +157,6 @@ interface AppDao {
     fun pagedFavourites(): PagingSource<Int, AppEntity>
 
     @Query(
-        "SELECT a.* FROM app a JOIN blacklist b ON b.packageName = a.packageName" +
-            " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
-    )
-    fun observeBlacklisted(): Flow<List<AppEntity>>
-
-    @Query(
         "SELECT a.* FROM app a JOIN ignored_update i ON i.packageName = a.packageName" +
             " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
     )

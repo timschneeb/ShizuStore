@@ -11,7 +11,6 @@
     <string name="action_app_info">Informacje o aplikacji</string>
     <string name="action_app_menu">Więcej opcji dla tej aplikacji</string>
     <string name="action_back">Wstecz</string>
-    <string name="action_blacklist">Czarna lista</string>
     <string name="action_cancel">Anuluj</string>
     <string name="action_cancel_all">Anuluj wszystko</string>
     <string name="action_clear">Wyczyść</string>
@@ -40,7 +39,6 @@
     <string name="action_share">Udostępnij</string>
     <string name="action_stop_ignoring_all">Przestań ignorować wszystkie aktualizacje</string>
     <string name="action_stop_ignoring_version">Przestań ignorować tę wersję</string>
-    <string name="action_unblacklist">Usuń z czarnej listy</string>
     <string name="action_unfavourite">Usuń z ulubionych</string>
     <string name="action_uninstall">Odinstaluj</string>
     <string name="action_update">Aktualizuj</string>
@@ -56,9 +54,6 @@
     <string name="apps_recently_added">Ostatnio dodane</string>
     <string name="apps_recently_updated">Ostatnio zaktualizowane</string>
     <string name="apps_most_starred">Najczęściej oznaczone gwiazdką na GitHub</string>
-    <string name="blacklist_empty">Nic nie znajduje się na czarnej liście</string>
-    <string name="blacklist_empty_detail">Dodaj aplikację do czarnej listy z poziomu jej menu, aby pojawiła się na tej liście.</string>
-    <string name="blacklist_unavailable">Brak aplikacji na czarnej liście do wyświetlenia</string>
     <string name="details_changelog">Lista zmian</string>
     <string name="details_changelog_subtitle">Co nowego w wersji %1$s</string>
     <string name="details_changelog_empty">Brak dziennika zmian</string>
@@ -382,7 +377,6 @@ Sprawdzaj tylko przez Wi-Fi</string>
     </plurals>
     <string name="title_about">O Aplikacji</string>
     <string name="title_apps">Aplikacje</string>
-    <string name="title_blacklist">Czarna lista</string>
     <string name="title_categories">Kategorie</string>
     <string name="title_search">Wyszukaj</string>
     <string name="title_donate">Wesprzyj</string>

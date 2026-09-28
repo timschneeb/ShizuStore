@@ -58,7 +58,6 @@ fun UpdatesScreen(
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val apps = viewModel.updates.collectAsLazyPagingItems()
-    val blacklisted by viewModel.blacklisted.collectAsStateWithLifecycle()
     val sheetApp by viewModel.sheetApp.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -79,11 +78,9 @@ fun UpdatesScreen(
         sheetApp?.let { app ->
             AppUpdateSheet(
                 app = app,
-                isBlacklisted = app.packageName in blacklisted,
                 onAppDetails = { onNavigateTo(Destination.AppDetails(app.packageName)) },
                 onIgnoreAllUpdates = { viewModel.ignoreAllUpdates(app) },
                 onIgnoreThisVersion = { viewModel.ignoreThisVersion(app) },
-                onToggleBlacklist = { viewModel.toggleBlacklist(app) },
                 onUninstall = { context.uninstallPackage(app.installedPackage ?: app.packageName) },
                 onAppInfo = { context.appInfo(app.installedPackage ?: app.packageName) },
                 onDismiss = viewModel::dismissSheet

@@ -76,7 +76,7 @@ does not guarantee `Retry-After`). Clock and sleep are injectable for tests.
   appCount, sortOrder)`.
 - `SyncStateEntity` (singleton id 0): `cursor`, `categoriesEtag`, `listCommit`,
   `syncedAt` and the popularity flag.
-- Catalog-scoped `FavouriteEntity`/`BlacklistEntity`/`IgnoredUpdateEntity` keyed by
+- Catalog-scoped `FavouriteEntity`/`IgnoredUpdateEntity` keyed by
   slug, so `link_only` apps with a null `packageName` work. `InstalledEntity`
   carries `signerMd5`.
 
@@ -114,7 +114,7 @@ keeps it in Installed/Updates, and settles the row from
 
 ## UI (`compose/`, `viewmodel/`)
 
-Surfaces are kept from AuroraDroid: Downloads, Installed, Favourites, Blacklist,
+Surfaces are kept from AuroraDroid: Downloads, Installed, Favourites,
 IgnoredUpdates, Updates (plus the update sheet), Details, Settings, About.
 `MainScreen` has three tabs (Apps, Search, Updates); the Search tab is one shared
 `AppListScreen`/`AppListViewModel` used by search, category, recently added/updated

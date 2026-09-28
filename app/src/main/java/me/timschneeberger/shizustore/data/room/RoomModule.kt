@@ -20,7 +20,6 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
-import me.timschneeberger.shizustore.data.room.dao.BlacklistDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
 import me.timschneeberger.shizustore.data.room.dao.DownloadDao
 import me.timschneeberger.shizustore.data.room.dao.FavouriteDao
@@ -48,7 +47,8 @@ object RoomModule {
                 MIGRATION_4_5,
                 MIGRATION_5_6,
                 MIGRATION_6_7,
-                MIGRATION_7_8
+                MIGRATION_7_8,
+                MIGRATION_8_9
             )
             .build()
 
@@ -174,6 +174,16 @@ object RoomModule {
         }
     }
 
+    /**
+     * Blacklist feature removed. Dropping the table is deliberate: the stored
+     * package names only fed a UI list that no longer exists.
+     */
+    internal val MIGRATION_8_9 = object : Migration(8, 9) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(connection, "DROP TABLE IF EXISTS blacklist")
+        }
+    }
+
     /** Driver-mode migrations use the raw connection, not SupportSQLiteDatabase. */
     private fun execSql(connection: SQLiteConnection, sql: String) {
         val statement = connection.prepare(sql)
@@ -204,9 +214,6 @@ object RoomModule {
 
     @Provides
     fun providesFavouriteDao(db: ShizuStoreDatabase): FavouriteDao = db.favouriteDao()
-
-    @Provides
-    fun providesBlacklistDao(db: ShizuStoreDatabase): BlacklistDao = db.blacklistDao()
 
     @Provides
     fun providesIgnoredUpdateDao(db: ShizuStoreDatabase): IgnoredUpdateDao = db.ignoredUpdateDao()

@@ -50,7 +50,6 @@ import me.timschneeberger.shizustore.data.model.InstallDispatch
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.data.repository.AppRepository
-import me.timschneeberger.shizustore.data.repository.BlacklistRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.repository.DetailedAppRepository
 import me.timschneeberger.shizustore.data.repository.DetailedAppResult
@@ -111,7 +110,6 @@ class AppDetailsViewModel @Inject constructor(
     private val installDispatcher: InstallDispatcher,
     private val mapper: CatalogUiMapper,
     private val favouriteRepository: FavouriteRepository,
-    private val blacklistRepository: BlacklistRepository,
     private val ignoredUpdateRepository: IgnoredUpdateRepository,
     private val installedRepository: InstalledRepository,
     @param:ApplicationContext private val context: Context
@@ -164,12 +162,6 @@ class AppDetailsViewModel @Inject constructor(
         .filterNotNull()
         .distinctUntilChanged()
         .flatMapLatest { favouriteRepository.isFavourite(it) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
-
-    val isBlacklisted: StateFlow<Boolean> = identity
-        .filterNotNull()
-        .distinctUntilChanged()
-        .flatMapLatest { blacklistRepository.isBlacklisted(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 
     val ignoredUpdate: StateFlow<IgnoredUpdateEntity?> = identity
@@ -340,11 +332,6 @@ class AppDetailsViewModel @Inject constructor(
     fun toggleFavourite() {
         val identity = identity.value ?: return
         viewModelScope.launch { favouriteRepository.toggle(identity) }
-    }
-
-    fun toggleBlacklist() {
-        val identity = identity.value ?: return
-        viewModelScope.launch { blacklistRepository.toggle(identity) }
     }
 
     fun ignoreAllUpdates() {

@@ -32,7 +32,6 @@ import me.timschneeberger.shizustore.data.helper.UpdateBatch
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.repository.AppRepository
-import me.timschneeberger.shizustore.data.repository.BlacklistRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.repository.DetailedAppRepository
 import me.timschneeberger.shizustore.data.repository.DetailedAppResult
@@ -50,7 +49,6 @@ class UpdatesViewModel @Inject constructor(
     private val mapper: CatalogUiMapper,
     private val updateBatch: UpdateBatch,
     private val ignoredUpdateRepository: IgnoredUpdateRepository,
-    private val blacklistRepository: BlacklistRepository,
     private val downloadHelper: DownloadHelper,
     private val syncHelper: SyncHelper
 ) : ViewModel() {
@@ -98,10 +96,6 @@ class UpdatesViewModel @Inject constructor(
     val syncFailure: StateFlow<CatalogSyncFailure?> = syncHelper.failure
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
-    val blacklisted: StateFlow<Set<String>> = blacklistRepository.observeBlacklist()
-        .map { it.toSet() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), emptySet())
-
     private val _sheetApp = MutableStateFlow<ResolvedApp?>(null)
     val sheetApp: StateFlow<ResolvedApp?> = _sheetApp.asStateFlow()
 
@@ -136,10 +130,6 @@ class UpdatesViewModel @Inject constructor(
 
     fun ignoreAllUpdates(app: ResolvedApp) {
         viewModelScope.launch { ignoredUpdateRepository.ignoreAll(app.packageName) }
-    }
-
-    fun toggleBlacklist(app: ResolvedApp) {
-        viewModelScope.launch { blacklistRepository.toggle(app.packageName) }
     }
 
     fun openSheet(app: ResolvedApp) {

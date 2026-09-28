@@ -32,7 +32,6 @@ sealed class Destination {
     data object Installed : Destination()
     data object Favourites : Destination()
 
-    data object Blacklist : Destination()
     data object IgnoredUpdates : Destination()
 
     data class AppList(

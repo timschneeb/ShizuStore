@@ -31,7 +31,6 @@ import androidx.navigation3.ui.NavDisplay
 import me.timschneeberger.shizustore.compose.permission.rememberDozeExemptionRequest
 import me.timschneeberger.shizustore.compose.ui.about.AboutScreen
 import me.timschneeberger.shizustore.compose.ui.applist.AppListScreen
-import me.timschneeberger.shizustore.compose.ui.blacklist.BlacklistScreen
 import me.timschneeberger.shizustore.compose.ui.details.AppDetailsScreen
 import me.timschneeberger.shizustore.compose.ui.details.ChangelogScreen
 import me.timschneeberger.shizustore.compose.ui.details.MoreAboutScreen
@@ -107,7 +106,6 @@ fun ShizuNavDisplay(
             is Destination.About -> backStack.add(Screen.About)
             is Destination.Installed -> backStack.add(Screen.Installed)
             is Destination.Favourites -> backStack.add(Screen.Favourites)
-            is Destination.Blacklist -> backStack.add(Screen.Blacklist)
             is Destination.IgnoredUpdates -> backStack.add(Screen.IgnoredUpdates)
             is Destination.AppList ->
                 backStack.add(
@@ -194,9 +192,6 @@ fun ShizuNavDisplay(
             }
             entry<Screen.Favourites> {
                 FavouritesScreen(onNavigateTo = ::navigate)
-            }
-            entry<Screen.Blacklist> {
-                BlacklistScreen(onNavigateTo = ::navigate)
             }
             entry<Screen.IgnoredUpdates> {
                 IgnoredUpdatesScreen(onNavigateTo = ::navigate)

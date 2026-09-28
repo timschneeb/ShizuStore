@@ -73,9 +73,6 @@ sealed class Screen : NavKey, Parcelable {
     data object Favourites : Screen()
 
     @Serializable
-    data object Blacklist : Screen()
-
-    @Serializable
     data object IgnoredUpdates : Screen()
 
     @Serializable

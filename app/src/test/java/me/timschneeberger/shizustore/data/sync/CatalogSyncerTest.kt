@@ -12,7 +12,6 @@ import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.helper.SyncStatusStore
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
-import me.timschneeberger.shizustore.data.room.entity.BlacklistEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.FavouriteEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
@@ -189,7 +188,6 @@ class CatalogSyncerTest : ApiTestBase() {
         )
         db.categoryDao().upsertAll(listOf(CategoryEntity(slug = "stale", name = "Stale")))
         db.favouriteDao().insert(FavouriteEntity("com.gone"))
-        db.blacklistDao().insert(BlacklistEntity("com.blocked"))
 
         server.dispatcher = routes(
             "/v1/changes" to json(CHANGES_WITH_PURGE),
@@ -208,7 +206,6 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(0, db.appDownloadDao().count())
         assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
         assertEquals(listOf("com.gone"), db.favouriteDao().observeAll().first())
-        assertEquals(listOf("com.blocked"), db.blacklistDao().observeAll().first())
         assertEquals(PURGE_AT_MILLIS, lastPurgeApplied())
         assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
 

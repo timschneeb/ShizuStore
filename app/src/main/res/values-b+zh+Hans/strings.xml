@@ -10,7 +10,6 @@
     <string name="action_app_info">应用信息</string>
     <string name="action_app_menu">此应用的更多选项</string>
     <string name="action_back">返回</string>
-    <string name="action_blacklist">加入黑名单</string>
     <string name="action_cancel">取消</string>
     <string name="action_cancel_all">全部取消</string>
     <string name="action_clear">清除</string>
@@ -39,7 +38,6 @@
     <string name="action_share">分享</string>
     <string name="action_stop_ignoring_all">停止忽略所有更新</string>
     <string name="action_stop_ignoring_version">停止忽略此版本</string>
-    <string name="action_unblacklist">从黑名单中移除</string>
     <string name="action_unfavourite">取消收藏</string>
     <string name="action_uninstall">卸载</string>
     <string name="action_update">更新</string>
@@ -55,9 +53,6 @@
     <string name="apps_recently_added">最近添加</string>
     <string name="apps_recently_updated">最近更新</string>
     <string name="apps_most_starred">GitHub 上最多星标</string>
-    <string name="blacklist_empty">黑名单为空</string>
-    <string name="blacklist_empty_detail">在应用菜单中将其加入黑名单后会显示在这里</string>
-    <string name="blacklist_unavailable">没有可显示的黑名单应用</string>
     <string name="details_changelog">更新日志</string>
     <string name="details_changelog_subtitle">%1$s 版本的新功能</string>
     <string name="details_changelog_empty">暂无更新日志</string>
@@ -339,7 +334,6 @@
     </plurals>
     <string name="title_about">关于</string>
     <string name="title_apps">应用</string>
-    <string name="title_blacklist">黑名单</string>
     <string name="title_categories">分类</string>
     <string name="title_search">搜索</string>
     <string name="title_donate">捐助</string>

@@ -29,11 +29,9 @@ import me.timschneeberger.shizustore.data.model.ResolvedApp
 @Composable
 fun AppUpdateSheet(
     app: ResolvedApp,
-    isBlacklisted: Boolean,
     onAppDetails: () -> Unit,
     onIgnoreAllUpdates: () -> Unit,
     onIgnoreThisVersion: () -> Unit,
-    onToggleBlacklist: () -> Unit,
     onUninstall: () -> Unit,
     onAppInfo: () -> Unit,
     onDismiss: () -> Unit
@@ -82,17 +80,6 @@ fun AppUpdateSheet(
 
             SheetDivider()
 
-            SheetActionItem(
-                label = if (isBlacklisted) {
-                    stringResource(R.string.action_unblacklist)
-                } else {
-                    stringResource(R.string.action_blacklist)
-                },
-                onClick = {
-                    onToggleBlacklist()
-                    onDismiss()
-                }
-            )
             SheetActionItem(
                 label = stringResource(R.string.action_app_info),
                 onClick = {
