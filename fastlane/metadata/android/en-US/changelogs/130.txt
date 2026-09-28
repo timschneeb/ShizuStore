@@ -1,0 +1,7 @@
+- Added "How Shizuku is used": an AI-assisted report explaining what an app can do with Shizuku, generated from its public source.
+- Added details stats (installs, downloads, stars, size) with tooltips, an ads badge, category chips and how long ago the app was updated.
+- Added a Catalog settings page where tracker detection (Exodus Privacy) can be shown or hidden.
+- The home screen now shows category rows, including a Dhizuku-compatible section.
+- The details menu can add an app to Obtainium or save the downloaded APK to Downloads.
+- App names now follow your language when the app ships localized names.
+- Fixed installs stuck after OEM app freezes and recent searches filling up with partial queries; performance and translation updates.
