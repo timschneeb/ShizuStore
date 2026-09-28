@@ -69,7 +69,10 @@ class SearchHistoryStore @Inject constructor(
          * query goes to the front and the prefixes it supersedes are dropped.
          */
         fun merge(current: List<String>, query: String): List<String> {
-            if (current.any { it.length > query.length && it.startsWith(query, ignoreCase = true) }) {
+            if (current.any {
+                    it.length > query.length && it.startsWith(query, ignoreCase = true)
+                }
+            ) {
                 return prune(current)
             }
             return (
