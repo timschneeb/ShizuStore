@@ -18,6 +18,7 @@
     <string name="action_collapse">Collapse</string>
     <string name="action_expand">توسيع</string>
     <string name="action_export">تصدير APK</string>
+    <string name="action_save_apk">Save APK</string>
     <string name="action_favourite">إضافة إلى المفضلة</string>
     <string name="action_grant">منح</string>
     <string name="action_granted">ممنوح</string>
@@ -61,8 +62,12 @@
     <string name="details_changelog_subtitle">What\'s new for version %1$s</string>
     <string name="details_changelog_empty">No changelog available</string>
     <string name="details_stats_downloads">Downloads</string>
+    <string name="details_stats_downloads_tooltip">Number of downloads counted at %1$s.</string>
+    <string name="details_stats_installs_tooltip">Number of installs reported by other ShizuStore users.</string>
     <string name="details_stats_stars">Stars</string>
+    <string name="details_stats_stars_tooltip">Number of stars on the source code repository.</string>
     <string name="details_stats_size">Size</string>
+    <string name="details_stats_size_tooltip">Download size of the APK file.</string>
     <string name="details_more_about">More about this app</string>
     <string name="details_more_from_author">More apps from this developer</string>
     <string name="details_more_from_category">More from this category</string>
@@ -82,6 +87,7 @@
     <string name="details_permissions_known">Other permissions</string>
     <string name="details_permissions_none">No permissions requested</string>
     <string name="details_source_code">Source code</string>
+    <string name="details_obtainium">Add to Obtainium</string>
     <string name="details_store">Store</string>
     <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
     <string name="details_closed_source_notice">This app is closed source. Its code is not public, so the community cannot easily verify what it does.</string>
@@ -113,6 +119,8 @@
     <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
     <string name="download_export_done">APK exported</string>
     <string name="download_export_failed">Could not export the APK</string>
+    <string name="download_saved">APK saved to Downloads</string>
+    <string name="download_save_failed">Could not save the APK</string>
     <string name="download_status_awaiting_confirmation">Waiting for confirmation</string>
     <string name="download_status_cancelled">Cancelled</string>
     <string name="download_status_completed">تم التنزيل</string>
@@ -260,6 +268,7 @@
     <string name="filter_title_category">Filter by category</string>
     <string name="filter_title_price">Filter by price</string>
     <string name="filter_title_sort">Sort by</string>
+    <string name="category_dhizuku">Dhizuku-compatible</string>
     <string name="app_badge_paid">Paid</string>
     <string name="app_badge_iap">IAP</string>
     <string name="app_badge_ads">Ads</string>
@@ -272,10 +281,16 @@
     <string name="details_dhizuku">Dhizuku</string>
     <string name="details_trackers_title">Detected trackers (%1$d)</string>
     <string name="details_trackers_note">Matched by Exodus Privacy code signatures. Not a complete list.</string>
+    <string name="details_shizuku_title">How Shizuku is used</string>
+    <string name="details_shizuku_empty">No usage report is available for this app.</string>
+    <string name="details_shizuku_ai_note">This is an AI-assisted analysis of Shizuku-related usages in the app\'s public source code. It is best effort, so it may not catch every single usage.</string>
+    <string name="details_shizuku_summary_title">Summary</string>
     <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_black_night_subtitle">Use the pure black theme if night mode is enabled</string>
     <string name="settings_black_night_title">Black night theme</string>
+    <string name="settings_catalog_summary">Listings and app analysis</string>
+    <string name="settings_catalog_title">Catalog</string>
     <string name="settings_dynamic_color_subtitle">Draws the palette from your wallpaper. Android 12 and later.</string>
     <string name="settings_dynamic_color_title">Dynamic colour</string>
     <string name="settings_group_updates_summary">Check schedule, network limits and automatic installs</string>
@@ -316,6 +331,8 @@
     <string name="settings_server_title">Server</string>
     <string name="settings_show_closed_source_subtitle">Also syncs apps from the upstream closed-source list. These apps are proprietary and off by default.</string>
     <string name="settings_show_closed_source_title">Show closed-source apps</string>
+    <string name="settings_show_tracker_info_subtitle">Shows trackers detected in an app\'s APK (Exodus Privacy code signatures) on its details page.</string>
+    <string name="settings_show_tracker_info_title">Show tracker info</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_system">System default</string>
