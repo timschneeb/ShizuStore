@@ -342,7 +342,7 @@ class AppDetailsViewModel @Inject constructor(
     fun ignoreThisVersion() {
         val app = resolvedApp() ?: return
         viewModelScope.launch {
-            ignoredUpdateRepository.ignoreVersion(app.packageName, app.versionCode)
+            ignoredUpdateRepository.ignoreVersion(app.packageName)
         }
     }
 

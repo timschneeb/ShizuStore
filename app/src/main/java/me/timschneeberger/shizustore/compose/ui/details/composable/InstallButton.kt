@@ -189,7 +189,7 @@ private fun idleButtonState(
         bar = ProgressBar.None
     )
 
-    app.hasUpdate -> InstallButtonState(
+    app.hasManualUpdate -> InstallButtonState(
         primary = ActionButton(
             context.getString(R.string.action_update),
             InstallAction.INSTALL

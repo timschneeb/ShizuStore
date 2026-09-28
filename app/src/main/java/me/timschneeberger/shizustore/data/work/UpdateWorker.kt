@@ -59,7 +59,7 @@ class UpdateWorker @AssistedInject constructor(
     }
 
     private suspend fun handleUpdatable(): Result {
-        val updatable = appDao.getAll().filter { it.updateAvailable && it.packageName != null }
+        val updatable = appDao.getUpdatable()
         if (updatable.isEmpty()) {
             Log.i(TAG, "Nothing to update; posting nothing")
             return Result.success()

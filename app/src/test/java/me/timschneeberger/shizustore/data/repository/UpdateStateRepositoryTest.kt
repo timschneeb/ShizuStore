@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import me.timschneeberger.shizustore.RobolectricTestBase
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -280,6 +281,134 @@ class UpdateStateRepositoryTest : RobolectricTestBase() {
         assertEquals(4L, app.installedVersionCode)
         assertTrue(app.updateAvailable)
         assertEquals(play.id, app.updateCandidateId)
+    }
+
+    @Test
+    fun ignoredAllSuppressesUpdateWhileKeepingTheCandidate() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(download(slug = "app", sigSha256 = "aaaaaaaa", versionCode = 8, url = "a"))
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+        db.ignoredUpdateDao().upsert(IgnoredUpdateEntity("com.app", null))
+
+        repository.recomputeAll()
+
+        val app = db.appDao().get("app")!!
+        assertTrue(app.updateAvailable)
+        assertTrue(app.updateIgnored)
+        assertEquals(db.appDownloadDao().forApp("app").first().id, app.updateCandidateId)
+    }
+
+    @Test
+    fun ignoredVersionStopsSuppressingWhenANewerCandidateArrives() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(download(slug = "app", sigSha256 = "aaaaaaaa", versionCode = 8, url = "a"))
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+        db.ignoredUpdateDao().upsert(IgnoredUpdateEntity("com.app", 8))
+
+        repository.recomputeAll()
+        assertTrue(db.appDao().get("app")!!.updateIgnored)
+
+        db.appDownloadDao().replaceForApp(
+            "app",
+            listOf(download(slug = "app", sigSha256 = "aaaaaaaa", versionCode = 9, url = "b"))
+        )
+        repository.recomputeAll()
+
+        val app = db.appDao().get("app")!!
+        assertTrue(app.updateAvailable)
+        assertFalse(app.updateIgnored)
+        assertTrue(db.ignoredUpdateDao().getAll().isEmpty())
+    }
+
+    @Test
+    fun ignoreKeyedByInstalledFlavorPackageStillSuppresses() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(
+                download(
+                    slug = "app",
+                    packageName = "com.app.play",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = true,
+                    url = "play"
+                )
+            )
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app.play",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+        db.ignoredUpdateDao().upsert(IgnoredUpdateEntity("com.app.play", 8))
+
+        repository.recomputeAll()
+
+        val app = db.appDao().get("app")!!
+        assertTrue(app.updateAvailable)
+        assertTrue(app.updateIgnored)
+    }
+
+    @Test
+    fun offeredVersionPrefersTheMatchingCandidate() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(
+                download(
+                    slug = "app",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = true,
+                    url = "a"
+                ),
+                download(
+                    slug = "app",
+                    sigSha256 = "bbbbbbbb",
+                    versionCode = 9,
+                    primary = false,
+                    url = "b"
+                )
+            )
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+
+        assertEquals(8L, repository.offeredVersionCode("com.app"))
     }
 
     private fun download(

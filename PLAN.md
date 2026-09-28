@@ -63,7 +63,8 @@ does not guarantee `Retry-After`). Clock and sleep are injectable for tests.
 
 ## Room (`data/room/`)
 
-`ShizuStoreDatabase` is at version 1 with no migrations (fresh start pre-release).
+`ShizuStoreDatabase` is at version 10; migrations only add columns or drop
+removed tables, and catalog purges never touch user data.
 
 - `AppEntity` (PK `slug`): summary, detail, denormalized update state
   (`updateAvailable`, `updateCandidateId`, `installedVersionCode`), popularity
@@ -76,9 +77,10 @@ does not guarantee `Retry-After`). Clock and sleep are injectable for tests.
   appCount, sortOrder)`.
 - `SyncStateEntity` (singleton id 0): `cursor`, `categoriesEtag`, `listCommit`,
   `syncedAt` and the popularity flag.
-- Catalog-scoped `FavouriteEntity`/`IgnoredUpdateEntity` keyed by
-  slug, so `link_only` apps with a null `packageName` work. `InstalledEntity`
-  carries `signerMd5`.
+- Catalog-scoped `FavouriteEntity` keyed by slug, so `link_only` apps with a null
+  `packageName` work; `IgnoredUpdateEntity` keyed by the canonical package, with a
+  null `versionCode` meaning every version and a set one expiring when a newer
+  candidate is offered. `InstalledEntity` carries `signerMd5`.
 
 `AppDao` exposes paging plus one `@RawQuery` (`AppListQueryBuilder`) for every
 filter combination: bound WHERE clauses (recursive category subtree, escaped LIKE
@@ -95,8 +97,9 @@ replaces the candidate rows atomically.
 
 `SyncHelper` is the global catalog control (WorkManager flow plus `sync()` and
 `refresh()`); `SyncWorker` runs `sync-catalog`; `UpdateWorker` runs the periodic
-sweep and posts the updates notification, and enqueues unattended installs when the
-preference is set and the selected installer can install without confirmation.
+sweep and posts the updates notification for non-ignored updates, and enqueues
+unattended installs when the preference is set and the selected installer can
+install without confirmation.
 
 ## Install and download (`data/download/`, `data/helper/`)
 

@@ -124,7 +124,7 @@ class UpdatesViewModel @Inject constructor(
 
     fun ignoreThisVersion(app: ResolvedApp) {
         viewModelScope.launch {
-            ignoredUpdateRepository.ignoreVersion(app.packageName, app.versionCode)
+            ignoredUpdateRepository.ignoreVersion(app.packageName)
         }
     }
 

@@ -64,6 +64,21 @@ strings and `ic_block`); nothing ever enforced it. Room moved to v9 with
 `MIGRATION_8_9` dropping the `blacklist` table. Favourites and ignored updates
 are now the only preserved user lists.
 
+Ignored updates (September 2026): ignoring an update now actually suppresses it.
+`UpdateStateRepository` reads `ignored_update` and writes a derived
+`AppEntity.updateIgnored` flag (Room v10, additive `MIGRATION_9_10`) next to the
+truthful `updateAvailable`, and `pagedUpdatable`/`observeUpdatableCount`,
+`AppDao.getUpdatable()` (notifications and unattended passes),
+`AppRepository.updatableApps()` (update all) and the list badges exclude ignored
+rows. `ResolvedApp.hasManualUpdate` keeps the details Update button, so an
+ignored app can still be updated by hand. Ignore-all (null `versionCode`)
+persists across future versions; a version-scoped ignore expires once a newer
+candidate is offered and the stale row is pruned. `ignoreVersion` stores the
+offered candidate version resolved by `UpdateStateRepository.offeredVersionCode`,
+every write canonicalizes the package key and recomputes update state. Tests:
+`UpdateStateRepositoryTest` ignore cases, `IgnoredUpdateRepositoryTest`,
+`CatalogDaoTest.updateStateDrivesUpdatableCount`.
+
 Usage screen polish (September 2026): the summary card text now renders as
 markdown (`MarkdownInline`, synchronous parse so the one-liner never flashes
 empty), and `UsageReport` hoists the report parse state so one spinner covers
@@ -706,12 +721,13 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 ## Gotchas
 
 - The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), now at
-  version 9. Migrations `MIGRATION_1_2` (analysis signals), `MIGRATION_2_3`
+  version 10. Migrations `MIGRATION_1_2` (analysis signals), `MIGRATION_2_3`
   (tracker tags), `MIGRATION_3_4` (badging and signer facts), `MIGRATION_4_5`
   (Shizuku usage classification) and `MIGRATION_5_6` (localized list names) only
   add columns with defaults; `MIGRATION_6_7` swaps the marker classification for
-  the AI usage report fields, `MIGRATION_7_8` adds `usageReportVersion` and
-  `MIGRATION_8_9` drops the removed `blacklist` table. A fresh install creates
+  the AI usage report fields, `MIGRATION_7_8` adds `usageReportVersion`,
+  `MIGRATION_8_9` drops the removed `blacklist` table and `MIGRATION_9_10` adds
+  `app.updateIgnored`. A fresh install creates
   the full schema in one step and cached catalogs upgrade in place. Old
   `AuroraDatabase` migrations and schemas are gone; export schemas to
   `app/schemas/` as usual and keep the generated JSON.

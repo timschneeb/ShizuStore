@@ -46,7 +46,8 @@ interface AppDao {
     suspend fun count(): Int
 
     @Query(
-        "UPDATE app SET installedVersionCode = NULL, updateAvailable = 0, updateCandidateId = NULL"
+        "UPDATE app SET installedVersionCode = NULL, updateAvailable = 0," +
+            " updateCandidateId = NULL, updateIgnored = 0"
     )
     suspend fun clearUpdateState()
 
@@ -83,24 +84,36 @@ interface AppDao {
 
     @Query(
         "UPDATE app SET installedVersionCode = :installedVersionCode," +
-            " updateAvailable = :updateAvailable, updateCandidateId = :updateCandidateId" +
+            " updateAvailable = :updateAvailable, updateCandidateId = :updateCandidateId," +
+            " updateIgnored = :updateIgnored" +
             " WHERE slug = :slug"
     )
     suspend fun setUpdateState(
         slug: String,
         installedVersionCode: Long?,
         updateAvailable: Boolean,
-        updateCandidateId: Long?
+        updateCandidateId: Long?,
+        updateIgnored: Boolean
     )
 
     @RawQuery(observedEntities = [AppEntity::class])
     fun pagedFiltered(query: SupportSQLiteQuery): PagingSource<Int, AppEntity>
 
-    @Query("SELECT * FROM app WHERE updateAvailable = 1 ORDER BY name COLLATE NOCASE ASC")
+    @Query(
+        "SELECT * FROM app WHERE updateAvailable = 1 AND updateIgnored = 0" +
+            " ORDER BY name COLLATE NOCASE ASC"
+    )
     fun pagedUpdatable(): PagingSource<Int, AppEntity>
 
-    @Query("SELECT COUNT(*) FROM app WHERE updateAvailable = 1")
+    @Query("SELECT COUNT(*) FROM app WHERE updateAvailable = 1 AND updateIgnored = 0")
     fun observeUpdatableCount(): Flow<Int>
+
+    /** Updatable rows a notification or unattended pass may act on. */
+    @Query(
+        "SELECT * FROM app WHERE updateAvailable = 1 AND updateIgnored = 0" +
+            " AND packageName IS NOT NULL"
+    )
+    suspend fun getUpdatable(): List<AppEntity>
 
     @Query(
         "SELECT * FROM app WHERE installedVersionCode IS NOT NULL ORDER BY name COLLATE NOCASE ASC"

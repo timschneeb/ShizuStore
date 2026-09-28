@@ -119,8 +119,7 @@ class AppRepository @Inject constructor(
     }
 
     /** Updatable rows with a real package name, the only ones an install can target. */
-    suspend fun updatableApps(): List<AppEntity> =
-        appDao.getAll().filter { it.updateAvailable && it.packageName != null }
+    suspend fun updatableApps(): List<AppEntity> = appDao.getUpdatable()
 
     suspend fun candidate(id: Long): AppCandidate? = appDownloadDao.getById(id)?.let { entity ->
         val packageName = appDao.get(entity.appSlug)?.packageName

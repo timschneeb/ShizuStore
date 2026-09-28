@@ -221,7 +221,8 @@ class CatalogDaoTest : RobolectricTestBase() {
             "foo",
             installedVersionCode = 1L,
             updateAvailable = true,
-            updateCandidateId = 9L
+            updateCandidateId = 9L,
+            updateIgnored = false
         )
 
         assertEquals(1, appDao.observeUpdatableCount().first())
@@ -229,6 +230,17 @@ class CatalogDaoTest : RobolectricTestBase() {
         assertEquals(1L, stored.installedVersionCode)
         assertTrue(stored.updateAvailable)
         assertEquals(9L, stored.updateCandidateId)
+
+        appDao.setUpdateState(
+            "foo",
+            installedVersionCode = 1L,
+            updateAvailable = true,
+            updateCandidateId = 9L,
+            updateIgnored = true
+        )
+
+        assertEquals(0, appDao.observeUpdatableCount().first())
+        assertTrue(appDao.getUpdatable().isEmpty())
     }
 
     @Test

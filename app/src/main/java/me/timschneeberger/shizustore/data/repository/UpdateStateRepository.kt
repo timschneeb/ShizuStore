@@ -14,8 +14,10 @@ import me.timschneeberger.shizustore.data.model.CertFingerprint
 import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
+import me.timschneeberger.shizustore.data.room.dao.IgnoredUpdateDao
 import me.timschneeberger.shizustore.data.room.dao.InstalledDao
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
+import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 
 /**
@@ -27,7 +29,8 @@ class UpdateStateRepository @Inject constructor(
     private val database: ShizuStoreDatabase,
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao,
-    private val installedDao: InstalledDao
+    private val installedDao: InstalledDao,
+    private val ignoredUpdateDao: IgnoredUpdateDao
 ) {
     /**
      * One transaction keeps the cleared state invisible to observers so badges do not flicker; the
@@ -37,9 +40,10 @@ class UpdateStateRepository @Inject constructor(
         transactor.immediateTransaction {
             appDao.clearUpdateState()
             val installedByPackage = installedDao.getAll().associateBy { it.packageName }
+            val ignoredByPackage = ignoredUpdateDao.getAll().associateBy { it.packageName }
             appDao.getAll().forEach { app ->
                 val installed = resolveInstalled(app, installedByPackage)
-                applyState(app.slug, installed)
+                applyState(app.slug, installed, ignoredByPackage)
             }
         }
     }
@@ -50,9 +54,26 @@ class UpdateStateRepository @Inject constructor(
                 ?: appDao.getByDownloadPackage(packageName)
                 ?: return@immediateTransaction
             val installedByPackage = installedDao.getAll().associateBy { it.packageName }
-            applyState(app.slug, resolveInstalled(app, installedByPackage))
+            val ignoredByPackage = ignoredUpdateDao.getAll().associateBy { it.packageName }
+            applyState(app.slug, resolveInstalled(app, installedByPackage), ignoredByPackage)
         }
     }
+
+    /** The version an update would offer for the installed app, or null when none is offered. */
+    suspend fun offeredVersionCode(packageName: String): Long? =
+        database.useWriterConnection { transactor ->
+            transactor.immediateTransaction {
+                val app = appDao.getByPackage(packageName)
+                    ?: appDao.getByDownloadPackage(packageName)
+                    ?: return@immediateTransaction null
+                val installedByPackage = installedDao.getAll().associateBy { it.packageName }
+                val installed = resolveInstalled(app, installedByPackage)
+                    ?: return@immediateTransaction null
+                val candidates = appDownloadDao.forApp(app.slug)
+                    .map { AppCandidate.from(it, app.packageName) }
+                resolveOfferedVersion(app, selectMatch(installed, candidates), candidates)
+            }
+        }
 
     /**
      * A flavor installs under its own package, so the entry counts as installed when any of its
@@ -68,26 +89,54 @@ class UpdateStateRepository @Inject constructor(
             .firstNotNullOfOrNull { installedByPackage[it] }
     }
 
-    private suspend fun applyState(slug: String, installed: InstalledEntity?) {
+    /**
+     * Flavor builds usually share a signing key, so the package is what ties the
+     * installed app to its own candidate; never offer a different flavor's APK.
+     */
+    private fun selectMatch(
+        installed: InstalledEntity,
+        candidates: List<AppCandidate>
+    ): AppCandidate? {
+        val installedFingerprint = CertFingerprint.of(installed.signer, installed.signerMd5)
+        val matches = candidates.filter { it.matchesInstalled(installedFingerprint) }
+        return matches.firstOrNull {
+            it.packageName == installed.packageName &&
+                it.supportsAbi(AppCandidate.deviceAbis)
+        }
+            ?: matches.firstOrNull { it.packageName == installed.packageName }
+            ?: matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
+            ?: matches.firstOrNull()
+    }
+
+    private fun resolveOfferedVersion(
+        app: AppEntity,
+        match: AppCandidate?,
+        candidates: List<AppCandidate>
+    ): Long? = when {
+        match != null -> match.versionCode ?: app.versionCode
+        candidates.isEmpty() -> app.versionCode
+        else -> null
+    }
+
+    private suspend fun applyState(
+        slug: String,
+        installed: InstalledEntity?,
+        ignoredByPackage: Map<String, IgnoredUpdateEntity>
+    ) {
         if (installed == null) {
-            appDao.setUpdateState(slug, null, updateAvailable = false, updateCandidateId = null)
+            appDao.setUpdateState(
+                slug,
+                null,
+                updateAvailable = false,
+                updateCandidateId = null,
+                updateIgnored = false
+            )
             return
         }
 
         val app = appDao.get(slug) ?: return
-        val installedFingerprint = CertFingerprint.of(installed.signer, installed.signerMd5)
         val candidates = appDownloadDao.forApp(slug).map { AppCandidate.from(it, app.packageName) }
-        val matches = candidates.filter { it.matchesInstalled(installedFingerprint) }
-        // Flavor builds usually share a signing key, so the package is what ties the
-        // installed app to its own candidate; never offer a different flavor's APK.
-        val match =
-            matches.firstOrNull {
-                it.packageName == installed.packageName &&
-                    it.supportsAbi(AppCandidate.deviceAbis)
-            }
-                ?: matches.firstOrNull { it.packageName == installed.packageName }
-                ?: matches.firstOrNull { it.supportsAbi(AppCandidate.deviceAbis) }
-                ?: matches.firstOrNull()
+        val match = selectMatch(installed, candidates)
 
         val available: Boolean
         val candidateId: Long?
@@ -105,6 +154,18 @@ class UpdateStateRepository @Inject constructor(
                 candidateId = null
             }
         }
-        appDao.setUpdateState(slug, installed.versionCode, available, candidateId)
+
+        // The ignore row may be keyed by the canonical or the installed flavor package.
+        val ignore = ignoredByPackage[app.packageName] ?: ignoredByPackage[installed.packageName]
+        val offeredVersion = resolveOfferedVersion(app, match, candidates)
+        val ignored = ignore != null && offeredVersion != null &&
+            (ignore.versionCode == null || ignore.versionCode == offeredVersion)
+        // A version-scoped ignore has served its purpose once a newer build is offered.
+        if (ignore?.versionCode != null && offeredVersion != null &&
+            offeredVersion > ignore.versionCode
+        ) {
+            ignoredUpdateDao.delete(ignore.packageName)
+        }
+        appDao.setUpdateState(slug, installed.versionCode, available, candidateId, ignored)
     }
 }

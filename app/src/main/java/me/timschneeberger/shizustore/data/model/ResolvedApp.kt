@@ -35,6 +35,8 @@ data class ResolvedApp(
     val availability: Availability = Availability.DIRECT_APK,
     val iconAdaptive: Boolean = false,
     val updateAvailable: Boolean = false,
+    /** True while the user ignores the offered update; badges hide, manual installs stay. */
+    val updateIgnored: Boolean = false,
     val candidateId: Long? = null,
     val hasPaid: Boolean = false,
     val hasIap: Boolean = false,
@@ -51,7 +53,7 @@ data class ResolvedApp(
     val listUpdatedAtMillis: Long? = null,
     val versionUpdatedAtMillis: Long? = null
 ) {
-    // Parsed once: hasUpdate and the signer checks run per row and re-parsing the
+    // Parsed once: hasManualUpdate and the signer checks run per row and re-parsing the
     // space-joined sets on every read shows up in profiles.
     private val installedFingerprint: Set<String> = parseFingerprintSet(installedSigner)
     private val candidateFingerprint: Set<String> = parseFingerprintSet(signer)
@@ -66,13 +68,18 @@ data class ResolvedApp(
     private val signerMatchesInstalled: Boolean
         get() = installedSigner != null && candidateFingerprint.any { it in installedFingerprint }
 
-    val hasUpdate: Boolean
+    /** Manual installs stay possible from details even while the update is ignored. */
+    val hasManualUpdate: Boolean
         get() = updateAvailable ||
             (
                 installedVersionCode != null &&
                     versionCode > installedVersionCode &&
                     signerMatchesInstalled
                 )
+
+    /** Badge and nagging surfaces hide an ignored update; the Update action does not. */
+    val hasUpdate: Boolean
+        get() = hasManualUpdate && !updateIgnored
 
     val signerDiffersFromInstalled: Boolean
         get() = installedSigner != null && !signerMatchesInstalled

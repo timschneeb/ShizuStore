@@ -48,7 +48,8 @@ object RoomModule {
                 MIGRATION_5_6,
                 MIGRATION_6_7,
                 MIGRATION_7_8,
-                MIGRATION_8_9
+                MIGRATION_8_9,
+                MIGRATION_9_10
             )
             .build()
 
@@ -181,6 +182,19 @@ object RoomModule {
     internal val MIGRATION_8_9 = object : Migration(8, 9) {
         override fun migrate(connection: SQLiteConnection) {
             execSql(connection, "DROP TABLE IF EXISTS blacklist")
+        }
+    }
+
+    /**
+     * Ignored-update suppression flag added to `app`. Additive like the previous
+     * migrations: the catalog cache is disposable but user state is not.
+     */
+    internal val MIGRATION_9_10 = object : Migration(9, 10) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN updateIgnored INTEGER NOT NULL DEFAULT 0"
+            )
         }
     }
 

@@ -19,7 +19,8 @@ import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
 class IgnoredUpdateRepository @Inject constructor(
     private val ignoredUpdateDao: IgnoredUpdateDao,
     private val appDao: AppDao,
-    private val mapper: CatalogUiMapper
+    private val mapper: CatalogUiMapper,
+    private val updateStateRepository: UpdateStateRepository
 ) {
 
     fun observeIgnores(): Flow<List<IgnoredUpdateEntity>> = ignoredUpdateDao.observeAll()
@@ -30,11 +31,27 @@ class IgnoredUpdateRepository @Inject constructor(
     fun observeIgnoredApps(): Flow<List<ResolvedApp>> =
         appDao.observeIgnoredUpdates().map { apps -> apps.map(mapper::toResolvedApp) }
 
-    suspend fun ignoreAll(packageName: String) =
-        ignoredUpdateDao.upsert(IgnoredUpdateEntity(packageName, null))
+    suspend fun ignoreAll(packageName: String) {
+        ignoredUpdateDao.upsert(IgnoredUpdateEntity(canonicalPackage(packageName), null))
+        updateStateRepository.recompute(packageName)
+    }
 
-    suspend fun ignoreVersion(packageName: String, versionCode: Long) =
-        ignoredUpdateDao.upsert(IgnoredUpdateEntity(packageName, versionCode))
+    /** Stores the version the update flow currently offers, so suppression matches exactly. */
+    suspend fun ignoreVersion(packageName: String) {
+        val offered = updateStateRepository.offeredVersionCode(packageName) ?: return
+        ignoredUpdateDao.upsert(IgnoredUpdateEntity(canonicalPackage(packageName), offered))
+        updateStateRepository.recompute(packageName)
+    }
 
-    suspend fun stopIgnoring(packageName: String) = ignoredUpdateDao.delete(packageName)
+    suspend fun stopIgnoring(packageName: String) {
+        ignoredUpdateDao.delete(canonicalPackage(packageName))
+        ignoredUpdateDao.delete(packageName)
+        updateStateRepository.recompute(packageName)
+    }
+
+    /** Rows are keyed by the app's canonical package, never by an installed flavor package. */
+    private suspend fun canonicalPackage(packageName: String): String =
+        (appDao.getByPackage(packageName) ?: appDao.getByDownloadPackage(packageName))
+            ?.packageName
+            ?: packageName
 }

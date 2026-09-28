@@ -92,6 +92,9 @@ data class AppEntity(
     val installedVersionCode: Long? = null,
     val updateAvailable: Boolean = false,
     val updateCandidateId: Long? = null,
+    /** True while the user ignores the offered update; drives badges, never manual installs. */
+    @ColumnInfo(defaultValue = "0")
+    val updateIgnored: Boolean = false,
     val syncedAt: Long = 0L,
     /** AI usage report from the server; null until the app was analyzed (SPEC 5.4). */
     val usageShort: String? = null,
@@ -131,6 +134,7 @@ fun AppEntity.mergeDetailFrom(existing: AppEntity?): AppEntity = if (existing ==
         installedVersionCode = existing.installedVersionCode,
         updateAvailable = existing.updateAvailable,
         updateCandidateId = existing.updateCandidateId,
+        updateIgnored = existing.updateIgnored,
         usageShort = existing.usageShort,
         usageMarkdown = existing.usageMarkdown,
         usageAnalyzedAt = existing.usageAnalyzedAt,

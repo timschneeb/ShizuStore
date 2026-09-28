@@ -7,6 +7,8 @@ package me.timschneeberger.shizustore
 
 import android.os.Build
 import androidx.room.Room
+import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
+import me.timschneeberger.shizustore.data.repository.IgnoredUpdateRepository
 import me.timschneeberger.shizustore.data.repository.UpdateStateRepository
 import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
 import org.junit.After
@@ -35,6 +37,18 @@ abstract class RobolectricTestBase {
         db.close()
     }
 
-    protected fun updateStateRepository() =
-        UpdateStateRepository(db, db.appDao(), db.appDownloadDao(), db.installedDao())
+    protected fun updateStateRepository() = UpdateStateRepository(
+        db,
+        db.appDao(),
+        db.appDownloadDao(),
+        db.installedDao(),
+        db.ignoredUpdateDao()
+    )
+
+    protected fun ignoredUpdateRepository() = IgnoredUpdateRepository(
+        db.ignoredUpdateDao(),
+        db.appDao(),
+        CatalogUiMapper(),
+        updateStateRepository()
+    )
 }

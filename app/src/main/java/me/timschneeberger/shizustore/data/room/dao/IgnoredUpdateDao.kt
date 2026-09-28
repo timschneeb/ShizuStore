@@ -18,6 +18,9 @@ interface IgnoredUpdateDao {
     @Query("SELECT * FROM ignored_update ORDER BY packageName ASC")
     fun observeAll(): Flow<List<IgnoredUpdateEntity>>
 
+    @Query("SELECT * FROM ignored_update")
+    suspend fun getAll(): List<IgnoredUpdateEntity>
+
     @Query("SELECT * FROM ignored_update WHERE packageName = :packageName")
     fun observe(packageName: String): Flow<IgnoredUpdateEntity?>
 

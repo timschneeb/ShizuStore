@@ -60,6 +60,7 @@ class CatalogUiMapper @Inject constructor() {
         availability = app.availability,
         iconAdaptive = app.iconAdaptive,
         updateAvailable = app.updateAvailable,
+        updateIgnored = app.updateIgnored,
         hasPaid = app.hasPaid,
         hasIap = app.hasIap,
         hasAds = app.hasAds,
@@ -202,6 +203,7 @@ class CatalogUiMapper @Inject constructor() {
         availability = app.availability,
         iconAdaptive = app.iconAdaptive,
         updateAvailable = app.updateAvailable,
+        updateIgnored = app.updateIgnored,
         candidateId = candidate.id
     )
 }
