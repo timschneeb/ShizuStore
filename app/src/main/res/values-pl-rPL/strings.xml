@@ -19,6 +19,7 @@
     <string name="action_collapse">Przewiń</string>
     <string name="action_expand">Rozwiń</string>
     <string name="action_export">Eksportuj APK</string>
+    <string name="action_save_apk">Save APK</string>
     <string name="action_favourite">Dodaj do ulubionych</string>
     <string name="action_grant">Przyznaj</string>
     <string name="action_granted">Przyznane</string>
@@ -61,11 +62,13 @@
     <string name="details_changelog">Lista zmian</string>
     <string name="details_changelog_subtitle">Co nowego w wersji %1$s</string>
     <string name="details_changelog_empty">Brak dziennika zmian</string>
-    <string name="details_stats_installs">Installs</string>
     <string name="details_stats_downloads">Downloads</string>
+    <string name="details_stats_downloads_tooltip">Number of downloads counted at %1$s.</string>
+    <string name="details_stats_installs_tooltip">Number of installs reported by other ShizuStore users.</string>
     <string name="details_stats_stars">Stars</string>
+    <string name="details_stats_stars_tooltip">Number of stars on the source code repository.</string>
     <string name="details_stats_size">Size</string>
-    <string name="details_updated">updated %1$s</string>
+    <string name="details_stats_size_tooltip">Download size of the APK file.</string>
     <string name="details_more_about">Więcej o tej aplikacji</string>
     <string name="details_more_from_author">Więcej aplikacji tego dewelopera</string>
     <string name="details_more_from_category">Więcej z tej kategorii</string>
@@ -83,6 +86,7 @@
     <string name="details_permissions_known">Inne uprawnienia</string>
     <string name="details_permissions_none">Nie zażądano żadnych uprawnień</string>
     <string name="details_source_code">Kod źródłowy</string>
+    <string name="details_obtainium">Add to Obtainium</string>
     <string name="details_store">Sklep</string>
     <string name="details_play_store_notice">Ta aplikacja jest dostępna tylko w Google Play. Dotknij, aby otworzyć listę.</string>
     <string name="details_closed_source_notice">Ta aplikacja ma zamknięty kod źródłowy. Jej kod nie jest publicznie dostępny, więc społeczność nie może łatwo zweryfikować, co aplikacja robi.</string>
@@ -112,6 +116,8 @@
     <string name="download_eta_sec">Pozostało <xliff:g id="seconds">%1$d</xliff:g>s left</string>
     <string name="download_export_done">APK wyeksportowano</string>
     <string name="download_export_failed">Nie można wyeksportować APK</string>
+    <string name="download_saved">APK saved to Downloads</string>
+    <string name="download_save_failed">Could not save the APK</string>
     <string name="download_status_awaiting_confirmation">Czekam na potwierdzenie</string>
     <string name="download_status_cancelled">Anulowane</string>
     <string name="download_status_completed">Pobrane</string>
@@ -250,10 +256,10 @@
     <string name="filter_title_category">Filtruj według kategorii</string>
     <string name="filter_title_price">Filtruj według ceny</string>
     <string name="filter_title_sort">Sortuj według</string>
+    <string name="category_dhizuku">Dhizuku-compatible</string>
     <string name="app_badge_paid">Płatne</string>
     <string name="app_badge_iap">Zakupy w aplikacji</string>
     <string name="app_badge_ads">Ads</string>
-    <string name="app_badge_trackers">Trackers</string>
     <string name="app_indicator_installed">Zainstalowano</string>
     <string name="app_indicator_update">Dostępna aktualizacja</string>
     <string name="details_billing_paid">To jest płatna aplikacja.</string>
@@ -263,10 +269,16 @@
     <string name="details_dhizuku">Dhizuku</string>
     <string name="details_trackers_title">Detected trackers (%1$d)</string>
     <string name="details_trackers_note">Matched by Exodus Privacy code signatures. Not a complete list.</string>
+    <string name="details_shizuku_title">How Shizuku is used</string>
+    <string name="details_shizuku_empty">No usage report is available for this app.</string>
+    <string name="details_shizuku_ai_note">This is an AI-assisted analysis of Shizuku-related usages in the app\'s public source code. It is best effort, so it may not catch every single usage.</string>
+    <string name="details_shizuku_summary_title">Summary</string>
     <string name="settings_appearance_summary">Jasny lub ciemny motyw oraz kolory tapety</string>
     <string name="settings_appearance_title">Wygląd</string>
     <string name="settings_black_night_subtitle">Użyj czystego czarnego motywu, jeśli włączony jest tryb nocny</string>
     <string name="settings_black_night_title">Motyw czarnej nocy</string>
+    <string name="settings_catalog_summary">Listings and app analysis</string>
+    <string name="settings_catalog_title">Catalog</string>
     <string name="settings_dynamic_color_subtitle">Rysuje paletę z Twojej tapety. Android 12 i nowszy.</string>
     <string name="settings_dynamic_color_title">Dynamiczny kolor</string>
     <string name="settings_group_updates_summary">Sprawdzanie harmonogramu, limitów sieci i automatycznych instalacji</string>
@@ -307,6 +319,8 @@
     <string name="settings_server_title">Serwer</string>
     <string name="settings_show_closed_source_subtitle">Synchronizuje również aplikacje z nadrzędnej listy oprogramowania o zamkniętym kodzie źródłowym. Są to aplikacje własnościowe, domyślnie wyłączone.</string>
     <string name="settings_show_closed_source_title">Pokaż aplikacje o zamkniętym kodzie źródłowym</string>
+    <string name="settings_show_tracker_info_subtitle">Shows trackers detected in an app\'s APK (Exodus Privacy code signatures) on its details page.</string>
+    <string name="settings_show_tracker_info_title">Show tracker info</string>
     <string name="settings_theme_dark">Ciemny</string>
     <string name="settings_theme_light">Jasny</string>
     <string name="settings_theme_system">Domyślny systemowy</string>
