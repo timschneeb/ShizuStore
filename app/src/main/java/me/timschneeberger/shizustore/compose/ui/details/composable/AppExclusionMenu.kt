@@ -6,6 +6,7 @@
 
 package me.timschneeberger.shizustore.compose.ui.details.composable
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -58,12 +59,14 @@ fun AppExclusionMenu(
             if (canIgnoreUpdates) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.action_app_info)) },
+                    leadingIcon = { MenuItemIcon(R.drawable.ic_info_outlined) },
                     onClick = { choose(onAppInfo) }
                 )
             }
             onAddToHome?.let { addToHome ->
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.action_add_to_home)) },
+                    leadingIcon = { MenuItemIcon(R.drawable.ic_add_to_home) },
                     onClick = { choose(addToHome) }
                 )
             }
@@ -71,6 +74,7 @@ fun AppExclusionMenu(
             if (canSaveApk) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.action_save_apk)) },
+                    leadingIcon = { MenuItemIcon(R.drawable.ic_download_manager) },
                     onClick = { choose(onSaveApk) }
                 )
             }
@@ -78,6 +82,7 @@ fun AppExclusionMenu(
             onObtainium?.let { obtainium ->
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.details_obtainium)) },
+                    leadingIcon = { MenuItemIcon(R.drawable.ic_obtainium) },
                     onClick = { choose(obtainium) }
                 )
             }
@@ -94,6 +99,7 @@ fun AppExclusionMenu(
                         )
                     )
                 },
+                leadingIcon = { MenuItemIcon(R.drawable.ic_block) },
                 onClick = { choose(onToggleBlacklist) }
             )
 
@@ -110,6 +116,7 @@ fun AppExclusionMenu(
                             )
                         )
                     },
+                    leadingIcon = { MenuItemIcon(R.drawable.ic_updates) },
                     onClick = { choose(onStopIgnoring) }
                 )
             } else {
@@ -123,16 +130,26 @@ fun AppExclusionMenu(
                                 )
                             )
                         },
+                        leadingIcon = { MenuItemIcon(R.drawable.ic_update_disabled_outlined) },
                         onClick = { choose(onIgnoreThisVersion) }
                     )
                 }
                 if (canIgnoreUpdates) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.action_ignore_all)) },
+                        leadingIcon = { MenuItemIcon(R.drawable.ic_update_disabled_outlined) },
                         onClick = { choose(onIgnoreAllUpdates) }
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun MenuItemIcon(@DrawableRes iconRes: Int) {
+    Icon(
+        painter = painterResource(iconRes),
+        contentDescription = null
+    )
 }

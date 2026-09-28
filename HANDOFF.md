@@ -256,6 +256,13 @@ snackbar); below 29 it launches the SAF `CreateDocument` picker instead and
 `exportTo` writes the picked Uri. The staged file stays in `filesDir/apk`, so
 the install pipeline is unaffected.
 
+Details overflow menu icons. September 2026: every `DropdownMenuItem` in
+`AppExclusionMenu` now carries a leading icon through a shared `MenuItemIcon`
+helper: app info `ic_info_outlined`, add to home `ic_add_to_home` (new drawable,
+Material `add_to_home_screen`), save APK `ic_download_manager`, Obtainium
+`ic_obtainium`, blacklist/unblacklist `ic_block`, ignore actions
+`ic_update_disabled_outlined`, stop ignoring `ic_updates`.
+
 Screenshots. The server collects a detail-only `screenshots` list from the
 F-Droid and Izzy `index-v2.json` (matched by every package name an app
 publishes, primary plus variants) and sends it on `GET /v1/apps/{slug}`. The
