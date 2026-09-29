@@ -1,0 +1,2 @@
+- App pages on shizustore.com now open directly in the app: verified Android App Links route links like https://shizustore.com/apps/sing-box to the matching app.
+- The shizustore:// link scheme also accepts a package name, so shizustore://apps/?package=io.nekohasekai.sfa opens the app without knowing its catalog slug.
