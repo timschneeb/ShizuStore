@@ -4,12 +4,13 @@
 
 <h1 align="center">ShizuStore</h1>
 
-**ShizuStore** is an app store for [Shizuku](https://shizuku.rikka.app/)
-apps with automatic update support.
+**ShizuStore** is an app store for [Shizuku](https://shizuku.rikka.app/) apps with automatic update support.
 
 **APKs are downloaded directly from the official developers** via GitHub, GitLab, F-Droid, IzzyDroid, or other primary sources like Codeberg. APKs are not rehosted or redistributed by me.
 
-[<img alt="Get it on GitHub" src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" width="240">](https://github.com/timschneeb/ShizuStore/releases/latest)
+You can also browse and discover apps on the web at [shizustore.com/apps](https://shizustore.com/apps).
+
+[<img alt="Get it on GitHub" src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" width="240">](https://github.com/timschneeb/ShizuStore/releases/latest) [<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" height="240">](https://shizustore.com/apps/shizustore)
 
 
 ### You can find APK downloads [in the release section](https://github.com/timschneeb/ShizuStore/releases/latest).
@@ -44,6 +45,16 @@ You can find APKs in the release section: https://github.com/timschneeb/ShizuSto
 Add the app to [awesome-shizuku list](https://github.com/timschneeb/awesome-shizuku); the app store will automatically pick it up from there. To get listed, follow the [contribution guide](https://github.com/timschneeb/awesome-shizuku/blob/master/CONTRIBUTING.md) or open an issue in the [awesome-shizuku](https://github.com/timschneeb/awesome-shizuku) repo.
 
 How the store discovers your releases and displays your app is documented in the server's [listing and metadata documentation](https://github.com/timschneeb/ShizuStoreServer/blob/master/docs/listing-and-metadata.md).
+
+## Resources
+
+- "Get it on ShizuStore" badge by [@rdevz-ph](https://github.com/rdevz-ph) for developers to include in their repos: [get-it-on-shizustore.png](https://raw.githubusercontent.com/rdevz-ph/awesome-shizuku-web/refs/heads/master/web/public/get-it-on-shizustore.png). Developers can link it to the web catalog URL, which automatically opens it in the ShizuStore app, if it is installed. 
+
+  - Example: `[<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" height="78">](https://shizustore.com/apps/INSERT_APP_ID_HERE)`
+
+  [<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" height="64">](https://shizustore.com)
+
+- Alternative web frontend by [@rdevz-ph](https://github.com/rdevz-ph): [awesome-shizuku-web](https://awesome-shizuku.vercel.app)
 
 ## Translations
 
