@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.compose.composable.app.LocalIconRefreshGeneration
 import me.timschneeberger.shizustore.compose.navigation.Screen
@@ -33,6 +34,7 @@ import me.timschneeberger.shizustore.data.api.BaseUrlProvider
 import me.timschneeberger.shizustore.data.helper.InstallReconciler
 import me.timschneeberger.shizustore.data.helper.SyncHelper
 import me.timschneeberger.shizustore.data.repository.InstalledRepository
+import me.timschneeberger.shizustore.util.DeepLinks
 import me.timschneeberger.shizustore.util.ServerConfig
 import me.timschneeberger.shizustore.util.ThemePreference
 
@@ -55,6 +57,9 @@ class MainActivity : ComponentActivity() {
     internal var initialTab: Int = TAB_APPS
         private set
 
+    /** Warm storefront links; the cold-start target comes from [initialScreens] instead. */
+    private val deepLinkTarget = MutableStateFlow<String?>(null)
+
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(ThemePreference.withNightMode(newBase))
     }
@@ -72,7 +77,12 @@ class MainActivity : ComponentActivity() {
                 .collectAsStateWithLifecycle(initialValue = 0)
             CompositionLocalProvider(LocalIconRefreshGeneration provides iconGeneration) {
                 ShizuTheme {
-                    ShizuNavDisplay(modifier = Modifier.fillMaxSize(), initialScreens = screens)
+                    ShizuNavDisplay(
+                        modifier = Modifier.fillMaxSize(),
+                        initialScreens = screens,
+                        deepLinkTarget = deepLinkTarget,
+                        onDeepLinkConsumed = { deepLinkTarget.value = null }
+                    )
                 }
             }
         }
@@ -102,10 +112,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        DeepLinks.parseAppId(intent.data?.toString())?.let { deepLinkTarget.value = it }
+    }
+
     private fun initialScreens(intent: Intent?, tab: Int): List<Screen> {
         val target = intent
             ?.let { IntentCompat.getParcelableExtra(it, EXTRA_SCREEN, Screen::class.java) }
             ?.takeIf { it !is Screen.Main }
+            ?: intent?.data
+                ?.let { DeepLinks.parseAppId(it.toString()) }
+                ?.let { Screen.AppDetails(it) }
 
         return listOfNotNull(Screen.Main(tab), target)
     }

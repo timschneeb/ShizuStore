@@ -158,10 +158,12 @@ class UpdateStateRepository @Inject constructor(
         // The ignore row may be keyed by the canonical or the installed flavor package.
         val ignore = ignoredByPackage[app.packageName] ?: ignoredByPackage[installed.packageName]
         val offeredVersion = resolveOfferedVersion(app, match, candidates)
-        val ignored = ignore != null && offeredVersion != null &&
+        val ignored = ignore != null &&
+            offeredVersion != null &&
             (ignore.versionCode == null || ignore.versionCode == offeredVersion)
         // A version-scoped ignore has served its purpose once a newer build is offered.
-        if (ignore?.versionCode != null && offeredVersion != null &&
+        if (ignore?.versionCode != null &&
+            offeredVersion != null &&
             offeredVersion > ignore.versionCode
         ) {
             ignoredUpdateDao.delete(ignore.packageName)
