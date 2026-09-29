@@ -10,7 +10,7 @@
 
 You can also browse and discover apps on the web at [shizustore.com/apps](https://shizustore.com/apps).
 
-[<img alt="Get it on GitHub" src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" width="240">](https://github.com/timschneeb/ShizuStore/releases/latest) [<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" height="240">](https://shizustore.com/apps/shizustore)
+[<img alt="Get it on GitHub" src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" width="240">](https://github.com/timschneeb/ShizuStore/releases/latest) [<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" width="240">](https://shizustore.com/apps/shizustore)
 
 
 ### You can find APK downloads [in the release section](https://github.com/timschneeb/ShizuStore/releases/latest).
@@ -50,7 +50,7 @@ How the store discovers your releases and displays your app is documented in the
 
 - "Get it on ShizuStore" badge by [@rdevz-ph](https://github.com/rdevz-ph) for developers to include in their repos: [get-it-on-shizustore.png](https://raw.githubusercontent.com/rdevz-ph/awesome-shizuku-web/refs/heads/master/web/public/get-it-on-shizustore.png). Developers can link it to the web catalog URL, which automatically opens it in the ShizuStore app, if it is installed. 
 
-  - Example: `[<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" height="78">](https://shizustore.com/apps/INSERT_APP_ID_HERE)`
+  - Example: `[<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" height="220">](https://shizustore.com/apps/INSERT_APP_ID_HERE)`
 
   [<img alt="Get it on ShizuStore" src="https://raw.githubusercontent.com/timschneeb/ShizuStore/refs/heads/master/artwork/get-it-on-shizustore.png" height="64">](https://shizustore.com)
 
