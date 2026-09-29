@@ -42,6 +42,15 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   carousels on every variant, but stays in Installed and Updates. Updates are
   manual by default; unattended background updates follow the existing Settings
   toggle. No custom relaunch: the next launch reconciles.
+- Storefront deep links: `https://shizustore.com/apps/{slug}` (App Link,
+  `autoVerify`) and `shizustore://apps/{slug}` open the app detail screen.
+  `MainActivity` is `singleTop`; cold starts seed the back stack from the
+  intent, warm links go through `ShizuNavDisplay(deepLinkTarget = ...)`.
+  `DeepLinks.parseAppId` is the only parser; the custom scheme also accepts
+  `?package={pkg}`, which wins over the path slug. `AppDetailsViewModel.load`
+  resolves its argument as package or slug and keys favourites on the row's
+  package. The fingerprint published in the storefront's `assetlinks.json` is
+  the release cert only, so debug builds test via the custom scheme.
 
 ## Current state
 
@@ -49,6 +58,17 @@ Feature complete against the server `/v1` contract. `assembleDebug`,
 `testDebugUnitTest`, `ktlintCheck` and `lintDebug` are green. See `TODO.md` for
 the short list of known deviations. A September 2026 Compose performance pass
 followed and is described below.
+
+Storefront deep links (September 2026): the manifest now declares an HTTPS App
+Link (`shizustore.com`, `pathPrefix /apps/`, `autoVerify`) plus the
+`shizustore://apps/` scheme on `MainActivity` (`launchMode="singleTop"`), which
+also takes `?package={pkg}`. Cold
+starts put `Screen.AppDetails(slug)` on the initial back stack; warm links are
+delivered by `onNewIntent` into a `MutableStateFlow` consumed by
+`ShizuNavDisplay`, which skips a push when the detail is already on top. The
+detail ViewModel normalizes the navigation argument to the row's package after
+resolving it as package or slug, so favourites and install actions behave the
+same as in-app navigation. Tests: `DeepLinksTest`.
 
 Stuck-install fix (September 2026): a Samsung One UI freeze dropped the install
 session broadcast while the app was backgrounded, leaving the haven row at

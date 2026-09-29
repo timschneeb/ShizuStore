@@ -19,6 +19,8 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -28,6 +30,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import kotlinx.coroutines.flow.StateFlow
 import me.timschneeberger.shizustore.compose.permission.rememberDozeExemptionRequest
 import me.timschneeberger.shizustore.compose.ui.about.AboutScreen
 import me.timschneeberger.shizustore.compose.ui.applist.AppListScreen
@@ -75,11 +78,26 @@ private fun DownloadDozeExemption(viewModel: DownloadActivityViewModel) {
 fun ShizuNavDisplay(
     modifier: Modifier = Modifier,
     initialScreens: List<Screen> = listOf(Screen.Main()),
+    deepLinkTarget: StateFlow<String?>? = null,
+    onDeepLinkConsumed: () -> Unit = {},
     downloadActivityViewModel: DownloadActivityViewModel = hiltViewModel()
 ) {
     val backStack = rememberNavBackStack(*initialScreens.toTypedArray())
 
     DownloadDozeExemption(downloadActivityViewModel)
+
+    // Warm storefront links land on top of the current stack; the host clears
+    // the pending target so the same link can open again later.
+    val pendingTarget by deepLinkTarget?.collectAsStateWithLifecycle()
+        ?: remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(pendingTarget) {
+        val target = pendingTarget ?: return@LaunchedEffect
+        onDeepLinkConsumed()
+        val current = backStack.lastOrNull()
+        if (current !is Screen.AppDetails || current.packageName != target) {
+            backStack.add(Screen.AppDetails(target))
+        }
+    }
 
     fun navigate(destination: Destination) {
         when (destination) {

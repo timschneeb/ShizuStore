@@ -260,9 +260,11 @@ class AppDetailsViewModel @Inject constructor(
         .distinctUntilChanged()
 
     fun load(packageName: String) {
-        identity.value = packageName
         viewModelScope.launch {
-            val stored = appRepository.getByPackage(packageName)
+            // A deep link can carry the catalog slug; resolve it to the row's
+            // package first so favourites key off the app, not the argument.
+            val stored = appRepository.getByPackage(packageName) ?: appRepository.get(packageName)
+            identity.value = stored?.packageName ?: packageName
             val resolvedSlug = stored?.slug ?: packageName
             _detailFetching.value = true
             slug.value = resolvedSlug
@@ -317,7 +319,12 @@ class AppDetailsViewModel @Inject constructor(
         _detailFetching.value = true
         try {
             when (val result = detailedAppRepository.fetchAndPersist(resolvedSlug)) {
-                is DetailedAppResult.Success -> _detailError.value = null
+                is DetailedAppResult.Success -> {
+                    // The row can appear from a concurrent catalog sync while the
+                    // fetch is in flight; adopt its package for favourites.
+                    result.app.packageName?.takeIf { it.isNotBlank() }?.let { identity.value = it }
+                    _detailError.value = null
+                }
                 DetailedAppResult.NotFound -> _detailError.value = null
                 is DetailedAppResult.Failed -> {
                     Log.w(TAG, "Detail fetch failed for $resolvedSlug: ${result.failure}")
