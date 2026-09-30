@@ -88,6 +88,7 @@ import me.timschneeberger.shizustore.extensions.isOAndAbove
 import me.timschneeberger.shizustore.extensions.shareApp
 import me.timschneeberger.shizustore.extensions.uninstallPackage
 import me.timschneeberger.shizustore.extensions.viewExternal
+import me.timschneeberger.shizustore.util.DeepLinks
 import me.timschneeberger.shizustore.util.ShortcutUtil
 import me.timschneeberger.shizustore.viewmodel.AppDetailsUiState
 import me.timschneeberger.shizustore.viewmodel.AppDetailsViewModel
@@ -244,7 +245,7 @@ private fun DetailsTopBar(
                     context.shareApp(
                         details?.name ?: packageName,
                         packageName,
-                        url = details?.storeUrl ?: details?.url ?: details?.sourceUrl
+                        url = details?.slug?.let(DeepLinks::appPage)
                     )
                 }
             ) {

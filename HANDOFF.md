@@ -50,7 +50,8 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   `?package={pkg}`, which wins over the path slug. `AppDetailsViewModel.load`
   resolves its argument as package or slug and keys favourites on the row's
   package. The fingerprint published in the storefront's `assetlinks.json` is
-  the release cert only, so debug builds test via the custom scheme.
+  the release cert only, so debug builds test via the custom scheme. The
+  details share action copies the storefront app page link.
 
 ## Current state
 

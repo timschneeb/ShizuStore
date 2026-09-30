@@ -17,6 +17,12 @@ class DeepLinksTest {
     }
 
     @Test
+    fun buildsStorefrontAppPage() {
+        assertEquals("https://shizustore.com/apps/my-app", DeepLinks.appPage("my-app"))
+        assertEquals("my-app", DeepLinks.parseAppId(DeepLinks.appPage("my-app")))
+    }
+
+    @Test
     fun parsesCustomSchemeLink() {
         assertEquals("my-app", DeepLinks.parseAppId("shizustore://apps/my-app"))
     }

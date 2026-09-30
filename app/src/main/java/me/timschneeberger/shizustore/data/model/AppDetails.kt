@@ -15,6 +15,7 @@ import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 @Immutable
 data class AppDetails(
     val packageName: String,
+    val slug: String,
     val repoName: String,
     val name: String,
     val description: String,
