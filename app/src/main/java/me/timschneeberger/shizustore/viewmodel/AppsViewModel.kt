@@ -92,18 +92,27 @@ class AppsViewModel @Inject constructor(
                 .map(mapper::toResolvedApp)
         }
 
+    // Paired to stay within combine's five-flow overload: the ordered ranking rows.
+    private val rankingRows: Flow<Pair<List<ResolvedApp>, List<ResolvedApp>>> = combine(
+        appRepository.observeMostStarred(),
+        appRepository.observePopular()
+    ) { starred, popular ->
+        starred.map(mapper::toResolvedApp) to popular.map(mapper::toResolvedApp)
+    }
+
     private val curatedGroups: Flow<List<AppGroup>> = combine(
         recommendedPicks,
         appRepository.observeRecentlyAdded().map { it.map(mapper::toResolvedApp) },
         appRepository.observeRecentlyUpdated().map { it.map(mapper::toResolvedApp) },
-        appRepository.observeMostStarred().map { it.map(mapper::toResolvedApp) },
+        rankingRows,
         randomPicks
-    ) { recommended, recentlyAdded, recentlyUpdated, mostStarred, picks ->
+    ) { recommended, recentlyAdded, recentlyUpdated, (mostStarred, popular), picks ->
         listOf(
             AppGroup(AppGroupKind.RECOMMENDED, recommended),
             AppGroup(AppGroupKind.RECENTLY_ADDED, recentlyAdded),
             AppGroup(AppGroupKind.RECENTLY_UPDATED, recentlyUpdated),
             AppGroup(AppGroupKind.MOST_STARRED, mostStarred),
+            AppGroup(AppGroupKind.POPULAR, popular),
             AppGroup(AppGroupKind.RANDOM_PICKS, picks)
         ).filter { it.apps.isNotEmpty() }
     }

@@ -50,7 +50,8 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   `?package={pkg}`, which wins over the path slug. `AppDetailsViewModel.load`
   resolves its argument as package or slug and keys favourites on the row's
   package. The fingerprint published in the storefront's `assetlinks.json` is
-  the release cert only, so debug builds test via the custom scheme.
+  the release cert only, so debug builds test via the custom scheme. The
+  details share action copies the storefront app page link.
 
 ## Current state
 
@@ -372,8 +373,8 @@ cannot easily be community-verified. Tests:
 `CatalogUiMapperTest.appDetailsCarriesListing`.
 
 Donations. The overflow sheet (`compose/ui/main/MoreSheet.kt`) carries a
-"Support ShizuStore" entry directly above About, and the Settings screen has a
-footer `DonationCard`; both open the shared `DonationDialog`
+"Donate" entry directly above About, and the Settings screen has a footer
+`DonationCard`; both open the shared `DonationDialog`
 (`compose/composable/DonationDialog.kt`), a titled thank-you with PayPal
 (`paypal.me/timschneeberger`) and Ko-fi
 (`ko-fi.com/thepbone`) rows. The PayPal drawable is untinted and gets a white
@@ -381,6 +382,25 @@ outline built from eight offset copies of the painter (its dark brand colours
 would vanish on the dark dialog); Ko-fi renders `ic_kofi_symbol` as-is because
 that image already carries its own outline. Links open in a Custom Tab through
 `SourceLauncher`. No automatic prompt, only on demand.
+
+Help translate. The overflow sheet carries a "Help us translate" row between
+Donate and About (`ic_translate`, Material Symbols "translate") that opens
+`https://crowdin.com/project/shizustore` in a Custom Tab and dismisses the
+sheet. The URL is `MoreSheet.CROWDIN_URL`; Crowdin matches the `crowdin.yml`
+source (`app/src/main/res/values/strings.xml`). October 2026: the two new keys
+(`apps_popular`, `title_help_translate`) were translated by hand in
+`values-de-rDE`, `values-b+zh+Hans` and `values-b+zh+Hant` for the 1.4.0
+build; later updates flow through Crowdin.
+
+Empty-state pull to refresh (October 2026). `UpdatesScreen` only wrapped its
+Loaded phase in `ExpressivePullToRefreshBox`, so the empty state had no refresh
+container and "Everything is up to date" could not be pulled. The box now wraps
+the whole `AnimatedContent` (matching AppsScreen), and the empty `Placeholder`
+is a `fillParentMaxSize` item inside a `LazyColumn`: `PullToRefreshBox` is a
+nested-scroll consumer, so a non-scrollable child swallows the gesture. The
+same scrollable-placeholder treatment applied to `AppListScreen`'s empty list
+(no results and sync failure). AppsScreen still places a non-scrollable
+placeholder inside its refresh box and keeps the limitation.
 
 Search home. `AppListViewModel.atSearchHome` is an explicit place, not "no
 filters set": clearing a category, sort or price keeps the list, and only the
@@ -502,6 +522,20 @@ filter sheet and the search tag cloud offer it in line with the real categories,
 with the Shizuku icon. Tests: `CategorySectionsTest`,
 `AppListQueryBuilderTest`, `SyntheticCategoryTest`.
 
+Popular on ShizuStore row. October 2026: `AppGroupKind.POPULAR` sits between
+Most starred and Random picks and ranks by client-reported `installCount`
+(`AppDao.observePopular`: `installCount > 0`, best first, name tiebreak, limit
+20). Zero-install rows are excluded so the strip hides on a fresh store, and
+`AppRepository.observePopular` applies `hideSelf()`, which keeps ShizuStore
+itself out of its own chart. The strip shows each app's install count through a
+new `showInstalls` on `AppCarouselStrip`/`AppListItem` and uses the download
+glyph as its section icon. Its More page opens the existing `AppSort.DOWNLOADS`
+list, which ranks by `installCount` and shows the counts whenever `/v1/meta`
+reports `useInstallCountsForPopularity` (on in production). In that list the
+per-row install count is hidden for entries that are not `direct_apk`, since
+redirect and link entries never report installs and would read zero. Test:
+`CatalogDaoTest.popularQueryExcludesZeroInstallsAndOrdersByCount`.
+
 Ads and detail counts. `ResolvedApp.hasAds` and `AppDetails.hasAds` come from the
 sync DTOs and drive a new "Ads" badge on list rows and the
 `BillingNotice`/`details_ads` sentence on the details card (which now covers
@@ -610,6 +644,16 @@ Catalog settings. Settings gained a Catalog subscreen
 toggle moved there from Network, together with a new "Show tracker info"
 preference (`PREFERENCE_SHOW_TRACKER_INFO`, default on) that hides the
 `TrackersNotice` card on details when off.
+
+F-Droid download User-Agent (October 2026): APK downloads now send
+`User-Agent: <app>/<version> F-Droid`. Some F-Droid mirrors serve `.apk` files
+only to the F-Droid client agent and 404 everyone else; the FAU mirror the
+server enriches from was answering "The repository refused the download." for
+Always on display toggle and FindMyDevice. `OkHttpDownloader` derives its own
+client and appends an interceptor after the shared client's agent setter, so
+`DownloadWorker` requests carry the tag while the API and Coil keep the plain
+agent. The server publishes canonical upstream `apkUrl`s now (see its SPEC), so
+the tag only matters for details cached before that deploy.
 
 ## Compose performance pass (September 2026)
 

@@ -70,6 +70,7 @@ fun AppCarousel(
                     AppCarouselStrip(
                         apps = group.apps,
                         showStars = group.kind == AppGroupKind.MOST_STARRED,
+                        showInstalls = group.kind == AppGroupKind.POPULAR,
                         onAppClick = onAppClick
                     )
                 }
@@ -104,7 +105,8 @@ private fun AppCarouselStrip(
     apps: List<ResolvedApp>,
     onAppClick: (ResolvedApp) -> Unit,
     modifier: Modifier = Modifier,
-    showStars: Boolean = false
+    showStars: Boolean = false,
+    showInstalls: Boolean = false
 ) {
     val gridState = rememberLazyGridState()
     // Same keyed-row anchoring as the tile strip; keep the new ranking visible.
@@ -124,7 +126,8 @@ private fun AppCarouselStrip(
                 app = app,
                 onClick = { onAppClick(app) },
                 modifier = Modifier.width(carouselItemWidth()),
-                showStars = showStars
+                showStars = showStars,
+                showInstalls = showInstalls
             )
         }
     }

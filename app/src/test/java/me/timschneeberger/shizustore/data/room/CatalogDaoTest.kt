@@ -378,4 +378,17 @@ class CatalogDaoTest : RobolectricTestBase() {
 
         assertEquals(listOf("Beta", "Delta"), rows)
     }
+
+    @Test
+    fun popularQueryExcludesZeroInstallsAndOrdersByCount() = runTest {
+        val appDao = db.appDao()
+        appDao.upsert(app("a", "Alpha").copy(installCount = 5))
+        appDao.upsert(app("b", "Beta").copy(installCount = 0))
+        appDao.upsert(app("c", "Gamma").copy(installCount = 12))
+        appDao.upsert(app("d", "Delta").copy(installCount = 5))
+
+        val rows = appDao.observePopular(limit = 10).first().map { it.name }
+
+        assertEquals(listOf("Gamma", "Alpha", "Delta"), rows)
+    }
 }

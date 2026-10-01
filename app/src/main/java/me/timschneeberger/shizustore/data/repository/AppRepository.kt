@@ -84,6 +84,9 @@ class AppRepository @Inject constructor(
     fun observeMostStarred(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
         appDao.observeMostStarred(limit).hideSelf()
 
+    fun observePopular(limit: Int = CAROUSEL_LIMIT): Flow<List<AppEntity>> =
+        appDao.observePopular(limit).hideSelf()
+
     fun observeRandomPool(): Flow<List<AppEntity>> = appDao.observeAll().hideSelf()
 
     fun observeDetail(slug: String): Flow<DetailedApp?> = combine(

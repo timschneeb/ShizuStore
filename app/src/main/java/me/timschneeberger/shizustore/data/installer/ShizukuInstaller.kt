@@ -262,10 +262,12 @@ open class ShizukuInstaller @Inject constructor(
         // permission names are shared and live in a global namespace. Stock first so installs that
         // declare both keep resolving to the same package as before.
         internal const val SHIZUKU_PLUS_PERMISSION = "af.shizuku.plus.permission.API_V23"
+        internal const val SHIZAKO_PERMISSION = "com.churan.shizako.permission.API_V23"
 
         internal val MANAGER_PERMISSIONS = listOf(
             ShizukuProvider.PERMISSION,
-            SHIZUKU_PLUS_PERMISSION
+            SHIZUKU_PLUS_PERMISSION,
+            SHIZAKO_PERMISSION
         )
 
         /** Packages declaring a Shizuku manager permission, stock first; empty when none is installed. */

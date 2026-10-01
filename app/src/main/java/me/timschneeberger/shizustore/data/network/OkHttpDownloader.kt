@@ -8,6 +8,8 @@
 
 package me.timschneeberger.shizustore.data.network
 
+import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
@@ -17,6 +19,8 @@ import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.timschneeberger.shizustore.BuildConfig
+import me.timschneeberger.shizustore.R
 import okhttp3.CacheControl
 import okhttp3.Headers
 import okhttp3.OkHttpClient
@@ -29,8 +33,29 @@ import okio.buffer
 
 @Singleton
 class OkHttpDownloader @Inject constructor(
-    private val client: OkHttpClient
+    client: OkHttpClient,
+    @ApplicationContext private val context: Context
 ) : Downloader {
+
+    // Some F-Droid mirrors serve .apk files only to the F-Droid client's
+    // User-Agent (the FAU mirror 404s others). APKs are never fetched from
+    // non-F-Droid sources, so tag every download; the appended interceptor
+    // runs after the base client's agent setter, which it overrides.
+    private val client = client.newBuilder()
+        .addInterceptor { chain ->
+            chain.proceed(
+                chain.request().newBuilder()
+                    .header(
+                        "User-Agent",
+                        "${userAgent(
+                            context.getString(R.string.app_name),
+                            BuildConfig.VERSION_NAME
+                        )} F-Droid"
+                    )
+                    .build()
+            )
+        }
+        .build()
 
     override suspend fun downloadToFile(
         url: String,

@@ -124,6 +124,7 @@ class LinkListTest {
         sourceUrl: String? = null
     ): AppDetails = AppDetails(
         packageName = "org.example.app",
+        slug = "example",
         repoName = "GitHub",
         name = "Example",
         description = "",

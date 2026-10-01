@@ -18,12 +18,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.DonationDialog
 import me.timschneeberger.shizustore.compose.composable.SheetActionItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.data.helper.SourceLauncher
 
 @Composable
 fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
@@ -33,6 +35,7 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
     }
 
     var showDonationDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     if (showDonationDialog) {
         DonationDialog(onDismiss = { showDonationDialog = false })
@@ -77,6 +80,14 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
             icon = R.drawable.ic_volunteer_activism
         )
         SheetActionItem(
+            label = stringResource(R.string.title_help_translate),
+            onClick = {
+                SourceLauncher.open(context, CROWDIN_URL)
+                onDismiss()
+            },
+            icon = R.drawable.ic_translate
+        )
+        SheetActionItem(
             label = stringResource(R.string.title_about),
             onClick = { navigateAndDismiss(Destination.About) },
             icon = R.drawable.ic_info_outlined
@@ -89,3 +100,5 @@ fun MoreSheet(onNavigateTo: (Destination) -> Unit, onDismiss: () -> Unit) {
         )
     }
 }
+
+private const val CROWDIN_URL = "https://crowdin.com/project/shizustore"

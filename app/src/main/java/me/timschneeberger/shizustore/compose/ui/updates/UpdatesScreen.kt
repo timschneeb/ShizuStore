@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -121,38 +120,53 @@ private fun UpdatesBody(
             OfflineBanner(onRetry = viewModel::retrySync)
         }
 
-        AnimatedContent(
-            targetState = contentPhase,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
-            label = "UpdatesScreenContent",
-            modifier = Modifier.weight(1f).fillMaxWidth()
-        ) { phase ->
-            when (phase) {
-                ContentPhase.Loading -> Column(modifier = Modifier.fillMaxSize()) {
-                    UpdatesHeader(
-                        count = updateCount,
-                        anyActive = anyActive,
-                        enabled = false,
-                        onUpdateAll = viewModel::updateAll,
-                        onCancelAll = viewModel::cancelAll
-                    )
-
-                    AppRowSkeleton(
-                        modifier = Modifier.weight(1f),
-                        contentPadding = listPadding,
-                        showTrailing = true
-                    )
-                }
-
-                ContentPhase.Empty -> Placeholder(
-                    painter = painterResource(R.drawable.ic_updates),
-                    message = stringResource(R.string.updates_empty)
+        ExpressivePullToRefreshBox(
+            isRefreshing = refreshing,
+            onRefresh = viewModel::retrySync,
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            placeholder = {
+                AppRowSkeleton(
+                    contentPadding = listPadding,
+                    showTrailing = true
                 )
+            }
+        ) {
+            AnimatedContent(
+                targetState = contentPhase,
+                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                label = "UpdatesScreenContent",
+                modifier = Modifier.fillMaxSize()
+            ) { phase ->
+                when (phase) {
+                    ContentPhase.Loading -> Column(modifier = Modifier.fillMaxSize()) {
+                        UpdatesHeader(
+                            count = updateCount,
+                            anyActive = anyActive,
+                            enabled = false,
+                            onUpdateAll = viewModel::updateAll,
+                            onCancelAll = viewModel::cancelAll
+                        )
 
-                ContentPhase.Loaded -> Column(modifier = Modifier.fillMaxSize()) {
-                    Box(
-                        modifier = Modifier.alpha(if (refreshing) 0f else 1f)
-                    ) {
+                        AppRowSkeleton(
+                            modifier = Modifier.weight(1f),
+                            contentPadding = listPadding,
+                            showTrailing = true
+                        )
+                    }
+
+                    // PullToRefreshBox listens to nested scroll, so the empty state
+                    // must be scrollable or it swallows the pull gesture.
+                    ContentPhase.Empty -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        item {
+                            Placeholder(
+                                modifier = Modifier.fillParentMaxSize(),
+                                painter = painterResource(R.drawable.ic_updates),
+                                message = stringResource(R.string.updates_empty)
+                            )
+                        }
+                    }
+
+                    ContentPhase.Loaded -> Column(modifier = Modifier.fillMaxSize()) {
                         UpdatesHeader(
                             count = updateCount,
                             anyActive = anyActive,
@@ -160,21 +174,9 @@ private fun UpdatesBody(
                             onUpdateAll = viewModel::updateAll,
                             onCancelAll = viewModel::cancelAll
                         )
-                    }
 
-                    ExpressivePullToRefreshBox(
-                        isRefreshing = refreshing,
-                        onRefresh = viewModel::retrySync,
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        placeholder = {
-                            AppRowSkeleton(
-                                contentPadding = listPadding,
-                                showTrailing = true
-                            )
-                        }
-                    ) {
                         LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
                             state = listState,
                             contentPadding = listPadding
                         ) {

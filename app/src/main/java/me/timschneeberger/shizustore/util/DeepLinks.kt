@@ -24,6 +24,9 @@ object DeepLinks {
     const val PATH_PREFIX = "/apps/"
     const val SCHEME = "shizustore"
 
+    /** Storefront page of a catalog slug, the inverse of [parseAppId]. */
+    fun appPage(slug: String): String = "https://$HOST$PATH_PREFIX$slug"
+
     private const val PACKAGE_PARAM = "package"
     private const val PACKAGE_MAX_LENGTH = 128
     private val packagePattern = Regex("^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+$")

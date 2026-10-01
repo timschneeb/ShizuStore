@@ -87,6 +87,7 @@ import me.timschneeberger.shizustore.compose.composable.app.AppAge
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
 import me.timschneeberger.shizustore.compose.composable.rememberVisibleForAtLeast
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppSort
 import me.timschneeberger.shizustore.data.model.CategoryTag
@@ -511,28 +512,39 @@ private fun AppRows(
 
             showRefreshing -> LoadingIndicatorBox()
 
-            isEmpty -> Placeholder(
-                painter = painterResource(R.drawable.ic_search),
-                message = if (syncFailure != null) {
-                    stringResource(R.string.apps_sync_failed)
-                } else {
-                    stringResource(R.string.search_no_results)
-                },
-                detail = if (syncFailure != null) {
-                    null
-                } else {
-                    stringResource(
-                        if (syncing) R.string.apps_empty_syncing else R.string.apps_empty_detail
+            // PullToRefreshBox listens to nested scroll, so the empty state
+            // must be scrollable or it swallows the pull gesture.
+            isEmpty -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+                item {
+                    Placeholder(
+                        modifier = Modifier.fillParentMaxSize(),
+                        painter = painterResource(R.drawable.ic_search),
+                        message = if (syncFailure != null) {
+                            stringResource(R.string.apps_sync_failed)
+                        } else {
+                            stringResource(R.string.search_no_results)
+                        },
+                        detail = if (syncFailure != null) {
+                            null
+                        } else {
+                            stringResource(
+                                if (syncing) {
+                                    R.string.apps_empty_syncing
+                                } else {
+                                    R.string.apps_empty_detail
+                                }
+                            )
+                        },
+                        inProgress = syncing && syncFailure == null,
+                        actionLabel = if (syncFailure != null) {
+                            stringResource(R.string.action_retry)
+                        } else {
+                            null
+                        },
+                        onAction = if (syncFailure != null) onRetry else null
                     )
-                },
-                inProgress = syncing && syncFailure == null,
-                actionLabel = if (syncFailure != null) {
-                    stringResource(R.string.action_retry)
-                } else {
-                    null
-                },
-                onAction = if (syncFailure != null) onRetry else null
-            )
+                }
+            }
 
             else -> Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
@@ -549,7 +561,10 @@ private fun AppRows(
                                 app = app,
                                 onClick = { onAppClick(app) },
                                 showStars = showStars,
-                                showInstalls = showInstalls,
+                                // Only direct downloads report installs;
+                                // redirect and link entries would always read zero.
+                                showInstalls = showInstalls &&
+                                    app.availability == Availability.DIRECT_APK,
                                 age = age
                             )
                         }

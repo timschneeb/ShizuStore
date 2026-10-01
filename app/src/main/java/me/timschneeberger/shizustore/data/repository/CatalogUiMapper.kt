@@ -81,6 +81,7 @@ class CatalogUiMapper @Inject constructor() {
         val localizedLabels = app.localizedLabels.ifEmpty { primary?.localizedLabels.orEmpty() }
         return AppDetails(
             packageName = app.packageName ?: app.slug,
+            slug = app.slug,
             repoName = displayRepoName(app),
             name = app.name,
             description = app.description,
