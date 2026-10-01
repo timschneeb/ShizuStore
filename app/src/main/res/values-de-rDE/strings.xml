@@ -53,6 +53,7 @@
     <string name="apps_recently_added">Kürzlich hinzugefügt</string>
     <string name="apps_recently_updated">Kürzlich aktualisiert</string>
     <string name="apps_most_starred">Die meisten Sterne auf GitHub</string>
+    <string name="apps_popular">Popular on ShizuStore</string>
     <string name="details_changelog">Änderungsprotokoll</string>
     <string name="details_changelog_subtitle">Was ist neu in Version %1$s</string>
     <string name="details_changelog_empty">Kein Änderungsprotokoll verfügbar</string>
@@ -352,6 +353,7 @@
     <string name="title_donate">Spenden</string>
     <string name="title_downloads">Downloads</string>
     <string name="title_favourites">Favoriten</string>
+    <string name="title_help_translate">Help us translate</string>
     <string name="title_ignored_updates">Ignorierte Updates</string>
     <string name="title_my_apps">Meine Apps</string>
     <string name="title_settings">Einstellungen</string>
