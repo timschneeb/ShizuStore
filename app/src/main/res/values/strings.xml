@@ -62,6 +62,7 @@
     <string name="apps_recently_added">Recently added</string>
     <string name="apps_recently_updated">Recently updated</string>
     <string name="apps_most_starred">Most starred on GitHub</string>
+    <string name="apps_popular">Popular on ShizuStore</string>
 
 
     <string name="details_changelog">Changelog</string>

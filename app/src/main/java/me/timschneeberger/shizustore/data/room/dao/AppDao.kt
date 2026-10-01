@@ -160,6 +160,13 @@ interface AppDao {
     )
     fun observeMostStarred(limit: Int): Flow<List<AppEntity>>
 
+    /** Zero installs excluded so the row hides on a fresh store. */
+    @Query(
+        "SELECT * FROM app WHERE installCount > 0 ORDER BY installCount DESC," +
+            " name COLLATE NOCASE ASC LIMIT :limit"
+    )
+    fun observePopular(limit: Int): Flow<List<AppEntity>>
+
     @Query("SELECT * FROM app ORDER BY slug ASC")
     fun observeAll(): Flow<List<AppEntity>>
 

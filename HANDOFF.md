@@ -519,6 +519,18 @@ filter sheet and the search tag cloud offer it in line with the real categories,
 with the Shizuku icon. Tests: `CategorySectionsTest`,
 `AppListQueryBuilderTest`, `SyntheticCategoryTest`.
 
+Popular on ShizuStore row. October 2026: `AppGroupKind.POPULAR` sits between
+Most starred and Random picks and ranks by client-reported `installCount`
+(`AppDao.observePopular`: `installCount > 0`, best first, name tiebreak, limit
+20). Zero-install rows are excluded so the strip hides on a fresh store, and
+`AppRepository.observePopular` applies `hideSelf()`, which keeps ShizuStore
+itself out of its own chart. The strip shows each app's install count through a
+new `showInstalls` on `AppCarouselStrip`/`AppListItem` and uses the download
+glyph as its section icon. Its More page opens the existing `AppSort.DOWNLOADS`
+list, which ranks by `installCount` and shows the counts whenever `/v1/meta`
+reports `useInstallCountsForPopularity` (on in production). Test:
+`CatalogDaoTest.popularQueryExcludesZeroInstallsAndOrdersByCount`.
+
 Ads and detail counts. `ResolvedApp.hasAds` and `AppDetails.hasAds` come from the
 sync DTOs and drive a new "Ads" badge on list rows and the
 `BillingNotice`/`details_ads` sentence on the details card (which now covers

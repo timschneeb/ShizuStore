@@ -18,6 +18,7 @@ enum class AppGroupKind(
     RECENTLY_ADDED(isCarousel = true, hasMorePage = true, isTileStrip = true),
     RECENTLY_UPDATED(isCarousel = true, hasMorePage = true, isTileStrip = true),
     MOST_STARRED(isCarousel = true, hasMorePage = true),
+    POPULAR(isCarousel = true, hasMorePage = true),
     RANDOM_PICKS(isCarousel = true, hasMorePage = false),
     CATEGORY(isCarousel = false, hasMorePage = true)
 }
