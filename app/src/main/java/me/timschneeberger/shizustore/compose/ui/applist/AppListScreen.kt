@@ -511,28 +511,39 @@ private fun AppRows(
 
             showRefreshing -> LoadingIndicatorBox()
 
-            isEmpty -> Placeholder(
-                painter = painterResource(R.drawable.ic_search),
-                message = if (syncFailure != null) {
-                    stringResource(R.string.apps_sync_failed)
-                } else {
-                    stringResource(R.string.search_no_results)
-                },
-                detail = if (syncFailure != null) {
-                    null
-                } else {
-                    stringResource(
-                        if (syncing) R.string.apps_empty_syncing else R.string.apps_empty_detail
+            // PullToRefreshBox listens to nested scroll, so the empty state
+            // must be scrollable or it swallows the pull gesture.
+            isEmpty -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+                item {
+                    Placeholder(
+                        modifier = Modifier.fillParentMaxSize(),
+                        painter = painterResource(R.drawable.ic_search),
+                        message = if (syncFailure != null) {
+                            stringResource(R.string.apps_sync_failed)
+                        } else {
+                            stringResource(R.string.search_no_results)
+                        },
+                        detail = if (syncFailure != null) {
+                            null
+                        } else {
+                            stringResource(
+                                if (syncing) {
+                                    R.string.apps_empty_syncing
+                                } else {
+                                    R.string.apps_empty_detail
+                                }
+                            )
+                        },
+                        inProgress = syncing && syncFailure == null,
+                        actionLabel = if (syncFailure != null) {
+                            stringResource(R.string.action_retry)
+                        } else {
+                            null
+                        },
+                        onAction = if (syncFailure != null) onRetry else null
                     )
-                },
-                inProgress = syncing && syncFailure == null,
-                actionLabel = if (syncFailure != null) {
-                    stringResource(R.string.action_retry)
-                } else {
-                    null
-                },
-                onAction = if (syncFailure != null) onRetry else null
-            )
+                }
+            }
 
             else -> Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
