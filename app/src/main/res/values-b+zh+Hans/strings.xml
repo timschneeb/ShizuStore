@@ -53,7 +53,7 @@
     <string name="apps_recently_added">最近添加</string>
     <string name="apps_recently_updated">最近更新</string>
     <string name="apps_most_starred">GitHub 上最多星标</string>
-    <string name="apps_popular">Popular on ShizuStore</string>
+    <string name="apps_popular">ShizuStore 热门应用</string>
     <string name="details_changelog">更新日志</string>
     <string name="details_changelog_subtitle">%1$s 版本的新功能</string>
     <string name="details_changelog_empty">暂无更新日志</string>
@@ -340,7 +340,7 @@
     <string name="title_donate">捐助</string>
     <string name="title_downloads">下载</string>
     <string name="title_favourites">收藏</string>
-    <string name="title_help_translate">Help us translate</string>
+    <string name="title_help_translate">帮助我们翻译</string>
     <string name="title_ignored_updates">忽略的更新</string>
     <string name="title_my_apps">我的应用</string>
     <string name="title_settings">设置</string>
