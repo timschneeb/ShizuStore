@@ -58,6 +58,14 @@ class ShizukuManagerPackagesTest {
     }
 
     @Test
+    fun shizakoForkPermissionOwnerIsDetected() {
+        declarePermission(ShizukuInstaller.SHIZAKO_PERMISSION, "com.churan.shizako")
+
+        assertEquals(listOf("com.churan.shizako"), ShizukuInstaller.managerPackages(context))
+        assertTrue(ShizukuInstaller.isAvailable(context))
+    }
+
+    @Test
     fun renamedForkDeclaringTheStockPermissionIsDetected() {
         declarePermission(ShizukuProvider.PERMISSION, "com.example.shizuku.fork")
 
