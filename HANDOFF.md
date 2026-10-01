@@ -373,8 +373,8 @@ cannot easily be community-verified. Tests:
 `CatalogUiMapperTest.appDetailsCarriesListing`.
 
 Donations. The overflow sheet (`compose/ui/main/MoreSheet.kt`) carries a
-"Support ShizuStore" entry directly above About, and the Settings screen has a
-footer `DonationCard`; both open the shared `DonationDialog`
+"Donate" entry directly above About, and the Settings screen has a footer
+`DonationCard`; both open the shared `DonationDialog`
 (`compose/composable/DonationDialog.kt`), a titled thank-you with PayPal
 (`paypal.me/timschneeberger`) and Ko-fi
 (`ko-fi.com/thepbone`) rows. The PayPal drawable is untinted and gets a white
@@ -382,6 +382,12 @@ outline built from eight offset copies of the painter (its dark brand colours
 would vanish on the dark dialog); Ko-fi renders `ic_kofi_symbol` as-is because
 that image already carries its own outline. Links open in a Custom Tab through
 `SourceLauncher`. No automatic prompt, only on demand.
+
+Help translate. The overflow sheet carries a "Help us translate" row between
+Donate and About (`ic_translate`, Material Symbols "translate") that opens
+`https://crowdin.com/project/shizustore` in a Custom Tab and dismisses the
+sheet. The URL is `MoreSheet.CROWDIN_URL`; Crowdin matches the `crowdin.yml`
+source (`app/src/main/res/values/strings.xml`).
 
 Search home. `AppListViewModel.atSearchHome` is an explicit place, not "no
 filters set": clearing a category, sort or price keeps the list, and only the
