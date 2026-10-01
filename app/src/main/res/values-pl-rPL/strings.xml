@@ -54,6 +54,7 @@
     <string name="apps_recently_added">Ostatnio dodane</string>
     <string name="apps_recently_updated">Ostatnio zaktualizowane</string>
     <string name="apps_most_starred">Najczęściej oznaczone gwiazdką na GitHub</string>
+    <string name="apps_popular">Popular on ShizuStore</string>
     <string name="details_changelog">Lista zmian</string>
     <string name="details_changelog_subtitle">Co nowego w wersji %1$s</string>
     <string name="details_changelog_empty">Brak dziennika zmian</string>
@@ -382,6 +383,7 @@ Sprawdzaj tylko przez Wi-Fi</string>
     <string name="title_donate">Wesprzyj</string>
     <string name="title_downloads">Pobrane</string>
     <string name="title_favourites">Ulubione</string>
+    <string name="title_help_translate">Help us translate</string>
     <string name="title_ignored_updates">Ignorowane aktualizacje</string>
     <string name="title_my_apps">Moje aplikacje</string>
     <string name="title_settings">Ustawienia</string>
