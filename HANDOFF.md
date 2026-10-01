@@ -387,7 +387,10 @@ Help translate. The overflow sheet carries a "Help us translate" row between
 Donate and About (`ic_translate`, Material Symbols "translate") that opens
 `https://crowdin.com/project/shizustore` in a Custom Tab and dismisses the
 sheet. The URL is `MoreSheet.CROWDIN_URL`; Crowdin matches the `crowdin.yml`
-source (`app/src/main/res/values/strings.xml`).
+source (`app/src/main/res/values/strings.xml`). October 2026: the two new keys
+(`apps_popular`, `title_help_translate`) were translated by hand in
+`values-de-rDE`, `values-b+zh+Hans` and `values-b+zh+Hant` for the 1.4.0
+build; later updates flow through Crowdin.
 
 Empty-state pull to refresh (October 2026). `UpdatesScreen` only wrapped its
 Loaded phase in `ExpressivePullToRefreshBox`, so the empty state had no refresh

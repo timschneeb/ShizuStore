@@ -47,13 +47,15 @@ class OkHttpDownloader @Inject constructor(
                 chain.request().newBuilder()
                     .header(
                         "User-Agent",
-                        "${userAgent(context.getString(R.string.app_name), BuildConfig.VERSION_NAME)} F-Droid"
+                        "${userAgent(
+                            context.getString(R.string.app_name),
+                            BuildConfig.VERSION_NAME
+                        )} F-Droid"
                     )
                     .build()
             )
         }
         .build()
-
 
     override suspend fun downloadToFile(
         url: String,
