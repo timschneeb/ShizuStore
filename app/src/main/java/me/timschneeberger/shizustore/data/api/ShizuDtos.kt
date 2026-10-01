@@ -141,6 +141,8 @@ data class AppDetailDto(
     val authorUrl: String? = null,
     val permissions: List<String> = emptyList(),
     val fullDescription: String? = null,
+    // Direct raw markdown URL of the stored README; the client refetches it live.
+    val readmeUrl: String? = null,
     val changelog: String? = null,
     val changelogUrl: String? = null,
     val screenshots: List<String> = emptyList(),

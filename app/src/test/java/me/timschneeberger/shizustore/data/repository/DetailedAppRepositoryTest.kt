@@ -10,6 +10,7 @@ import me.timschneeberger.shizustore.ApiTestBase
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import okhttp3.mockwebserver.MockResponse
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -68,6 +69,10 @@ class DetailedAppRepositoryTest : ApiTestBase() {
         assertEquals("v2+v3", candidates.first().signerScheme)
         assertEquals("RSA 2048", candidates.first().signerKeyAlgorithm)
         assertEquals("# Alpha readme", repository.fullDescription("alpha"))
+        assertEquals(
+            "https://raw.githubusercontent.com/o/alpha/HEAD/README.md",
+            repository.readmeUrl("alpha")
+        )
         assertEquals("## 1.0\n- First release", repository.changelog("alpha"))
         assertEquals(
             "https://github.com/o/alpha/releases/tag/v1.0",
@@ -85,7 +90,31 @@ class DetailedAppRepositoryTest : ApiTestBase() {
         assertEquals(DetailedAppResult.NotFound, repository.fetchAndPersist("nope"))
     }
 
+    @Test
+    fun detailWithoutReadmeUrlClearsCachedRoute() = runTest {
+        db.appDao().upsert(AppEntity(slug = "alpha", name = "Alpha"))
+        server.enqueue(
+            MockResponse().setResponseCode(200)
+                .addHeader("Content-Type", "application/json")
+                .setBody(DETAIL)
+        )
+        repository.fetchAndPersist("alpha")
+
+        // A Play-sourced description has no raw markdown route.
+        server.enqueue(
+            MockResponse().setResponseCode(200)
+                .addHeader("Content-Type", "application/json")
+                .setBody(DETAIL.replace(README_URL_LINE, ""))
+        )
+        repository.fetchAndPersist("alpha")
+
+        assertNull(repository.readmeUrl("alpha"))
+    }
+
     private companion object {
+        const val README_URL_LINE =
+            "\"readmeUrl\": \"https://raw.githubusercontent.com/o/alpha/HEAD/README.md\","
+
         val DETAIL = """
             {
               "slug": "alpha", "name": "Alpha", "description": "first",
@@ -121,6 +150,7 @@ class DetailedAppRepositoryTest : ApiTestBase() {
               "parentSlug": null, "addedAt": "2026-01-01T00:00:00+00:00",
               "lastCheckedAt": "2026-05-01T00:00:00+00:00",
               "fullDescription": "# Alpha readme",
+              "readmeUrl": "https://raw.githubusercontent.com/o/alpha/HEAD/README.md",
               "changelog": "## 1.0\n- First release",
               "changelogUrl": "https://github.com/o/alpha/releases/tag/v1.0",
               "screenshots": ["https://f-droid.org/repo/example/en-US/phoneScreenshots/00.png"]

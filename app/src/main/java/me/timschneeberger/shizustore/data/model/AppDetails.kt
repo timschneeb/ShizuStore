@@ -63,6 +63,8 @@ data class AppDetails(
     val downloadTotal: Long? = null,
     val versionUpdatedAtMillis: Long? = null,
     val fullDescription: String? = null,
+    /** Raw markdown URL the live README is fetched from; null for Play-only entries. */
+    val readmeUrl: String? = null,
     val sourceKind: SourceKind? = null,
     val sourceName: String? = null,
     val changelogUrl: String? = null,

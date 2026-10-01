@@ -17,6 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,6 +57,7 @@ import me.timschneeberger.shizustore.data.repository.DetailedAppResult
 import me.timschneeberger.shizustore.data.repository.FavouriteRepository
 import me.timschneeberger.shizustore.data.repository.IgnoredUpdateRepository
 import me.timschneeberger.shizustore.data.repository.InstalledRepository
+import me.timschneeberger.shizustore.data.repository.LiveReadmeFetcher
 import me.timschneeberger.shizustore.data.room.entity.Download
 import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
 import me.timschneeberger.shizustore.data.room.entity.USAGE_REPORT_VERSION
@@ -112,6 +114,7 @@ class AppDetailsViewModel @Inject constructor(
     private val favouriteRepository: FavouriteRepository,
     private val ignoredUpdateRepository: IgnoredUpdateRepository,
     private val installedRepository: InstalledRepository,
+    private val liveReadmeFetcher: LiveReadmeFetcher,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
     /** The navigation key: a real package name when known, otherwise the catalog slug. */
@@ -128,6 +131,11 @@ class AppDetailsViewModel @Inject constructor(
 
     /** Detail request in progress; the screen stays blank until it settles. */
     private val _detailFetching = MutableStateFlow(false)
+
+    /** Live README pulled from the forge raw URL; only valid for [liveReadmeSlug]. */
+    private val liveReadme = MutableStateFlow<String?>(null)
+    private val liveReadmeSlug = MutableStateFlow<String?>(null)
+    private var liveReadmeJob: Job? = null
 
     /** Exposed so screens can keep their content hidden until the request settles. */
     val detailFetching: StateFlow<Boolean> = _detailFetching.asStateFlow()
@@ -268,6 +276,10 @@ class AppDetailsViewModel @Inject constructor(
             val resolvedSlug = stored?.slug ?: packageName
             _detailFetching.value = true
             slug.value = resolvedSlug
+            // A view model can be reused for another app; the previous live
+            // README must not leak into the new one.
+            liveReadme.value = null
+            liveReadmeSlug.value = null
             // The AI usage report lands on a detail fetch and can appear after
             // the README was cached; refetch once for analyzable apps whose
             // report is still missing. Apps without a forge repo never have
@@ -291,6 +303,24 @@ class AppDetailsViewModel @Inject constructor(
                 // holding the markdown must not refetch it over the network.
                 _detailFetching.value = false
             }
+            refreshLiveReadme(resolvedSlug)
+        }
+    }
+
+    /**
+     * Pulls the README straight from the forge raw URL so the screen shows the
+     * live file; the stored snapshot covers offline and error cases. A newer
+     * load cancels the previous fetch so its text cannot win.
+     */
+    private fun refreshLiveReadme(resolvedSlug: String) {
+        val url = detailedAppRepository.readmeUrl(resolvedSlug) ?: return
+        liveReadmeJob?.cancel()
+        liveReadmeJob = viewModelScope.launch {
+            val markdown = liveReadmeFetcher.fetch(url)
+            if (!markdown.isNullOrBlank() && slug.value == resolvedSlug) {
+                liveReadmeSlug.value = resolvedSlug
+                liveReadme.value = markdown
+            }
         }
     }
 
@@ -309,6 +339,7 @@ class AppDetailsViewModel @Inject constructor(
             _refreshing.value = true
             try {
                 fetchDetail(resolvedSlug)
+                refreshLiveReadme(resolvedSlug)
             } finally {
                 _refreshing.value = false
             }
@@ -510,8 +541,10 @@ class AppDetailsViewModel @Inject constructor(
         return combine(
             catalog,
             _detailError,
-            _detailFetching
-        ) { catalogPair, error, fetching ->
+            _detailFetching,
+            liveReadmeSlug,
+            liveReadme
+        ) { catalogPair, error, fetching, liveSlug, liveMarkdown ->
             val (detailed, installed) = catalogPair
             when {
                 // Blank the screen until the request settles so the install row
@@ -520,9 +553,11 @@ class AppDetailsViewModel @Inject constructor(
 
                 detailed != null -> {
                     val fingerprint = installed?.let { CertFingerprint.of(it.signer, it.signerMd5) }
+                    val live = liveMarkdown?.takeIf { liveSlug == slug }
                     AppDetailsUiState.Loaded(
                         details = mapper.toAppDetails(detailed).copy(
-                            fullDescription = detailedAppRepository.fullDescription(slug),
+                            fullDescription = live ?: detailedAppRepository.fullDescription(slug),
+                            readmeUrl = detailedAppRepository.readmeUrl(slug),
                             changelog = detailedAppRepository.changelog(slug),
                             changelogUrl = detailedAppRepository.changelogUrl(slug),
                             screenshots = detailedAppRepository.screenshots(slug).orEmpty()

@@ -255,6 +255,18 @@ The details screen shows a "Changelog" row only when the text is non-blank.
 Tests: `DetailedAppRepositoryTest` (LRU hit) and
 `MarkdownDescriptionTest.changelogRendersAsHtml`.
 
+Live README. The server keeps the README as a detail-only snapshot
+(`full_description`) and now also sends the direct raw markdown URL it came from
+(`readme_url`; null for Play text). The client keeps that URL in a bounded LRU
+(`DetailedAppRepository.readmeUrl`) and `AppDetailsViewModel` pulls the file
+straight from the forge through `LiveReadmeFetcher` (singleton OkHttpClient,
+`CacheControl.FORCE_NETWORK`, 2 MiB cap, fail-soft) each time the details screen
+loads; the live markdown overrides the snapshot in `detailsFor` when it arrives,
+and a failed fetch keeps the stored snapshot. `MoreAboutScreen` still renders
+`AppDetails.fullDescription` through `MarkdownDescription`. Tests:
+`LiveReadmeFetcherTest`, `DetailedAppRepositoryTest` (route LRU, Play-sourced
+detail clears it).
+
 Relative ages in list rows. Browse/search rows already showed stars when sorted
 by stars and installs when sorted by popularity; a row sorted by
 `RECENTLY_ADDED`/`RECENTLY_UPDATED` now shows the matching timestamp ("3 days
@@ -742,8 +754,8 @@ instead of applying that payload. It refreshes `/v1/categories`
 when the stored ETag changes and advances the cursor to `meta().generatedAt`.
 `/v1/changes` and `/v1/apps` carry summaries only, so `DetailedAppRepository`
 fetches `/v1/apps/{slug}` for candidates, the full description, the changelog
-and the screenshots. The README, changelog and screenshots are kept only in
-bounded in-memory LRUs, never persisted to Room.
+and the screenshots. The README, its raw refetch URL, the changelog and the
+screenshots are kept only in bounded in-memory LRUs, never persisted to Room.
 
 **Install.** `DownloadHelper` stages a queue row from a candidate. `DownloadWorker`
 fetches the upstream `apkUrl`, verifies its hash, and extracts the named member

@@ -57,6 +57,16 @@ class DetailedAppRepository @Inject constructor(
 
     fun fullDescription(slug: String): String? = fullDescriptions[slug]
 
+    /** Raw markdown URL backing [fullDescriptions]; drives the live README refetch. */
+    private val readmeUrls = Collections.synchronizedMap(
+        object : LinkedHashMap<String, String>(CACHE_SIZE, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>) =
+                size > MAX_CACHED_DESCRIPTIONS
+        }
+    )
+
+    fun readmeUrl(slug: String): String? = readmeUrls[slug]
+
     /** Same process-lifetime LRU as [fullDescriptions]; the changelog screen reads one app at a time. */
     private val changelogs = Collections.synchronizedMap(
         object : LinkedHashMap<String, String>(CACHE_SIZE, 0.75f, true) {
@@ -108,6 +118,9 @@ class DetailedAppRepository @Inject constructor(
         appDao.upsert(updated)
 
         detail.fullDescription?.takeIf { it.isNotBlank() }?.let { fullDescriptions[slug] = it }
+        // A Play-sourced description clears the route so no stale raw URL is used.
+        val readmeUrl = detail.readmeUrl?.takeIf { it.isNotBlank() }
+        if (readmeUrl != null) readmeUrls[slug] = readmeUrl else readmeUrls.remove(slug)
         detail.changelog?.takeIf { it.isNotBlank() }?.let { changelogs[slug] = it }
         detail.changelogUrl?.takeIf { it.isNotBlank() }?.let { changelogUrls[slug] = it }
         detail.screenshots.takeIf { it.isNotEmpty() }?.let { screenshots[slug] = it }
