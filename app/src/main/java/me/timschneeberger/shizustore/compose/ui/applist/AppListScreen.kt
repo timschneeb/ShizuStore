@@ -87,6 +87,7 @@ import me.timschneeberger.shizustore.compose.composable.app.AppAge
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
 import me.timschneeberger.shizustore.compose.composable.rememberVisibleForAtLeast
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.AppSort
 import me.timschneeberger.shizustore.data.model.CategoryTag
@@ -560,7 +561,10 @@ private fun AppRows(
                                 app = app,
                                 onClick = { onAppClick(app) },
                                 showStars = showStars,
-                                showInstalls = showInstalls,
+                                // Only direct downloads report installs;
+                                // redirect and link entries would always read zero.
+                                showInstalls = showInstalls &&
+                                    app.availability == Availability.DIRECT_APK,
                                 age = age
                             )
                         }

@@ -528,7 +528,9 @@ itself out of its own chart. The strip shows each app's install count through a
 new `showInstalls` on `AppCarouselStrip`/`AppListItem` and uses the download
 glyph as its section icon. Its More page opens the existing `AppSort.DOWNLOADS`
 list, which ranks by `installCount` and shows the counts whenever `/v1/meta`
-reports `useInstallCountsForPopularity` (on in production). Test:
+reports `useInstallCountsForPopularity` (on in production). In that list the
+per-row install count is hidden for entries that are not `direct_apk`, since
+redirect and link entries never report installs and would read zero. Test:
 `CatalogDaoTest.popularQueryExcludesZeroInstallsAndOrdersByCount`.
 
 Ads and detail counts. `ResolvedApp.hasAds` and `AppDetails.hasAds` come from the
@@ -639,6 +641,16 @@ Catalog settings. Settings gained a Catalog subscreen
 toggle moved there from Network, together with a new "Show tracker info"
 preference (`PREFERENCE_SHOW_TRACKER_INFO`, default on) that hides the
 `TrackersNotice` card on details when off.
+
+F-Droid download User-Agent (October 2026): APK downloads now send
+`User-Agent: <app>/<version> F-Droid`. Some F-Droid mirrors serve `.apk` files
+only to the F-Droid client agent and 404 everyone else; the FAU mirror the
+server enriches from was answering "The repository refused the download." for
+Always on display toggle and FindMyDevice. `OkHttpDownloader` derives its own
+client and appends an interceptor after the shared client's agent setter, so
+`DownloadWorker` requests carry the tag while the API and Coil keep the plain
+agent. The server publishes canonical upstream `apkUrl`s now (see its SPEC), so
+the tag only matters for details cached before that deploy.
 
 ## Compose performance pass (September 2026)
 
