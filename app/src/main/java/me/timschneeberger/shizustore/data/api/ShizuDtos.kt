@@ -193,7 +193,10 @@ data class ChangesDto(
     val installsUpdated: Map<String, Long> = emptyMap(),
     // Operator high-water mark for remote catalog purges; older or absent
     // means no purge. Raw ISO string, parsed only when compared.
-    val catalogPurgeRequestedAt: String? = null
+    val catalogPurgeRequestedAt: String? = null,
+    // Server timestamp captured before the response's reads; the only safe
+    // cursor. Null against servers that predate it, then /v1/meta is used.
+    val generatedAt: String? = null
 )
 
 @Serializable

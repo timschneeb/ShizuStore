@@ -77,9 +77,13 @@ module with the Macrobenchmark suite and the baseline profile generator.
 - Server API is the source of truth: `../ShizuAppStoreServer/docs/SPEC.md` and
   `../ShizuAppStoreServer/src/ShizuAppStoreServer/Api/{Dtos,ApiEnums,AppMapper}.cs`.
   camelCase JSON; enums are lowercase/snake strings. Never guess a field name.
-- Sync is `GET /v1/changes?since=` incremental; never a full dump. Summaries in
-  `/v1/changes` and `/v1/apps` carry no `downloads[]`; fetch `/v1/apps/{slug}`
-  for install candidates. A `catalogPurgeRequestedAt` newer than the locally
+- Sync is `GET /v1/changes?since=` incremental; never a full dump. The cursor is
+  the response's `generatedAt` (captured before its reads) minus a small safety
+  margin, never a client clock; `/v1/meta` is only the fallback for older
+  servers, and bootstrap captures meta before paging. Summaries in `/v1/changes`
+  and `/v1/apps` carry no `downloads[]`; fetch `/v1/apps/{slug}` for install
+  candidates. Rows awaiting their first successful check are never sent, so a new
+  app appears only complete. A `catalogPurgeRequestedAt` newer than the locally
   applied marker wipes the cached catalog and re-bootstraps; the marker lives in
   DataStore and user data is never purged.
 - Availability: `direct_apk` installs a matching candidate from `downloads[]`;

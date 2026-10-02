@@ -755,7 +755,13 @@ rows (cascade to their candidates), and applies install-count deltas from
 `installsUpdated` last via a narrow column write. A `catalogPurgeRequestedAt`
 newer than the locally applied marker drops the cached catalog and bootstraps
 instead of applying that payload. It refreshes `/v1/categories`
-when the stored ETag changes and advances the cursor to `meta().generatedAt`.
+when the stored ETag changes. The cursor comes from the response's own
+`generatedAt`, which the server captures before its reads, minus a one-second
+safety margin; bootstrap captures `/v1/meta` before paging so rows committed
+mid-page replay through the next delta. `meta().generatedAt` is only the fallback
+for older servers that omit the delta cursor. The server hides rows until their
+first successful check, so a newly listed app appears only complete (icon,
+description and download link present).
 `/v1/changes` and `/v1/apps` carry summaries only, so `DetailedAppRepository`
 fetches `/v1/apps/{slug}` for candidates, the full description, the changelog
 and the screenshots. The README, its raw refetch URL, the changelog and the
