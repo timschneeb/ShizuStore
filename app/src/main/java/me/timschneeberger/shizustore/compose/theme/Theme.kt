@@ -10,10 +10,13 @@ package me.timschneeberger.shizustore.compose.theme
 import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalRippleThemeConfiguration
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.RippleDefaults
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -101,5 +104,11 @@ fun ShizuTheme(content: @Composable () -> Unit) {
         }
     }
 
-    MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
+    // Remote/keyboard users need a visible focus cue; the default focus state
+    // layer is too subtle at TV distance.
+    CompositionLocalProvider(
+        LocalRippleThemeConfiguration provides RippleDefaults.InsetFocusRingThemeConfiguration
+    ) {
+        MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
+    }
 }

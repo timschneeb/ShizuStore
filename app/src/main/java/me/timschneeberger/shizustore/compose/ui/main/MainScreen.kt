@@ -8,6 +8,7 @@
 
 package me.timschneeberger.shizustore.compose.ui.main
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -70,6 +74,19 @@ fun MainScreen(
 
     val requestNotifications = rememberNotificationPermissionRequest()
     LaunchedEffect(Unit) { requestNotifications() }
+
+    val configuration = LocalConfiguration.current
+    val hasRemoteInput = configuration.keyboard != Configuration.KEYBOARD_NOKEYS ||
+        (configuration.uiMode and Configuration.UI_MODE_TYPE_MASK) ==
+        Configuration.UI_MODE_TYPE_TELEVISION
+    val tabFocusRequesters = remember { List(MainTab.entries.size) { FocusRequester() } }
+    LaunchedEffect(Unit) {
+        // Touch-only phones keep their clean launch; remote and keyboard users
+        // get a visible starting point for the first arrow press.
+        if (hasRemoteInput) {
+            tabFocusRequesters[pagerState.currentPage].requestFocus()
+        }
+    }
 
     var showMoreSheet by remember { mutableStateOf(false) }
     // Bumped only by the top-bar search action so the Search tab focuses its field there,
@@ -116,6 +133,7 @@ fun MainScreen(
             NavigationBar {
                 MainTab.entries.forEachIndexed { index, tab ->
                     NavigationBarItem(
+                        modifier = Modifier.focusRequester(tabFocusRequesters[index]),
                         selected = pagerState.currentPage == index,
                         onClick = {
                             coroutineScope.launch { pagerState.animateScrollToPage(index) }
@@ -145,9 +163,9 @@ fun MainScreen(
             HorizontalPager(
                 state = pagerState,
                 userScrollEnabled = false,
-                // Keep the neighbor tab composed so a tab switch does not pay for
-                // a full screen's first composition during the animation.
-                beyondViewportPageCount = 1,
+                // Do not pre-compose the neighbor tab: an off-screen page is
+                // still a focus target and can swallow arrow-key navigation.
+                beyondViewportPageCount = 0,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 when (MainTab.entries[page]) {

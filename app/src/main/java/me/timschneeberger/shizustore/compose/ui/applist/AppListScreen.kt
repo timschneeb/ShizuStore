@@ -8,6 +8,7 @@
 
 package me.timschneeberger.shizustore.compose.ui.applist
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -58,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -167,10 +169,16 @@ fun AppListScreen(
         if (index != null) listState.scrollToItem(index, anchor.offset)
     }
 
+    val hasHardwareKeyboard =
+        LocalConfiguration.current.keyboard != Configuration.KEYBOARD_NOKEYS
     LaunchedEffect(searchFocusRequest) {
         if (searchFocusRequest > 0) {
             searchFocusRequester.requestFocus()
-            keyboardController?.show()
+            // A physical keyboard or remote already types; summoning the soft
+            // IME would only cover the results.
+            if (!hasHardwareKeyboard) {
+                keyboardController?.show()
+            }
         }
     }
 

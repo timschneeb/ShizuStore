@@ -11,28 +11,40 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ContainedLoadingIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -45,6 +57,7 @@ import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Size
+import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.R
 
 /**
@@ -119,6 +132,14 @@ fun ScreenshotGallery(screenshots: List<String>, modifier: Modifier = Modifier) 
 @Composable
 private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDismiss: () -> Unit) {
     val pagerState = rememberPagerState(initialPage = initialIndex) { screenshots.size }
+    val scope = rememberCoroutineScope()
+    val closeFocusRequester = remember { FocusRequester() }
+
+    val buttonColors = IconButtonDefaults.iconButtonColors(
+        contentColor = Color.White,
+        disabledContentColor = Color.White.copy(alpha = 0.4f)
+    )
+    val scrim = Color.Black.copy(alpha = OVERLAY_SCRIM_ALPHA)
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -132,21 +153,75 @@ private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDis
                 state = pagerState,
                 beyondViewportPageCount = 1
             ) { page ->
-                Box(
-                    modifier = Modifier.fillMaxSize().clickable(onClick = onDismiss),
-                    contentAlignment = Alignment.Center
+                SubcomposeAsyncImage(
+                    model = rememberScreenshotModel(screenshots[page], Size.ORIGINAL),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    loading = { ScreenshotLoadingIndicator() },
+                    success = { SubcomposeAsyncImageContent() },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Explicit controls keep the viewer navigable with a remote; the
+            // image itself is not a focus target.
+            IconButton(
+                onClick = onDismiss,
+                colors = buttonColors,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(dimensionResource(R.dimen.spacing_large))
+                    .background(scrim, CircleShape)
+                    .focusRequester(closeFocusRequester)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_cancel),
+                    contentDescription = stringResource(R.string.action_close)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = dimensionResource(R.dimen.spacing_large))
+                    .background(scrim, CircleShape),
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_small)
+                )
+            ) {
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        }
+                    },
+                    enabled = pagerState.currentPage > 0,
+                    colors = buttonColors
                 ) {
-                    SubcomposeAsyncImage(
-                        model = rememberScreenshotModel(screenshots[page], Size.ORIGINAL),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        loading = { ScreenshotLoadingIndicator() },
-                        success = { SubcomposeAsyncImageContent() },
-                        modifier = Modifier.fillMaxSize()
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_right),
+                        contentDescription = stringResource(R.string.action_previous),
+                        modifier = Modifier.graphicsLayer { scaleX = -1f }
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
+                    },
+                    enabled = pagerState.currentPage < screenshots.size - 1,
+                    colors = buttonColors
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_right),
+                        contentDescription = stringResource(R.string.action_next)
                     )
                 }
             }
         }
+
+        LaunchedEffect(Unit) { closeFocusRequester.requestFocus() }
     }
 }
 
@@ -182,6 +257,8 @@ private fun rememberScreenshotModel(url: String, size: Size): ImageRequest {
             .build()
     }
 }
+
+private const val OVERLAY_SCRIM_ALPHA = 0.4f
 
 /**
  * Bounded LRU: the strip only holds a handful of shots, so an unbounded map

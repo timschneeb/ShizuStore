@@ -49,6 +49,21 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   package. The fingerprint published in the storefront's `assetlinks.json` is
   the release cert only, so debug builds test via the custom scheme. The
   details share action copies the storefront app page link.
+- Android TV: `MainActivity` also carries `LEANBACK_LAUNCHER`, and the
+  application ships `@drawable/tv_banner` (320x180 xhdpi, from
+  `artwork/androidtv/`); `android.software.leanback` and
+  `android.hardware.touchscreen` are `required="false"` so phone installs are
+  unaffected. The phone Compose UI is what runs on TV.
+- Remote and keyboard navigation: `Theme.kt` provides
+  `LocalRippleThemeConfiguration = RippleDefaults.InsetFocusRingThemeConfiguration`
+  so every ripple-based control gets a visible focus ring. `MainScreen` detects a
+  remote or hardware keyboard (`Configuration.keyboard != KEYBOARD_NOKEYS` or TV
+  `uiMode`) and focuses the current tab on launch; `HorizontalPager` uses
+  `beyondViewportPageCount = 0` so an off-screen tab cannot swallow focus. The
+  search field only force-opens the soft IME when no hardware keyboard is present.
+  The screenshot viewer has focusable close/previous/next controls and starts on
+  close. Pull-to-refresh still has no keyboard path (retry buttons cover error
+  states).
 
 ## Current state
 
