@@ -62,8 +62,9 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   `beyondViewportPageCount = 0` so an off-screen tab cannot swallow focus. The
   search field only force-opens the soft IME when no hardware keyboard is present.
   The screenshot viewer has focusable close/previous/next controls and starts on
-  close. Pull-to-refresh still has no keyboard path (retry buttons cover error
-  states).
+  close; it also supports pinch zoom (up to 5x, one-finger pan) and pauses
+  paging while zoomed. Pull-to-refresh still has no keyboard path
+  (retry buttons cover error states).
 
 ## Current state
 

@@ -8,6 +8,10 @@ package me.timschneeberger.shizustore.compose.ui.details.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,7 +34,9 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -39,15 +45,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -134,6 +144,9 @@ private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDis
     val pagerState = rememberPagerState(initialPage = initialIndex) { screenshots.size }
     val scope = rememberCoroutineScope()
     val closeFocusRequester = remember { FocusRequester() }
+    // A zoomed shot pans with one finger, so paging must yield until a pinch
+    // returns the shot to 1x.
+    var pageZoomed by remember { mutableStateOf(false) }
 
     val buttonColors = IconButtonDefaults.iconButtonColors(
         contentColor = Color.White,
@@ -151,15 +164,13 @@ private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDis
         ) {
             HorizontalPager(
                 state = pagerState,
-                beyondViewportPageCount = 1
+                beyondViewportPageCount = 1,
+                userScrollEnabled = !pageZoomed
             ) { page ->
-                SubcomposeAsyncImage(
-                    model = rememberScreenshotModel(screenshots[page], Size.ORIGINAL),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    loading = { ScreenshotLoadingIndicator() },
-                    success = { SubcomposeAsyncImageContent() },
-                    modifier = Modifier.fillMaxSize()
+                ZoomableScreenshot(
+                    url = screenshots[page],
+                    isActive = pagerState.currentPage == page,
+                    onZoomChanged = { pageZoomed = it }
                 )
             }
 
@@ -175,7 +186,7 @@ private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDis
                     .focusRequester(closeFocusRequester)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_cancel),
+                    painter = painterResource(R.drawable.ic_clear),
                     contentDescription = stringResource(R.string.action_close)
                 )
             }
@@ -225,6 +236,76 @@ private fun ScreenshotViewer(screenshots: List<String>, initialIndex: Int, onDis
     }
 }
 
+/**
+ * Pinch to zoom, with one-finger panning while zoomed. Single-finger drags at
+ * 1x are left unconsumed so the surrounding pager can still page between shots.
+ */
+@Composable
+private fun ZoomableScreenshot(
+    url: String,
+    isActive: Boolean,
+    onZoomChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+
+    LaunchedEffect(isActive) {
+        if (!isActive) {
+            scale = 1f
+            offset = Offset.Zero
+            onZoomChanged(false)
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .onSizeChanged { containerSize = it }
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown(requireUnconsumed = false)
+                    do {
+                        val event = awaitPointerEvent()
+                        val zoomChange = event.calculateZoom()
+                        val panChange = event.calculatePan()
+                        val pinching = event.changes.size > 1 &&
+                            (zoomChange != 1f || panChange != Offset.Zero)
+                        if (pinching || scale > 1f) {
+                            val newScale = (scale * zoomChange).coerceIn(1f, MAX_ZOOM)
+                            val maxX = (newScale - 1f) / 2f * containerSize.width
+                            val maxY = (newScale - 1f) / 2f * containerSize.height
+                            scale = newScale
+                            offset = Offset(
+                                x = (offset.x + panChange.x).coerceIn(-maxX, maxX),
+                                y = (offset.y + panChange.y).coerceIn(-maxY, maxY)
+                            )
+                            event.changes.forEach { if (it.pressed) it.consume() }
+                            onZoomChanged(newScale > 1f)
+                        }
+                    } while (event.changes.any { it.pressed })
+                }
+            }
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                translationX = offset.x
+                translationY = offset.y
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        SubcomposeAsyncImage(
+            model = rememberScreenshotModel(url, Size.ORIGINAL),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            loading = { ScreenshotLoadingIndicator() },
+            success = { SubcomposeAsyncImageContent() },
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
 @Composable
 private fun ScreenshotLoadingIndicator() {
     val description = stringResource(R.string.loading)
@@ -259,6 +340,7 @@ private fun rememberScreenshotModel(url: String, size: Size): ImageRequest {
 }
 
 private const val OVERLAY_SCRIM_ALPHA = 0.4f
+private const val MAX_ZOOM = 5f
 
 /**
  * Bounded LRU: the strip only holds a handful of shots, so an unbounded map
