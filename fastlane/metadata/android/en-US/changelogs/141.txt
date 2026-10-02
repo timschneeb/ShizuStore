@@ -1,0 +1,4 @@
+- "More about this app" now loads the latest README directly from the developer repository.
+- New "Popular on ShizuStore" section on the Apps tab, ranked by installs.
+- Downloads from F-Droid mirrors now send the F-Droid user agent, fixing some failed downloads.
+- Shizuku forks such as Shizako are now detected as manager apps, plus updated translations.
