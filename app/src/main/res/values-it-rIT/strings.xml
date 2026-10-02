@@ -155,67 +155,67 @@
     <string name="installer_native_subtitle">Disattiva la finestra di dialogo di sistema</string>
     <string name="installer_native_title">Installer di sistema</string>
     <string name="installer_root_desc">Esegue il comando di installazione di sistema come root, senza finestra di conferma. Richiede un dispositivo con root e i permessi di superutente per ShizuStore.</string>
-    <string name="installer_root_subtitle">Installare silenziosamente tramite una shell root</string>
+    <string name="installer_root_subtitle">Installa silenziosamente tramite una shell root</string>
     <string name="installer_root_title">Installer root</string>
     <string name="installer_session_desc">Usa l\'installer di pacchetti di Android. Non richiede alcuna configurazione; Android può comunque chiederti di confermare ogni installazione.</string>
-    <string name="installer_session_subtitle">Default, works without root</string>
+    <string name="installer_session_subtitle">Predefinito, funziona senza root</string>
     <string name="installer_session_title">Installer di sessione</string>
     <string name="installer_shizuku_desc">Utilizza le API di sistema tramite il servizio ADB o root di Shizuku. Richiede che Shizuku o Sui siano in esecuzione, con il permesso concesso a ShizuStore.</string>
     <string name="installer_shizuku_subtitle">Installa in modo silenzioso tramite Shizuku o Sui</string>
     <string name="installer_shizuku_title">Installer di Shizuku</string>
-    <string name="shizuku_card_title">Set up Shizuku</string>
-    <string name="shizuku_card_install_body">Shizuku is not installed. Install it so ShizuStore can install apps in the background without root.</string>
-    <string name="shizuku_card_grant_body">Shizuku is installed. Allow ShizuStore to install apps through it.</string>
-    <string name="shizuku_card_start_body">Shizuku is installed but not running. Start Shizuku, then allow ShizuStore access.</string>
-    <string name="shizuku_card_install_action">Get Shizuku</string>
-    <string name="shizuku_card_grant_action">Allow access</string>
-    <string name="shizuku_card_start_action">Start Shizuku</string>
-    <string name="shizuku_card_dismiss">Dismiss</string>
-    <string name="item_optional">Optional</string>
-    <string name="item_required">Required</string>
-    <string name="loading">Loading in progress</string>
-    <string name="notification_channel_alerts">Needs attention</string>
-    <string name="notification_channel_download">Downloads</string>
+    <string name="shizuku_card_title">Imposta Shizuku</string>
+    <string name="shizuku_card_install_body">Shizuku non è installato. Installalo per permettere a ShizuStore di installare le app in background senza root.</string>
+    <string name="shizuku_card_grant_body">Shizuku è installato. Consenti a ShizuStore di installare le app tramite Shizuku.</string>
+    <string name="shizuku_card_start_body">Shizuku è installato ma non è in esecuzione. Avvia Shizuku, poi consenti l\'accesso a ShizuStore.</string>
+    <string name="shizuku_card_install_action">Ottieni Shizuku</string>
+    <string name="shizuku_card_grant_action">Consenti accesso</string>
+    <string name="shizuku_card_start_action">Avvia Shizuku</string>
+    <string name="shizuku_card_dismiss">Ignora</string>
+    <string name="item_optional">Facoltativo</string>
+    <string name="item_required">Obbligatorio</string>
+    <string name="loading">Caricamento in corso</string>
+    <string name="notification_channel_alerts">Richiede attenzione</string>
+    <string name="notification_channel_download">Download</string>
     <string name="notification_channel_install">Installs</string>
     <string name="notification_channel_update">Update checks</string>
-    <string name="notification_confirm_install">Tap to install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_confirm_install_text">Android needs you to confirm this install.</string>
-    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> downloaded</string>
-    <string name="notification_group_activity">Activity</string>
-    <string name="notification_group_alerts">Needs attention</string>
-    <string name="notification_download_failed">Could not download <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_downloading">Downloading <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
-    <string name="notification_install_failed">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_installing">Installing <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
+    <string name="notification_confirm_install">Tocca per installare <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_confirm_install_text">Android richiede che confermi questa installazione.</string>
+    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> scaricata</string>
+    <string name="notification_group_activity">Attività</string>
+    <string name="notification_group_alerts">Richiede attenzione</string>
+    <string name="notification_download_failed">Impossibile scaricare <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_downloading">Download di <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installata</string>
+    <string name="notification_install_failed">Impossibile installare <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_installing">Installazione di <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused">Impossibile installare <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused_text">Un\'altra installazione è ancora in corso. Riprova una volta terminata.</string>
     <plurals name="notification_failed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app richiede attenzione</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> app richiedono attenzione</item>
     </plurals>
     <plurals name="notification_installed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app installed</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app installata</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> app installate</item>
     </plurals>
     <plurals name="notification_download_summary">
-        <item quantity="one">Downloading <xliff:g id="count">%1$d</xliff:g> app</item>
-        <item quantity="other">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
+        <item quantity="one">Download di <xliff:g id="count">%1$d</xliff:g> app</item>
+        <item quantity="other">Download di <xliff:g id="count">%1$d</xliff:g> app</item>
     </plurals>
     <plurals name="notification_updates_available">
-        <item quantity="one">%1$d update available</item>
-        <item quantity="other">%1$d updates available</item>
+        <item quantity="one">%1$d aggiornamento disponibile</item>
+        <item quantity="other">%1$d aggiornamenti disponibili</item>
     </plurals>
-    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
-    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> and <xliff:g id="third">%3$s</xliff:g></string>
+    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> e <xliff:g id="second">%2$s</xliff:g></string>
+    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> e <xliff:g id="third">%3$s</xliff:g></string>
     <plurals name="notification_updates_available_desc_more">
-        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
-        <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
+        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> e <xliff:g id="count">%4$d</xliff:g> altra</item>
+        <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> e altre <xliff:g id="count">%4$d</xliff:g></item>
     </plurals>
-    <string name="notification_updates_available_text">Open ShizuStore to review and install them.</string>
-    <string name="permission_doze">Ignore battery optimisation</string>
-    <string name="permission_doze_desc">Keeps downloads running and update checks on time when ShizuStore is in the background.</string>
-    <string name="permission_install">Install unknown apps</string>
+    <string name="notification_updates_available_text">Aprire ShizuStore per controllarli e installarli.</string>
+    <string name="permission_doze">Ignora ottimizzazione della batteria</string>
+    <string name="permission_doze_desc">Mantiene attivi i download e fa eseguire i controlli degli aggiornamenti quando ShizuStore è in background.</string>
+    <string name="permission_install">Installa app sconosciute</string>
     <string name="permission_install_desc">Required before ShizuStore can install anything. Android still confirms each install unless you use root or Shizuku.</string>
     <string name="permission_notifications">Notifications</string>
     <string name="permission_notifications_desc">Mostra la sincronizzazione del repository, il progresso di download e di installazione e avvisa quando sono pronti gli aggiornamenti.</string>
@@ -306,9 +306,9 @@
     <string name="settings_theme_system">System default</string>
     <string name="settings_theme_title">Theme</string>
     <string name="settings_unattended_paused_checks_off">Paused. Background checks are set to Never above, so nothing runs to install. Choose an interval to start them.</string>
-    <string name="settings_unattended_paused_confirmation">Paused. Your installer asks you to confirm each install, so you\'ll just be notified when updates are available. Root or Shizuku, if your device supports one, removes that step.</string>
-    <string name="settings_unattended_paused_root">Paused. No root access - grant ShizuStore superuser rights, or choose another installer under App installer.</string>
-    <string name="settings_unattended_paused_shizuku">Paused. This device cannot install through Shizuku right now. Check that Shizuku is installed, running and has allowed ShizuStore; if it already is, choose another installer under App installer.</string>
+    <string name="settings_unattended_paused_confirmation">In pausa. Il tuo installer chiede conferma a ogni installazione, quindi riceverai solo una notifica quando sono disponibili aggiornamenti. Root o Shizuku, se il tuo dispositivo ne supporta uno, elimina questo passaggio.</string>
+    <string name="settings_unattended_paused_root">In pausa. Accesso root non disponibile: concedi a ShizuStore i permessi di superutente, oppure scegli un altro installer in Installer delle app.</string>
+    <string name="settings_unattended_paused_shizuku">In pausa. Al momento questo dispositivo non può installare tramite Shizuku. Controlla che Shizuku sia installato, in esecuzione e che abbia concesso il permesso a ShizuStore; se lo è già, scegli un altro installer in Installer delle app.</string>
     <string name="settings_unattended_section_title">Automatic installs</string>
     <string name="settings_unattended_subtitle">Downloads and installs new versions in the background, without confirming each one.</string>
     <string name="settings_unattended_title">Install updates automatically</string>
