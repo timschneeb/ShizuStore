@@ -36,7 +36,7 @@ After a client change, install the fresh debug build to the phone over adb:
 
 ```bash
 adb connect 192.168.178.58:5555
-adb -s 192.168.178.58:5555 install -r app/build/outputs/apk/debug/ShizuStore-1.4.0-debug.apk
+adb -s 192.168.178.58:5555 install -r app/build/outputs/apk/debug/ShizuStore-1.4.1-debug.apk
 ```
 
 Adjust the device address if the phone reports a different one.
@@ -52,7 +52,7 @@ The first regenerates `app/src/release/generated/baselineProfiles/` (keep it in
 source); the second runs the frame-timing suite. Both use the release-like
 `benchmarkRelease`/`nonMinifiedRelease` variants signed with the AOSP testkey.
 Pre-install
-`app/build/outputs/apk/benchmarkRelease/ShizuStore-1.4.0-benchmarkRelease-unsigned.apk`,
+`app/build/outputs/apk/benchmarkRelease/ShizuStore-1.4.1-benchmarkRelease-unsigned.apk`,
 grant `POST_NOTIFICATIONS` and wake the screen first; the connected runner
 uninstalls the app at the end, and a dozing screen yields no frame stats.
 
