@@ -71,7 +71,7 @@
     <string name="details_load_failed">Could not reach the server. Check your connection and try again.</string>
     <string name="details_permissions">Permissions</string>
     <plurals name="details_permissions_count">
-        <item quantity="zero">%1$d permissions requested</item>
+        <item quantity="zero">%1$d permission requested</item>
         <item quantity="one">%1$d permission requested</item>
         <item quantity="two">%1$d permissions requested</item>
         <item quantity="few">%1$d permissions requested</item>
@@ -94,7 +94,7 @@
     <string name="details_version_selected">Selected</string>
     <string name="details_sources">Sources</string>
     <plurals name="details_sources_count">
-        <item quantity="zero">%1$d sources</item>
+        <item quantity="zero">%1$d source</item>
         <item quantity="one">%1$d source</item>
         <item quantity="two">%1$d sources</item>
         <item quantity="few">%1$d sources</item>
