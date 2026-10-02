@@ -2,11 +2,7 @@
 
 Android client for the Shizu app store. A fork of AuroraDroid (Kotlin, Jetpack
 Compose, Material 3) retargeted from the F-Droid multi-repo index to the
-`ShizuAppStoreServer` `/v1/*` REST API. Read `PLAN.md` (design) and `TODO.md`
-(live checklist) first. Keep `HANDOFF.md` current in the same pass as code.
-
-The pristine upstream template lives at `../auroradroid/` (GPL-3.0-or-later).
-Reference only, never edit it.
+`ShizuAppStoreServer` `/v1/*` REST API. Keep `docs/HANDOFF.md` current in the same pass as code.
 
 ## Commands
 
@@ -20,7 +16,7 @@ Run from this directory:
 iterating. Run `./gradlew testDebugUnitTest` when the change touches logic that
 has unit tests (or when adding tests).
 
-Lint and style checks are slow and only run before committing:
+Lint and style checks are slow and only run before a new release:
 
 ```bash
 ./gradlew ktlintCheck lintDebug
@@ -102,14 +98,10 @@ module with the Macrobenchmark suite and the baseline profile generator.
 
 ## Rules
 
-- GPL-3.0-or-later. Keep upstream SPDX headers and `LICENSE`. Never copy
-  AGPL-licensed code. Each file keeps one `SPDX-FileCopyrightText` line per
-  holder: Tim's line on top once the file diverges from `../auroradroid/`,
-  the Aurora OSS line below while upstream code remains, upstream-only files
-  untouched, and third-party lines (Calyx, Material) preserved.
+- GPL-3.0-or-later. Keep upstream SPDX headers and `LICENSE`.
 - Comments are concise and explain WHY, not WHAT. No em-dashes in code,
   comments, or docs.
 - Tests are hermetic (MockWebServer for API/sync, in-memory Room/Robolectric for
   DAOs). Live-server tests are env-gated.
-- Never commit unless asked. Update this file and `HANDOFF.md` when component
+- Never commit unless asked. Update this file and `docs/HANDOFF.md` when component
   rules or state change.
