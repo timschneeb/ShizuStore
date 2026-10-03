@@ -28,6 +28,7 @@ import androidx.compose.ui.res.dimensionResource
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 
 @Composable
@@ -45,6 +46,7 @@ fun AppListScaffold(
     content: LazyListScope.() -> Unit
 ) {
     val listPadding = PaddingValues(bottom = dimensionResource(R.dimen.spacing_large))
+    val transitionFadeSpec = motionEffectsSpec<Float>()
 
     Scaffold(
         modifier = modifier,
@@ -58,7 +60,9 @@ fun AppListScaffold(
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             AnimatedContent(
                 targetState = contentPhase,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                transitionSpec = {
+                    fadeIn(transitionFadeSpec) togetherWith fadeOut(transitionFadeSpec)
+                },
                 label = transitionLabel
             ) { phase ->
                 when (phase) {

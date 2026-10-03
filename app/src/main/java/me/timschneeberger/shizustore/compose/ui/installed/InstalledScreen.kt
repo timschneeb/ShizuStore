@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -22,6 +23,8 @@ import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.AppListScaffold
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.viewmodel.InstalledViewModel
 
@@ -59,6 +62,9 @@ private fun InstalledContent(
     val isInitialLoad = apps.loadState.refresh is LoadState.Loading && apps.itemCount == 0
     val isEmpty = apps.loadState.refresh is LoadState.NotLoading && apps.itemCount == 0
 
+    val itemFadeSpec = motionEffectsSpec<Float>()
+    val itemPlacementSpec = motionSpatialSpec<IntOffset>()
+
     AppListScaffold(
         title = stringResource(R.string.title_my_apps),
         contentPhase = when {
@@ -83,7 +89,12 @@ private fun InstalledContent(
                     app = app,
                     onClick = {
                         onNavigateTo(Destination.AppDetails(app.packageName))
-                    }
+                    },
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = itemFadeSpec,
+                        placementSpec = itemPlacementSpec,
+                        fadeOutSpec = itemFadeSpec
+                    )
                 )
             }
         }

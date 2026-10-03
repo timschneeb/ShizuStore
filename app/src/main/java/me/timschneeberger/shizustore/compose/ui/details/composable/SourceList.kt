@@ -35,10 +35,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntSize
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.AuroraListItem
 import me.timschneeberger.shizustore.compose.composable.LabelChip
 import me.timschneeberger.shizustore.compose.composable.minTouchTarget
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionFastSpatialSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.data.model.AppSource
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 
@@ -79,8 +83,11 @@ fun SourceList(
 
     val rotation by animateFloatAsState(
         targetValue = if (expanded) CHEVRON_EXPANDED_DEGREES else 0f,
+        animationSpec = motionFastSpatialSpec(),
         label = "sourcesChevron"
     )
+    val expandSpec = motionSpatialSpec<IntSize>()
+    val rowFadeSpec = motionEffectsSpec<Float>()
 
     Column(modifier = modifier) {
         Row(
@@ -137,8 +144,8 @@ fun SourceList(
 
         AnimatedVisibility(
             visible = expanded,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
+            enter = expandVertically(expandSpec) + fadeIn(rowFadeSpec),
+            exit = shrinkVertically(expandSpec) + fadeOut(rowFadeSpec)
         ) {
             Column {
                 rows.forEach { row ->

@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.timschneeberger.shizustore.R
@@ -20,6 +21,8 @@ import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.AppListScaffold
 import me.timschneeberger.shizustore.compose.composable.RemovableAppItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.viewmodel.IgnoredUpdatesViewModel
 
 @Composable
@@ -32,6 +35,9 @@ fun IgnoredUpdatesScreen(
     val hasIgnoredPackages by viewModel.hasIgnoredPackages.collectAsStateWithLifecycle()
 
     val listState = rememberLazyListState()
+
+    val itemFadeSpec = motionEffectsSpec<Float>()
+    val itemPlacementSpec = motionSpatialSpec<IntOffset>()
 
     AppListScaffold(
         title = stringResource(R.string.title_ignored_updates),
@@ -77,7 +83,11 @@ fun IgnoredUpdatesScreen(
                     }
                 ),
                 supporting = caption,
-                modifier = Modifier.animateItem()
+                modifier = Modifier.animateItem(
+                    fadeInSpec = itemFadeSpec,
+                    placementSpec = itemPlacementSpec,
+                    fadeOutSpec = itemFadeSpec
+                )
             )
         }
     }

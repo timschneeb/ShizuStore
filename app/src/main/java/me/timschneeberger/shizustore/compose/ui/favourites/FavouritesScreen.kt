@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -24,6 +25,8 @@ import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.AppListScaffold
 import me.timschneeberger.shizustore.compose.composable.RemovableAppItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.viewmodel.FavouritesViewModel
 
@@ -61,6 +64,9 @@ private fun FavouritesContent(
     modifier: Modifier = Modifier
 ) {
     val hasStarredPackages by viewModel.hasStarredPackages.collectAsStateWithLifecycle()
+
+    val itemFadeSpec = motionEffectsSpec<Float>()
+    val itemPlacementSpec = motionSpatialSpec<IntOffset>()
 
     val isListEmpty = apps.itemCount == 0
     val isInitialLoad = isListEmpty &&
@@ -103,7 +109,11 @@ private fun FavouritesContent(
                     onRemove = { viewModel.unfavourite(app.packageName) },
                     icon = painterResource(R.drawable.ic_favorite_checked),
                     contentDescription = stringResource(R.string.action_unfavourite),
-                    modifier = Modifier.animateItem()
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = itemFadeSpec,
+                        placementSpec = itemPlacementSpec,
+                        fadeOutSpec = itemFadeSpec
+                    )
                 )
             }
         }

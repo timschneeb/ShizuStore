@@ -28,6 +28,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.app.AnimatedAppIcon
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.data.model.AppDetails
 import me.timschneeberger.shizustore.extensions.viewExternal
 
@@ -42,6 +43,7 @@ fun DetailsHeader(
     statusKey: Any? = null
 ) {
     val context = LocalContext.current
+    val statusFadeSpec = motionEffectsSpec<Float>()
 
     Row(
         modifier = modifier
@@ -91,7 +93,9 @@ fun DetailsHeader(
             }
             AnimatedContent(
                 targetState = statusKey,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                transitionSpec = {
+                    fadeIn(statusFadeSpec) togetherWith fadeOut(statusFadeSpec)
+                },
                 label = "DetailsHeaderStatus"
             ) { key ->
                 val versionLine = listOfNotNull(

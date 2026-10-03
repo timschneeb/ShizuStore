@@ -26,14 +26,21 @@ fun TopAppBar(
     title: String? = null,
     showNavigationIcon: Boolean = true,
     onNavigateBack: () -> Unit = {},
-    actions: @Composable (RowScope.() -> Unit) = {}
+    actions: @Composable (RowScope.() -> Unit) = {},
+    titleContent: (@Composable () -> Unit)? = null
 ) {
     val colors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer
     )
     TopAppBar(
         modifier = modifier,
-        title = { if (title != null) Text(text = title) },
+        title = {
+            if (titleContent != null) {
+                titleContent()
+            } else if (title != null) {
+                Text(text = title)
+            }
+        },
         navigationIcon = {
             if (showNavigationIcon) {
                 IconButton(onClick = onNavigateBack) {

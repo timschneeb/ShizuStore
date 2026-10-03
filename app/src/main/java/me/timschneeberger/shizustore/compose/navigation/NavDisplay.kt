@@ -8,9 +8,6 @@
 
 package me.timschneeberger.shizustore.compose.navigation
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -32,6 +29,8 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import kotlinx.coroutines.flow.StateFlow
 import me.timschneeberger.shizustore.compose.permission.rememberDozeExemptionRequest
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.compose.ui.about.AboutScreen
 import me.timschneeberger.shizustore.compose.ui.applist.AppListScreen
 import me.timschneeberger.shizustore.compose.ui.details.AppDetailsScreen
@@ -55,14 +54,6 @@ import me.timschneeberger.shizustore.compose.ui.settings.UpdatePreferencesScreen
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.viewmodel.DownloadActivityViewModel
 
-private val navSlideSpec = spring<IntOffset>(
-    dampingRatio = Spring.DampingRatioNoBouncy,
-    stiffness = 380f,
-    visibilityThreshold = IntOffset.VisibilityThreshold
-)
-
-private val navFadeSpec = spring<Float>(stiffness = 380f)
-
 /**
  * Keeps the download state read out of the nav host body: the downloads table
  * ticks during a download and must not invalidate navigation for it.
@@ -83,6 +74,10 @@ fun ShizuNavDisplay(
     downloadActivityViewModel: DownloadActivityViewModel = hiltViewModel()
 ) {
     val backStack = rememberNavBackStack(*initialScreens.toTypedArray())
+
+    // Hoisted here: NavDisplay's transition lambdas are not composable.
+    val navSlideSpec = motionSpatialSpec<IntOffset>()
+    val navFadeSpec = motionEffectsSpec<Float>()
 
     DownloadDozeExemption(downloadActivityViewModel)
 

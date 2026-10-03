@@ -31,6 +31,7 @@ import me.timschneeberger.shizustore.compose.composable.OfflineBanner
 import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.ShizukuPromptCard
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.data.model.AppSort
 import me.timschneeberger.shizustore.viewmodel.AppGroup
 import me.timschneeberger.shizustore.viewmodel.AppGroupKind
@@ -49,6 +50,7 @@ fun AppsScreen(
     val shizukuDismissed by viewModel.shizukuCardDismissed.collectAsStateWithLifecycle()
 
     val listPadding = PaddingValues(bottom = dimensionResource(R.dimen.fab_clearance))
+    val contentFadeSpec = motionEffectsSpec<Float>()
 
     Column(modifier = modifier.fillMaxSize()) {
         if (syncFailure != null) {
@@ -74,7 +76,9 @@ fun AppsScreen(
         ) {
             AnimatedContent(
                 targetState = contentPhase,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                transitionSpec = {
+                    fadeIn(contentFadeSpec) togetherWith fadeOut(contentFadeSpec)
+                },
                 label = "AppsScreenContent"
             ) { phase ->
                 when (phase) {

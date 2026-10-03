@@ -6,6 +6,8 @@
 
 package me.timschneeberger.shizustore.compose.ui.details.composable
 
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -69,6 +71,7 @@ import coil3.request.ImageRequest
 import coil3.size.Size
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.R
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 
 /**
  * Horizontal screenshot strip sourced from the server detail payload. URLs are
@@ -250,12 +253,33 @@ private fun ZoomableScreenshot(
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
+    val scope = rememberCoroutineScope()
+    val scaleResetSpec = motionSpatialSpec<Float>()
+    val offsetResetSpec = motionSpatialSpec<Offset>()
 
+    // Spring back to rest when the page scrolls away. The launch lives in the
+    // screen scope, not this effect, so a quick swipe back does not cancel it
+    // with the zoom still applied.
     LaunchedEffect(isActive) {
-        if (!isActive) {
-            scale = 1f
-            offset = Offset.Zero
+        if (!isActive && (scale != 1f || offset != Offset.Zero)) {
             onZoomChanged(false)
+            val startScale = scale
+            val startOffset = offset
+            scope.launch {
+                animate(
+                    initialValue = startScale,
+                    targetValue = 1f,
+                    animationSpec = scaleResetSpec
+                ) { value, _ -> scale = value }
+            }
+            scope.launch {
+                animate(
+                    typeConverter = Offset.VectorConverter,
+                    initialValue = startOffset,
+                    targetValue = Offset.Zero,
+                    animationSpec = offsetResetSpec
+                ) { value, _ -> offset = value }
+            }
         }
     }
 

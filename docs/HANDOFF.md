@@ -63,14 +63,27 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   search field only force-opens the soft IME when no hardware keyboard is present.
   The screenshot viewer has focusable close/previous/next controls and starts on
   close; it also supports pinch zoom (up to 5x, one-finger pan) and pauses
-  paging while zoomed. Pull-to-refresh still has no keyboard path
-  (retry buttons cover error states).
+   paging while zoomed. Pull-to-refresh still has no keyboard path
+   (retry buttons cover error states).
+- Motion: custom animation never hardcodes springs or tweens. `compose/theme/Motion.kt`
+  exposes `motionSpatialSpec` / `motionFastSpatialSpec` / `motionEffectsSpec`, which
+  read `MaterialTheme.motionScheme`, so bespoke motion stays in step with the
+  MaterialExpressiveTheme components around it. Navigation 3 pushes/pops use
+  defaultSpatial plus defaultEffects, the top bar title crossfades on tab change,
+  `AnimatedAppIcon` springs its corner radius into a circle while installing, the
+  updates, installed, downloads, favourites and ignored lists use
+  `Modifier.animateItem` with scheme specs, the sources chevron and expanded rows
+  share one vocabulary, the screenshot viewer springs a zoom back to rest on
+  dismiss, and the pull-to-refresh placeholder crossfades in over loaded content.
+  All specs are hoisted to composable scope because the animation lambdas that
+  consume them are not composable. The shared-element icon transition suggested in
+  `../IDEAS.md` is not implemented.
 
 ## Current state
 
 Feature complete against the server `/v1` contract. `assembleDebug`,
-`testDebugUnitTest`, `ktlintCheck` and `lintDebug` are green. `TODO.md` lists the
-known deviations. Behavior worth knowing before touching a subsystem:
+`testDebugUnitTest`, `ktlintCheck` and `lintDebug` are green. Behavior worth
+knowing before touching a subsystem:
 
 - Detail screen: a changelog (forge markdown or F-Droid/Izzy HTML), a live
   README refetched on every details load, a screenshot gallery and an AI usage

@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -50,6 +51,8 @@ import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.composable.app.DownloadListItem
 import me.timschneeberger.shizustore.compose.composable.app.toRowState
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.compose.ui.details.composable.installRefusalText
 import me.timschneeberger.shizustore.compose.ui.downloads.composable.DownloadActionsSheet
 import me.timschneeberger.shizustore.compose.ui.downloads.composable.DownloadsMenu
@@ -169,10 +172,13 @@ private fun DownloadsContent(
         else -> ContentPhase.Loaded
     }
 
+    val fadeSpec = motionEffectsSpec<Float>()
+    val placementSpec = motionSpatialSpec<IntOffset>()
+
     Box(modifier = modifier) {
         AnimatedContent(
             targetState = contentPhase,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            transitionSpec = { fadeIn(fadeSpec) togetherWith fadeOut(fadeSpec) },
             label = "DownloadsScreenContent"
         ) { phase ->
             when (phase) {
@@ -198,7 +204,11 @@ private fun DownloadsContent(
                                 DownloadListItem(
                                     state = download.toRowState(),
                                     onClick = { onItemClick(download) },
-                                    modifier = Modifier.animateItem()
+                                    modifier = Modifier.animateItem(
+                                        fadeInSpec = fadeSpec,
+                                        placementSpec = placementSpec,
+                                        fadeOutSpec = fadeSpec
+                                    )
                                 )
                             }
                         }

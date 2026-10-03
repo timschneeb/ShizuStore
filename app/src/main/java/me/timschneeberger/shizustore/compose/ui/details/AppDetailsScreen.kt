@@ -53,6 +53,7 @@ import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.SectionHeader
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.compose.ui.details.composable.AppExclusionMenu
 import me.timschneeberger.shizustore.compose.ui.details.composable.BillingNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.ClosedSourceNotice
@@ -146,6 +147,8 @@ fun AppDetailsScreen(
         }
     }
 
+    val contentFadeSpec = motionEffectsSpec<Float>()
+
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -178,7 +181,9 @@ fun AppDetailsScreen(
                             is AppDetailsUiState.Loaded -> ContentPhase.Loaded
                         }
                     },
-                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    transitionSpec = {
+                        fadeIn(contentFadeSpec) togetherWith fadeOut(contentFadeSpec)
+                    },
                     label = "AppDetailsScreenContent"
                 ) { state ->
                     when (state) {

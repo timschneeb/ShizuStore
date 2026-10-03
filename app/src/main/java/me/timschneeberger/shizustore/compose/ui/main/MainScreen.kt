@@ -11,6 +11,10 @@ package me.timschneeberger.shizustore.compose.ui.main
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +49,7 @@ import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.permission.rememberNotificationPermissionRequest
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.compose.ui.applist.AppListScreen
 import me.timschneeberger.shizustore.compose.ui.apps.AppsScreen
 import me.timschneeberger.shizustore.compose.ui.updates.UpdatesScreen
@@ -72,6 +77,10 @@ fun MainScreen(
         initialPage = initialTab.coerceIn(0, MainTab.entries.size - 1)
     ) { MainTab.entries.size }
 
+    // The pager and its title stay on the critically damped effects curve, so
+    // tab glides keep today's feel while the title crossfade matches them.
+    val tabMotionSpec = motionEffectsSpec<Float>()
+
     val requestNotifications = rememberNotificationPermissionRequest()
     LaunchedEffect(Unit) { requestNotifications() }
 
@@ -95,15 +104,29 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            if (MainTab.entries[pagerState.currentPage] != MainTab.SEARCH) {
+            val currentTab = MainTab.entries[pagerState.currentPage]
+            if (currentTab != MainTab.SEARCH) {
                 TopAppBar(
-                    title = stringResource(MainTab.entries[pagerState.currentPage].labelRes),
+                    titleContent = {
+                        AnimatedContent(
+                            targetState = currentTab,
+                            transitionSpec = {
+                                fadeIn(tabMotionSpec) togetherWith fadeOut(tabMotionSpec)
+                            },
+                            label = "MainTopBarTitle"
+                        ) { tab ->
+                            Text(text = stringResource(tab.labelRes))
+                        }
+                    },
                     showNavigationIcon = false,
                     actions = {
                         IconButton(
                             onClick = {
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(MainTab.SEARCH.ordinal)
+                                    pagerState.animateScrollToPage(
+                                        MainTab.SEARCH.ordinal,
+                                        animationSpec = tabMotionSpec
+                                    )
                                     searchFocusRequest++
                                 }
                             }
@@ -136,7 +159,12 @@ fun MainScreen(
                         modifier = Modifier.focusRequester(tabFocusRequesters[index]),
                         selected = pagerState.currentPage == index,
                         onClick = {
-                            coroutineScope.launch { pagerState.animateScrollToPage(index) }
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(
+                                    index,
+                                    animationSpec = tabMotionSpec
+                                )
+                            }
                         },
                         icon = {
                             val icon = painterResource(tab.iconRes)
