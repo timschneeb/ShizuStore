@@ -16,6 +16,8 @@
     <string name="action_close">إغلاق</string>
     <string name="action_collapse">Collapse</string>
     <string name="action_expand">توسيع</string>
+    <string name="action_next">Next</string>
+    <string name="action_previous">Previous</string>
     <string name="action_export">تصدير APK</string>
     <string name="action_save_apk">Save APK</string>
     <string name="action_favourite">إضافة إلى المفضلة</string>
