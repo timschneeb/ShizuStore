@@ -5,6 +5,7 @@
 
 package me.timschneeberger.shizustore.baselineprofile
 
+import android.os.SystemClock
 import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.FrameTimingMetric
 import androidx.benchmark.macro.MacrobenchmarkScope
@@ -13,7 +14,9 @@ import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
+import java.util.regex.Pattern
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -69,6 +72,62 @@ internal fun MacrobenchmarkScope.clickText(text: String) {
     error("Could not click \"$text\"")
 }
 
+// The tallest scrollable is the vertical list; nested carousel strips and the
+// filter chip row are shorter, so a coordinate-free fling cannot land on them.
+// Handles go stale while the list swaps skeletons for rows, so bounds reads
+// are best-effort and a stale candidate simply sorts as zero height.
+private fun MacrobenchmarkScope.listScroller(): UiObject2? =
+    device.findObjects(By.scrollable(true))
+        .maxByOrNull { runCatching { it.visibleBounds.height() }.getOrDefault(0) }
+
+// Skeleton placeholders carry no text, real rows do. Compose nests row text
+// below the item node, so the probe searches descendants instead of direct
+// children. Flinging only after rows appear keeps the frame stats a measure of
+// the list, not of the loading state.
+private fun MacrobenchmarkScope.awaitLoadedList() {
+    val deadline = SystemClock.uptimeMillis() + UI_TIMEOUT_MS
+    val textProbe = Pattern.compile("\\S+")
+    while (SystemClock.uptimeMillis() < deadline) {
+        val scroller = listScroller()
+        val loaded = scroller != null && runCatching {
+            scroller.findObjects(By.text(textProbe)).size >= 2
+        }.getOrDefault(false)
+        if (loaded) return
+        device.waitForIdle(250)
+    }
+    error("No loaded scrollable list appeared")
+}
+
+// Repeated flings keep the metric on sustained scroll frames instead of the
+// single touch-down beat.
+private fun MacrobenchmarkScope.flingList() {
+    awaitLoadedList()
+    repeat(SCROLL_FLINGS) {
+        check(flingOnce()) { "Could not fling the list" }
+        device.waitForIdle()
+    }
+}
+
+// Re-resolve the scroller on every attempt: a fling on a stale handle no-ops
+// and the row swap that caused it has usually settled by the next try.
+// The gesture is a raw swipe inside the list bounds with an explicit duration:
+// UiObject2.fling picked the full-screen pager and short swipes read as clicks.
+private fun MacrobenchmarkScope.flingOnce(): Boolean {
+    repeat(5) {
+        val scroller = listScroller() ?: return@repeat
+        val bounds = runCatching { scroller.visibleBounds }.getOrNull() ?: return@repeat
+        val x = bounds.centerX()
+        val startY = bounds.top + (bounds.height() * 0.75f).toInt()
+        val endY = bounds.top + (bounds.height() * 0.25f).toInt()
+        val flung = runCatching {
+            device.executeShellCommand("input swipe $x $startY $x $endY $FLING_DURATION_MS")
+        }.isSuccess
+        if (flung) return true
+        device.waitForIdle(100)
+    }
+    return false
+}
+
 @RunWith(AndroidJUnit4::class)
 class NavigationBenchmarks {
     @get:Rule
@@ -122,4 +181,44 @@ class NavigationBenchmarks {
         clickText("Obtainium")
         device.waitForIdle()
     }
+
+    // Vertical flings through the curated home carousel, the heaviest lazy
+    // composition (rows of tiles and two-row grids inside one list).
+    @Test
+    fun scrollHome() = benchmarkRule.measureRepeated(
+        packageName = TARGET_PACKAGE,
+        metrics = listOf(FrameTimingMetric()),
+        iterations = 5,
+        startupMode = StartupMode.WARM,
+        compilationMode = CompilationMode.Partial(),
+        setupBlock = {
+            startAtHome()
+        }
+    ) {
+        flingList()
+    }
+
+    // Vertical flings through the full catalog list, reached through the search
+    // home's "All" chip so the route never depends on catalog contents.
+    @Test
+    fun scrollAppList() = benchmarkRule.measureRepeated(
+        packageName = TARGET_PACKAGE,
+        metrics = listOf(FrameTimingMetric()),
+        iterations = 5,
+        startupMode = StartupMode.WARM,
+        compilationMode = CompilationMode.Partial(),
+        setupBlock = {
+            startAtHome()
+            clickText("Search")
+            clickText("All")
+            check(device.wait(Until.gone(By.text("Categories")), UI_TIMEOUT_MS)) {
+                "Search home did not give way to the app list"
+            }
+        }
+    ) {
+        flingList()
+    }
 }
+
+private const val SCROLL_FLINGS = 3
+private const val FLING_DURATION_MS = 150

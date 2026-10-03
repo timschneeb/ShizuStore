@@ -88,12 +88,12 @@ class CatalogUiMapper @Inject constructor() {
             iconUrl = ShizuUrls.icon(ServerConfig.baseUrl, app.iconHash),
             license = app.license.orEmpty(),
             authorName = app.authorName,
-            changelog = null,
+            changelog = app.changelog,
             categories = listOfNotNull(
                 app.categoryPath.lastOrNull()?.name?.takeIf { it.isNotBlank() }
                     ?: app.categorySlug
             ),
-            screenshots = emptyList(),
+            screenshots = app.screenshots,
             lastUpdated = 0L,
             versionName = app.versionName.orEmpty(),
             size = primary?.size ?: 0L,
@@ -120,6 +120,9 @@ class CatalogUiMapper @Inject constructor() {
             sourceKind = app.sourceKind,
             sourceName = app.sourceName,
             authorUrl = app.authorUrl,
+            readmeUrl = app.readmeUrl,
+            changelogUrl = app.changelogUrl,
+            fullDescription = app.fullDescription,
             hasPaid = app.hasPaid,
             hasIap = app.hasIap,
             hasAds = app.hasAds,

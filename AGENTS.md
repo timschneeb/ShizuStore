@@ -45,12 +45,24 @@ Performance benchmarks are device-gated and not part of the inner loop:
 ```
 
 The first regenerates `app/src/release/generated/baselineProfiles/` (keep it in
-source); the second runs the frame-timing suite. Both use the release-like
-`benchmarkRelease`/`nonMinifiedRelease` variants signed with the AOSP testkey.
-Pre-install
-`app/build/outputs/apk/benchmarkRelease/ShizuStore-1.4.1-benchmarkRelease-unsigned.apk`,
-grant `POST_NOTIFICATIONS` and wake the screen first; the connected runner
-uninstalls the app at the end, and a dozing screen yields no frame stats.
+source); the second runs the frame-timing suite: startup, tab switch, details
+open and vertical flings through the home and catalog lists. The connected task
+installs `app/build/outputs/apk/benchmarkRelease/ShizuStore-1.4.1-benchmarkRelease.apk`
+itself and uninstalls the app when it finishes (the APK is `-unsigned` only on
+machines without `signing.properties`). Grant `POST_NOTIFICATIONS` and wake the
+screen first; a dozing screen yields no frame stats.
+
+Judge animation and scroll work on a release-like install, never the debug APK:
+debug is unminified and JIT-only, so it stutters in ways the shipped build does
+not, and baseline profiles cannot help a debuggable app. For animation QA run
+`./gradlew assembleNonMinifiedRelease` and install
+`app/build/outputs/apk/nonMinifiedRelease/ShizuStore-1.4.1-nonMinifiedRelease.apk`
+(AOSP testkey).
+
+Compose compiler skipping and stability reports are opt-in because writing them
+slows every build: `./gradlew assembleDebug -PcomposeMetrics=true` writes
+`app/build/compose-metrics/` and `app/build/compose-reports/` (add
+`:app:compileDebugKotlin --rerun-tasks` when the task is up to date).
 
 ## Layout
 

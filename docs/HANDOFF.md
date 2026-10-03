@@ -96,8 +96,14 @@ knowing before touching a subsystem:
 - Detail screen: a changelog (forge markdown or F-Droid/Izzy HTML), a live
   README refetched on every details load, a screenshot gallery and an AI usage
   report (`usageShort`/`usageMarkdown` from Shizuku analysis) whose screen
-  refetches once when an analyzable app has no report. Changelog, README and
-  screenshots live only in bounded in-memory LRUs, never Room. Trackers, Dhizuku
+  refetches once when an analyzable app has no report. Changelog, changelog
+  URL, README URL, screenshots and the full description persist in the `app`
+  row on every detail fetch (schema v11, additive migration), so a warm reopen
+  composes them on its first emission; the in-memory LRUs still back the
+  fetch-time gate and the live README lookup. The screen only shows the
+  spinner for rows this device has never fetched (summary rows lack
+  url/storeUrl/permissions/candidates); already-fetched rows render
+  immediately while the background fetch enriches. Trackers, Dhizuku
   and localized labels come from server analysis fields; the list has no
   trackers badge (deliberate).
 - Ignored updates: `ignored_update` writes a derived `AppEntity.updateIgnored`
@@ -125,6 +131,25 @@ knowing before touching a subsystem:
   "Dhizuku-compatible" section listing every `dhizukuDeclared` app. `POPULAR`
   ranks by `installCount`, hides itself, and its More page shows counts when the
   server reports `useInstallCountsForPopularity`.
+- Performance: the frame-timing suite has `scrollHome` and `scrollAppList`
+  flings next to the startup, tab switch and details tests. The fling starts
+  only after the skeleton is replaced, and the loaded probe searches descendant
+  text nodes because Compose nests row text below the item node; the gesture is
+  a timed `input swipe` inside the list bounds, since `UiObject2.fling` picked
+  the full-screen pager. Baselines on SM-G998B (Android 14): startup 600-690ms
+  TTI, scrollHome P50 6.6ms / P90 10.6ms, scrollAppList P50 7.2ms / P90 9.4ms,
+  switchTabs P50 6.9ms, openAppDetails P50 10.4ms / P90 30.4ms / P95 45.9ms
+  (frame overrun P90 +24.8ms, was +70.8ms). openAppDetails halved via two
+  fixes: rows fetched before render immediately instead of waiting on the
+  detail request, and fetch artifacts persist in Room (schema v11) so the
+  fetch landing no longer swaps screenshots/changelog sections into the
+  list mid-transition. The residual tail (one ~86ms frame per open) is the
+  Navigation 3 transition finalizing content re-parenting; accept it unless
+  measurements demand more. Debug builds stutter by design (no
+  R8, JIT only), so animation QA installs `nonMinifiedRelease` or
+  `benchmarkRelease`; `-PcomposeMetrics=true` writes Compose
+  skipping/stability reports to `app/build/compose-metrics` and
+  `app/build/compose-reports`.
 
 ## Architecture
 
@@ -147,9 +172,11 @@ the delta cursor. The server hides rows until their first successful check, so a
 newly listed app appears only complete (icon, description and download link
 present). `/v1/changes` and `/v1/apps` carry summaries only, so
 `DetailedAppRepository` fetches `/v1/apps/{slug}` for candidates, the full
-description, the changelog and the screenshots. The README, its raw refetch URL,
-the changelog and the screenshots are kept only in bounded in-memory LRUs, never
-persisted to Room.
+description, the changelog and the screenshots. That fetch persists the
+candidates plus the full description, changelog, screenshots and README URL
+into the row (schema v11) and mirrors them into bounded in-memory LRUs, so a
+warm reopen composes them from the first emission and the request settling
+changes nothing visible.
 
 **Install.** `DownloadHelper` stages a queue row from a candidate. `DownloadWorker`
 fetches the upstream `apkUrl`, verifies its hash, and extracts the named member

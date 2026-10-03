@@ -211,10 +211,7 @@ private fun CustomServerField(
 private const val COMMIT_SHORT_LENGTH = 7
 
 @Composable
-private fun ServerInfoItem(
-    serverInfo: ServerInfo,
-    modifier: Modifier = Modifier
-) {
+private fun ServerInfoItem(serverInfo: ServerInfo, modifier: Modifier = Modifier) {
     val appCount = serverInfo.appCount
     val categoryCount = serverInfo.categoryCount
     val countsLine = if (appCount != null && categoryCount != null) {

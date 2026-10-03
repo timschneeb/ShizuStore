@@ -49,7 +49,8 @@ object RoomModule {
                 MIGRATION_6_7,
                 MIGRATION_7_8,
                 MIGRATION_8_9,
-                MIGRATION_9_10
+                MIGRATION_9_10,
+                MIGRATION_10_11
             )
             .build()
 
@@ -195,6 +196,25 @@ object RoomModule {
                 connection,
                 "ALTER TABLE app ADD COLUMN updateIgnored INTEGER NOT NULL DEFAULT 0"
             )
+        }
+    }
+
+    /**
+     * Detail fetch artifacts moved out of process memory into `app` so reopening
+     * a details page composes screenshots, changelog and README from the first
+     * emission instead of a burst when the background fetch lands. Additive like
+     * the previous migrations: the catalog cache is disposable but user state is not.
+     */
+    internal val MIGRATION_10_11 = object : Migration(10, 11) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN screenshots TEXT NOT NULL DEFAULT '[]'"
+            )
+            execSql(connection, "ALTER TABLE app ADD COLUMN changelog TEXT")
+            execSql(connection, "ALTER TABLE app ADD COLUMN changelogUrl TEXT")
+            execSql(connection, "ALTER TABLE app ADD COLUMN readmeUrl TEXT")
+            execSql(connection, "ALTER TABLE app ADD COLUMN fullDescription TEXT")
         }
     }
 

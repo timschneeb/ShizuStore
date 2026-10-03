@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.timschneeberger.shizustore.compose.ui.details.composable.canHandleObtainium
 import me.timschneeberger.shizustore.compose.ui.details.composable.obtainiumRepoUrl
+import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.download.ApkSaver
 import me.timschneeberger.shizustore.data.helper.DownloadHelper
 import me.timschneeberger.shizustore.data.helper.InstallDispatcher
@@ -129,7 +130,7 @@ class AppDetailsViewModel @Inject constructor(
     private val _refreshing = MutableStateFlow(false)
     val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
 
-    /** Detail request in progress; the screen stays blank until it settles. */
+    /** Detail request in progress; only rows that cannot render yet stay blank. */
     private val _detailFetching = MutableStateFlow(false)
 
     /** Live README pulled from the forge raw URL; only valid for [liveReadmeSlug]. */
@@ -547,21 +548,32 @@ class AppDetailsViewModel @Inject constructor(
         ) { catalogPair, error, fetching, liveSlug, liveMarkdown ->
             val (detailed, installed) = catalogPair
             when {
-                // Blank the screen until the request settles so the install row
-                // does not pop in late; failures fall back to cached data.
-                fetching -> AppDetailsUiState.Loading
+                // A summary row lacks the fields the page acts on (url, storeUrl,
+                // permissions, download candidates) until this device has fetched
+                // the detail once, so blank the screen until that request settles;
+                // failures fall back to cached data. Rows fetched before render
+                // immediately while the background fetch only enriches the
+                // README, changelog and screenshot caches.
+                fetching &&
+                    (
+                        detailed == null ||
+                            detailed.app.detailsFetchedAt == null ||
+                            (
+                                detailed.app.availability == Availability.DIRECT_APK &&
+                                    detailed.candidates.isEmpty()
+                                )
+                        ) -> AppDetailsUiState.Loading
 
                 detailed != null -> {
                     val fingerprint = installed?.let { CertFingerprint.of(it.signer, it.signerMd5) }
+                    // Screenshots, changelog and README URL come straight from the
+                    // row, so a warm reopen renders them on the first emission and
+                    // the background fetch settling changes nothing visible; only
+                    // the live README overrides the stored snapshot.
+                    val details = mapper.toAppDetails(detailed)
                     val live = liveMarkdown?.takeIf { liveSlug == slug }
                     AppDetailsUiState.Loaded(
-                        details = mapper.toAppDetails(detailed).copy(
-                            fullDescription = live ?: detailedAppRepository.fullDescription(slug),
-                            readmeUrl = detailedAppRepository.readmeUrl(slug),
-                            changelog = detailedAppRepository.changelog(slug),
-                            changelogUrl = detailedAppRepository.changelogUrl(slug),
-                            screenshots = detailedAppRepository.screenshots(slug).orEmpty()
-                        ),
+                        details = live?.let { details.copy(fullDescription = it) } ?: details,
                         sources = mapper.toSources(detailed, fingerprint, installed?.packageName),
                         installedPackage = installed?.packageName
                     )
