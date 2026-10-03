@@ -322,6 +322,9 @@
     <string name="settings_server_active">Active server</string>
     <string name="settings_server_custom">Custom server</string>
     <string name="settings_server_hint" translatable="false">https://example.com</string>
+    <string name="settings_server_info">Server info</string>
+    <string name="settings_server_info_commit">awesome-shizuku commit %1$s</string>
+    <string name="settings_server_info_counts">%1$d apps, %2$d categories</string>
     <string name="settings_server_invalid">Enter a valid http or https URL.</string>
     <string name="settings_server_maintenance">Maintenance</string>
     <string name="settings_server_not_configured">Not configured</string>

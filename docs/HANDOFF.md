@@ -30,6 +30,11 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   server binds localhost by default, so it must listen on `0.0.0.0`). The same
   screen has a "Clear local database" action (confirm dialog) that wipes the
   cached catalog and cursor, then pulls the whole catalog from the active server.
+  Below "Active server" the screen shows a Server info row once the `/v1/meta`
+  probe succeeds: the server's app and category counts plus the short
+  awesome-shizuku list commit. The commit line is omitted while a sync run is
+  in progress (the API reports a null commit for the newest running run), and
+  the whole row stays hidden until the probe succeeds.
 - `rootProject.name = "ShizuAppStore"`. DB file `shizu.db`; DataStore store
   `shizu_preferences`. Versions: `versionName 1.4.1`, `versionCode 141`.
 - Navigation 3 with a bottom nav of Apps / Search / Updates, Material 3 with

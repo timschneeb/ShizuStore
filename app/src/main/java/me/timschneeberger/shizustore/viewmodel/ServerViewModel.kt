@@ -28,6 +28,13 @@ import me.timschneeberger.shizustore.util.ServerConfig
 
 enum class ServerStatus { UNKNOWN, CHECKING, REACHABLE, UNREACHABLE }
 
+/** Result of a successful /v1/meta probe, shown in the server info row. */
+data class ServerInfo(
+    val appCount: Int?,
+    val categoryCount: Int?,
+    val listCommit: String?
+)
+
 @HiltViewModel
 class ServerViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -52,6 +59,9 @@ class ServerViewModel @Inject constructor(
 
     private val _status = MutableStateFlow(ServerStatus.UNKNOWN)
     val status: StateFlow<ServerStatus> = _status.asStateFlow()
+
+    private val _serverInfo = MutableStateFlow<ServerInfo?>(null)
+    val serverInfo: StateFlow<ServerInfo?> = _serverInfo.asStateFlow()
 
     init {
         validate()
@@ -84,9 +94,20 @@ class ServerViewModel @Inject constructor(
     fun validate() {
         viewModelScope.launch {
             _status.value = ServerStatus.CHECKING
+            _serverInfo.value = null
             _status.value = when (api.health()) {
                 is ApiResult.Success -> ServerStatus.REACHABLE
                 is ApiResult.Failure -> ServerStatus.UNREACHABLE
+            }
+            if (_status.value == ServerStatus.REACHABLE) {
+                val meta = api.meta()
+                if (meta is ApiResult.Success) {
+                    _serverInfo.value = ServerInfo(
+                        appCount = meta.value.counts?.apps,
+                        categoryCount = meta.value.counts?.categories,
+                        listCommit = meta.value.listCommit
+                    )
+                }
             }
         }
     }

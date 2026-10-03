@@ -40,6 +40,7 @@ import me.timschneeberger.shizustore.compose.composable.SectionHeader
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.util.ServerConfig
+import me.timschneeberger.shizustore.viewmodel.ServerInfo
 import me.timschneeberger.shizustore.viewmodel.ServerStatus
 import me.timschneeberger.shizustore.viewmodel.ServerViewModel
 
@@ -53,6 +54,7 @@ fun ServerPreferencesScreen(
     val customUrl by viewModel.customUrl.collectAsStateWithLifecycle()
     val baseUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
     val status by viewModel.status.collectAsStateWithLifecycle()
+    val serverInfo by viewModel.serverInfo.collectAsStateWithLifecycle()
     var showResetDialog by remember { mutableStateOf(false) }
 
     if (showResetDialog) {
@@ -134,6 +136,8 @@ fun ServerPreferencesScreen(
                 supportingMaxLines = 2
             )
 
+            serverInfo?.let { ServerInfoItem(it) }
+
             SectionHeader(
                 title = stringResource(R.string.settings_server_maintenance),
                 titleColor = MaterialTheme.colorScheme.primary
@@ -202,4 +206,32 @@ private fun CustomServerField(
             }
         }
     }
+}
+
+private const val COMMIT_SHORT_LENGTH = 7
+
+@Composable
+private fun ServerInfoItem(
+    serverInfo: ServerInfo,
+    modifier: Modifier = Modifier
+) {
+    val appCount = serverInfo.appCount
+    val categoryCount = serverInfo.categoryCount
+    val countsLine = if (appCount != null && categoryCount != null) {
+        stringResource(R.string.settings_server_info_counts, appCount, categoryCount)
+    } else {
+        null
+    }
+    val commitLine = serverInfo.listCommit
+        ?.takeIf { it.isNotBlank() }
+        ?.let { stringResource(R.string.settings_server_info_commit, it.take(COMMIT_SHORT_LENGTH)) }
+    val supporting = listOfNotNull(countsLine, commitLine).joinToString("\n")
+    if (supporting.isEmpty()) return
+
+    AuroraListItem(
+        headline = stringResource(R.string.settings_server_info),
+        supporting = supporting,
+        supportingMaxLines = 2,
+        modifier = modifier
+    )
 }

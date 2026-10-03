@@ -203,7 +203,15 @@ data class ChangesDto(
 data class MetaDto(
     val generatedAt: String = "",
     val listCommit: String? = null,
-    val useInstallCountsForPopularity: Boolean = false
+    val useInstallCountsForPopularity: Boolean = false,
+    // Null against servers that predate the counts field.
+    val counts: MetaCountsDto? = null
+)
+
+@Serializable
+data class MetaCountsDto(
+    val apps: Int = 0,
+    val categories: Int = 0
 )
 
 @Serializable
