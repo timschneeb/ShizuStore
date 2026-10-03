@@ -83,19 +83,19 @@
     <string name="details_source_code">Código fuente</string>
     <string name="details_obtainium">Añadir a Obtainium</string>
     <string name="details_store">Tienda</string>
-    <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
-    <string name="details_closed_source_notice">This app is closed source. Its code is not public, so the community cannot easily verify what it does.</string>
-    <string name="details_incompatible_notice">This app needs Android %1$s or newer. This device runs Android %2$s.</string>
+    <string name="details_play_store_notice">Esta aplicación solo está disponible en Google Play. Toca para abrir la ficha.</string>
+    <string name="details_closed_source_notice">Esta aplicación es de código cerrado. Su código no es público, por lo que la comunidad no puede verificar fácilmente lo que hace.</string>
+    <string name="details_incompatible_notice">Esta aplicación requiere Android %1$s o posterior. Este dispositivo tiene Android %2$s.</string>
     <string name="details_version_incompatible">Incompatible</string>
-    <string name="details_version_installed">Installed</string>
-    <string name="details_version_repo_other_signer"><xliff:g id="repository">%1$s</xliff:g> · Different signing key</string>
-    <string name="details_version_selected">Selected</string>
-    <string name="details_sources">Sources</string>
+    <string name="details_version_installed">Instalada</string>
+    <string name="details_version_repo_other_signer"><xliff:g id="repository">%1$s</xliff:g> · Clave de firma diferente</string>
+    <string name="details_version_selected">Seleccionada</string>
+    <string name="details_sources">Fuentes</string>
     <plurals name="details_sources_count">
-        <item quantity="one">%1$d source</item>
-        <item quantity="other">%1$d sources</item>
+        <item quantity="one">%1$d fuente</item>
+        <item quantity="other">%1$d fuentes</item>
     </plurals>
-    <string name="details_website">Website</string>
+    <string name="details_website">Sitio web</string>
     <string name="donation_card_body">ShizuStore is free and open-source.\nDonations cover the server costs and keep the app and backend moving.</string>
     <string name="donation_card_title">Support ShizuStore</string>
     <string name="donation_dialog_message">Thank you for supporting the project! Every donation helps cover the server costs and gives me more time to keep developing the app, the backend and to keep the app list up-to-date. Tap on one of the links to support me.</string>
