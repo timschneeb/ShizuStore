@@ -16,6 +16,8 @@
     <string name="action_close">關閉</string>
     <string name="action_collapse">摺疊</string>
     <string name="action_expand">展開</string>
+    <string name="action_next">Next</string>
+    <string name="action_previous">Previous</string>
     <string name="action_export">匯出 APK</string>
     <string name="action_save_apk">儲存 APK</string>
     <string name="action_favourite">加入收藏</string>
