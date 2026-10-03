@@ -81,7 +81,10 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   share one vocabulary, the screenshot viewer springs a zoom back to rest on
   dismiss, and the pull-to-refresh placeholder crossfades in over loaded content.
   All specs are hoisted to composable scope because the animation lambdas that
-  consume them are not composable. The shared-element icon transition suggested in
+  consume them are not composable. Settings -> Appearance has a Motion section
+  with an Expressive motion switch (default on) that swaps the theme's
+  `MotionScheme` between expressive and standard, calming both the M3 components
+  and these specs when off. The shared-element icon transition suggested in
   `../IDEAS.md` is not implemented.
 
 ## Current state

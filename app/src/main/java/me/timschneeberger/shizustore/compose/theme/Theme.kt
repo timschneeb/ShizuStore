@@ -12,6 +12,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.LocalRippleThemeConfiguration
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.RippleDefaults
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -36,6 +37,7 @@ fun ShizuTheme(content: @Composable () -> Unit) {
     val initialThemeStyle = remember(context) { ThemePreference.style(context) }
     val initialDynamicColor = remember(context) { ThemePreference.dynamicColors(context) }
     val initialBlackNight = remember(context) { ThemePreference.blackNight(context) }
+    val initialExpressiveMotion = remember(context) { ThemePreference.expressiveMotion(context) }
 
     val themeStyleFlow = remember(context) {
         Preferences.integerFlow(
@@ -54,10 +56,16 @@ fun ShizuTheme(content: @Composable () -> Unit) {
     val blackNightFlow = remember(context) {
         Preferences.booleanFlow(context, Preferences.PREFERENCE_BLACK_NIGHT)
     }
+    val expressiveMotionFlow = remember(context) {
+        Preferences.booleanFlow(context, Preferences.PREFERENCE_EXPRESSIVE_MOTION, true)
+    }
 
     val themeStyle by themeStyleFlow.collectAsStateWithLifecycle(initialThemeStyle)
     val dynamicColor by dynamicColorFlow.collectAsStateWithLifecycle(initialDynamicColor)
     val blackNight by blackNightFlow.collectAsStateWithLifecycle(initialBlackNight)
+    val expressiveMotion by expressiveMotionFlow.collectAsStateWithLifecycle(
+        initialExpressiveMotion
+    )
 
     val useDynamicColor = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
@@ -109,6 +117,16 @@ fun ShizuTheme(content: @Composable () -> Unit) {
     CompositionLocalProvider(
         LocalRippleThemeConfiguration provides RippleDefaults.InsetFocusRingThemeConfiguration
     ) {
-        MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
+        // Custom animation reads the same scheme through compose/theme/Motion.kt, so
+        // turning expressive motion off calms the whole app, not just M3 components.
+        MaterialExpressiveTheme(
+            colorScheme = colorScheme,
+            motionScheme = if (expressiveMotion) {
+                MotionScheme.expressive()
+            } else {
+                MotionScheme.standard()
+            },
+            content = content
+        )
     }
 }

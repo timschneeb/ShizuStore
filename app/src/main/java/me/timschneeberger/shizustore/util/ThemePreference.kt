@@ -32,6 +32,9 @@ object ThemePreference {
     @Volatile
     private var cachedBlackNight: Boolean? = null
 
+    @Volatile
+    private var cachedExpressiveMotion: Boolean? = null
+
     fun style(context: Context): Int {
         cachedStyle?.let { return it }
 
@@ -63,6 +66,16 @@ object ThemePreference {
             Preferences.readBoolean(context, Preferences.PREFERENCE_BLACK_NIGHT)
         }
         cachedBlackNight = enabled
+        return enabled
+    }
+
+    fun expressiveMotion(context: Context): Boolean {
+        cachedExpressiveMotion?.let { return it }
+
+        val enabled = runBlocking {
+            Preferences.readBoolean(context, Preferences.PREFERENCE_EXPRESSIVE_MOTION, true)
+        }
+        cachedExpressiveMotion = enabled
         return enabled
     }
 
@@ -102,6 +115,11 @@ object ThemePreference {
         launch {
             Preferences.booleanFlow(context, Preferences.PREFERENCE_BLACK_NIGHT)
                 .distinctUntilChanged().collect { cachedBlackNight = it }
+        }
+
+        launch {
+            Preferences.booleanFlow(context, Preferences.PREFERENCE_EXPRESSIVE_MOTION, true)
+                .distinctUntilChanged().collect { cachedExpressiveMotion = it }
         }
     }
 

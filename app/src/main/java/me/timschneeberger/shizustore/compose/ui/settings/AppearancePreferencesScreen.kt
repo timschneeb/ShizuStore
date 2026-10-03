@@ -39,6 +39,7 @@ fun AppearancePreferencesScreen(
     val themeStyle by viewModel.themeStyle.collectAsStateWithLifecycle()
     val dynamicColorsEnabled by viewModel.dynamicColorsEnabled.collectAsStateWithLifecycle()
     val blackNightEnabled by viewModel.blackNightEnabled.collectAsStateWithLifecycle()
+    val expressiveMotionEnabled by viewModel.expressiveMotionEnabled.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
@@ -91,6 +92,22 @@ fun AppearancePreferencesScreen(
                 },
                 onClick = { viewModel.setBlackNightEnabled(!blackNightEnabled) },
                 selection = ItemSelection.Switch(blackNightEnabled)
+            )
+
+            SectionHeader(
+                title = stringResource(R.string.settings_motion_title),
+                titleColor = MaterialTheme.colorScheme.primary
+            )
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_expressive_motion_title),
+                supporting = stringResource(R.string.settings_expressive_motion_subtitle),
+                supportingMaxLines = 2,
+                trailing = {
+                    Switch(checked = expressiveMotionEnabled, onCheckedChange = null)
+                },
+                onClick = { viewModel.setExpressiveMotionEnabled(!expressiveMotionEnabled) },
+                selection = ItemSelection.Switch(expressiveMotionEnabled)
             )
         }
     }

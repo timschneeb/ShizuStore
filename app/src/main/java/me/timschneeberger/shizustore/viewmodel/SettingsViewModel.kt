@@ -68,6 +68,17 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private val _expressiveMotionEnabled = MutableStateFlow(true)
+    val expressiveMotionEnabled: StateFlow<Boolean> = _expressiveMotionEnabled.asStateFlow()
+
+    fun setExpressiveMotionEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            initialLoad.join()
+            _expressiveMotionEnabled.value = enabled
+            Preferences.putBoolean(context, Preferences.PREFERENCE_EXPRESSIVE_MOTION, enabled)
+        }
+    }
+
     private val _updateCheckIntervalHours =
         MutableStateFlow(UpdateWorker.DEFAULT_INTERVAL_HOURS)
     val updateCheckIntervalHours: StateFlow<Int> = _updateCheckIntervalHours.asStateFlow()
@@ -139,6 +150,11 @@ class SettingsViewModel @Inject constructor(
         _blackNightEnabled.value = Preferences.readBoolean(
             context,
             Preferences.PREFERENCE_BLACK_NIGHT
+        )
+        _expressiveMotionEnabled.value = Preferences.readBoolean(
+            context,
+            Preferences.PREFERENCE_EXPRESSIVE_MOTION,
+            true
         )
         _updateCheckIntervalHours.value = UpdateWorker.intervalHours(context)
         _syncOnWifiOnly.value = Preferences.readBoolean(

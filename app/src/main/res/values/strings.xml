@@ -297,6 +297,8 @@
     <string name="settings_catalog_title">Catalog</string>
     <string name="settings_dynamic_color_subtitle">Draws the palette from your wallpaper. Android 12 and later.</string>
     <string name="settings_dynamic_color_title">Dynamic colour</string>
+    <string name="settings_expressive_motion_subtitle">Elastic Material 3 animations. Turn off for standard motion.</string>
+    <string name="settings_expressive_motion_title">Expressive animations</string>
     <string name="settings_group_updates_summary">Check schedule, network limits and automatic installs</string>
     <string name="settings_group_updates_title">Updates</string>
     <string name="settings_install_reporting_subtitle">Sends an anonymous install count to the server when an app is installed. Feeds the popularity ranking.</string>
@@ -309,6 +311,7 @@
     <string name="settings_installer_custom_source_title">Use custom installer source</string>
     <string name="settings_installer_summary">Which installer applies downloaded packages</string>
     <string name="settings_installer_title">App installer</string>
+    <string name="settings_motion_title">Motion</string>
     <string name="settings_network_summary">HTTP or SOCKS proxy and privacy</string>
     <string name="settings_network_title">Network</string>
     <string name="settings_permissions_summary">Install, notification and battery permissions</string>
