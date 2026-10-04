@@ -290,6 +290,7 @@ fun AppListScreen(
                         listState = listState,
                         showStars = currentArgs.sort == AppSort.STARS,
                         showInstalls = currentArgs.sort == AppSort.DOWNLOADS && useInstallCounts,
+                        showTrend = currentArgs.sort == AppSort.TRENDING,
                         age = currentArgs.sort.ageLabel,
                         syncing = syncing,
                         syncFailure = syncFailure,
@@ -500,6 +501,7 @@ private fun AppRows(
     listState: LazyListState,
     showStars: Boolean,
     showInstalls: Boolean,
+    showTrend: Boolean,
     age: AppAge?,
     syncing: Boolean,
     syncFailure: CatalogSyncFailure?,
@@ -573,6 +575,7 @@ private fun AppRows(
                                 // redirect and link entries would always read zero.
                                 showInstalls = showInstalls &&
                                     app.availability == Availability.DIRECT_APK,
+                                showTrend = showTrend,
                                 age = age
                             )
                         }

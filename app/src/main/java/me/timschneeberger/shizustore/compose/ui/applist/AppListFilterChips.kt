@@ -204,6 +204,9 @@ private fun FilterSheet(
                     val selected = option.id == selectedId
                     AuroraListItem(
                         headline = option.label,
+                        // Option labels like the trending sort are longer than a
+                        // chip, so the sheet wraps them instead of truncating.
+                        headlineMaxLines = 3,
                         selection = ItemSelection.Radio(selected),
                         onClick = { onSelect(option.id) },
                         leading = option.iconRes?.let { res ->
@@ -306,13 +309,18 @@ private fun sortOptions(context: Context): List<FilterOption> = listOf(
     ),
     FilterOption(
         id = AppSort.STARS.name,
-        label = context.getString(R.string.search_sort_stars),
+        label = context.getString(R.string.search_sort_stars_full),
         iconRes = R.drawable.ic_star
     ),
     FilterOption(
         id = AppSort.DOWNLOADS.name,
         label = context.getString(R.string.search_sort_popularity),
         iconRes = R.drawable.ic_download_manager
+    ),
+    FilterOption(
+        id = AppSort.TRENDING.name,
+        label = context.getString(R.string.search_sort_trending),
+        iconRes = R.drawable.ic_trending_up
     ),
     FilterOption(
         id = AppSort.SIZE_DESC.name,
@@ -341,7 +349,8 @@ internal fun sortLabel(sort: AppSort): Int = when (sort) {
     AppSort.RECENTLY_ADDED -> R.string.apps_recently_added
     AppSort.RECENTLY_UPDATED -> R.string.apps_recently_updated
     AppSort.STARS -> R.string.search_sort_stars
-    AppSort.DOWNLOADS -> R.string.search_sort_popularity
+    AppSort.DOWNLOADS -> R.string.search_sort_popularity_short
+    AppSort.TRENDING -> R.string.search_sort_trending_short
     AppSort.SIZE_DESC -> R.string.search_sort_size
 }
 
@@ -352,6 +361,7 @@ private fun sortIcon(sort: AppSort): Int = when (sort) {
     AppSort.RECENTLY_UPDATED -> R.drawable.ic_updates
     AppSort.STARS -> R.drawable.ic_star
     AppSort.DOWNLOADS -> R.drawable.ic_download_manager
+    AppSort.TRENDING -> R.drawable.ic_trending_up
     AppSort.SIZE_DESC -> R.drawable.ic_sd_card
 }
 

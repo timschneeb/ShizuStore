@@ -47,6 +47,8 @@ data class ResolvedApp(
     val localizedName: String? = null,
     val stars: Int? = null,
     val installCount: Long = 0,
+    /** Installs in the server's trending window; null when the app is not ranked. */
+    val trendScore: Long? = null,
     val downloadTotal: Long? = null,
     val categorySlug: String? = null,
     /** Parsed from the ISO-8601 wire strings; null when the source has no date. */

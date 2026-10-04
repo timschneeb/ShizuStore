@@ -76,6 +76,8 @@ data class AppEntity(
     val downloadTotal: Long? = null,
     /** Successful installs via this app, reported by clients and served by /v1/meta flag. */
     val installCount: Long = 0,
+    /** Weekly install window from /v1/trending; ranks the Trending sort, null until fetched. */
+    val trendScore: Long? = null,
     val url: String? = null,
     val sourceUrl: String? = null,
     val sourceKind: SourceKind? = null,
@@ -147,6 +149,7 @@ fun AppEntity.mergeDetailFrom(existing: AppEntity?): AppEntity = if (existing ==
         usageMarkdown = existing.usageMarkdown,
         usageAnalyzedAt = existing.usageAnalyzedAt,
         usageReportVersion = existing.usageReportVersion,
+        trendScore = existing.trendScore,
         screenshots = existing.screenshots,
         changelog = existing.changelog,
         changelogUrl = existing.changelogUrl,

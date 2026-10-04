@@ -23,10 +23,6 @@ interface AppDao {
     @Query("SELECT * FROM app WHERE slug = :slug")
     suspend fun get(slug: String): AppEntity?
 
-    /** Look up a ranked slug set (e.g. trending); callers restore server order. */
-    @Query("SELECT * FROM app WHERE slug IN (:slugs)")
-    suspend fun getBySlugs(slugs: List<String>): List<AppEntity>
-
     @Query("SELECT * FROM app WHERE packageName = :packageName LIMIT 1")
     suspend fun getByPackage(packageName: String): AppEntity?
 
@@ -84,6 +80,20 @@ interface AppDao {
     @Transaction
     suspend fun setInstallCounts(counts: Map<String, Long>) {
         counts.forEach { (slug, count) -> setInstallCount(slug, count) }
+    }
+
+    @Query("UPDATE app SET trendScore = NULL")
+    suspend fun clearTrendScores()
+
+    @Query("UPDATE app SET trendScore = :score WHERE slug = :slug")
+    suspend fun setTrendScore(slug: String, score: Long)
+
+    /** Wholesale rewrite behind the Trending sort: clearing first drops apps that
+     * fell out of the window so a stale score cannot keep ranking them. */
+    @Transaction
+    suspend fun replaceTrendScores(scores: Map<String, Long>) {
+        clearTrendScores()
+        scores.forEach { (slug, score) -> setTrendScore(slug, score) }
     }
 
     @Query(

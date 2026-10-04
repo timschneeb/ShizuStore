@@ -50,7 +50,8 @@ object RoomModule {
                 MIGRATION_7_8,
                 MIGRATION_8_9,
                 MIGRATION_9_10,
-                MIGRATION_10_11
+                MIGRATION_10_11,
+                MIGRATION_11_12
             )
             .build()
 
@@ -215,6 +216,16 @@ object RoomModule {
             execSql(connection, "ALTER TABLE app ADD COLUMN changelogUrl TEXT")
             execSql(connection, "ALTER TABLE app ADD COLUMN readmeUrl TEXT")
             execSql(connection, "ALTER TABLE app ADD COLUMN fullDescription TEXT")
+        }
+    }
+
+    /**
+     * Weekly install window behind the Trending sort. Additive nullable score:
+     * rows stay name-ordered until the client refreshes `/v1/trending`.
+     */
+    internal val MIGRATION_11_12 = object : Migration(11, 12) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(connection, "ALTER TABLE app ADD COLUMN trendScore INTEGER")
         }
     }
 

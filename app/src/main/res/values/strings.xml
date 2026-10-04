@@ -61,7 +61,6 @@
     <string name="apps_sync_failed">Couldn\'t connect to the server. Browsing the local cache. Check your connection and retry.</string>
     <string name="apps_random_picks">Random picks</string>
     <string name="apps_recommended">Recommended</string>
-    <string name="apps_trending">Trending this week</string>
     <string name="apps_recently_added">Recently added</string>
     <string name="apps_recently_updated">Recently updated</string>
     <string name="apps_most_starred">Most starred on GitHub</string>
@@ -270,7 +269,11 @@
     <string name="search_history">Recent searches</string>
     <string name="search_sort_name">Name</string>
     <string name="search_sort_stars">Most starred</string>
-    <string name="search_sort_popularity">Popularity</string>
+    <string name="search_sort_stars_full">Most starred on GitHub/GitLab</string>
+    <string name="search_sort_popularity">Total downloads on ShizuStore</string>
+    <string name="search_sort_popularity_short">Total downloads</string>
+    <string name="search_sort_trending">New installations in the last 14 days on ShizuStore (Trending)</string>
+    <string name="search_sort_trending_short">Trending</string>
     <string name="search_sort_size">Largest first</string>
     <string name="filter_all">All</string>
     <string name="filter_price">Price</string>

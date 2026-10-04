@@ -9,7 +9,7 @@ import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class AppSort { NAME, RECENTLY_ADDED, RECENTLY_UPDATED, STARS, DOWNLOADS, SIZE_DESC }
+enum class AppSort { NAME, RECENTLY_ADDED, RECENTLY_UPDATED, STARS, DOWNLOADS, TRENDING, SIZE_DESC }
 
 /** Price buckets. IAP and IAP_OR_PAID overlap by design; FREE is disjoint from both. */
 @Serializable

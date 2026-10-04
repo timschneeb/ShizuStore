@@ -7,37 +7,33 @@ package me.timschneeberger.shizustore.data.repository
 
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import me.timschneeberger.shizustore.data.api.ApiResult
 import me.timschneeberger.shizustore.data.api.ShizuApi
-import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 
+/**
+ * Loads the server's fresh-install window ranking into the `trendScore` column
+ * that backs the Trending sort. Wholesale rewrite, like the feed's own refresh:
+ * best-effort, so a failed fetch keeps the last ranking instead of blanking it.
+ */
 @Singleton
 class TrendingRepository @Inject constructor(
     private val api: ShizuApi,
-    private val appDao: AppDao,
-    private val mapper: CatalogUiMapper
+    private val appDao: AppDao
 ) {
-    private val _trending = MutableStateFlow<List<ResolvedApp>>(emptyList())
-    val trending: StateFlow<List<ResolvedApp>> = _trending.asStateFlow()
 
-    /**
-     * Re-fetch the ranked window. The ranking is server-computed from
-     * app_install_days, so it is refreshed wholesale instead of synced
-     * incrementally like the catalog; failures keep the last good ranking.
-     */
     suspend fun refresh() {
-        val result = api.trending()
-        if (result !is ApiResult.Success) return
-        val slugs = result.value.items.map { it.slug }
-        if (slugs.isEmpty()) {
-            _trending.value = emptyList()
-            return
+        val result = api.trending(days = WINDOW_DAYS, limit = MAX_ITEMS, sort = "installs")
+        if (result is ApiResult.Success) {
+            appDao.replaceTrendScores(result.value.items.associate { it.slug to it.installs })
         }
-        val bySlug = appDao.getBySlugs(slugs).associateBy { it.slug }
-        _trending.value = slugs.mapNotNull(bySlug::get).map(mapper::toResolvedApp)
+    }
+
+    private companion object {
+        /** Matches the "last 14 days" label on the sort option. */
+        const val WINDOW_DAYS = 14
+
+        /** Server clamp is 100; deeper ranks fall back to the name tiebreak. */
+        const val MAX_ITEMS = 100
     }
 }

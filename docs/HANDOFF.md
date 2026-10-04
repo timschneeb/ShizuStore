@@ -155,14 +155,26 @@ knowing before touching a subsystem:
   closed-source apps" switch makes sync ask for `listing=main,closed_source`;
   turning it off drops cached `CLOSED_SOURCE` rows and re-bootstraps. Details
   show a forge source link normally but a `ClosedSourceNotice` for such rows.
-- Home: the leading "Trending this week" strip (`AppGroupKind.TRENDING`) ranks a
-  server window from `GET /v1/trending`, refreshed wholesale by
-  `TrendingRepository` on cold start and pull-to-refresh; it carries no More
-  page and keeps the last good ranking when a refresh fails. Then one strip per
+- Home: curated strips first, then one strip per
   top-level category with at least 4 apps, plus a synthetic
   "Dhizuku-compatible" section listing every `dhizukuDeclared` app. `POPULAR`
   ranks by `installCount`, hides itself, and its More page shows counts when the
   server reports `useInstallCountsForPopularity`.
+- App list: sort chips show shortened labels while the bottom sheet shows the
+  full ones (stars = "Most starred" vs "Most starred on GitHub/GitLab",
+  downloads = "Total downloads" vs "Total downloads on ShizuStore"); sheet rows
+  wrap long labels up to three lines (`AuroraListItem.headlineMaxLines`), the
+  one-line chip keeps the short form. The
+  `TRENDING` sort ("New installations in the last 14 days on ShizuStore
+  (Trending)" in the sheet, "Trending" on the chip) orders by
+  `AppEntity.trendScore`, a nullable column added in Room schema v12: picking
+  the sort fetches `GET /v1/trending` (14 days, fresh installs only, top 100)
+  through `TrendingRepository`, which clears and rewrites the scores in one
+  transaction so apps that left the window drop back to the name tiebreak. Rows
+  never fetched sort last; a failed fetch keeps the previous ranking. While the
+  Trending sort is active each ranked row's meta line shows its window count
+  behind a calendar-clock glyph and the download glyph, ahead of the version
+  (`AppListItem.showTrend`); unranked rows show the version alone.
 - Performance: the frame-timing suite has `scrollHome` and `scrollAppList`
   flings next to the startup, tab switch and details tests. The fling starts
   only after the skeleton is replaced, and the loaded probe searches descendant
@@ -253,12 +265,13 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 ## Gotchas
 
 - The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), now at
-  version 11. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
+  version 12. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
   with defaults; `MIGRATION_6_7` swaps the marker classification for the AI usage
   report fields, `MIGRATION_7_8` adds `usageReportVersion`, `MIGRATION_8_9` drops
-  the removed `blacklist` table, `MIGRATION_9_10` adds `app.updateIgnored` and
+  the removed `blacklist` table, `MIGRATION_9_10` adds `app.updateIgnored`,
   `MIGRATION_10_11` persists the changelog, screenshots and README fields on the
-  `app` row. A
+  `app` row, and `MIGRATION_11_12` adds the nullable `app.trendScore` behind the
+  Trending sort. A
   fresh install creates the full schema in one step and cached catalogs upgrade
   in place. Old `AuroraDatabase` migrations are gone; export schemas to
   `app/schemas/` as usual.

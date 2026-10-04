@@ -69,6 +69,7 @@ class CatalogUiMapper @Inject constructor() {
         localizedName = pickLocalizedLabel(app.localizedLabels)?.takeIf { it != app.name },
         stars = app.stars,
         installCount = app.installCount,
+        trendScore = app.trendScore,
         downloadTotal = app.downloadTotal,
         categorySlug = app.categorySlug,
         listUpdatedAtMillis = CommonUtil.parseIsoUtcMillis(app.listUpdatedAt),

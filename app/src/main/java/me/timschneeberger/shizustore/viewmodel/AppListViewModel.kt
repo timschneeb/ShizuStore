@@ -42,6 +42,7 @@ import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
+import me.timschneeberger.shizustore.data.repository.TrendingRepository
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.util.SearchHistoryStore
 
@@ -57,6 +58,7 @@ class AppListViewModel @Inject constructor(
     private val mapper: CatalogUiMapper,
     private val searchHistory: SearchHistoryStore,
     private val syncHelper: SyncHelper,
+    private val trendingRepository: TrendingRepository,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -128,6 +130,14 @@ class AppListViewModel @Inject constructor(
         if (initialized) return
         initialized = true
         _args.value = args
+        refreshTrendIfSorted(args.sort)
+    }
+
+    /** The Trending sort reads `trendScore`, which only this fetch writes. */
+    private fun refreshTrendIfSorted(sort: AppSort) {
+        if (sort == AppSort.TRENDING) {
+            viewModelScope.launch { trendingRepository.refresh() }
+        }
     }
 
     private var pendingScrollAnchor: ScrollAnchor? = null
@@ -170,6 +180,7 @@ class AppListViewModel @Inject constructor(
     fun setSort(sort: AppSort) {
         _atSearchHome.value = false
         _args.update { it.copy(sort = sort) }
+        refreshTrendIfSorted(sort)
     }
 
     fun clearAll() {
