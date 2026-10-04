@@ -16,6 +16,8 @@
     <string name="action_close">إغلاق</string>
     <string name="action_collapse">Collapse</string>
     <string name="action_expand">توسيع</string>
+    <string name="action_next">Next</string>
+    <string name="action_previous">Previous</string>
     <string name="action_export">تصدير APK</string>
     <string name="action_save_apk">Save APK</string>
     <string name="action_favourite">إضافة إلى المفضلة</string>
@@ -71,7 +73,7 @@
     <string name="details_load_failed">Could not reach the server. Check your connection and try again.</string>
     <string name="details_permissions">Permissions</string>
     <plurals name="details_permissions_count">
-        <item quantity="zero">%1$d permissions requested</item>
+        <item quantity="zero">%1$d permission requested</item>
         <item quantity="one">%1$d permission requested</item>
         <item quantity="two">%1$d permissions requested</item>
         <item quantity="few">%1$d permissions requested</item>
@@ -94,7 +96,7 @@
     <string name="details_version_selected">Selected</string>
     <string name="details_sources">Sources</string>
     <plurals name="details_sources_count">
-        <item quantity="zero">%1$d sources</item>
+        <item quantity="zero">%1$d source</item>
         <item quantity="one">%1$d source</item>
         <item quantity="two">%1$d sources</item>
         <item quantity="few">%1$d sources</item>

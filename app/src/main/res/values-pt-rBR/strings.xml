@@ -16,6 +16,8 @@
     <string name="action_close">Fechar</string>
     <string name="action_collapse">Recolher</string>
     <string name="action_expand">Expandir</string>
+    <string name="action_next">Next</string>
+    <string name="action_previous">Previous</string>
     <string name="action_export">Exportar APK</string>
     <string name="action_save_apk">Save APK</string>
     <string name="action_favourite">Adicionar aos favoritos</string>

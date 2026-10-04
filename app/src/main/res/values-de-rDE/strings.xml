@@ -16,6 +16,8 @@
     <string name="action_close">Schließen</string>
     <string name="action_collapse">Einklappen</string>
     <string name="action_expand">Ausklappen</string>
+    <string name="action_next">Next</string>
+    <string name="action_previous">Previous</string>
     <string name="action_export">APK exportieren</string>
     <string name="action_save_apk">APK speichern</string>
     <string name="action_favourite">Zu Favoriten hinzufügen</string>
