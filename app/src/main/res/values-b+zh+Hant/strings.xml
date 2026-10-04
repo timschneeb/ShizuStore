@@ -35,6 +35,7 @@
     <string name="action_open_link">查看網站</string>
     <string name="action_retry">重試</string>
     <string name="action_save">儲存</string>
+    <string name="action_export_obtainium">Export as Obtainium JSON</string>
     <string name="action_scroll_down">向下捲動</string>
     <string name="action_search">搜尋</string>
     <string name="action_share">分享</string>
@@ -66,6 +67,16 @@
     <string name="details_stats_stars_tooltip">原始碼倉庫的星標數。</string>
     <string name="details_stats_size">大小</string>
     <string name="details_stats_size_tooltip">APK 檔案的下載大小。</string>
+    <string name="details_history_title">Statistics</string>
+    <string name="details_history_installs">Installs</string>
+    <string name="details_history_installs_axis">Downloads per day</string>
+    <string name="details_history_stars_axis">Stars per week</string>
+    <string name="details_history_downloads_last_week">%1$s new downloads in the last week</string>
+    <string name="details_history_stars_last_week">%1$s new stars in the last week</string>
+    <string name="details_history_total_stars">Total stars: %1$s</string>
+    <string name="details_history_total_downloads">Total downloads: %1$s</string>
+    <string name="details_history_chart_desc">Daily %1$s for the last %2$d days</string>
+    <string name="details_history_weekly_desc">%1$s per week for the last %2$d weeks</string>
     <string name="details_more_about">關於此應用程式的更多資訊</string>
     <string name="details_more_from_author">此開發者的更多應用程式</string>
     <string name="details_more_from_category">此分類下的更多應用程式</string>
@@ -81,6 +92,10 @@
     <string name="details_permissions_none">未請求任何權限</string>
     <string name="details_source_code">原始碼</string>
     <string name="details_obtainium">新增至 Obtainium</string>
+    <string name="obtainium_export_empty">No apps with a trackable source to export</string>
+    <string name="obtainium_export_failed">Could not save the export</string>
+    <string name="obtainium_import_title">Obtainium export saved</string>
+    <string name="obtainium_import_message">Open Obtainium or a compatible fork, go to Settings and use Import/Export to import %1$s from the location you picked.</string>
     <string name="details_store">應用程式商店</string>
     <string name="details_play_store_notice">此應用程式僅在 Google Play 提供。點擊開啟詳情頁面。</string>
     <string name="details_closed_source_notice">此應用程式為封閉原始碼軟體。它的程式碼是不公開的，因此社群無法輕易驗證其行為。</string>
@@ -219,7 +234,11 @@
     <string name="search_history">最近搜尋</string>
     <string name="search_sort_name">名稱</string>
     <string name="search_sort_stars">最多星號</string>
+    <string name="search_sort_stars_full">Most starred on GitHub/GitLab</string>
     <string name="search_sort_popularity">受歡迎程度</string>
+    <string name="search_sort_popularity_short">Total downloads</string>
+    <string name="search_sort_trending">New installations in the last 14 days on ShizuStore (Trending)</string>
+    <string name="search_sort_trending_short">Trending</string>
     <string name="search_sort_size">檔案從大到小</string>
     <string name="filter_all">全部</string>
     <string name="filter_price">價格</string>
@@ -256,6 +275,8 @@
     <string name="settings_catalog_title">目錄</string>
     <string name="settings_dynamic_color_subtitle">從您的桌布中擷取色彩。需要 Android 12 及更新版本。</string>
     <string name="settings_dynamic_color_title">動態色彩</string>
+    <string name="settings_expressive_motion_subtitle">Elastic Material 3 animations. Turn off for standard motion.</string>
+    <string name="settings_expressive_motion_title">Expressive animations</string>
     <string name="settings_group_updates_summary">檢查排程、網路限制和自動安裝</string>
     <string name="settings_group_updates_title">更新</string>
     <string name="settings_install_reporting_subtitle">在應用程式完成安裝時向伺服器發送匿名的安裝次數統計。用於產生受歡迎程度排名。</string>
@@ -268,6 +289,7 @@
     <string name="settings_installer_custom_source_title">使用自訂安裝來源</string>
     <string name="settings_installer_summary">選擇用於安裝已下載應用程式套件的安裝程式</string>
     <string name="settings_installer_title">應用程式安裝程式</string>
+    <string name="settings_motion_title">Motion</string>
     <string name="settings_network_summary">HTTP 或 SOCKS 代理伺服器及隱私設定</string>
     <string name="settings_network_title">網路</string>
     <string name="settings_permissions_summary">安裝、通知和電池權限</string>
@@ -279,6 +301,9 @@
     <string name="settings_proxy_title">代理伺服器</string>
     <string name="settings_server_active">目前使用中的伺服器</string>
     <string name="settings_server_custom">自訂伺服器</string>
+    <string name="settings_server_info">Server info</string>
+    <string name="settings_server_info_commit">awesome-shizuku commit %1$s</string>
+    <string name="settings_server_info_counts">%1$d apps, %2$d categories</string>
     <string name="settings_server_invalid">請輸入有效的 http 或 https URL。</string>
     <string name="settings_server_maintenance">維護中</string>
     <string name="settings_server_not_configured">未設定</string>
@@ -296,6 +321,8 @@
     <string name="settings_show_closed_source_title">顯示閉源應用程式</string>
     <string name="settings_show_tracker_info_subtitle">在應用程式詳情頁顯示 APK 中偵測到的追蹤器（Exodus Privacy 程式碼簽章）。</string>
     <string name="settings_show_tracker_info_title">顯示追蹤器資訊</string>
+    <string name="settings_show_statistics_subtitle">Shows the install and star statistics charts on an app\'s details page.</string>
+    <string name="settings_show_statistics_title">Show statistics</string>
     <string name="settings_theme_dark">深色</string>
     <string name="settings_theme_light">淺色</string>
     <string name="settings_theme_system">系統預設</string>
