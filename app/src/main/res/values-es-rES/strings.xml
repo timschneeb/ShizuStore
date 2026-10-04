@@ -35,6 +35,7 @@
     <string name="action_open_link">Ver sitio web</string>
     <string name="action_retry">Reintentar</string>
     <string name="action_save">Guardar</string>
+    <string name="action_export_obtainium">Exportar como JSON de Obtainium</string>
     <string name="action_scroll_down">Desplazar hacia abajo</string>
     <string name="action_search">Buscar</string>
     <string name="action_share">Compartir</string>
@@ -66,6 +67,16 @@
     <string name="details_stats_stars_tooltip">Número de estrellas en el repositorio de código fuente.</string>
     <string name="details_stats_size">Tamaño</string>
     <string name="details_stats_size_tooltip">Tamaño de descarga del archivo APK.</string>
+    <string name="details_history_title">Estadísticas</string>
+    <string name="details_history_installs">Instalaciones</string>
+    <string name="details_history_installs_axis">Descargas por día</string>
+    <string name="details_history_stars_axis">Estrellas por semana</string>
+    <string name="details_history_downloads_last_week">%1$s nuevas descargas en la última semana</string>
+    <string name="details_history_stars_last_week">%1$s nuevas estrellas en la última semana</string>
+    <string name="details_history_total_stars">Estrellas totales: %1$s</string>
+    <string name="details_history_total_downloads">Descargas totales: %1$s</string>
+    <string name="details_history_chart_desc">%1$s por día durante los últimos %2$d días</string>
+    <string name="details_history_weekly_desc">%1$s por semana durante las últimas %2$d semanas</string>
     <string name="details_more_about">Más sobre esta aplicación</string>
     <string name="details_more_from_author">Más aplicaciones de este desarrollador</string>
     <string name="details_more_from_category">Más de esta categoría</string>
@@ -82,6 +93,10 @@
     <string name="details_permissions_none">No se han solicitado permisos</string>
     <string name="details_source_code">Código fuente</string>
     <string name="details_obtainium">Añadir a Obtainium</string>
+    <string name="obtainium_export_empty">No hay aplicaciones con una fuente rastreable para exportar</string>
+    <string name="obtainium_export_failed">No se pudo guardar la exportación</string>
+    <string name="obtainium_import_title">Exportación de Obtainium guardada</string>
+    <string name="obtainium_import_message">Abre Obtainium o un fork compatible, ve a Ajustes y usa Importar/Exportar para importar %1$s desde la ubicación que elegiste.</string>
     <string name="details_store">Tienda</string>
     <string name="details_play_store_notice">Esta aplicación solo está disponible en Google Play. Toca para abrir la ficha.</string>
     <string name="details_closed_source_notice">Esta aplicación es de código cerrado. Su código no es público, por lo que la comunidad no puede verificar fácilmente lo que hace.</string>
@@ -156,214 +171,226 @@
     <string name="installer_native_desc">Abre la pantalla de instalación de Android para cada aplicación. Siempre pide confirmación y funciona cuando el instalador por sesiones está bloqueado.</string>
     <string name="installer_native_subtitle">Cede el control al cuadro de diálogo del sistema</string>
     <string name="installer_native_title">Instalador del sistema</string>
-    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
-    <string name="installer_root_subtitle">Installs silently through a root shell</string>
-    <string name="installer_root_title">Root installer</string>
-    <string name="installer_session_desc">Uses Android\'s own package installer service. Needs no setup; Android may still ask you to confirm each install.</string>
-    <string name="installer_session_subtitle">Default, works without root</string>
-    <string name="installer_session_title">Session installer</string>
-    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to ShizuStore.</string>
-    <string name="installer_shizuku_subtitle">Installs silently through Shizuku or Sui</string>
-    <string name="installer_shizuku_title">Shizuku installer</string>
-    <string name="shizuku_card_title">Set up Shizuku</string>
-    <string name="shizuku_card_install_body">Shizuku is not installed. Install it so ShizuStore can install apps in the background without root.</string>
-    <string name="shizuku_card_grant_body">Shizuku is installed. Allow ShizuStore to install apps through it.</string>
-    <string name="shizuku_card_start_body">Shizuku is installed but not running. Start Shizuku, then allow ShizuStore access.</string>
-    <string name="shizuku_card_install_action">Get Shizuku</string>
-    <string name="shizuku_card_grant_action">Allow access</string>
-    <string name="shizuku_card_start_action">Start Shizuku</string>
-    <string name="shizuku_card_dismiss">Dismiss</string>
-    <string name="item_optional">Optional</string>
-    <string name="item_required">Required</string>
-    <string name="loading">Loading in progress</string>
-    <string name="notification_channel_alerts">Needs attention</string>
-    <string name="notification_channel_download">Downloads</string>
-    <string name="notification_channel_install">Installs</string>
-    <string name="notification_channel_update">Update checks</string>
-    <string name="notification_confirm_install">Tap to install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_confirm_install_text">Android needs you to confirm this install.</string>
-    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> downloaded</string>
-    <string name="notification_group_activity">Activity</string>
-    <string name="notification_group_alerts">Needs attention</string>
-    <string name="notification_download_failed">Could not download <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_downloading">Downloading <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
-    <string name="notification_install_failed">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_installing">Installing <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
+    <string name="installer_root_desc">Ejecuta el comando de instalación de la plataforma como root, sin diálogo de confirmación. Requiere un dispositivo con root y acceso de superusuario para ShizuStore.</string>
+    <string name="installer_root_subtitle">Se instala de forma silenciosa a través de una shell de root</string>
+    <string name="installer_root_title">Instalador root</string>
+    <string name="installer_session_desc">Utiliza el propio servicio de instalación de paquetes de Android. No requiere configuración; es posible que Android aún te pida confirmar cada instalación.</string>
+    <string name="installer_session_subtitle">Predeterminado, funciona sin root</string>
+    <string name="installer_session_title">Instalador de sesión</string>
+    <string name="installer_shizuku_desc">Utiliza las API del sistema en lugar del servicio ADB o root de Shizuku. Requiere que Shizuku o Sui estén en ejecución y que ShizuStore tenga el permiso concedido.</string>
+    <string name="installer_shizuku_subtitle">Se instala de forma silenciosa a través de Shizuku o Sui</string>
+    <string name="installer_shizuku_title">Instalador de Shizuku</string>
+    <string name="shizuku_card_title">Configurar Shizuku</string>
+    <string name="shizuku_card_install_body">Shizuku no está instalado. Instálalo para que ShizuStore pueda instalar aplicaciones en segundo plano sin root.</string>
+    <string name="shizuku_card_grant_body">Shizuku está instalado. Permite que ShizuStore instale aplicaciones a través de él.</string>
+    <string name="shizuku_card_start_body">Shizuku está instalado pero no se está ejecutando. Inicia Shizuku y luego permite el acceso a ShizuStore.</string>
+    <string name="shizuku_card_install_action">Obtener Shizuku</string>
+    <string name="shizuku_card_grant_action">Permitir acceso</string>
+    <string name="shizuku_card_start_action">Iniciar Shizuku</string>
+    <string name="shizuku_card_dismiss">Descartar</string>
+    <string name="item_optional">Opcional</string>
+    <string name="item_required">Requerido</string>
+    <string name="loading">Carga en progreso</string>
+    <string name="notification_channel_alerts">Requiere atención</string>
+    <string name="notification_channel_download">Descargas</string>
+    <string name="notification_channel_install">Instalaciones</string>
+    <string name="notification_channel_update">Comprobación de actualizaciones</string>
+    <string name="notification_confirm_install">Toca para instalar <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_confirm_install_text">Android necesita que confirmes esta instalación.</string>
+    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> descargada</string>
+    <string name="notification_group_activity">Actividad</string>
+    <string name="notification_group_alerts">Requiere atención</string>
+    <string name="notification_download_failed">No se pudo descargar <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_downloading">Descargando <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> instalada</string>
+    <string name="notification_install_failed">No se pudo instalar <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_installing">Instalando <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused">No se pudo instalar <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused_text">Otra instalación está en progreso. Inténtalo de nuevo cuando termine.</string>
     <plurals name="notification_failed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> aplicación requiere atención</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> aplicaciones requieren atención</item>
     </plurals>
     <plurals name="notification_installed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app installed</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> aplicación instalada</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> aplicaciones instaladas</item>
     </plurals>
     <plurals name="notification_download_summary">
-        <item quantity="one">Downloading <xliff:g id="count">%1$d</xliff:g> app</item>
-        <item quantity="other">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
+        <item quantity="one">Descargando <xliff:g id="count">%1$d</xliff:g> aplicación</item>
+        <item quantity="other">Descargando <xliff:g id="count">%1$d</xliff:g> aplicaciones</item>
     </plurals>
     <plurals name="notification_updates_available">
-        <item quantity="one">%1$d update available</item>
-        <item quantity="other">%1$d updates available</item>
+        <item quantity="one">%1$d actualización disponible</item>
+        <item quantity="other">%1$d actualizaciones disponibles</item>
     </plurals>
-    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
-    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> and <xliff:g id="third">%3$s</xliff:g></string>
+    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> y <xliff:g id="second">%2$s</xliff:g></string>
+    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> y <xliff:g id="third">%3$s</xliff:g></string>
     <plurals name="notification_updates_available_desc_more">
-        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
-        <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
+        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> y <xliff:g id="count">%4$d</xliff:g> más</item>
+        <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> y <xliff:g id="count">%4$d</xliff:g> más</item>
     </plurals>
-    <string name="notification_updates_available_text">Open ShizuStore to review and install them.</string>
-    <string name="permission_doze">Ignore battery optimisation</string>
-    <string name="permission_doze_desc">Keeps downloads running and update checks on time when ShizuStore is in the background.</string>
-    <string name="permission_install">Install unknown apps</string>
-    <string name="permission_install_desc">Required before ShizuStore can install anything. Android still confirms each install unless you use root or Shizuku.</string>
-    <string name="permission_notifications">Notifications</string>
-    <string name="permission_notifications_desc">Shows repository sync, download and install progress, and alerts you when updates are ready.</string>
-    <string name="search_hint">Search apps</string>
-    <string name="search_no_results">No apps match that search</string>
-    <string name="search_history">Recent searches</string>
-    <string name="search_sort_name">Name</string>
-    <string name="search_sort_stars">Most starred</string>
+    <string name="notification_updates_available_text">Abre ShizuStore para revisarlas e instalarlas.</string>
+    <string name="permission_doze">Ignorar optimización de la batería</string>
+    <string name="permission_doze_desc">Mantiene las descargas en ejecución y las comprobaciones de actualización al día cuando ShizuStore está en segundo plano.</string>
+    <string name="permission_install">Instalar aplicaciones desconocidas</string>
+    <string name="permission_install_desc">Requerido antes de que ShizuStore pueda instalar algo. Android seguirá confirmando cada instalación a menos que uses root o Shizuku.</string>
+    <string name="permission_notifications">Notificaciones</string>
+    <string name="permission_notifications_desc">Muestra el progreso de la sincronización del repositorio, la descarga y la instalación, y te avisa cuando las actualizaciones están listas.</string>
+    <string name="search_hint">Buscar aplicaciones</string>
+    <string name="search_no_results">Ninguna aplicación coincide con esa búsqueda</string>
+    <string name="search_history">Búsquedas recientes</string>
+    <string name="search_sort_name">Nombre</string>
+    <string name="search_sort_stars">Con más estrellas</string>
+    <string name="search_sort_stars_full">Con más estrellas en GitHub/GitLab</string>
     <string name="search_sort_popularity">Popularity</string>
-    <string name="search_sort_size">Largest first</string>
-    <string name="filter_all">All</string>
-    <string name="filter_price">Price</string>
-    <string name="filter_free">Free</string>
-    <string name="filter_iap">In-app purchases</string>
-    <string name="filter_iap_or_paid">In-app purchases or Paid</string>
-    <string name="filter_iap_short">IAP</string>
-    <string name="filter_iap_or_paid_short">IAP or Paid</string>
-    <string name="filter_title_category">Filter by category</string>
-    <string name="filter_title_price">Filter by price</string>
-    <string name="filter_title_sort">Sort by</string>
-    <string name="category_dhizuku">Dhizuku-compatible</string>
-    <string name="app_badge_paid">Paid</string>
-    <string name="app_badge_iap">IAP</string>
-    <string name="app_badge_ads">Ads</string>
-    <string name="app_indicator_installed">Installed</string>
-    <string name="app_indicator_update">Update available</string>
-    <string name="details_billing_paid">This is a paid app.</string>
-    <string name="details_billing_iap">This app offers in-app purchases.</string>
-    <string name="details_billing_paid_iap">This is a paid app with in-app purchases.</string>
-    <string name="details_ads">This app contains ads.</string>
+    <string name="search_sort_popularity_short">Descargas totales</string>
+    <string name="search_sort_trending">Nuevas instalaciones en los últimos 14 días en ShizuStore (Tendencias)</string>
+    <string name="search_sort_trending_short">Tendencias</string>
+    <string name="search_sort_size">Más grandes primero</string>
+    <string name="filter_all">Todo</string>
+    <string name="filter_price">Precio</string>
+    <string name="filter_free">Gratis</string>
+    <string name="filter_iap">Compras integradas</string>
+    <string name="filter_iap_or_paid">Compras integradas o de pago</string>
+    <string name="filter_iap_short">IAP (Compras integradas)</string>
+    <string name="filter_iap_or_paid_short">IAP o de pago</string>
+    <string name="filter_title_category">Filtrar por categoría</string>
+    <string name="filter_title_price">Filtrar por precio</string>
+    <string name="filter_title_sort">Ordenar por</string>
+    <string name="category_dhizuku">Compatible con Dhizuku</string>
+    <string name="app_badge_paid">De pago</string>
+    <string name="app_badge_iap">IAP (Compras integradas)</string>
+    <string name="app_badge_ads">Anuncios</string>
+    <string name="app_indicator_installed">Instalada</string>
+    <string name="app_indicator_update">Actualización disponible</string>
+    <string name="details_billing_paid">Esta es una aplicación de pago.</string>
+    <string name="details_billing_iap">Esta aplicación ofrece compras integradas.</string>
+    <string name="details_billing_paid_iap">Esta es una aplicación de pago con compras integradas.</string>
+    <string name="details_ads">Esta aplicación contiene anuncios.</string>
     <string name="details_dhizuku">Dhizuku</string>
-    <string name="details_trackers_title">Detected trackers (%1$d)</string>
-    <string name="details_trackers_note">Matched by Exodus Privacy code signatures. Not a complete list.</string>
-    <string name="details_shizuku_title">How Shizuku is used</string>
-    <string name="details_shizuku_empty">No usage report is available for this app.</string>
-    <string name="details_shizuku_ai_note">This is an AI-assisted analysis of Shizuku-related usages in the app\'s public source code. It is best effort, so it may not catch every single usage.</string>
-    <string name="details_shizuku_summary_title">Summary</string>
-    <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>
-    <string name="settings_appearance_title">Appearance</string>
-    <string name="settings_black_night_subtitle">Use the pure black theme if night mode is enabled</string>
-    <string name="settings_black_night_title">Black night theme</string>
-    <string name="settings_catalog_summary">Listings and app analysis</string>
-    <string name="settings_catalog_title">Catalog</string>
-    <string name="settings_dynamic_color_subtitle">Draws the palette from your wallpaper. Android 12 and later.</string>
-    <string name="settings_dynamic_color_title">Dynamic colour</string>
-    <string name="settings_group_updates_summary">Check schedule, network limits and automatic installs</string>
-    <string name="settings_group_updates_title">Updates</string>
-    <string name="settings_install_reporting_subtitle">Sends an anonymous install count to the server when an app is installed. Feeds the popularity ranking.</string>
-    <string name="settings_install_reporting_title">Report installs</string>
-    <string name="settings_installer_custom_source_hint">Package name</string>
-    <string name="settings_installer_custom_source_invalid">Enter a valid package name</string>
-    <string name="settings_installer_custom_source_saved">Package name saved</string>
-    <string name="settings_installer_custom_source_section">Installer source</string>
-    <string name="settings_installer_custom_source_subtitle">Reports the package below as the installer. Applies to the Shizuku installer only.</string>
-    <string name="settings_installer_custom_source_title">Use custom installer source</string>
-    <string name="settings_installer_summary">Which installer applies downloaded packages</string>
-    <string name="settings_installer_title">App installer</string>
-    <string name="settings_network_summary">HTTP or SOCKS proxy and privacy</string>
-    <string name="settings_network_title">Network</string>
-    <string name="settings_permissions_summary">Install, notification and battery permissions</string>
-    <string name="settings_permissions_title">Permissions</string>
-    <string name="settings_proxy_clear">Clear</string>
-    <string name="settings_proxy_dialog_message">Takes effect on the next connection; no restart needed. Clearing this hands proxying back to the device\'s own network settings rather than turning it off.</string>
-    <string name="settings_proxy_invalid">Enter a proxy as protocol://host:port, optionally with user:password@ before the host. http, https, socks and socks5 are supported.</string>
-    <string name="settings_proxy_summary_none">Not set. Repository traffic follows this device\'s network settings.</string>
+    <string name="details_trackers_title">Rastreadores detectados (%1$d)</string>
+    <string name="details_trackers_note">Coincidencia por firmas de código de Exodus Privacy. No es una lista completa.</string>
+    <string name="details_shizuku_title">Cómo se usa Shizuku</string>
+    <string name="details_shizuku_empty">No hay ningún informe de uso disponible para esta aplicación.</string>
+    <string name="details_shizuku_ai_note">Este es un análisis asistido por IA de los usos relacionados con Shizuku en el código fuente público de la aplicación. Es un esfuerzo por hacer lo mejor posible, por lo que puede que no detecte todos los usos.</string>
+    <string name="details_shizuku_summary_title">Resumen</string>
+    <string name="settings_appearance_summary">Tema claro u oscuro, y colores del fondo de pantalla</string>
+    <string name="settings_appearance_title">Apariencia</string>
+    <string name="settings_black_night_subtitle">Usar el tema negro puro si el modo noche está activado</string>
+    <string name="settings_black_night_title">Tema negro noche</string>
+    <string name="settings_catalog_summary">Listados y análisis de aplicaciones</string>
+    <string name="settings_catalog_title">Catálogo</string>
+    <string name="settings_dynamic_color_subtitle">Extrae la paleta de tu fondo de pantalla. Android 12 y posteriores.</string>
+    <string name="settings_dynamic_color_title">Color dinámico</string>
+    <string name="settings_expressive_motion_subtitle">Animaciones elásticas de Material 3. Desactívalas para usar el movimiento estándar.</string>
+    <string name="settings_expressive_motion_title">Animaciones expresivas</string>
+    <string name="settings_group_updates_summary">Comprueba la programación, los límites de la red y las instalaciones automáticas</string>
+    <string name="settings_group_updates_title">Actualizaciones</string>
+    <string name="settings_install_reporting_subtitle">Envía un recuento anónimo de instalaciones al servidor cuando se instala una aplicación. Alimenta el ranking de popularidad.</string>
+    <string name="settings_install_reporting_title">Informar de las instalaciones</string>
+    <string name="settings_installer_custom_source_hint">Nombre del paquete</string>
+    <string name="settings_installer_custom_source_invalid">Introduce un nombre de paquete válido</string>
+    <string name="settings_installer_custom_source_saved">Nombre del paquete guardado</string>
+    <string name="settings_installer_custom_source_section">Fuente del instalador</string>
+    <string name="settings_installer_custom_source_subtitle">Indica el paquete que figura a continuación como el instalador. Se aplica únicamente al instalador de Shizuku.</string>
+    <string name="settings_installer_custom_source_title">Usar fuente del instalador personalizada</string>
+    <string name="settings_installer_summary">Qué instalador aplica los paquetes descargados</string>
+    <string name="settings_installer_title">Instalador de aplicaciones</string>
+    <string name="settings_motion_title">Movimiento</string>
+    <string name="settings_network_summary">Proxy HTTP o SOCKS y privacidad</string>
+    <string name="settings_network_title">Red</string>
+    <string name="settings_permissions_summary">Permisos de instalación, notificación y batería</string>
+    <string name="settings_permissions_title">Permisos</string>
+    <string name="settings_proxy_clear">Borrar</string>
+    <string name="settings_proxy_dialog_message">Surte efecto en la próxima conexión; no es necesario reiniciar. Al borrar esto, la gestión del proxy vuelve a la configuración de red del propio dispositivo en lugar de desactivarse.</string>
+    <string name="settings_proxy_invalid">Introduce un proxy como protocolo://host:puerto, opcionalmente con usuario:contraseña@ antes del host. Se admiten http, https, socks y socks5.</string>
+    <string name="settings_proxy_summary_none">No configurado. El tráfico del repositorio sigue los ajustes de red de este dispositivo.</string>
     <string name="settings_proxy_title">Proxy</string>
-    <string name="settings_server_active">Active server</string>
-    <string name="settings_server_custom">Custom server</string>
-    <string name="settings_server_invalid">Enter a valid http or https URL.</string>
-    <string name="settings_server_maintenance">Maintenance</string>
-    <string name="settings_server_not_configured">Not configured</string>
-    <string name="settings_server_production">Production</string>
-    <string name="settings_server_reset">Clear local database</string>
-    <string name="settings_server_reset_message">Clear the cached catalog and pull everything from the active server again? Favourites and installed apps are kept.</string>
-    <string name="settings_server_reset_summary">Deletes the cached catalog and downloads it again from the active server. Favourites and installed apps are kept.</string>
-    <string name="settings_server_status_checking">Checking...</string>
-    <string name="settings_server_status_reachable">Reachable</string>
-    <string name="settings_server_status_unknown">Not checked</string>
-    <string name="settings_server_status_unreachable">Unreachable</string>
-    <string name="settings_server_summary">Catalog server address</string>
-    <string name="settings_server_title">Server</string>
-    <string name="settings_show_closed_source_subtitle">Also syncs apps from the upstream closed-source list. These apps are proprietary and off by default.</string>
-    <string name="settings_show_closed_source_title">Show closed-source apps</string>
-    <string name="settings_show_tracker_info_subtitle">Shows trackers detected in an app\'s APK (Exodus Privacy code signatures) on its details page.</string>
-    <string name="settings_show_tracker_info_title">Show tracker info</string>
-    <string name="settings_theme_dark">Dark</string>
-    <string name="settings_theme_light">Light</string>
-    <string name="settings_theme_system">System default</string>
-    <string name="settings_theme_title">Theme</string>
-    <string name="settings_unattended_paused_checks_off">Paused. Background checks are set to Never above, so nothing runs to install. Choose an interval to start them.</string>
-    <string name="settings_unattended_paused_confirmation">Paused. Your installer asks you to confirm each install, so you\'ll just be notified when updates are available. Root or Shizuku, if your device supports one, removes that step.</string>
-    <string name="settings_unattended_paused_root">Paused. No root access - grant ShizuStore superuser rights, or choose another installer under App installer.</string>
-    <string name="settings_unattended_paused_shizuku">Paused. This device cannot install through Shizuku right now. Check that Shizuku is installed, running and has allowed ShizuStore; if it already is, choose another installer under App installer.</string>
-    <string name="settings_unattended_section_title">Automatic installs</string>
-    <string name="settings_unattended_subtitle">Downloads and installs new versions in the background, without confirming each one.</string>
-    <string name="settings_unattended_title">Install updates automatically</string>
-    <string name="settings_update_interval_daily">Every day</string>
-    <string name="settings_update_interval_never">Never</string>
-    <string name="settings_update_interval_six_hours">Every 6 hours</string>
-    <string name="settings_update_interval_twelve_hours">Every 12 hours</string>
-    <string name="settings_update_interval_weekly">Every week</string>
-    <string name="settings_updates_subtitle">How often enabled repositories are checked for new versions.</string>
-    <string name="settings_updates_title">Update checks</string>
-    <string name="settings_wifi_only_subtitle">Background checks and automatic downloads wait for an unmetered network.</string>
-    <string name="settings_wifi_only_title">Check on Wi-Fi only</string>
-    <string name="time_just_now">just now</string>
+    <string name="settings_server_active">Servidor activo</string>
+    <string name="settings_server_custom">Servidor personalizado</string>
+    <string name="settings_server_info">Información del servidor</string>
+    <string name="settings_server_info_commit">Commit %1$s de awesome-shizuku</string>
+    <string name="settings_server_info_counts">%1$d aplicaciones, %2$d categorías</string>
+    <string name="settings_server_invalid">Introduce una URL http o https válida.</string>
+    <string name="settings_server_maintenance">Mantenimiento</string>
+    <string name="settings_server_not_configured">No configurado</string>
+    <string name="settings_server_production">Producción</string>
+    <string name="settings_server_reset">Borrar la base de datos local</string>
+    <string name="settings_server_reset_message">¿Borrar el catálogo en caché y descargar todo de nuevo desde el servidor activo? Se mantendrán los favoritos y las aplicaciones instaladas.</string>
+    <string name="settings_server_reset_summary">Elimina el catálogo en caché y lo descarga de nuevo desde el servidor activo. Se mantienen los favoritos y las aplicaciones instaladas.</string>
+    <string name="settings_server_status_checking">Comprobando...</string>
+    <string name="settings_server_status_reachable">Accesible</string>
+    <string name="settings_server_status_unknown">No comprobado</string>
+    <string name="settings_server_status_unreachable">Inaccesible</string>
+    <string name="settings_server_summary">Dirección del servidor del catálogo</string>
+    <string name="settings_server_title">Servidor</string>
+    <string name="settings_show_closed_source_subtitle">También sincroniza aplicaciones de la lista de código cerrado original. Estas aplicaciones son propietarias y están desactivadas por defecto.</string>
+    <string name="settings_show_closed_source_title">Mostrar aplicaciones de código cerrado</string>
+    <string name="settings_show_tracker_info_subtitle">Muestra los rastreadores detectados en el APK de una aplicación (firmas de código de Exodus Privacy) en su página de detalles.</string>
+    <string name="settings_show_tracker_info_title">Mostrar información del rastreador</string>
+    <string name="settings_show_statistics_subtitle">Muestra los gráficos de estadísticas de instalación y estrellas en la pantalla de detalles de una aplicación.</string>
+    <string name="settings_show_statistics_title">Mostrar estadísticas</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_system">Predeterminado del sistema</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_unattended_paused_checks_off">Pausado. Las comprobaciones en segundo plano están configuradas en \"Nunca\" más arriba, por lo que no se ejecutará ninguna instalación. Elige un intervalo para iniciarlas.</string>
+    <string name="settings_unattended_paused_confirmation">Pausado. Tu instalador requiere que confirmes cada instalación, por lo que solo recibirás notificaciones cuando haya actualizaciones disponibles. El uso de Root o Shizuku, si tu dispositivo es compatible con alguno de ellos, elimina este paso.</string>
+    <string name="settings_unattended_paused_root">Pausado. Sin acceso root: concede permisos de superusuario a ShizuStore o elige otro instalador en la sección \"Instalador de aplicaciones\"</string>
+    <string name="settings_unattended_paused_shizuku">Pausado. Este dispositivo no puede realizar instalaciones a través de Shizuku en este momento. Comprueba que Shizuku esté instalado, en ejecución y que haya autorizado a ShizuStore. Si ya es así, elige otro instalador en la sección \"Instalador de aplicaciones\".</string>
+    <string name="settings_unattended_section_title">Instalaciones automáticas</string>
+    <string name="settings_unattended_subtitle">Descarga e instala nuevas versiones en segundo plano, sin necesidad de confirmar cada una.</string>
+    <string name="settings_unattended_title">Instalar actualizaciones automáticamente</string>
+    <string name="settings_update_interval_daily">Todos los días</string>
+    <string name="settings_update_interval_never">Nunca</string>
+    <string name="settings_update_interval_six_hours">Cada 6 horas</string>
+    <string name="settings_update_interval_twelve_hours">Cada 12 horas</string>
+    <string name="settings_update_interval_weekly">Cada semana</string>
+    <string name="settings_updates_subtitle">Frecuencia con la que se comprueba si hay nuevas versiones en los repositorios activados.</string>
+    <string name="settings_updates_title">Comprobación de actualizaciones</string>
+    <string name="settings_wifi_only_subtitle">Las comprobaciones en segundo plano y las descargas automáticas esperarán a una conexión sin límite de datos.</string>
+    <string name="settings_wifi_only_title">Comprobar solo por Wi-Fi</string>
+    <string name="time_just_now">Ahora mismo</string>
     <plurals name="time_minutes_ago">
-        <item quantity="one">%1$d minute ago</item>
-        <item quantity="other">%1$d minutes ago</item>
+        <item quantity="one">Hace %1$d minuto</item>
+        <item quantity="other">Hace %1$d minutos</item>
     </plurals>
     <plurals name="time_hours_ago">
-        <item quantity="one">%1$d hour ago</item>
-        <item quantity="other">%1$d hours ago</item>
+        <item quantity="one">Hace %1$d hora</item>
+        <item quantity="other">Hace %1$d horas</item>
     </plurals>
     <plurals name="time_days_ago">
-        <item quantity="one">%1$d day ago</item>
-        <item quantity="other">%1$d days ago</item>
+        <item quantity="one">Hace %1$d día</item>
+        <item quantity="other">Hace %1$d días</item>
     </plurals>
     <plurals name="time_weeks_ago">
-        <item quantity="one">%1$d week ago</item>
-        <item quantity="other">%1$d weeks ago</item>
+        <item quantity="one">Hace %1$d semana</item>
+        <item quantity="other">Hace %1$d semanas</item>
     </plurals>
     <plurals name="time_months_ago">
-        <item quantity="one">%1$d month ago</item>
-        <item quantity="other">%1$d months ago</item>
+        <item quantity="one">Hace %1$d mes</item>
+        <item quantity="other">Hace %1$d meses</item>
     </plurals>
     <plurals name="time_years_ago">
-        <item quantity="one">%1$d year ago</item>
-        <item quantity="other">%1$d years ago</item>
+        <item quantity="one">Hace %1$d año</item>
+        <item quantity="other">Hace %1$d años</item>
     </plurals>
-    <string name="title_about">About</string>
-    <string name="title_apps">Apps</string>
-    <string name="title_categories">Categories</string>
-    <string name="title_search">Search</string>
-    <string name="title_donate">Donate</string>
-    <string name="title_downloads">Downloads</string>
-    <string name="title_favourites">Favourites</string>
-    <string name="title_help_translate">Help us translate</string>
-    <string name="title_ignored_updates">Ignored updates</string>
-    <string name="title_my_apps">My apps</string>
-    <string name="title_settings">Settings</string>
-    <string name="title_updates">Updates</string>
-    <string name="updates_app_details">Details</string>
+    <string name="title_about">Acerca de</string>
+    <string name="title_apps">Aplicaciones</string>
+    <string name="title_categories">Categorías</string>
+    <string name="title_search">Buscar</string>
+    <string name="title_donate">Donar</string>
+    <string name="title_downloads">Descargas</string>
+    <string name="title_favourites">Favoritos</string>
+    <string name="title_help_translate">Ayúdanos a traducir</string>
+    <string name="title_ignored_updates">Actualizaciones ignoradas</string>
+    <string name="title_my_apps">Mis aplicaciones</string>
+    <string name="title_settings">Ajustes</string>
+    <string name="title_updates">Actualizaciones</string>
+    <string name="updates_app_details">Detalles</string>
     <plurals name="updates_available_count">
-        <item quantity="one">%1$d update available</item>
-        <item quantity="other">%1$d updates available</item>
+        <item quantity="one">%1$d actualización disponible</item>
+        <item quantity="other">%1$d actualizaciones disponibles</item>
     </plurals>
-    <string name="updates_empty">Everything is up to date</string>
+    <string name="updates_empty">Todo está actualizado</string>
 </resources>
