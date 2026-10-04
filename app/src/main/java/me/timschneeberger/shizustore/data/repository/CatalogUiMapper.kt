@@ -66,6 +66,7 @@ class CatalogUiMapper @Inject constructor() {
         hasAds = app.hasAds,
         dhizukuDeclared = app.dhizukuDeclared,
         trackers = app.trackers,
+        useCases = app.useCases,
         localizedName = pickLocalizedLabel(app.localizedLabels)?.takeIf { it != app.name },
         stars = app.stars,
         installCount = app.installCount,

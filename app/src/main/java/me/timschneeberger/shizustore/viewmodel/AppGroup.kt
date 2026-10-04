@@ -20,7 +20,8 @@ enum class AppGroupKind(
     MOST_STARRED(isCarousel = true, hasMorePage = true),
     POPULAR(isCarousel = true, hasMorePage = true),
     RANDOM_PICKS(isCarousel = true, hasMorePage = false),
-    CATEGORY(isCarousel = false, hasMorePage = true)
+    CATEGORY(isCarousel = false, hasMorePage = true),
+    USE_CASE(isCarousel = false, hasMorePage = true)
 }
 
 @Immutable
@@ -28,8 +29,10 @@ data class AppGroup(
     val kind: AppGroupKind,
     val apps: List<ResolvedApp>,
     val category: String? = null,
+    /** Use case display name; [useCase] carries the slug for navigation. */
+    val useCase: String? = null,
     /** Category display name; [category] carries the slug for navigation. */
     val title: String? = null
 ) {
-    val key: String get() = "${kind.name}:${category.orEmpty()}"
+    val key: String get() = "${kind.name}:${category.orEmpty()}:${useCase.orEmpty()}"
 }

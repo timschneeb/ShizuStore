@@ -20,6 +20,7 @@ enum class AppPrice { FREE, IAP, IAP_OR_PAID }
 data class AppListArgs(
     val query: String = "",
     val categorySlug: String? = null,
+    val useCaseSlug: String? = null,
     val price: AppPrice? = null,
     val recommended: Boolean = false,
     val sort: AppSort = AppSort.NAME
@@ -27,6 +28,7 @@ data class AppListArgs(
     val isSearchHome: Boolean
         get() = query.isBlank() &&
             categorySlug == null &&
+            useCaseSlug == null &&
             price == null &&
             !recommended &&
             sort == AppSort.NAME

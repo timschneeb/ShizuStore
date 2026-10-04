@@ -22,6 +22,7 @@ fun appGroupTitle(kind: AppGroupKind, title: String? = null): String = when (kin
     AppGroupKind.POPULAR -> stringResource(R.string.apps_popular)
     AppGroupKind.RANDOM_PICKS -> stringResource(R.string.apps_random_picks)
     AppGroupKind.CATEGORY -> title.orEmpty()
+    AppGroupKind.USE_CASE -> title.orEmpty()
 }
 
 @Composable
@@ -36,4 +37,5 @@ fun appGroupIcon(group: AppGroup): Int = when (group.kind) {
     AppGroupKind.POPULAR -> R.drawable.ic_download_manager
     AppGroupKind.RANDOM_PICKS -> R.drawable.ic_redeem
     AppGroupKind.CATEGORY -> categoryIcon(group.category.orEmpty())
+    AppGroupKind.USE_CASE -> R.drawable.ic_shizuku_icon
 }

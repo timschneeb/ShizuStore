@@ -56,11 +56,6 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import me.timschneeberger.shizustore.R
-import me.timschneeberger.shizustore.data.api.AppHistoryDto
-import me.timschneeberger.shizustore.data.api.InstallDayDto
-import me.timschneeberger.shizustore.data.api.StarDayDto
-import me.timschneeberger.shizustore.util.CommonUtil
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -68,6 +63,11 @@ import java.time.format.FormatStyle
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import me.timschneeberger.shizustore.R
+import me.timschneeberger.shizustore.data.api.AppHistoryDto
+import me.timschneeberger.shizustore.data.api.InstallDayDto
+import me.timschneeberger.shizustore.data.api.StarDayDto
+import me.timschneeberger.shizustore.util.CommonUtil
 
 /** Chart modes the section can show; a mode only appears when its series has signal. */
 private enum class HistoryMetric(val iconRes: Int) {
@@ -177,7 +177,10 @@ private fun StatisticsBody(
         when (mode) {
             HistoryMetric.INSTALLS -> {
                 var running = 0L
-                values.map { running += it; running }
+                values.map {
+                    running += it
+                    running
+                }
             }
 
             HistoryMetric.STARS -> {
@@ -334,13 +337,12 @@ private fun StatisticsChart(
  * by Sunday week start (matching how the server's feed groups its gains).
  * Levels can dip when someone unstars, so a bucket may go negative.
  */
-private fun weeklyStarGains(stars: List<StarDayDto>): List<Pair<String, Long>> =
-    stars
-        .map { LocalDate.parse(it.day) to it.stars.toLong() }
-        .zipWithNext { older, newer -> newer.first to (newer.second - older.second) }
-        .groupBy({ (day, _) -> day.with(DayOfWeek.SUNDAY) }, { (_, gain) -> gain })
-        .map { (weekStart, gains) -> weekStart.toString() to gains.sum() }
-        .sortedBy { (weekStart, _) -> weekStart }
+private fun weeklyStarGains(stars: List<StarDayDto>): List<Pair<String, Long>> = stars
+    .map { LocalDate.parse(it.day) to it.stars.toLong() }
+    .zipWithNext { older, newer -> newer.first to (newer.second - older.second) }
+    .groupBy({ (day, _) -> day.with(DayOfWeek.SUNDAY) }, { (_, gain) -> gain })
+    .map { (weekStart, gains) -> weekStart.toString() to gains.sum() }
+    .sortedBy { (weekStart, _) -> weekStart }
 
 /**
  * Hand-drawn polyline anchored at zero so losses dip below the baseline;
@@ -395,12 +397,11 @@ private fun HistorySparkline(
 
                 // The tooltip must sit over the dot, not the raw touch, so
                 // the reported x is the selected point's center.
-                fun xFor(index: Int): Float =
-                    if (values.size <= 1) {
-                        plotLeft + plotWidth / 2f
-                    } else {
-                        plotLeft + plotWidth * index / (values.size - 1)
-                    }
+                fun xFor(index: Int): Float = if (values.size <= 1) {
+                    plotLeft + plotWidth / 2f
+                } else {
+                    plotLeft + plotWidth * index / (values.size - 1)
+                }
 
                 fun report(position: Offset) {
                     val index = indexAt(position.x)
@@ -533,11 +534,7 @@ private fun HistorySparkline(
  * Stays clamped to the chart's width.
  */
 @Composable
-private fun ChartTooltip(
-    text: String,
-    anchorX: Float,
-    modifier: Modifier = Modifier
-) {
+private fun ChartTooltip(text: String, anchorX: Float, modifier: Modifier = Modifier) {
     val textMeasurer = rememberTextMeasurer()
     val style = MaterialTheme.typography.labelSmall
         .copy(color = MaterialTheme.colorScheme.onSurface)

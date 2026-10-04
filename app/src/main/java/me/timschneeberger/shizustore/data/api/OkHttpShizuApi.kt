@@ -68,6 +68,24 @@ class OkHttpShizuApi @Inject constructor(
             }
         }
 
+    override suspend fun useCases(
+        etag: String?,
+        listing: String?
+    ): ApiResult<EtagResult<List<UseCaseCountDto>>> =
+        when (val result = execute("/v1/use-cases", listingParams(listing), etag)) {
+            is ApiResult.Failure -> result
+            is ApiResult.Success -> when (val raw = result.value) {
+                is RawResponse.Ok -> try {
+                    val nodes = json.decodeFromString(useCaseListSerializer, raw.body)
+                    ApiResult.Success(EtagResult.Data(nodes, raw.etag))
+                } catch (e: SerializationException) {
+                    ApiResult.Failure(ApiError.Parse(e.message, e))
+                }
+                RawResponse.NotModified -> ApiResult.Success(EtagResult.NotModified)
+                RawResponse.NotFound -> ApiResult.Success(EtagResult.NotFound)
+            }
+        }
+
     override suspend fun changes(since: String, listing: String?): ApiResult<ChangesDto> =
         decode(execute("/v1/changes", listOf("since" to since) + listingParams(listing))) { body ->
             json.decodeFromString(ChangesDto.serializer(), body)
@@ -253,5 +271,6 @@ class OkHttpShizuApi @Inject constructor(
         const val ERROR_BODY_LIMIT = 512
 
         val categoryListSerializer = ListSerializer(CategoryNodeDto.serializer())
+        val useCaseListSerializer = ListSerializer(UseCaseCountDto.serializer())
     }
 }

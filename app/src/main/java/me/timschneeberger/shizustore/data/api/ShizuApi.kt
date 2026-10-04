@@ -27,6 +27,12 @@ interface ShizuApi {
         listing: String? = null
     ): ApiResult<EtagResult<List<CategoryNodeDto>>>
 
+    /** 304 -> [EtagResult.NotModified]. */
+    suspend fun useCases(
+        etag: String? = null,
+        listing: String? = null
+    ): ApiResult<EtagResult<List<UseCaseCountDto>>>
+
     suspend fun changes(since: String, listing: String? = null): ApiResult<ChangesDto>
 
     suspend fun meta(): ApiResult<MetaDto>

@@ -135,4 +135,5 @@ private fun AppGroup.moreDestination(): Destination? = when (kind) {
     AppGroupKind.POPULAR -> Destination.AppList(sort = AppSort.DOWNLOADS)
     AppGroupKind.RANDOM_PICKS -> null
     AppGroupKind.CATEGORY -> Destination.AppList(categorySlug = category)
+    AppGroupKind.USE_CASE -> Destination.AppList(useCaseSlug = useCase)
 }

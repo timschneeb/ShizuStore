@@ -234,6 +234,15 @@ class CatalogUiMapperTest {
     }
 
     @Test
+    fun resolvedAppCarriesUseCaseSlugs() {
+        val app = app().copy(useCases = listOf("install-apps", "file-access"))
+
+        val resolved = mapper.toResolvedApp(app)
+
+        assertEquals(listOf("install-apps", "file-access"), resolved.useCases)
+    }
+
+    @Test
     fun resolvedAppPrefersLocalizedSummaryName() {
         val app = app().copy(
             localizedLabels = mapOf(

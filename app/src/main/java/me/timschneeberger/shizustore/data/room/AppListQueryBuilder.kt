@@ -69,6 +69,14 @@ object AppListQueryBuilder {
             where += "isRecommended = 1"
         }
 
+        val useCaseSlug = args.useCaseSlug?.takeIf { it.isNotBlank() }
+        if (useCaseSlug != null) {
+            // useCases is a JSON array of slugs; require the quoted slug so one
+            // tag name can never substring-match another.
+            where += "useCases LIKE '%' || ? || '%' ESCAPE '\\'"
+            binds += "\"${escapeLikePattern(useCaseSlug)}\""
+        }
+
         if (excludePackage != null) {
             // The store's own catalog row is never browsable; it surfaces only via
             // the installed and updates lists. NULL stays because most rows have a package.

@@ -117,19 +117,22 @@ class AppsViewModel @Inject constructor(
         ).filter { it.apps.isNotEmpty() }
     }
 
-    /** Curated rows first, then one strip per qualifying top-level category. */
+    /** Curated rows, then the use case strips, then one strip per qualifying category. */
     val groups: StateFlow<List<AppGroup>?> = combine(
         curatedGroups,
         appRepository.observeAllApps(),
         appRepository.observeCategories(),
+        appRepository.observeUseCases(),
         appRepository.observePopularityFlag()
-    ) { curated, apps, categories, useInstallCounts ->
-        curated + CategorySections.build(
-            categories = CategoryTagTree.build(categories),
-            apps = apps,
-            useInstallCounts = useInstallCounts,
-            dhizukuTitle = context.getString(R.string.category_dhizuku)
-        )
+    ) { curated, apps, categories, useCases, useInstallCounts ->
+        curated +
+            UseCaseSections.build(useCases, apps, useInstallCounts) +
+            CategorySections.build(
+                categories = CategoryTagTree.build(categories),
+                apps = apps,
+                useInstallCounts = useInstallCounts,
+                dhizukuTitle = context.getString(R.string.category_dhizuku)
+            )
     }
         // Mapping, shuffling and section building are catalog-sized; keep them off
         // the main thread, which Room invalidations and recomposition share.

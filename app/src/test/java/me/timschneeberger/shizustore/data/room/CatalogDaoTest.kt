@@ -272,6 +272,7 @@ class CatalogDaoTest : RobolectricTestBase() {
             appDao,
             db.appDownloadDao(),
             db.categoryDao(),
+            db.useCaseDao(),
             db.syncStateDao(),
             db.installedDao(),
             CatalogUiMapper()

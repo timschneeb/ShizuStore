@@ -23,6 +23,7 @@ import me.timschneeberger.shizustore.data.repository.UpdateStateRepository
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
 import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
+import me.timschneeberger.shizustore.data.room.dao.UseCaseDao
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
 import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.Preferences
@@ -54,6 +55,7 @@ class CatalogSyncer @Inject constructor(
     private val api: ShizuApi,
     private val appDao: AppDao,
     private val categoryDao: CategoryDao,
+    private val useCaseDao: UseCaseDao,
     private val syncStateDao: SyncStateDao,
     private val updateStateRepository: UpdateStateRepository,
     private val syncStatus: SyncStatusStore
@@ -85,6 +87,7 @@ class CatalogSyncer @Inject constructor(
     private suspend fun clearCatalogLocked() {
         syncStateDao.clear()
         categoryDao.clear()
+        useCaseDao.clear()
         // app_download rows cascade with their app.
         appDao.clear()
     }
@@ -158,6 +161,8 @@ class CatalogSyncer @Inject constructor(
         // and leave it empty.
         val categoriesEtag =
             refreshCategories(if (purged) null else state?.categoriesEtag, listing)
+        val useCasesEtag =
+            refreshUseCases(if (purged) null else state?.useCasesEtag, listing)
         val meta = when (val result = api.meta()) {
             is ApiResult.Success -> result.value
             is ApiResult.Failure -> return result.error.toOutcome()
@@ -170,6 +175,7 @@ class CatalogSyncer @Inject constructor(
             SyncStateEntity(
                 cursor = stepCursor ?: meta.generatedAt,
                 categoriesEtag = categoriesEtag,
+                useCasesEtag = useCasesEtag,
                 listCommit = meta.listCommit,
                 syncedAt = System.currentTimeMillis(),
                 useInstallCountsForPopularity = meta.useInstallCountsForPopularity
@@ -260,6 +266,19 @@ class CatalogSyncer @Inject constructor(
             is ApiResult.Success -> when (val value = result.value) {
                 is EtagResult.Data -> {
                     categoryDao.replaceAll(value.value.toEntities())
+                    value.etag ?: etag
+                }
+                EtagResult.NotModified, EtagResult.NotFound -> etag
+            }
+        }
+
+    /** Use case failures are non-fatal like categories: the catalog stays usable. */
+    private suspend fun refreshUseCases(etag: String?, listing: String): String? =
+        when (val result = api.useCases(etag, listing)) {
+            is ApiResult.Failure -> etag
+            is ApiResult.Success -> when (val value = result.value) {
+                is EtagResult.Data -> {
+                    useCaseDao.replaceAll(value.value.toUseCaseEntities())
                     value.etag ?: etag
                 }
                 EtagResult.NotModified, EtagResult.NotFound -> etag

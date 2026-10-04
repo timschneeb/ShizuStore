@@ -14,12 +14,14 @@ import me.timschneeberger.shizustore.data.api.CategorySection
 import me.timschneeberger.shizustore.data.api.DownloadDto
 import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.api.SourceKind
+import me.timschneeberger.shizustore.data.api.UseCaseCountDto
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 import me.timschneeberger.shizustore.data.room.entity.USAGE_REPORT_VERSION
+import me.timschneeberger.shizustore.data.room.entity.UseCaseEntity
 
 /** Enums fall back to entity defaults for unknown server values, so an addition never drops a row. */
 
@@ -64,6 +66,7 @@ fun AppSummaryDto.toEntity(syncedAt: Long): AppEntity = AppEntity(
     authorKey = authorKey,
     authorName = authorName,
     sourceName = sourceName,
+    useCases = useCases.map { it.slug },
     syncedAt = syncedAt
 )
 
@@ -128,6 +131,7 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         usageMarkdown = detail.usageMarkdown,
         usageAnalyzedAt = detail.usageAnalyzedAt,
         usageReportVersion = USAGE_REPORT_VERSION,
+        useCases = detail.useCases.map { it.slug },
         // Mirrors the old process-memory cache: blank artifacts never clear a
         // stored copy, but a missing README URL does (Play-sourced rows).
         screenshots = detail.screenshots.ifEmpty { screenshots },
@@ -185,4 +189,14 @@ fun List<CategoryNodeDto>.toEntities(): List<CategoryEntity> {
 
     walk(this, null)
     return out
+}
+
+/** Server order is count-desc; keep it as the Room sort so the list mirrors the web. */
+fun List<UseCaseCountDto>.toUseCaseEntities(): List<UseCaseEntity> = mapIndexed { index, dto ->
+    UseCaseEntity(
+        slug = dto.slug,
+        name = dto.name,
+        appCount = dto.appCount,
+        sortOrder = index
+    )
 }

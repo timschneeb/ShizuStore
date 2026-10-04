@@ -26,6 +26,7 @@ import me.timschneeberger.shizustore.data.room.dao.FavouriteDao
 import me.timschneeberger.shizustore.data.room.dao.IgnoredUpdateDao
 import me.timschneeberger.shizustore.data.room.dao.InstalledDao
 import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
+import me.timschneeberger.shizustore.data.room.dao.UseCaseDao
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -51,7 +52,8 @@ object RoomModule {
                 MIGRATION_8_9,
                 MIGRATION_9_10,
                 MIGRATION_10_11,
-                MIGRATION_11_12
+                MIGRATION_11_12,
+                MIGRATION_12_13
             )
             .build()
 
@@ -229,6 +231,27 @@ object RoomModule {
         }
     }
 
+    /**
+     * Structured Shizuku use case tags. `app.useCases` is a summary field fed by
+     * `/v1/changes`, the catalog table backs the search home and home sections.
+     * Additive plus a new cache-only table: user state is preserved.
+     */
+    internal val MIGRATION_12_13 = object : Migration(12, 13) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(
+                connection,
+                "ALTER TABLE app ADD COLUMN useCases TEXT NOT NULL DEFAULT '[]'"
+            )
+            execSql(connection, "ALTER TABLE sync_state ADD COLUMN useCasesEtag TEXT")
+            execSql(
+                connection,
+                "CREATE TABLE IF NOT EXISTS use_case (" +
+                    "slug TEXT NOT NULL, name TEXT NOT NULL, appCount INTEGER NOT NULL, " +
+                    "sortOrder INTEGER NOT NULL, PRIMARY KEY(slug))"
+            )
+        }
+    }
+
     /** Driver-mode migrations use the raw connection, not SupportSQLiteDatabase. */
     private fun execSql(connection: SQLiteConnection, sql: String) {
         val statement = connection.prepare(sql)
@@ -247,6 +270,9 @@ object RoomModule {
 
     @Provides
     fun providesCategoryDao(db: ShizuStoreDatabase): CategoryDao = db.categoryDao()
+
+    @Provides
+    fun providesUseCaseDao(db: ShizuStoreDatabase): UseCaseDao = db.useCaseDao()
 
     @Provides
     fun providesSyncStateDao(db: ShizuStoreDatabase): SyncStateDao = db.syncStateDao()

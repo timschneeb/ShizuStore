@@ -104,6 +104,9 @@ data class AppEntity(
     val usageAnalyzedAt: String? = null,
     /** Report format generation of the cached text; older rows refetch once. */
     val usageReportVersion: Int? = null,
+    /** Slugs of the structured Shizuku capabilities the server assigned to this app. */
+    @ColumnInfo(defaultValue = "[]")
+    val useCases: List<String> = emptyList(),
     /** Detail-only artifacts kept in Room so a warm reopen composes them on its first emission. */
     @ColumnInfo(defaultValue = "[]")
     val screenshots: List<String> = emptyList(),

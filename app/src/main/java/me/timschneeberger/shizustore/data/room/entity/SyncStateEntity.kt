@@ -13,6 +13,7 @@ data class SyncStateEntity(
     @PrimaryKey val id: Int = SINGLETON_ID,
     val cursor: String? = null,
     val categoriesEtag: String? = null,
+    val useCasesEtag: String? = null,
     val listCommit: String? = null,
     val syncedAt: Long = 0L,
     /** Server popularity mode from /v1/meta: sort by installCount, not downloadTotal. */

@@ -180,11 +180,17 @@ knowing before touching a subsystem:
   closed-source apps" switch makes sync ask for `listing=main,closed_source`;
   turning it off drops cached `CLOSED_SOURCE` rows and re-bootstraps. Details
   show a forge source link normally but a `ClosedSourceNotice` for such rows.
-- Home: curated strips first, then one strip per
-  top-level category with at least 4 apps, plus a synthetic
-  "Dhizuku-compatible" section listing every `dhizukuDeclared` app. `POPULAR`
+- Home: curated strips first, then up to four use case strips with at least 4
+  apps each, then one strip per top-level category with at least 4 apps, plus a
+  synthetic "Dhizuku-compatible" section listing every `dhizukuDeclared` app.
+  Use case strips come from the server's `/v1/use-cases` vocabulary (synced with
+  its own ETag) and only list apps the classifier actually tagged; the More page
+  browses that tag via the local `useCases LIKE` filter. `POPULAR`
   ranks by `installCount`, hides itself, and its More page shows counts when the
   server reports `useInstallCountsForPopularity`.
+- Search home: below the category cloud the same use case vocabulary renders as
+  chips (no filter-sheet entry and no detail chips by design); tapping one opens
+  the list filtered by that use case.
 - App list: sort chips show shortened labels while the bottom sheet shows the
   full ones (stars = "Most starred" vs "Most starred on GitHub/GitLab",
   downloads = "Total downloads" vs "Total downloads on ShizuStore"); sheet rows
@@ -290,13 +296,15 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 ## Gotchas
 
 - The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), now at
-  version 12. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
+  version 13. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
   with defaults; `MIGRATION_6_7` swaps the marker classification for the AI usage
   report fields, `MIGRATION_7_8` adds `usageReportVersion`, `MIGRATION_8_9` drops
   the removed `blacklist` table, `MIGRATION_9_10` adds `app.updateIgnored`,
   `MIGRATION_10_11` persists the changelog, screenshots and README fields on the
-  `app` row, and `MIGRATION_11_12` adds the nullable `app.trendScore` behind the
-  Trending sort. A
+  `app` row, `MIGRATION_11_12` adds the nullable `app.trendScore` behind the
+  Trending sort, and `MIGRATION_12_13` adds the `app.useCases` slug list, the
+  `sync_state.useCasesEtag` ETag and the `use_case` vocabulary table behind the
+  use case rows. A
   fresh install creates the full schema in one step and cached catalogs upgrade
   in place. Old `AuroraDatabase` migrations are gone; export schemas to
   `app/schemas/` as usual.

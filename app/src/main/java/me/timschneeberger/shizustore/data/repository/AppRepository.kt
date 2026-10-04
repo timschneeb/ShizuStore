@@ -23,8 +23,10 @@ import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
 import me.timschneeberger.shizustore.data.room.dao.CategoryDao
 import me.timschneeberger.shizustore.data.room.dao.InstalledDao
 import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
+import me.timschneeberger.shizustore.data.room.dao.UseCaseDao
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
+import me.timschneeberger.shizustore.data.room.entity.UseCaseEntity
 import me.timschneeberger.shizustore.util.SHIZU_STORE_PACKAGE
 
 @Singleton
@@ -32,6 +34,7 @@ class AppRepository @Inject constructor(
     private val appDao: AppDao,
     private val appDownloadDao: AppDownloadDao,
     private val categoryDao: CategoryDao,
+    private val useCaseDao: UseCaseDao,
     private val syncStateDao: SyncStateDao,
     private val installedDao: InstalledDao,
     private val mapper: CatalogUiMapper
@@ -133,6 +136,8 @@ class AppRepository @Inject constructor(
     }
 
     fun observeCategories(): Flow<List<CategoryEntity>> = categoryDao.observeAll()
+
+    fun observeUseCases(): Flow<List<UseCaseEntity>> = useCaseDao.observeAll()
 
     /** Whole catalog for the home category sections; self-filtered like the pools. */
     fun observeAllApps(): Flow<List<ResolvedApp>> =

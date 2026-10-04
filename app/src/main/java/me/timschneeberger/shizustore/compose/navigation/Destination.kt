@@ -36,6 +36,7 @@ sealed class Destination {
 
     data class AppList(
         val categorySlug: String? = null,
+        val useCaseSlug: String? = null,
         val recommended: Boolean = false,
         val sort: AppSort = AppSort.NAME
     ) : Destination()

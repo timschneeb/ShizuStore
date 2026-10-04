@@ -43,6 +43,8 @@ data class ResolvedApp(
     val hasAds: Boolean = false,
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
+    /** Slugs of the server-assigned Shizuku use case tags. */
+    val useCases: List<String> = emptyList(),
     /** Locale label that differs from [name], when the APK ships one for a device locale. */
     val localizedName: String? = null,
     val stars: Int? = null,

@@ -16,6 +16,7 @@ import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.FavouriteEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
+import me.timschneeberger.shizustore.data.room.entity.UseCaseEntity
 import me.timschneeberger.shizustore.util.CommonUtil
 import me.timschneeberger.shizustore.util.Preferences
 import okhttp3.mockwebserver.Dispatcher
@@ -40,6 +41,7 @@ class CatalogSyncerTest : ApiTestBase() {
             api = api(),
             appDao = db.appDao(),
             categoryDao = db.categoryDao(),
+            useCaseDao = db.useCaseDao(),
             syncStateDao = db.syncStateDao(),
             updateStateRepository = updateStateRepository(),
             syncStatus = SyncStatusStore()
@@ -68,10 +70,51 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(mapOf("de" to "Alpha DE"), alpha.localizedLabels)
         assertEquals(BOOTSTRAP_CURSOR, db.syncStateDao().get()!!.cursor)
         assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
+        assertEquals(listOf("install-apps"), alpha.useCases)
 
         // The cursor is captured before the pages are read: meta first, apps second.
         assertEquals("/v1/meta", server.takeRequest().path)
         assertTrue(server.takeRequest().path!!.startsWith("/v1/apps"))
+    }
+
+    @Test
+    fun bootstrapRefreshesUseCasesAndStoresTheEtag() = runTest {
+        server.dispatcher = routes(
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to json(CATEGORIES),
+            "/v1/use-cases" to json(USE_CASES).addHeader("ETag", "\"uc-2-4\"")
+        )
+
+        val outcome = syncer.sync()
+
+        assertTrue(outcome is CatalogSyncOutcome.Success)
+        val useCases = db.useCaseDao().observeAll().first()
+        assertEquals(listOf("install-apps", "settings-writes"), useCases.map { it.slug })
+        assertEquals("Install and uninstall apps", useCases.first().name)
+        assertEquals("\"uc-2-4\"", db.syncStateDao().get()!!.useCasesEtag)
+    }
+
+    @Test
+    fun useCaseRefreshFailuresAreNonFatal() = runTest {
+        db.useCaseDao().upsertAll(
+            listOf(UseCaseEntity("install-apps", "Install and uninstall apps"))
+        )
+
+        server.dispatcher = routes(
+            "/v1/apps" to json(BOOTSTRAP_PAGE),
+            "/v1/meta" to json(META),
+            "/v1/categories" to json(CATEGORIES),
+            "/v1/use-cases" to MockResponse().setResponseCode(500)
+        )
+
+        val outcome = syncer.sync()
+
+        assertTrue(outcome is CatalogSyncOutcome.Success)
+        assertEquals(
+            listOf("install-apps"),
+            db.useCaseDao().observeAll().first().map { it.slug }
+        )
     }
 
     @Test
@@ -160,12 +203,14 @@ class CatalogSyncerTest : ApiTestBase() {
             )
         )
         db.categoryDao().upsertAll(listOf(CategoryEntity(slug = "stale", name = "Stale")))
+        db.useCaseDao().upsertAll(listOf(UseCaseEntity("stale-tag", "Stale tag")))
 
         syncer.clearCatalog()
 
         assertEquals(0, db.appDao().count())
         assertEquals(0, db.appDownloadDao().count())
         assertEquals(0, db.categoryDao().observeAll().first().size)
+        assertEquals(0, db.useCaseDao().observeAll().first().size)
         assertNull(db.syncStateDao().get())
 
         server.dispatcher = routes(
@@ -431,7 +476,8 @@ class CatalogSyncerTest : ApiTestBase() {
                   "targetSdk": 34, "compileSdk": 35, "localeCount": 3,
                   "abis": ["arm64-v8a"],
                   "localizedLabels": {"de": "Alpha DE"},
-                  "managers": ["shizuku"]
+                  "managers": ["shizuku"],
+                  "useCases": [{ "slug": "install-apps", "name": "Install and uninstall apps" }]
                 },
                 {
                   "slug": "beta", "name": "Beta", "description": "second",
@@ -537,6 +583,13 @@ class CatalogSyncerTest : ApiTestBase() {
 
         val CATEGORIES = """
             [ { "slug": "tools", "name": "Tools", "section": "apps", "appCount": 2, "children": [] } ]
+        """.trimIndent()
+
+        val USE_CASES = """
+            [
+              { "slug": "install-apps", "name": "Install and uninstall apps", "appCount": 3 },
+              { "slug": "settings-writes", "name": "Change system settings", "appCount": 1 }
+            ]
         """.trimIndent()
     }
 }

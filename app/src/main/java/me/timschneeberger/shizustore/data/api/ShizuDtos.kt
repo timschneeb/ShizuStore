@@ -56,7 +56,9 @@ data class AppSummaryDto(
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
-    val trackerTags: List<TrackerTagDto> = emptyList()
+    val trackerTags: List<TrackerTagDto> = emptyList(),
+    // Structured Shizuku capabilities from the server's use case classifier.
+    val useCases: List<UseCaseDto> = emptyList()
 )
 
 @Serializable
@@ -97,6 +99,21 @@ data class CategoryPathDto(
 data class TrackerTagDto(
     val name: String = "",
     val tags: List<String> = emptyList()
+)
+
+/** One structured Shizuku capability assigned by the server. */
+@Serializable
+data class UseCaseDto(
+    val slug: String,
+    val name: String = ""
+)
+
+/** A use case with its catalog-wide app count, for the search home and home sections. */
+@Serializable
+data class UseCaseCountDto(
+    val slug: String,
+    val name: String = "",
+    val appCount: Int = 0
 )
 
 @Serializable
@@ -160,7 +177,8 @@ data class AppDetailDto(
     // APK analysis signals from the primary download; empty until the server analyzed it.
     val dhizukuDeclared: Boolean = false,
     val trackers: List<String> = emptyList(),
-    val trackerTags: List<TrackerTagDto> = emptyList()
+    val trackerTags: List<TrackerTagDto> = emptyList(),
+    val useCases: List<UseCaseDto> = emptyList()
 )
 
 @Serializable

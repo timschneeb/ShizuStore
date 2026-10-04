@@ -96,6 +96,7 @@ import me.timschneeberger.shizustore.data.model.CategoryTag
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.data.model.flatten
+import me.timschneeberger.shizustore.data.room.entity.UseCaseEntity
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.viewmodel.AppListViewModel
 
@@ -118,6 +119,7 @@ fun AppListScreen(
 
     val currentArgs by viewModel.args.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
+    val useCases by viewModel.useCases.collectAsStateWithLifecycle()
     val history by viewModel.history.collectAsStateWithLifecycle()
     val syncing by viewModel.syncing.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
@@ -238,7 +240,11 @@ fun AppListScreen(
                             )
                         } else {
                             Text(
-                                text = listTitle(currentArgs, categories.orEmpty()),
+                                text = listTitle(
+                                    currentArgs,
+                                    categories.orEmpty(),
+                                    useCases.orEmpty()
+                                ),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -281,12 +287,14 @@ fun AppListScreen(
                 SearchHome(
                     history = history,
                     categories = categories.orEmpty(),
+                    useCases = useCases.orEmpty(),
                     onSearch = { query ->
                         searchFieldState.setTextAndPlaceCursorAtEnd(query)
                         viewModel.setQuery(query)
                     },
                     onClearHistory = viewModel::clearHistory,
-                    onCategory = viewModel::setCategory
+                    onCategory = viewModel::setCategory,
+                    onUseCase = viewModel::setUseCase
                 )
             } else {
                 ExpressivePullToRefreshBox(
@@ -367,9 +375,11 @@ fun AppSearchField(
 private fun SearchHome(
     history: List<String>,
     categories: List<CategoryTag>,
+    useCases: List<UseCaseEntity>,
     onSearch: (String) -> Unit,
     onClearHistory: () -> Unit,
     onCategory: (String?) -> Unit,
+    onUseCase: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -421,7 +431,69 @@ private fun SearchHome(
                 CategoryTagCloud(categories = categories, onCategory = onCategory)
             }
         }
+
+        if (useCases.isNotEmpty()) {
+            item(key = "useCases") {
+                Column(
+                    modifier = Modifier.padding(
+                        horizontal = dimensionResource(R.dimen.spacing_large)
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.title_use_cases),
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(
+                            vertical = dimensionResource(R.dimen.spacing_small)
+                        )
+                    )
+                    UseCaseTagCloud(useCases = useCases, onUseCase = onUseCase)
+                }
+            }
+        }
     }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun UseCaseTagCloud(
+    useCases: List<UseCaseEntity>,
+    onUseCase: (String?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val horizontal = dimensionResource(R.dimen.spacing_small)
+    val vertical = dimensionResource(R.dimen.spacing_xsmall)
+    FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(horizontal),
+        verticalArrangement = Arrangement.spacedBy(vertical)
+    ) {
+        AssistChip(
+            onClick = { onUseCase(null) },
+            label = { Text(stringResource(R.string.filter_all)) },
+            leadingIcon = { UseCaseTagIcon() },
+            modifier = Modifier.height(dimensionResource(R.dimen.chip_height))
+        )
+        useCases.forEach { useCase ->
+            AssistChip(
+                onClick = { onUseCase(useCase.slug) },
+                label = {
+                    Text(useCase.name, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                },
+                leadingIcon = { UseCaseTagIcon() },
+                modifier = Modifier.height(dimensionResource(R.dimen.chip_height))
+            )
+        }
+    }
+}
+
+@Composable
+private fun UseCaseTagIcon() {
+    Icon(
+        painter = painterResource(R.drawable.ic_shizuku_icon),
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_chip))
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -601,13 +673,20 @@ private fun AppRows(
 }
 
 @Composable
-private fun listTitle(args: AppListArgs, categories: List<CategoryTag>): String {
+private fun listTitle(
+    args: AppListArgs,
+    categories: List<CategoryTag>,
+    useCases: List<UseCaseEntity>
+): String {
     val flatCategories = remember(categories) { categories.flatten() }
     args.categorySlug?.let { slug ->
         if (SyntheticCategory.isDhizuku(slug)) {
             return stringResource(R.string.category_dhizuku)
         }
         return flatCategories.firstOrNull { it.slug == slug }?.name ?: slug
+    }
+    args.useCaseSlug?.let { slug ->
+        return useCases.firstOrNull { it.slug == slug }?.name ?: slug
     }
     return when {
         args.recommended -> stringResource(R.string.apps_recommended)

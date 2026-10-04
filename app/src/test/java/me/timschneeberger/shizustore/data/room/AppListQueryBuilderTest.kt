@@ -118,6 +118,36 @@ class AppListQueryBuilderTest {
     }
 
     @Test
+    fun useCaseFilterRequiresTheQuotedSlug() {
+        val query = AppListQueryBuilder.build(AppListArgs(useCaseSlug = "install-apps"))
+
+        assertEquals(
+            "SELECT * FROM app WHERE useCases LIKE '%' || ? || '%' ESCAPE '\\'" +
+                " ORDER BY name COLLATE NOCASE ASC",
+            query.sql
+        )
+        assertEquals(1, query.argCount)
+    }
+
+    @Test
+    fun blankUseCaseSlugIsIgnored() {
+        val query = AppListQueryBuilder.build(AppListArgs(useCaseSlug = "  "))
+
+        assertFalse(query.sql.contains("useCases"))
+        assertEquals(0, query.argCount)
+    }
+
+    @Test
+    fun useCaseFilterCombinesWithSearchBinds() {
+        val query = AppListQueryBuilder.build(
+            AppListArgs(query = "foo", useCaseSlug = "file-access")
+        )
+
+        assertTrue(query.sql.contains("useCases LIKE '%' || ? || '%' ESCAPE '\\'"))
+        assertEquals(4, query.argCount)
+    }
+
+    @Test
     fun allFiltersCombineWithAnd() {
         val query = AppListQueryBuilder.build(
             AppListArgs(

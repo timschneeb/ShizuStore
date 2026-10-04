@@ -43,6 +43,7 @@ import me.timschneeberger.shizustore.data.model.SyntheticCategory
 import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
 import me.timschneeberger.shizustore.data.repository.TrendingRepository
+import me.timschneeberger.shizustore.data.room.entity.UseCaseEntity
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.util.SearchHistoryStore
 
@@ -93,6 +94,10 @@ class AppListViewModel @Inject constructor(
             )
         }
         .flowOn(Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
+    /** Server-curated Shizuku use cases for the search home and home sections. */
+    val useCases: StateFlow<List<UseCaseEntity>?> = appRepository.observeUseCases()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     val history: StateFlow<List<String>> = searchHistory.history
@@ -165,6 +170,11 @@ class AppListViewModel @Inject constructor(
     fun setCategory(categorySlug: String?) {
         _atSearchHome.value = false
         _args.update { it.copy(categorySlug = categorySlug) }
+    }
+
+    fun setUseCase(useCaseSlug: String?) {
+        _atSearchHome.value = false
+        _args.update { it.copy(useCaseSlug = useCaseSlug) }
     }
 
     fun setPrice(price: AppPrice?) {

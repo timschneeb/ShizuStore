@@ -93,12 +93,11 @@ internal fun buildObtainiumExportJson(
  * Writes the export into the URI the storage access framework returned, so the
  * file lands wherever the user picked it instead of behind a share target.
  */
-internal suspend fun ContentResolver.writeObtainiumExport(uri: Uri, json: String): Boolean =
-    try {
-        withContext(Dispatchers.IO) {
-            openOutputStream(uri)?.use { it.write(json.toByteArray()) } != null
-        }
-    } catch (e: Exception) {
-        Log.e(TAG, "Could not write the Obtainium export", e)
-        false
+internal suspend fun ContentResolver.writeObtainiumExport(uri: Uri, json: String): Boolean = try {
+    withContext(Dispatchers.IO) {
+        openOutputStream(uri)?.use { it.write(json.toByteArray()) } != null
     }
+} catch (e: Exception) {
+    Log.e(TAG, "Could not write the Obtainium export", e)
+    false
+}

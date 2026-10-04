@@ -17,6 +17,7 @@ import me.timschneeberger.shizustore.data.room.dao.FavouriteDao
 import me.timschneeberger.shizustore.data.room.dao.IgnoredUpdateDao
 import me.timschneeberger.shizustore.data.room.dao.InstalledDao
 import me.timschneeberger.shizustore.data.room.dao.SyncStateDao
+import me.timschneeberger.shizustore.data.room.dao.UseCaseDao
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
@@ -25,15 +26,17 @@ import me.timschneeberger.shizustore.data.room.entity.FavouriteEntity
 import me.timschneeberger.shizustore.data.room.entity.IgnoredUpdateEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
+import me.timschneeberger.shizustore.data.room.entity.UseCaseEntity
 
 @Database(
-    version = 12,
+    version = 13,
     exportSchema = true,
     entities = [
         AppEntity::class,
         AppDownloadEntity::class,
         CategoryEntity::class,
         SyncStateEntity::class,
+        UseCaseEntity::class,
         InstalledEntity::class,
         Download::class,
         FavouriteEntity::class,
@@ -45,6 +48,7 @@ abstract class ShizuStoreDatabase : RoomDatabase() {
     abstract fun appDao(): AppDao
     abstract fun appDownloadDao(): AppDownloadDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun useCaseDao(): UseCaseDao
     abstract fun syncStateDao(): SyncStateDao
     abstract fun installedDao(): InstalledDao
     abstract fun downloadDao(): DownloadDao

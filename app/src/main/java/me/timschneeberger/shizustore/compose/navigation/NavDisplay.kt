@@ -124,6 +124,7 @@ fun ShizuNavDisplay(
                 backStack.add(
                     Screen.AppList(
                         categorySlug = destination.categorySlug,
+                        useCaseSlug = destination.useCaseSlug,
                         recommended = destination.recommended,
                         sort = destination.sort
                     )
@@ -213,6 +214,7 @@ fun ShizuNavDisplay(
                 AppListScreen(
                     args = AppListArgs(
                         categorySlug = key.categorySlug,
+                        useCaseSlug = key.useCaseSlug,
                         recommended = key.recommended,
                         sort = key.sort
                     ),
