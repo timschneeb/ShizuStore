@@ -87,7 +87,14 @@ off-screen page can swallow focus. The
   share one vocabulary, the screenshot viewer springs a zoom back to rest on
   dismiss, and the pull-to-refresh placeholder crossfades in over loaded content.
   All specs are hoisted to composable scope because the animation lambdas that
-  consume them are not composable. Settings -> Appearance has a Motion section
+  consume them are not composable. Compose honors those springs only on
+  uninterrupted enter/exit segments; a flip-back or an interrupted pop falls
+  back to a hardcoded, critically damped spring. `MotionFallbackPatch` swaps
+  that fallback for the active scheme's spring on startup and whenever the
+  Appearance switch changes, so interrupted slides stay expressive too; if a
+  future Compose renames the internal field the patch logs once and the app
+  keeps the framework behavior (`MotionFallbackPatchTest` fails the build
+  first). Settings -> Appearance has a Motion section
   with an Expressive motion switch (default on) that swaps the theme's
   `MotionScheme` between expressive and standard, calming both the M3 components
   and these specs when off. The shared-element icon transition suggested in

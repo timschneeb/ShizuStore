@@ -67,6 +67,11 @@ fun ShizuTheme(content: @Composable () -> Unit) {
         initialExpressiveMotion
     )
 
+    // Interrupted slides fall back to a hardcoded, non-expressive spring inside
+    // Compose; keep that fallback on the active motion scheme so quick tab and
+    // screen switches stay expressive too.
+    SideEffect { MotionFallbackPatch.install(expressiveMotion) }
+
     val useDynamicColor = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
     val lightScheme = if (useDynamicColor) {
