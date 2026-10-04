@@ -16,8 +16,8 @@
     <string name="action_close">关闭</string>
     <string name="action_collapse">折叠</string>
     <string name="action_expand">展开</string>
-    <string name="action_next">Next</string>
-    <string name="action_previous">Previous</string>
+    <string name="action_next">下一张</string>
+    <string name="action_previous">上一张</string>
     <string name="action_export">导出 APK</string>
     <string name="action_save_apk">保存 APK</string>
     <string name="action_favourite">添加到收藏</string>
@@ -35,6 +35,7 @@
     <string name="action_open_link">查看网站</string>
     <string name="action_retry">重试</string>
     <string name="action_save">保存</string>
+    <string name="action_export_obtainium">导出为 Obtainium JSON</string>
     <string name="action_scroll_down">向下滚动</string>
     <string name="action_search">搜索</string>
     <string name="action_share">分享</string>
@@ -66,6 +67,16 @@
     <string name="details_stats_stars_tooltip">源代码仓库的星标数。</string>
     <string name="details_stats_size">大小</string>
     <string name="details_stats_size_tooltip">APK 文件的下载大小。</string>
+    <string name="details_history_title">统计</string>
+    <string name="details_history_installs">安装次数</string>
+    <string name="details_history_installs_axis">每日下载量</string>
+    <string name="details_history_stars_axis">每周星标数</string>
+    <string name="details_history_downloads_last_week">过去一周新增 %1$s 次下载</string>
+    <string name="details_history_stars_last_week">过去一周新增 %1$s 个星标</string>
+    <string name="details_history_total_stars">星标总数：%1$s</string>
+    <string name="details_history_total_downloads">下载总数：%1$s</string>
+    <string name="details_history_chart_desc">最近 %2$d 天每日%1$s</string>
+    <string name="details_history_weekly_desc">最近 %2$d 周每周%1$s</string>
     <string name="details_more_about">关于此应用的更多信息</string>
     <string name="details_more_from_author">此开发者的更多应用</string>
     <string name="details_more_from_category">此分类下的更多应用</string>
@@ -81,6 +92,10 @@
     <string name="details_permissions_none">未请求任何权限</string>
     <string name="details_source_code">源代码</string>
     <string name="details_obtainium">添加到 Obtainium</string>
+    <string name="obtainium_export_empty">没有包含可跟踪来源的应用可导出</string>
+    <string name="obtainium_export_failed">无法保存导出文件</string>
+    <string name="obtainium_import_title">Obtainium 导出已保存</string>
+    <string name="obtainium_import_message">请打开 Obtainium 或兼容分支，前往设置，通过导入/导出从所选位置导入 %1$s。</string>
     <string name="details_store">应用商店</string>
     <string name="details_play_store_notice">此应用仅在 Google Play 提供。点击打开详情页面。</string>
     <string name="details_closed_source_notice">此应用为闭源软件。它的代码是不公开的，因此社区无法轻易验证其行为。</string>
@@ -219,7 +234,11 @@
     <string name="search_history">最近搜索</string>
     <string name="search_sort_name">名称</string>
     <string name="search_sort_stars">最多星标</string>
+    <string name="search_sort_stars_full">GitHub/GitLab 上最多星标</string>
     <string name="search_sort_popularity">受欢迎程度</string>
+    <string name="search_sort_popularity_short">总下载量</string>
+    <string name="search_sort_trending">ShizuStore 上最近 14 天的新安装数（趋势）</string>
+    <string name="search_sort_trending_short">趋势</string>
     <string name="search_sort_size">体积从大到小</string>
     <string name="filter_all">全部</string>
     <string name="filter_price">价格</string>
@@ -256,6 +275,8 @@
     <string name="settings_catalog_title">目录</string>
     <string name="settings_dynamic_color_subtitle">从您的壁纸中提取颜色。需要 Android 12 及更高版本。</string>
     <string name="settings_dynamic_color_title">动态配色</string>
+    <string name="settings_expressive_motion_subtitle">富有弹性的 Material 3 动画。关闭后使用标准动效。</string>
+    <string name="settings_expressive_motion_title">表现力动画</string>
     <string name="settings_group_updates_summary">检查计划、网络限制和自动安装</string>
     <string name="settings_group_updates_title">更新</string>
     <string name="settings_install_reporting_subtitle">在应用完成安装时向服务器发送匿名的安装次数统计。用于生成受欢迎程度排名。</string>
@@ -268,6 +289,7 @@
     <string name="settings_installer_custom_source_title">使用自定义安装来源</string>
     <string name="settings_installer_summary">选择用于安装已下载应用包的安装器</string>
     <string name="settings_installer_title">应用安装器</string>
+    <string name="settings_motion_title">动效</string>
     <string name="settings_network_summary">HTTP 或 SOCKS 代理及隐私设置</string>
     <string name="settings_network_title">网络</string>
     <string name="settings_permissions_summary">安装、通知和电池权限</string>
@@ -279,6 +301,9 @@
     <string name="settings_proxy_title">代理</string>
     <string name="settings_server_active">当前使用的服务器</string>
     <string name="settings_server_custom">自定义服务器</string>
+    <string name="settings_server_info">服务器信息</string>
+    <string name="settings_server_info_commit">awesome-shizuku 提交 %1$s</string>
+    <string name="settings_server_info_counts">%1$d 个应用，%2$d 个分类</string>
     <string name="settings_server_invalid">请输入有效的 http 或 https URL。</string>
     <string name="settings_server_maintenance">维护中</string>
     <string name="settings_server_not_configured">未配置</string>
@@ -296,6 +321,8 @@
     <string name="settings_show_closed_source_title">显示闭源应用</string>
     <string name="settings_show_tracker_info_subtitle">在应用详情页显示 APK 中检测到的跟踪器（Exodus Privacy 代码签名）。</string>
     <string name="settings_show_tracker_info_title">显示跟踪器信息</string>
+    <string name="settings_show_statistics_subtitle">在应用详情页显示安装量和星标统计图表。</string>
+    <string name="settings_show_statistics_title">显示统计信息</string>
     <string name="settings_theme_dark">深色</string>
     <string name="settings_theme_light">浅色</string>
     <string name="settings_theme_system">系统默认</string>
