@@ -77,8 +77,10 @@ off-screen page can swallow focus. The
   MaterialExpressiveTheme components around it. Navigation 3 pushes/pops use
   defaultSpatial plus defaultEffects, tab changes slide directly between the two
   selected tabs on the spatial spec (the middle tab never renders, and the
-  Appearance toggle makes the slide expressive), the top bar title crossfades on
-  tab change,
+  Appearance toggle makes the slide expressive). All three tabs share one top
+  bar that stays fixed above the animated content; on Search its title slot
+  swaps to the search field and the action icons fade out, so the scaffold
+  padding never changes between tabs and the slide stays purely horizontal,
   `AnimatedAppIcon` springs its corner radius into a circle while installing, the
   updates, installed, downloads, favourites and ignored lists use
   `Modifier.animateItem` with scheme specs, the sources chevron and expanded rows

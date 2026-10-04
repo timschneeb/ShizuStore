@@ -107,6 +107,9 @@ fun AppListScreen(
     searchHome: Boolean = false,
     showBack: Boolean = false,
     searchFocusRequest: Int = 0,
+    showTopBar: Boolean = true,
+    textFieldState: TextFieldState? = null,
+    focusRequester: FocusRequester? = null,
     onBack: () -> Unit = {},
     onNavigateTo: (Destination) -> Unit = {},
     viewModel: AppListViewModel = hiltViewModel()
@@ -125,11 +128,13 @@ fun AppListScreen(
 
     var searchExpanded by rememberSaveable { mutableStateOf(searchHome) }
 
-    val searchFieldState = rememberTextFieldState(args.query)
+    // A caller can hand in the field and its focus target when this screen is
+    // hosted under a shared top bar; standalone it owns both.
+    val searchFieldState = textFieldState ?: rememberTextFieldState(args.query)
+    val searchFocusRequester = focusRequester ?: remember { FocusRequester() }
     // Saveable (not plain remember): the list entry leaves composition while a
     // detail screen is on top, and only rememberSaveable survives the return.
     val listState = rememberSaveable(saver = LazyListState.Saver) { LazyListState() }
-    val searchFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     // Guarded by appliedArgs: LaunchedEffect also fires when the screen re-enters
@@ -197,59 +202,63 @@ fun AppListScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    when {
-                        showBack -> IconButton(onClick = onBack) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_back),
-                                contentDescription = stringResource(R.string.action_back)
-                            )
-                        }
-
-                        searchHome && !atSearchHome -> IconButton(
-                            onClick = {
-                                searchFieldState.setTextAndPlaceCursorAtEnd("")
-                                viewModel.clearAll()
+            // Hosted under MainScreen's shared bar the field already exists up
+            // there, so this screen must not stack a second bar below it.
+            if (showTopBar) {
+                TopAppBar(
+                    navigationIcon = {
+                        when {
+                            showBack -> IconButton(onClick = onBack) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_arrow_back),
+                                    contentDescription = stringResource(R.string.action_back)
+                                )
                             }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_back),
-                                contentDescription = stringResource(R.string.action_back)
+
+                            searchHome && !atSearchHome -> IconButton(
+                                onClick = {
+                                    searchFieldState.setTextAndPlaceCursorAtEnd("")
+                                    viewModel.clearAll()
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_arrow_back),
+                                    contentDescription = stringResource(R.string.action_back)
+                                )
+                            }
+                        }
+                    },
+                    title = {
+                        if (searchHome || searchExpanded) {
+                            AppSearchField(
+                                textFieldState = searchFieldState,
+                                onQueryChange = viewModel::setQuery,
+                                onSearchCleared = { viewModel.setQuery("") },
+                                focusRequester = searchFocusRequester
+                            )
+                        } else {
+                            Text(
+                                text = listTitle(currentArgs, categories.orEmpty()),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                    }
-                },
-                title = {
-                    if (searchHome || searchExpanded) {
-                        AppSearchField(
-                            textFieldState = searchFieldState,
-                            onQueryChange = viewModel::setQuery,
-                            onSearchCleared = { viewModel.setQuery("") },
-                            focusRequester = searchFocusRequester
-                        )
-                    } else {
-                        Text(
-                            text = listTitle(currentArgs, categories.orEmpty()),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                },
-                actions = {
-                    if (!searchHome && !searchExpanded) {
-                        IconButton(onClick = { searchExpanded = true }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_search),
-                                contentDescription = stringResource(R.string.action_search)
-                            )
+                    },
+                    actions = {
+                        if (!searchHome && !searchExpanded) {
+                            IconButton(onClick = { searchExpanded = true }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_search),
+                                    contentDescription = stringResource(R.string.action_search)
+                                )
+                            }
                         }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    )
                 )
-            )
+            }
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -307,7 +316,7 @@ fun AppListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
-private fun AppSearchField(
+fun AppSearchField(
     textFieldState: TextFieldState,
     onQueryChange: (String) -> Unit,
     onSearchCleared: () -> Unit,

@@ -12,15 +12,21 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -36,6 +42,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -52,9 +59,11 @@ import me.timschneeberger.shizustore.compose.permission.rememberNotificationPerm
 import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.compose.ui.applist.AppListScreen
+import me.timschneeberger.shizustore.compose.ui.applist.AppSearchField
 import me.timschneeberger.shizustore.compose.ui.apps.AppsScreen
 import me.timschneeberger.shizustore.compose.ui.updates.UpdatesScreen
 import me.timschneeberger.shizustore.data.model.AppListArgs
+import me.timschneeberger.shizustore.viewmodel.AppListViewModel
 import me.timschneeberger.shizustore.viewmodel.UpdatesViewModel
 
 internal enum class MainTab(
@@ -70,6 +79,7 @@ internal enum class MainTab(
 fun MainScreen(
     initialTab: Int = 0,
     updatesViewModel: UpdatesViewModel = hiltViewModel(),
+    searchViewModel: AppListViewModel = hiltViewModel(),
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val updateCount by updatesViewModel.updateCount.collectAsStateWithLifecycle()
@@ -104,49 +114,103 @@ fun MainScreen(
     // not when the user arrives via the bottom navigation.
     var searchFocusRequest by remember { mutableStateOf(0) }
 
+    val openSearch: () -> Unit = {
+        currentTab = MainTab.SEARCH
+        searchFocusRequest++
+    }
+    val openDownloads: () -> Unit = { onNavigateTo(Destination.Downloads) }
+    val openMore: () -> Unit = { showMoreSheet = true }
+
+    val searchFieldState = rememberTextFieldState("")
+    val searchFocusRequester = remember { FocusRequester() }
+    val atSearchHome by searchViewModel.atSearchHome.collectAsStateWithLifecycle()
+
+    // One top bar serves all three tabs; on Search it swaps its title for the
+    // field. Keeping the bar in place means the scaffold padding never changes
+    // between tabs, so the content slide below stays purely horizontal.
     Scaffold(
         topBar = {
-            if (currentTab != MainTab.SEARCH) {
-                TopAppBar(
-                    titleContent = {
+            TopAppBar(
+                titleContent = {
+                    // The box centers both states on the same midline, so the
+                    // field can only fade (and rise slightly on enter) instead
+                    // of being dragged down with the slot as its height changes.
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         AnimatedContent(
                             targetState = currentTab,
                             transitionSpec = {
                                 fadeIn(tabFadeSpec) togetherWith fadeOut(tabFadeSpec)
                             },
+                            contentAlignment = Alignment.CenterStart,
                             label = "MainTopBarTitle"
                         ) { tab ->
-                            Text(text = stringResource(tab.labelRes))
-                        }
-                    },
-                    showNavigationIcon = false,
-                    actions = {
-                        IconButton(
-                            onClick = {
-                                currentTab = MainTab.SEARCH
-                                searchFocusRequest++
+                            if (tab != MainTab.SEARCH) {
+                                Text(text = stringResource(tab.labelRes))
                             }
+                        }
+                        AnimatedVisibility(
+                            visible = currentTab == MainTab.SEARCH,
+                            enter = fadeIn(tabFadeSpec) +
+                                slideInVertically(tabSlideSpec) { it / 2 },
+                            exit = fadeOut(tabFadeSpec)
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_search),
-                                contentDescription = stringResource(R.string.action_search)
-                            )
-                        }
-                        IconButton(onClick = { onNavigateTo(Destination.Downloads) }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_download_manager),
-                                contentDescription = stringResource(R.string.title_downloads)
-                            )
-                        }
-                        IconButton(onClick = { showMoreSheet = true }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_settings_outlined),
-                                contentDescription = stringResource(R.string.action_more)
+                            AppSearchField(
+                                textFieldState = searchFieldState,
+                                onQueryChange = searchViewModel::setQuery,
+                                onSearchCleared = { searchViewModel.setQuery("") },
+                                focusRequester = searchFocusRequester
                             )
                         }
                     }
-                )
-            }
+                },
+                navigationContent = {
+                    if (currentTab == MainTab.SEARCH && !atSearchHome) {
+                        IconButton(
+                            onClick = {
+                                searchFieldState.setTextAndPlaceCursorAtEnd("")
+                                searchViewModel.clearAll()
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_arrow_back),
+                                contentDescription = stringResource(R.string.action_back)
+                            )
+                        }
+                    }
+                },
+                showNavigationIcon = false,
+                actions = {
+                    AnimatedVisibility(
+                        visible = currentTab != MainTab.SEARCH,
+                        enter = fadeIn(tabFadeSpec),
+                        exit = fadeOut(tabFadeSpec)
+                    ) {
+                        Row {
+                            IconButton(onClick = openSearch) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_search),
+                                    contentDescription = stringResource(R.string.action_search)
+                                )
+                            }
+                            IconButton(onClick = openDownloads) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_download_manager),
+                                    contentDescription = stringResource(R.string.title_downloads)
+                                )
+                            }
+                            IconButton(onClick = openMore) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_settings_outlined),
+                                    contentDescription = stringResource(R.string.action_more)
+                                )
+                            }
+                        }
+                    }
+                }
+            )
         },
         bottomBar = {
             NavigationBar {
@@ -199,7 +263,11 @@ fun MainScreen(
                         args = AppListArgs(),
                         searchHome = true,
                         searchFocusRequest = searchFocusRequest,
-                        onNavigateTo = onNavigateTo
+                        showTopBar = false,
+                        textFieldState = searchFieldState,
+                        focusRequester = searchFocusRequester,
+                        onNavigateTo = onNavigateTo,
+                        viewModel = searchViewModel
                     )
                     MainTab.UPDATES -> UpdatesScreen(
                         viewModel = updatesViewModel,

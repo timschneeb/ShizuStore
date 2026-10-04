@@ -27,7 +27,8 @@ fun TopAppBar(
     showNavigationIcon: Boolean = true,
     onNavigateBack: () -> Unit = {},
     actions: @Composable (RowScope.() -> Unit) = {},
-    titleContent: (@Composable () -> Unit)? = null
+    titleContent: (@Composable () -> Unit)? = null,
+    navigationContent: (@Composable () -> Unit)? = null
 ) {
     val colors = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.surfaceContainer
@@ -42,8 +43,9 @@ fun TopAppBar(
             }
         },
         navigationIcon = {
-            if (showNavigationIcon) {
-                IconButton(onClick = onNavigateBack) {
+            when {
+                navigationContent != null -> navigationContent()
+                showNavigationIcon -> IconButton(onClick = onNavigateBack) {
                     Icon(
                         painter = painterResource(R.drawable.ic_arrow_back),
                         contentDescription = stringResource(R.string.action_back)
