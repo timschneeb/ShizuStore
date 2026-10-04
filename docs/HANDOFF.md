@@ -61,10 +61,11 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   unaffected. The phone Compose UI is what runs on TV.
 - Remote and keyboard navigation: `Theme.kt` provides
   `LocalRippleThemeConfiguration = RippleDefaults.InsetFocusRingThemeConfiguration`
-  so every ripple-based control gets a visible focus ring. `MainScreen` detects a
-  remote or hardware keyboard (`Configuration.keyboard != KEYBOARD_NOKEYS` or TV
-  `uiMode`) and focuses the current tab on launch; `HorizontalPager` uses
-  `beyondViewportPageCount = 0` so an off-screen tab cannot swallow focus. The
+so every ripple-based control gets a visible focus ring. `MainScreen` detects a
+remote or hardware keyboard (`Configuration.keyboard != KEYBOARD_NOKEYS` or TV
+`uiMode`) and focuses the current tab on launch; tab content lives in an
+`AnimatedContent` that composes only the outgoing and incoming tabs, so no
+off-screen page can swallow focus. The
   search field only force-opens the soft IME when no hardware keyboard is present.
   The screenshot viewer has focusable close/previous/next controls and starts on
   close; it also supports pinch zoom (up to 5x, one-finger pan) and pauses
@@ -74,7 +75,10 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   exposes `motionSpatialSpec` / `motionFastSpatialSpec` / `motionEffectsSpec`, which
   read `MaterialTheme.motionScheme`, so bespoke motion stays in step with the
   MaterialExpressiveTheme components around it. Navigation 3 pushes/pops use
-  defaultSpatial plus defaultEffects, the top bar title crossfades on tab change,
+  defaultSpatial plus defaultEffects, tab changes slide directly between the two
+  selected tabs on the spatial spec (the middle tab never renders, and the
+  Appearance toggle makes the slide expressive), the top bar title crossfades on
+  tab change,
   `AnimatedAppIcon` springs its corner radius into a circle while installing, the
   updates, installed, downloads, favourites and ignored lists use
   `Modifier.animateItem` with scheme specs, the sources chevron and expanded rows

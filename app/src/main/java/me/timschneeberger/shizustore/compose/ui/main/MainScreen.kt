@@ -14,13 +14,13 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -34,7 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -42,14 +42,15 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.permission.rememberNotificationPermissionRequest
 import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.compose.ui.applist.AppListScreen
 import me.timschneeberger.shizustore.compose.ui.apps.AppsScreen
 import me.timschneeberger.shizustore.compose.ui.updates.UpdatesScreen
@@ -72,14 +73,15 @@ fun MainScreen(
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val updateCount by updatesViewModel.updateCount.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(
-        initialPage = initialTab.coerceIn(0, MainTab.entries.size - 1)
-    ) { MainTab.entries.size }
+    var currentTab by rememberSaveable {
+        mutableStateOf(MainTab.entries[initialTab.coerceIn(0, MainTab.entries.size - 1)])
+    }
 
-    // The pager and its title stay on the critically damped effects curve, so
-    // tab glides keep today's feel while the title crossfade matches them.
-    val tabMotionSpec = motionEffectsSpec<Float>()
+    // Hoisted here: AnimatedContent's transition lambda is not composable. The
+    // slide is spatial, so the Appearance toggle makes tab changes expressive;
+    // the title crossfade stays on the matching effects curve.
+    val tabSlideSpec = motionSpatialSpec<IntOffset>()
+    val tabFadeSpec = motionEffectsSpec<Float>()
 
     val requestNotifications = rememberNotificationPermissionRequest()
     LaunchedEffect(Unit) { requestNotifications() }
@@ -93,7 +95,7 @@ fun MainScreen(
         // Touch-only phones keep their clean launch; remote and keyboard users
         // get a visible starting point for the first arrow press.
         if (hasRemoteInput) {
-            tabFocusRequesters[pagerState.currentPage].requestFocus()
+            tabFocusRequesters[currentTab.ordinal].requestFocus()
         }
     }
 
@@ -104,14 +106,13 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            val currentTab = MainTab.entries[pagerState.currentPage]
             if (currentTab != MainTab.SEARCH) {
                 TopAppBar(
                     titleContent = {
                         AnimatedContent(
                             targetState = currentTab,
                             transitionSpec = {
-                                fadeIn(tabMotionSpec) togetherWith fadeOut(tabMotionSpec)
+                                fadeIn(tabFadeSpec) togetherWith fadeOut(tabFadeSpec)
                             },
                             label = "MainTopBarTitle"
                         ) { tab ->
@@ -122,13 +123,8 @@ fun MainScreen(
                     actions = {
                         IconButton(
                             onClick = {
-                                coroutineScope.launch {
-                                    pagerState.animateScrollToPage(
-                                        MainTab.SEARCH.ordinal,
-                                        animationSpec = tabMotionSpec
-                                    )
-                                    searchFocusRequest++
-                                }
+                                currentTab = MainTab.SEARCH
+                                searchFocusRequest++
                             }
                         ) {
                             Icon(
@@ -157,15 +153,8 @@ fun MainScreen(
                 MainTab.entries.forEachIndexed { index, tab ->
                     NavigationBarItem(
                         modifier = Modifier.focusRequester(tabFocusRequesters[index]),
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(
-                                    index,
-                                    animationSpec = tabMotionSpec
-                                )
-                            }
-                        },
+                        selected = currentTab == tab,
+                        onClick = { currentTab = tab },
                         icon = {
                             val icon = painterResource(tab.iconRes)
                             if (tab == MainTab.UPDATES && updateCount > 0) {
@@ -188,15 +177,23 @@ fun MainScreen(
                 .consumeWindowInsets(paddingValues)
                 .fillMaxSize()
         ) {
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-                // Do not pre-compose the neighbor tab: an off-screen page is
-                // still a focus target and can swallow arrow-key navigation.
-                beyondViewportPageCount = 0,
+            AnimatedContent(
+                targetState = currentTab,
+                // Direct slide between any two tabs; the pager used to glide
+                // through the search page when jumping between apps and updates.
+                transitionSpec = {
+                    if (targetState.ordinal > initialState.ordinal) {
+                        (slideInHorizontally(tabSlideSpec) { it } + fadeIn(tabFadeSpec)) togetherWith
+                            (slideOutHorizontally(tabSlideSpec) { -it } + fadeOut(tabFadeSpec))
+                    } else {
+                        (slideInHorizontally(tabSlideSpec) { -it } + fadeIn(tabFadeSpec)) togetherWith
+                            (slideOutHorizontally(tabSlideSpec) { it } + fadeOut(tabFadeSpec))
+                    }
+                },
+                label = "MainTabContent",
                 modifier = Modifier.fillMaxSize()
-            ) { page ->
-                when (MainTab.entries[page]) {
+            ) { tab ->
+                when (tab) {
                     MainTab.APPS -> AppsScreen(onNavigateTo = onNavigateTo)
                     MainTab.SEARCH -> AppListScreen(
                         args = AppListArgs(),
