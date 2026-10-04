@@ -35,6 +35,7 @@
     <string name="action_open_link">Visualizza sito web</string>
     <string name="action_retry">Riprova</string>
     <string name="action_save">Salva</string>
+    <string name="action_export_obtainium">Export as Obtainium JSON</string>
     <string name="action_scroll_down">Scorri in basso</string>
     <string name="action_search">Cerca</string>
     <string name="action_share">Condividi</string>
@@ -66,6 +67,16 @@
     <string name="details_stats_stars_tooltip">Numero di stelle nel repository del codice sorgente.</string>
     <string name="details_stats_size">Dimensione</string>
     <string name="details_stats_size_tooltip">Dimensione del download del file APK.</string>
+    <string name="details_history_title">Statistics</string>
+    <string name="details_history_installs">Installs</string>
+    <string name="details_history_installs_axis">Downloads per day</string>
+    <string name="details_history_stars_axis">Stars per week</string>
+    <string name="details_history_downloads_last_week">%1$s new downloads in the last week</string>
+    <string name="details_history_stars_last_week">%1$s new stars in the last week</string>
+    <string name="details_history_total_stars">Total stars: %1$s</string>
+    <string name="details_history_total_downloads">Total downloads: %1$s</string>
+    <string name="details_history_chart_desc">Daily %1$s for the last %2$d days</string>
+    <string name="details_history_weekly_desc">%1$s per week for the last %2$d weeks</string>
     <string name="details_more_about">Maggiori informazioni su questa app</string>
     <string name="details_more_from_author">Altre app di questo sviluppatore</string>
     <string name="details_more_from_category">Altro da questa categoria</string>
@@ -82,6 +93,10 @@
     <string name="details_permissions_none">Nessuna autorizzazione richiesta</string>
     <string name="details_source_code">Codice sorgente</string>
     <string name="details_obtainium">Aggiungi a Obtainium</string>
+    <string name="obtainium_export_empty">No apps with a trackable source to export</string>
+    <string name="obtainium_export_failed">Could not save the export</string>
+    <string name="obtainium_import_title">Obtainium export saved</string>
+    <string name="obtainium_import_message">Open Obtainium or a compatible fork, go to Settings and use Import/Export to import %1$s from the location you picked.</string>
     <string name="details_store">Store</string>
     <string name="details_play_store_notice">Questa app è disponibile solo su Google Play. Tocca per aprire l\'elenco.</string>
     <string name="details_closed_source_notice">Questa app è closed source. Il suo codice non è pubblico, quindi la community non può verificare facilmente cosa fa.</string>
@@ -226,7 +241,11 @@
     <string name="search_history">Ricerche recenti</string>
     <string name="search_sort_name">Nome</string>
     <string name="search_sort_stars">Più votate</string>
+    <string name="search_sort_stars_full">Most starred on GitHub/GitLab</string>
     <string name="search_sort_popularity">Popolarità</string>
+    <string name="search_sort_popularity_short">Total downloads</string>
+    <string name="search_sort_trending">New installations in the last 14 days on ShizuStore (Trending)</string>
+    <string name="search_sort_trending_short">Trending</string>
     <string name="search_sort_size">Più grandi prima</string>
     <string name="filter_all">Tutte</string>
     <string name="filter_price">Prezzo</string>
@@ -263,6 +282,8 @@
     <string name="settings_catalog_title">Catalogo</string>
     <string name="settings_dynamic_color_subtitle">Estrae i colori dal tuo sfondo. Android 12 e versioni successive.</string>
     <string name="settings_dynamic_color_title">Colore dinamico</string>
+    <string name="settings_expressive_motion_subtitle">Elastic Material 3 animations. Turn off for standard motion.</string>
+    <string name="settings_expressive_motion_title">Expressive animations</string>
     <string name="settings_group_updates_summary">Verifica pianificazione, limiti di rete e installazioni automatiche</string>
     <string name="settings_group_updates_title">Aggiornamenti</string>
     <string name="settings_install_reporting_subtitle">Invia al server un conteggio anonimo delle installazioni quando viene installata un\'app. Alimenta la classifica di popolarità.</string>
@@ -275,6 +296,7 @@
     <string name="settings_installer_custom_source_title">Usa un\'origine di installazione personalizzata</string>
     <string name="settings_installer_summary">Quale installer utilizzare per i pacchetti scaricati</string>
     <string name="settings_installer_title">Installer delle app</string>
+    <string name="settings_motion_title">Motion</string>
     <string name="settings_network_summary">HTTP or SOCKS proxy and privacy</string>
     <string name="settings_network_title">Rete</string>
     <string name="settings_permissions_summary">Autorizzazioni all\'installazione, alle notifiche e alla batteria</string>
@@ -286,6 +308,9 @@
     <string name="settings_proxy_title">Proxy</string>
     <string name="settings_server_active">Server attivo</string>
     <string name="settings_server_custom">Server personalizzato</string>
+    <string name="settings_server_info">Server info</string>
+    <string name="settings_server_info_commit">awesome-shizuku commit %1$s</string>
+    <string name="settings_server_info_counts">%1$d apps, %2$d categories</string>
     <string name="settings_server_invalid">Inserisci un URL http o https valido.</string>
     <string name="settings_server_maintenance">Manutenzione</string>
     <string name="settings_server_not_configured">Non configurato</string>
@@ -303,6 +328,8 @@
     <string name="settings_show_closed_source_title">Mostra applicazioni closed-source</string>
     <string name="settings_show_tracker_info_subtitle">Shows trackers detected in an app\'s APK (Exodus Privacy code signatures) on its details page.</string>
     <string name="settings_show_tracker_info_title">Mostra informazioni tracker</string>
+    <string name="settings_show_statistics_subtitle">Shows the install and star statistics charts on an app\'s details page.</string>
+    <string name="settings_show_statistics_title">Show statistics</string>
     <string name="settings_theme_dark">Scuro</string>
     <string name="settings_theme_light">Chiaro</string>
     <string name="settings_theme_system">Predefinito di sistema</string>
