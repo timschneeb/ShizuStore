@@ -189,6 +189,8 @@ class AppDetailsViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     // Other apps by the same stable developer key; empty until a profile is known.
+    // Eager on purpose: the row sits at the bottom of the page, and a query that
+    // only starts once a fling reaches it grows the list and stops the scroll short.
     val moreFromAuthor: StateFlow<List<ResolvedApp>> = slug
         .filterNotNull()
         .distinctUntilChanged()
@@ -207,7 +209,7 @@ class AppDetailsViewModel @Inject constructor(
         }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            SharingStarted.Eagerly,
             emptyList()
         )
 
@@ -217,7 +219,7 @@ class AppDetailsViewModel @Inject constructor(
         .flatMapLatest { currentSlug -> observeCategorySlug(currentSlug) }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            SharingStarted.Eagerly,
             null
         )
 
@@ -260,6 +262,8 @@ class AppDetailsViewModel @Inject constructor(
     ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
     // Other apps in the same category; empty until a profile is known.
+    // Eager for the same reason as the author row: it is the last item, so it
+    // must be measured before the user can fling down to it.
     val moreFromCategory: StateFlow<List<ResolvedApp>> = slug
         .filterNotNull()
         .distinctUntilChanged()
@@ -276,7 +280,7 @@ class AppDetailsViewModel @Inject constructor(
         }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            SharingStarted.Eagerly,
             emptyList()
         )
 

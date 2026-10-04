@@ -133,7 +133,11 @@ knowing before touching a subsystem:
    the segmented button's label slot because M3 sizes that slot as the whole
    control, so an empty label would clip the icons. Trackers, Dhizuku
   and localized labels come from server analysis fields; the list has no
-  trackers badge (deliberate).
+  trackers badge (deliberate). The author and category carousels at the very
+  bottom subscribe eagerly instead of `WhileSubscribed`: their rows have to be
+  measured before a fling reaches them, because height that only lands once the
+  item first composes grows the list mid-fling and stops the scroll just short
+  of the sections.
 - Ignored updates: `ignored_update` writes a derived `AppEntity.updateIgnored`
   next to the truthful `updateAvailable`; updates lists, the updatable count and
   badges exclude ignored rows while the details Update button stays. A null
