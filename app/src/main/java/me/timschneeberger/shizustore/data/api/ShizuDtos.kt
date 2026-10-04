@@ -238,3 +238,45 @@ data class InstallReportDto(
     val versionCode: Long,
     val installType: String
 )
+
+@Serializable
+data class TrendingItemDto(
+    val slug: String = "",
+    val installs: Long = 0,
+    val previousInstalls: Long = 0,
+    val delta: Long = 0
+)
+
+@Serializable
+data class TrendingDto(
+    // Server timestamp captured before the response's reads; not a cursor here,
+    // the trending window simply recomputes on the next fetch.
+    val generatedAt: String = "",
+    val windowDays: Int = 0,
+    val sort: String = "",
+    val items: List<TrendingItemDto> = emptyList()
+)
+
+@Serializable
+data class InstallDayDto(
+    val day: String = "",
+    val count: Long = 0
+)
+
+@Serializable
+data class StarDayDto(
+    val day: String = "",
+    val stars: Int = 0
+)
+
+/**
+ * Per-day history for one app; installs cover the whole window zero-filled,
+ * days before the first star snapshot are omitted (not zeroed).
+ */
+@Serializable
+data class AppHistoryDto(
+    val slug: String = "",
+    val generatedAt: String = "",
+    val installs: List<InstallDayDto> = emptyList(),
+    val stars: List<StarDayDto> = emptyList()
+)

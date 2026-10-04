@@ -30,6 +30,7 @@ import me.timschneeberger.shizustore.data.model.CategoryTagTree
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
+import me.timschneeberger.shizustore.data.repository.TrendingRepository
 import me.timschneeberger.shizustore.data.sync.CatalogSyncFailure
 import me.timschneeberger.shizustore.util.Preferences
 
@@ -38,6 +39,7 @@ class AppsViewModel @Inject constructor(
     appRepository: AppRepository,
     mapper: CatalogUiMapper,
     private val syncHelper: SyncHelper,
+    private val trendingRepository: TrendingRepository,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -58,6 +60,11 @@ class AppsViewModel @Inject constructor(
         recommendedSeed.value = Random.nextLong()
         randomSeed.value = Random.nextLong()
         syncHelper.refresh()
+        viewModelScope.launch { trendingRepository.refresh() }
+    }
+
+    init {
+        viewModelScope.launch { trendingRepository.refresh() }
     }
 
     val shizukuCardDismissed: StateFlow<Boolean> =
@@ -117,14 +124,20 @@ class AppsViewModel @Inject constructor(
         ).filter { it.apps.isNotEmpty() }
     }
 
-    /** Curated rows first, then one strip per qualifying top-level category. */
+    /** Trending row first, then curated rows, then one strip per qualifying top-level category. */
     val groups: StateFlow<List<AppGroup>?> = combine(
         curatedGroups,
         appRepository.observeAllApps(),
         appRepository.observeCategories(),
-        appRepository.observePopularityFlag()
-    ) { curated, apps, categories, useInstallCounts ->
-        curated + CategorySections.build(
+        appRepository.observePopularityFlag(),
+        trendingRepository.trending
+    ) { curated, apps, categories, useInstallCounts, trending ->
+        val trendingGroup = if (trending.isEmpty()) {
+            emptyList()
+        } else {
+            listOf(AppGroup(AppGroupKind.TRENDING, trending))
+        }
+        trendingGroup + curated + CategorySections.build(
             categories = CategoryTagTree.build(categories),
             apps = apps,
             useInstallCounts = useInstallCounts,

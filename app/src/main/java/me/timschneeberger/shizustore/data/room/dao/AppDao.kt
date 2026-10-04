@@ -23,6 +23,10 @@ interface AppDao {
     @Query("SELECT * FROM app WHERE slug = :slug")
     suspend fun get(slug: String): AppEntity?
 
+    /** Look up a ranked slug set (e.g. trending); callers restore server order. */
+    @Query("SELECT * FROM app WHERE slug IN (:slugs)")
+    suspend fun getBySlugs(slugs: List<String>): List<AppEntity>
+
     @Query("SELECT * FROM app WHERE packageName = :packageName LIMIT 1")
     suspend fun getByPackage(packageName: String): AppEntity?
 

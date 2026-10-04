@@ -61,6 +61,7 @@
     <string name="apps_sync_failed">Couldn\'t connect to the server. Browsing the local cache. Check your connection and retry.</string>
     <string name="apps_random_picks">Random picks</string>
     <string name="apps_recommended">Recommended</string>
+    <string name="apps_trending">Trending this week</string>
     <string name="apps_recently_added">Recently added</string>
     <string name="apps_recently_updated">Recently updated</string>
     <string name="apps_most_starred">Most starred on GitHub</string>
@@ -81,6 +82,16 @@
     <string name="details_stats_size">Size</string>
     <string name="details_stats_size_tooltip">Download size of the APK file.</string>
     <string name="details_stats_store" translatable="false">ShizuStore</string>
+    <string name="details_history_title">Statistics</string>
+    <string name="details_history_installs">Installs</string>
+    <string name="details_history_installs_axis">Downloads per day</string>
+    <string name="details_history_stars_axis">Stars per week</string>
+    <string name="details_history_downloads_last_week">%1$s new downloads in the last week</string>
+    <string name="details_history_stars_last_week">%1$s new stars in the last week</string>
+    <string name="details_history_total_stars">Total stars: %1$s</string>
+    <string name="details_history_total_downloads">Total downloads: %1$s</string>
+    <string name="details_history_chart_desc">Daily %1$s for the last %2$d days</string>
+    <string name="details_history_weekly_desc">%1$s per week for the last %2$d weeks</string>
     <string name="details_more_about">More about this app</string>
     <string name="details_more_from_author">More apps from this developer</string>
     <string name="details_more_from_category">More from this category</string>

@@ -20,6 +20,7 @@ fun appGroupTitle(kind: AppGroupKind, title: String? = null): String = when (kin
     AppGroupKind.RECENTLY_UPDATED -> stringResource(R.string.apps_recently_updated)
     AppGroupKind.MOST_STARRED -> stringResource(R.string.apps_most_starred)
     AppGroupKind.POPULAR -> stringResource(R.string.apps_popular)
+    AppGroupKind.TRENDING -> stringResource(R.string.apps_trending)
     AppGroupKind.RANDOM_PICKS -> stringResource(R.string.apps_random_picks)
     AppGroupKind.CATEGORY -> title.orEmpty()
 }
@@ -34,6 +35,7 @@ fun appGroupIcon(group: AppGroup): Int = when (group.kind) {
     AppGroupKind.RECENTLY_UPDATED -> R.drawable.ic_updates
     AppGroupKind.MOST_STARRED -> R.drawable.ic_star
     AppGroupKind.POPULAR -> R.drawable.ic_download_manager
+    AppGroupKind.TRENDING -> R.drawable.ic_trending_up
     AppGroupKind.RANDOM_PICKS -> R.drawable.ic_redeem
     AppGroupKind.CATEGORY -> categoryIcon(group.category.orEmpty())
 }

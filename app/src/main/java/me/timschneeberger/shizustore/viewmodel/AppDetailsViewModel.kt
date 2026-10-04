@@ -40,7 +40,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.timschneeberger.shizustore.compose.ui.details.composable.canHandleObtainium
 import me.timschneeberger.shizustore.compose.ui.details.composable.obtainiumRepoUrl
+import me.timschneeberger.shizustore.data.api.ApiResult
+import me.timschneeberger.shizustore.data.api.AppHistoryDto
 import me.timschneeberger.shizustore.data.api.Availability
+import me.timschneeberger.shizustore.data.api.ShizuApi
 import me.timschneeberger.shizustore.data.download.ApkSaver
 import me.timschneeberger.shizustore.data.helper.DownloadHelper
 import me.timschneeberger.shizustore.data.helper.InstallDispatcher
@@ -116,6 +119,7 @@ class AppDetailsViewModel @Inject constructor(
     private val ignoredUpdateRepository: IgnoredUpdateRepository,
     private val installedRepository: InstalledRepository,
     private val liveReadmeFetcher: LiveReadmeFetcher,
+    private val api: ShizuApi,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
     /** The navigation key: a real package name when known, otherwise the catalog slug. */
@@ -137,6 +141,11 @@ class AppDetailsViewModel @Inject constructor(
     private val liveReadme = MutableStateFlow<String?>(null)
     private val liveReadmeSlug = MutableStateFlow<String?>(null)
     private var liveReadmeJob: Job? = null
+
+    /** Per-day install/star history for the sparkline; best-effort, null until it lands. */
+    private val _history = MutableStateFlow<AppHistoryDto?>(null)
+    val history: StateFlow<AppHistoryDto?> = _history.asStateFlow()
+    private var historyJob: Job? = null
 
     /** Exposed so screens can keep their content hidden until the request settles. */
     val detailFetching: StateFlow<Boolean> = _detailFetching.asStateFlow()
@@ -281,6 +290,8 @@ class AppDetailsViewModel @Inject constructor(
             // README must not leak into the new one.
             liveReadme.value = null
             liveReadmeSlug.value = null
+            // Same for the history series, which is fetched per slug below.
+            _history.value = null
             // The AI usage report lands on a detail fetch and can appear after
             // the README was cached; refetch once for analyzable apps whose
             // report is still missing. Apps without a forge repo never have
@@ -305,6 +316,29 @@ class AppDetailsViewModel @Inject constructor(
                 _detailFetching.value = false
             }
             refreshLiveReadme(resolvedSlug)
+            refreshHistory(resolvedSlug)
+        }
+    }
+
+    /**
+     * Pulls the per-day install/star/release series for the activity charts. Off
+     * the loading path on purpose: the page renders from Room while this
+     * enriches, and a newer load cancels the previous fetch so its data cannot
+     * win.
+     */
+    private fun refreshHistory(resolvedSlug: String) {
+        historyJob?.cancel()
+        historyJob = viewModelScope.launch {
+            when (val result = api.appHistory(resolvedSlug, HISTORY_DAYS)) {
+                is ApiResult.Success -> if (slug.value == resolvedSlug) {
+                    _history.value = result.value
+                }
+
+                is ApiResult.Failure ->
+                    if (slug.value == resolvedSlug) {
+                        Log.w(TAG, "History fetch failed for $resolvedSlug: ${result.error}")
+                    }
+            }
         }
     }
 
@@ -341,6 +375,7 @@ class AppDetailsViewModel @Inject constructor(
             try {
                 fetchDetail(resolvedSlug)
                 refreshLiveReadme(resolvedSlug)
+                refreshHistory(resolvedSlug)
             } finally {
                 _refreshing.value = false
             }
@@ -592,5 +627,8 @@ class AppDetailsViewModel @Inject constructor(
 
     private companion object {
         const val TAG = "AppDetailsViewModel"
+
+        /** One bounded window backs every chart mode; installs slice a 30-day tail. */
+        const val HISTORY_DAYS = 365
     }
 }

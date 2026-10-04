@@ -19,6 +19,10 @@ enum class AppGroupKind(
     RECENTLY_UPDATED(isCarousel = true, hasMorePage = true, isTileStrip = true),
     MOST_STARRED(isCarousel = true, hasMorePage = true),
     POPULAR(isCarousel = true, hasMorePage = true),
+
+    // Server-ranked install window; no More page because the API only serves
+    // one fixed window.
+    TRENDING(isCarousel = true, hasMorePage = false),
     RANDOM_PICKS(isCarousel = true, hasMorePage = false),
     CATEGORY(isCarousel = false, hasMorePage = true)
 }

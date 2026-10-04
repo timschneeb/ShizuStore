@@ -103,7 +103,35 @@ knowing before touching a subsystem:
   fetch-time gate and the live README lookup. The screen only shows the
   spinner for rows this device has never fetched (summary rows lack
   url/storeUrl/permissions/candidates); already-fetched rows render
-  immediately while the background fetch enriches. Trackers, Dhizuku
+   immediately while the background fetch enriches. A "Statistics" section
+   below the permissions/sources rows and above the author carousel draws
+   charts from `GET /v1/apps/{slug}/history` (fetched once per load at 365
+   days, off the loading path); it grows in with an expand+fade
+   `AnimatedVisibility` when the fetch lands so the rows below slide
+   instead of the block popping in. Icon-only segmented buttons switch between
+    install activity (daily series across the whole window) and stars (new
+    stars per week, derived client-side from the API's daily levels by
+    differencing and Sunday-bucketing); the sparkline carries
+    min/max y-axis labels in a left gutter, titles with `titleMedium` to
+    match the other section headers, and captions the bucket size on the
+    left ("Downloads per day" / "Stars per week") with the newest week's
+    gain on the right. Dragging across the chart scrubs it: the nearest
+    point gets a dot and a popover tooltip parked fully above the canvas
+    (a finger on the line reaches downward, so nothing renders below the
+    touch). The tooltip draws with an opaque elevated `surfaceContainerHigh`
+    background, 12dp corners and a 16dp gap, floating over the rows above
+     while shown, and shows the localized full date, the value with its
+     bucket unit, and the cumulative total at that point. Scrub state lives
+     in the chart child (series, values and totals are memoized in the
+     body), so finger movement recomposes only that node; the gesture picks
+     an axis at the touch slop, and a vertical drag releases the pointer to
+     the page scroll while horizontal moves consume so the list never
+     twitches under a scrub. The stars mode appears
+    only once its series has at least two daily levels to form a bucket,
+    installs always offers a mode, and the
+    section renders nothing when no series has signal. The icon travels in
+   the segmented button's label slot because M3 sizes that slot as the whole
+   control, so an empty label would clip the icons. Trackers, Dhizuku
   and localized labels come from server analysis fields; the list has no
   trackers badge (deliberate).
 - Ignored updates: `ignored_update` writes a derived `AppEntity.updateIgnored`
@@ -127,7 +155,11 @@ knowing before touching a subsystem:
   closed-source apps" switch makes sync ask for `listing=main,closed_source`;
   turning it off drops cached `CLOSED_SOURCE` rows and re-bootstraps. Details
   show a forge source link normally but a `ClosedSourceNotice` for such rows.
-- Home: one strip per top-level category with at least 4 apps, plus a synthetic
+- Home: the leading "Trending this week" strip (`AppGroupKind.TRENDING`) ranks a
+  server window from `GET /v1/trending`, refreshed wholesale by
+  `TrendingRepository` on cold start and pull-to-refresh; it carries no More
+  page and keeps the last good ranking when a refresh fails. Then one strip per
+  top-level category with at least 4 apps, plus a synthetic
   "Dhizuku-compatible" section listing every `dhizukuDeclared` app. `POPULAR`
   ranks by `installCount`, hides itself, and its More page shows counts when the
   server reports `useInstallCountsForPopularity`.
@@ -221,10 +253,12 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 ## Gotchas
 
 - The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), now at
-  version 10. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
+  version 11. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
   with defaults; `MIGRATION_6_7` swaps the marker classification for the AI usage
   report fields, `MIGRATION_7_8` adds `usageReportVersion`, `MIGRATION_8_9` drops
-  the removed `blacklist` table and `MIGRATION_9_10` adds `app.updateIgnored`. A
+  the removed `blacklist` table, `MIGRATION_9_10` adds `app.updateIgnored` and
+  `MIGRATION_10_11` persists the changelog, screenshots and README fields on the
+  `app` row. A
   fresh install creates the full schema in one step and cached catalogs upgrade
   in place. Old `AuroraDatabase` migrations are gone; export schemas to
   `app/schemas/` as usual.

@@ -60,6 +60,7 @@ import me.timschneeberger.shizustore.compose.ui.details.composable.ClosedSourceN
 import me.timschneeberger.shizustore.compose.ui.details.composable.CompatibilityNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsCarousel
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsHeader
+import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsHistory
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsStats
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsTags
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallAction
@@ -471,6 +472,11 @@ private fun DetailsContent(
                 sources = state.sources,
                 onSelect = { viewModel.installFrom(it.app) }
             )
+        }
+
+        item(key = "history") {
+            val history by viewModel.history.collectAsStateWithLifecycle()
+            DetailsHistory(history = history)
         }
 
         item(key = "more-from-author") {

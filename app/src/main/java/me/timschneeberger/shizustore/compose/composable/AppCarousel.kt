@@ -70,7 +70,8 @@ fun AppCarousel(
                     AppCarouselStrip(
                         apps = group.apps,
                         showStars = group.kind == AppGroupKind.MOST_STARRED,
-                        showInstalls = group.kind == AppGroupKind.POPULAR,
+                        showInstalls = group.kind == AppGroupKind.POPULAR ||
+                            group.kind == AppGroupKind.TRENDING,
                         onAppClick = onAppClick
                     )
                 }
