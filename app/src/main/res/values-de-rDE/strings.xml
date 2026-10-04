@@ -282,8 +282,8 @@
     <string name="settings_catalog_title">Katalog</string>
     <string name="settings_dynamic_color_subtitle">Bezieht die Farbpalette aus deinem Hintergrundbild. Android 12 und neuer.</string>
     <string name="settings_dynamic_color_title">Dynamische Farben</string>
-    <string name="settings_expressive_motion_title">Expressive Animationen</string>
     <string name="settings_expressive_motion_subtitle">Elastische Material-3-Animationen. Ausschalten für Standardbewegungen.</string>
+    <string name="settings_expressive_motion_title">Expressive Animationen</string>
     <string name="settings_group_updates_summary">Überprüfungszeitplan, Netzwerkbeschränkungen und automatische Installationen</string>
     <string name="settings_group_updates_title">Updates</string>
     <string name="settings_install_reporting_subtitle">Sendet eine anonyme Installationszählung an den Server, wenn eine App installiert wird. Fließt in das Beliebtheitsranking ein.</string>
@@ -328,8 +328,8 @@
     <string name="settings_show_closed_source_title">Closed-Source-Apps anzeigen</string>
     <string name="settings_show_tracker_info_subtitle">Zeigt im APK erkannte Tracker (Code-Signaturen von Exodus Privacy) auf der Detailseite an.</string>
     <string name="settings_show_tracker_info_title">Tracker-Infos anzeigen</string>
-    <string name="settings_show_statistics_title">Statistiken anzeigen</string>
     <string name="settings_show_statistics_subtitle">Zeigt die Installations- und Sterne-Statistikdiagramme auf der Detailseite einer App an.</string>
+    <string name="settings_show_statistics_title">Statistiken anzeigen</string>
     <string name="settings_theme_dark">Dunkel</string>
     <string name="settings_theme_light">Hell</string>
     <string name="settings_theme_system">Systemstandard</string>
