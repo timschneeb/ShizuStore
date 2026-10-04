@@ -152,6 +152,14 @@ knowing before touching a subsystem:
 - Install reporting: the Settings -> Network switch gates install reports before
   the once-guard, so callbacks and `InstallReconciler` share one chokepoint; the
   body is `{"versionCode", "installType"}` and an empty body stays valid.
+- Obtainium export: the Favourites and My apps top bars carry a tooltipped
+  action that builds an Obtainium schema-v2 document and writes it through the
+  storage access framework's create-document dialog, since Obtainium cannot
+  ingest a config from a share target. Only rows with a package name and a forge
+  or F-Droid source are included (`obtainiumRepoUrl`, so link-only and Play rows
+  are skipped), and the builder omits `installedVersion` because Obtainium reads
+  that from the device on import; empty exports and failed writes get toasts, and
+  a successful save explains the Import/Export step.
 - Installer: a one-time `ShizukuPromptCard` on the Apps tab walks from "not
   installed" to "running and allowed" and sets
   `PREFERENCE_INSTALLER_ID = Installer.SHIZUKU` on grant; it is gated by

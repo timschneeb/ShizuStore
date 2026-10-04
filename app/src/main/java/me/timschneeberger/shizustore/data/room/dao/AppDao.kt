@@ -134,6 +134,12 @@ interface AppDao {
     )
     fun pagedInstalled(): PagingSource<Int, AppEntity>
 
+    /** Whole installed set for bulk actions such as the Obtainium export. */
+    @Query(
+        "SELECT * FROM app WHERE installedVersionCode IS NOT NULL ORDER BY name COLLATE NOCASE ASC"
+    )
+    suspend fun getInstalled(): List<AppEntity>
+
     @Query(
         "SELECT * FROM app ORDER BY listUpdatedAt IS NULL, listUpdatedAt DESC," +
             " name COLLATE NOCASE ASC LIMIT :limit"
@@ -189,6 +195,13 @@ interface AppDao {
             " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
     )
     fun pagedFavourites(): PagingSource<Int, AppEntity>
+
+    /** Whole favourite set for bulk actions such as the Obtainium export. */
+    @Query(
+        "SELECT a.* FROM app a JOIN favourite f ON f.packageName = a.packageName" +
+            " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
+    )
+    suspend fun getFavourites(): List<AppEntity>
 
     @Query(
         "SELECT a.* FROM app a JOIN ignored_update i ON i.packageName = a.packageName" +

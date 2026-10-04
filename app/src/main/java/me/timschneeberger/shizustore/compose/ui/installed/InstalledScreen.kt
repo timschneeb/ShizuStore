@@ -21,6 +21,7 @@ import androidx.paging.compose.itemKey
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.AppListScaffold
+import me.timschneeberger.shizustore.compose.composable.ObtainiumExportButton
 import me.timschneeberger.shizustore.compose.composable.app.AppListItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
@@ -42,6 +43,7 @@ fun InstalledScreen(
 
     InstalledContent(
         apps = apps,
+        viewModel = viewModel,
         listState = listState,
         onNavigateTo = onNavigateTo,
         modifier = modifier
@@ -55,6 +57,7 @@ fun InstalledScreen(
 @Composable
 private fun InstalledContent(
     apps: LazyPagingItems<ResolvedApp>,
+    viewModel: InstalledViewModel,
     listState: LazyListState,
     onNavigateTo: (Destination) -> Unit,
     modifier: Modifier = Modifier
@@ -78,6 +81,9 @@ private fun InstalledContent(
         showScrollHint = false,
         transitionLabel = "InstalledScreenContent",
         onNavigateBack = { onNavigateTo(Destination.Back) },
+        actions = {
+            ObtainiumExportButton(fetchApps = { viewModel.exportCandidates() })
+        },
         modifier = modifier
     ) {
         items(

@@ -12,6 +12,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,6 +44,7 @@ fun AppListScaffold(
     modifier: Modifier = Modifier,
     emptyDetail: String? = null,
     showScrollHint: Boolean = true,
+    actions: @Composable (RowScope.() -> Unit) = {},
     content: LazyListScope.() -> Unit
 ) {
     val listPadding = PaddingValues(bottom = dimensionResource(R.dimen.spacing_large))
@@ -53,7 +55,8 @@ fun AppListScaffold(
         topBar = {
             TopAppBar(
                 title = title,
-                onNavigateBack = onNavigateBack
+                onNavigateBack = onNavigateBack,
+                actions = actions
             )
         }
     ) { padding ->

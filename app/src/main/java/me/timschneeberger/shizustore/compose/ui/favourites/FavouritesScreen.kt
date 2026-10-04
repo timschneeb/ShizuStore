@@ -23,6 +23,7 @@ import androidx.paging.compose.itemKey
 import me.timschneeberger.shizustore.R
 import me.timschneeberger.shizustore.compose.ContentPhase
 import me.timschneeberger.shizustore.compose.composable.AppListScaffold
+import me.timschneeberger.shizustore.compose.composable.ObtainiumExportButton
 import me.timschneeberger.shizustore.compose.composable.RemovableAppItem
 import me.timschneeberger.shizustore.compose.navigation.Destination
 import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
@@ -94,6 +95,9 @@ private fun FavouritesContent(
         emptyDetail = stringResource(R.string.favourites_empty_detail),
         transitionLabel = "FavouritesScreenContent",
         onNavigateBack = { onNavigateTo(Destination.Back) },
+        actions = {
+            ObtainiumExportButton(fetchApps = { viewModel.exportCandidates() })
+        },
         modifier = modifier
     ) {
         items(

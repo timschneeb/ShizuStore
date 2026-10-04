@@ -39,6 +39,7 @@
     <string name="action_open_link">View website</string>
     <string name="action_retry">Retry</string>
     <string name="action_save">Save</string>
+    <string name="action_export_obtainium">Export as Obtainium JSON</string>
     <string name="action_scroll_down">Scroll down</string>
     <string name="action_search">Search</string>
     <string name="action_share">Share</string>
@@ -107,6 +108,10 @@
     <string name="details_permissions_none">No permissions requested</string>
     <string name="details_source_code">Source code</string>
     <string name="details_obtainium">Add to Obtainium</string>
+    <string name="obtainium_export_empty">No apps with a trackable source to export</string>
+    <string name="obtainium_export_failed">Could not save the export</string>
+    <string name="obtainium_import_title">Obtainium export saved</string>
+    <string name="obtainium_import_message">Open Obtainium or a compatible fork, go to Settings and use Import/Export to import %1$s from the location you picked.</string>
     <string name="details_store">Store</string>
     <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
     <string name="details_closed_source_notice">This app is closed source. Its code is not public, so the community cannot easily verify what it does.</string>
