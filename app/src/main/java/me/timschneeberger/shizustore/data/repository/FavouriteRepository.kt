@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.FavouriteDao
+import me.timschneeberger.shizustore.data.room.entity.AppEntity
 
 @Singleton
 class FavouriteRepository @Inject constructor(
@@ -30,4 +31,7 @@ class FavouriteRepository @Inject constructor(
 
     fun pagedFavourites(): PagingSource<Int, ResolvedApp> =
         MappedPagingSource(appDao.pagedFavourites()) { mapper.toResolvedApp(it) }
+
+    /** Whole favourite set for bulk actions such as the Obtainium export. */
+    suspend fun favouriteApps(): List<AppEntity> = appDao.getFavourites()
 }

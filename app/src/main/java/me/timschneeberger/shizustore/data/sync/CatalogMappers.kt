@@ -127,7 +127,14 @@ fun AppEntity.applyDetail(detail: AppDetailDto, fetchedAt: Long): AppEntity {
         usageShort = detail.usageShort,
         usageMarkdown = detail.usageMarkdown,
         usageAnalyzedAt = detail.usageAnalyzedAt,
-        usageReportVersion = USAGE_REPORT_VERSION
+        usageReportVersion = USAGE_REPORT_VERSION,
+        // Mirrors the old process-memory cache: blank artifacts never clear a
+        // stored copy, but a missing README URL does (Play-sourced rows).
+        screenshots = detail.screenshots.ifEmpty { screenshots },
+        changelog = detail.changelog?.takeIf { it.isNotBlank() } ?: changelog,
+        changelogUrl = detail.changelogUrl?.takeIf { it.isNotBlank() } ?: changelogUrl,
+        readmeUrl = detail.readmeUrl?.takeIf { it.isNotBlank() },
+        fullDescription = detail.fullDescription?.takeIf { it.isNotBlank() } ?: fullDescription
     )
 }
 

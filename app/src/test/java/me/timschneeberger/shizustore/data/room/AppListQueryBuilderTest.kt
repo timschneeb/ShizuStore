@@ -52,6 +52,10 @@ class AppListQueryBuilderTest {
                 )
         )
         assertTrue(
+            AppListQueryBuilder.build(AppListArgs(sort = AppSort.TRENDING)).sql
+                .endsWith("ORDER BY trendScore IS NULL, trendScore DESC, name COLLATE NOCASE ASC")
+        )
+        assertTrue(
             AppListQueryBuilder.build(AppListArgs(sort = AppSort.SIZE_DESC)).sql
                 .endsWith("ORDER BY size IS NULL, size DESC, name COLLATE NOCASE ASC")
         )

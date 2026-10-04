@@ -2,11 +2,7 @@
 
 Android client for the Shizu app store. A fork of AuroraDroid (Kotlin, Jetpack
 Compose, Material 3) retargeted from the F-Droid multi-repo index to the
-`ShizuAppStoreServer` `/v1/*` REST API. Read `PLAN.md` (design) and `TODO.md`
-(live checklist) first. Keep `HANDOFF.md` current in the same pass as code.
-
-The pristine upstream template lives at `../auroradroid/` (GPL-3.0-or-later).
-Reference only, never edit it.
+`ShizuAppStoreServer` `/v1/*` REST API. Keep `docs/HANDOFF.md` current in the same pass as code.
 
 ## Commands
 
@@ -20,7 +16,7 @@ Run from this directory:
 iterating. Run `./gradlew testDebugUnitTest` when the change touches logic that
 has unit tests (or when adding tests).
 
-Lint and style checks are slow and only run before committing:
+Lint and style checks are slow and only run before a new release:
 
 ```bash
 ./gradlew ktlintCheck lintDebug
@@ -49,12 +45,24 @@ Performance benchmarks are device-gated and not part of the inner loop:
 ```
 
 The first regenerates `app/src/release/generated/baselineProfiles/` (keep it in
-source); the second runs the frame-timing suite. Both use the release-like
-`benchmarkRelease`/`nonMinifiedRelease` variants signed with the AOSP testkey.
-Pre-install
-`app/build/outputs/apk/benchmarkRelease/ShizuStore-1.4.1-benchmarkRelease-unsigned.apk`,
-grant `POST_NOTIFICATIONS` and wake the screen first; the connected runner
-uninstalls the app at the end, and a dozing screen yields no frame stats.
+source); the second runs the frame-timing suite: startup, tab switch, details
+open and vertical flings through the home and catalog lists. The connected task
+installs `app/build/outputs/apk/benchmarkRelease/ShizuStore-1.4.1-benchmarkRelease.apk`
+itself and uninstalls the app when it finishes (the APK is `-unsigned` only on
+machines without `signing.properties`). Grant `POST_NOTIFICATIONS` and wake the
+screen first; a dozing screen yields no frame stats.
+
+Judge animation and scroll work on a release-like install, never the debug APK:
+debug is unminified and JIT-only, so it stutters in ways the shipped build does
+not, and baseline profiles cannot help a debuggable app. For animation QA run
+`./gradlew assembleNonMinifiedRelease` and install
+`app/build/outputs/apk/nonMinifiedRelease/ShizuStore-1.4.1-nonMinifiedRelease.apk`
+(AOSP testkey).
+
+Compose compiler skipping and stability reports are opt-in because writing them
+slows every build: `./gradlew assembleDebug -PcomposeMetrics=true` writes
+`app/build/compose-metrics/` and `app/build/compose-reports/` (add
+`:app:compileDebugKotlin --rerun-tasks` when the task is up to date).
 
 ## Layout
 
@@ -77,9 +85,13 @@ module with the Macrobenchmark suite and the baseline profile generator.
 - Server API is the source of truth: `../ShizuAppStoreServer/docs/SPEC.md` and
   `../ShizuAppStoreServer/src/ShizuAppStoreServer/Api/{Dtos,ApiEnums,AppMapper}.cs`.
   camelCase JSON; enums are lowercase/snake strings. Never guess a field name.
-- Sync is `GET /v1/changes?since=` incremental; never a full dump. Summaries in
-  `/v1/changes` and `/v1/apps` carry no `downloads[]`; fetch `/v1/apps/{slug}`
-  for install candidates. A `catalogPurgeRequestedAt` newer than the locally
+- Sync is `GET /v1/changes?since=` incremental; never a full dump. The cursor is
+  the response's `generatedAt` (captured before its reads) minus a small safety
+  margin, never a client clock; `/v1/meta` is only the fallback for older
+  servers, and bootstrap captures meta before paging. Summaries in `/v1/changes`
+  and `/v1/apps` carry no `downloads[]`; fetch `/v1/apps/{slug}` for install
+  candidates. Rows awaiting their first successful check are never sent, so a new
+  app appears only complete. A `catalogPurgeRequestedAt` newer than the locally
   applied marker wipes the cached catalog and re-bootstraps; the marker lives in
   DataStore and user data is never purged.
 - Availability: `direct_apk` installs a matching candidate from `downloads[]`;
@@ -98,14 +110,10 @@ module with the Macrobenchmark suite and the baseline profile generator.
 
 ## Rules
 
-- GPL-3.0-or-later. Keep upstream SPDX headers and `LICENSE`. Never copy
-  AGPL-licensed code. Each file keeps one `SPDX-FileCopyrightText` line per
-  holder: Tim's line on top once the file diverges from `../auroradroid/`,
-  the Aurora OSS line below while upstream code remains, upstream-only files
-  untouched, and third-party lines (Calyx, Material) preserved.
+- GPL-3.0-or-later. Keep upstream SPDX headers and `LICENSE`.
 - Comments are concise and explain WHY, not WHAT. No em-dashes in code,
   comments, or docs.
 - Tests are hermetic (MockWebServer for API/sync, in-memory Room/Robolectric for
   DAOs). Live-server tests are env-gated.
-- Never commit unless asked. Update this file and `HANDOFF.md` when component
+- Never commit unless asked. Update this file and `docs/HANDOFF.md` when component
   rules or state change.

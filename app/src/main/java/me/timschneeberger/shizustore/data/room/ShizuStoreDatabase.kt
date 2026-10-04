@@ -27,7 +27,7 @@ import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.SyncStateEntity
 
 @Database(
-    version = 10,
+    version = 12,
     exportSchema = true,
     entities = [
         AppEntity::class,

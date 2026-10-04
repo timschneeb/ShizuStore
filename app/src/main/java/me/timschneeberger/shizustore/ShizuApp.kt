@@ -22,6 +22,7 @@ import coil3.svg.SvgDecoder
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import me.timschneeberger.shizustore.compose.theme.MotionFallbackPatch
 import me.timschneeberger.shizustore.data.installer.HiddenApiExemption
 import me.timschneeberger.shizustore.data.installer.ShizukuInstaller
 import me.timschneeberger.shizustore.data.model.Installer
@@ -67,6 +68,9 @@ class ShizuApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
 
     override fun onCreate() {
         super.onCreate()
+        // The theme re-syncs this with the stored preference on first
+        // composition; the default here covers startup animations.
+        MotionFallbackPatch.install(expressive = true)
         exemptPackageManagerHiddenApis()
         NotificationUtil.createChannels(this)
         // Arming the periodic check reads DataStore and writes WorkManager state;

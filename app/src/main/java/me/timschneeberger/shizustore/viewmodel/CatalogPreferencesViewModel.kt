@@ -35,6 +35,10 @@ class CatalogPreferencesViewModel @Inject constructor(
 
     val showTrackerInfo: StateFlow<Boolean> = _showTrackerInfo.asStateFlow()
 
+    private val _showStatistics = MutableStateFlow(true)
+
+    val showStatistics: StateFlow<Boolean> = _showStatistics.asStateFlow()
+
     init {
         viewModelScope.launch {
             Preferences.booleanFlow(context, PREFERENCE_SHOW_CLOSED_SOURCE, false).collect {
@@ -44,6 +48,11 @@ class CatalogPreferencesViewModel @Inject constructor(
         viewModelScope.launch {
             Preferences.booleanFlow(context, PREFERENCE_SHOW_TRACKER_INFO, true).collect {
                 _showTrackerInfo.value = it
+            }
+        }
+        viewModelScope.launch {
+            Preferences.booleanFlow(context, Preferences.PREFERENCE_SHOW_STATISTICS, true).collect {
+                _showStatistics.value = it
             }
         }
     }
@@ -59,6 +68,12 @@ class CatalogPreferencesViewModel @Inject constructor(
     fun setShowTrackerInfo(enabled: Boolean) {
         viewModelScope.launch {
             Preferences.putBoolean(context, PREFERENCE_SHOW_TRACKER_INFO, enabled)
+        }
+    }
+
+    fun setShowStatistics(enabled: Boolean) {
+        viewModelScope.launch {
+            Preferences.putBoolean(context, Preferences.PREFERENCE_SHOW_STATISTICS, enabled)
         }
     }
 }

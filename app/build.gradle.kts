@@ -60,6 +60,16 @@ kotlin {
     }
 }
 
+// Recomposer-skipping and stability reports, opt-in because writing them slows
+// every Compose module down: ./gradlew assembleRelease -PcomposeMetrics=true
+composeCompiler {
+    val enabled = providers.gradleProperty("composeMetrics").map(String::toBoolean).getOrElse(false)
+    if (enabled) {
+        metricsDestination.set(layout.buildDirectory.dir("compose-metrics"))
+        reportsDestination.set(layout.buildDirectory.dir("compose-reports"))
+    }
+}
+
 android {
     namespace = "me.timschneeberger.shizustore"
     compileSdk {

@@ -45,6 +45,7 @@ fun AppListItem(
     trailing: (@Composable () -> Unit)? = null,
     showStars: Boolean = false,
     showInstalls: Boolean = false,
+    showTrend: Boolean = false,
     age: AppAge? = null,
     supporting: String? = app.summary
 ) {
@@ -58,6 +59,10 @@ fun AppListItem(
     } else {
         null
     }
+    // The trending sort explains its own order: the ranked window count joins the
+    // meta line behind a calendar-clock glyph and the download glyph, like the
+    // install count of the sort it replaces. Unranked rows keep the plain line.
+    val trendText = if (showTrend) app.trendScore?.let(CommonUtil::formatCount) else null
     val context = LocalContext.current
     val ageText = remember(age, context, app.listUpdatedAtMillis, app.versionUpdatedAtMillis) {
         when (age) {
@@ -68,12 +73,18 @@ fun AppListItem(
             null -> null
         }
     }
-    val metaPart: AnnotatedString? = remember(installsText, starsText, ageText) {
+    val metaPart: AnnotatedString? = remember(installsText, starsText, trendText, ageText) {
         when {
             installsText != null -> buildAnnotatedString {
                 appendInlineContent(INSTALLS_ICON_ID, "[downloads]")
                 append(" ")
                 append(installsText)
+            }
+            trendText != null -> buildAnnotatedString {
+                appendInlineContent(CALENDAR_ICON_ID, "[calendar]")
+                appendInlineContent(INSTALLS_ICON_ID, "[downloads]")
+                append(" ")
+                append(trendText)
             }
             starsText != null -> AnnotatedString(starsText)
             ageText != null -> AnnotatedString(ageText)
@@ -97,33 +108,57 @@ fun AppListItem(
     }
     // The installs glyph is the download drawable, tinted to match the
     // tertiary text: InlineTextContent children do not inherit it.
-    val installsPainter = if (showInstalls) {
+    val installsPainter = if (showInstalls || trendText != null) {
         painterResource(
             R.drawable.ic_download_manager
         )
     } else {
         null
     }
+    val calendarPainter = if (trendText != null) {
+        painterResource(R.drawable.ic_calendar_clock)
+    } else {
+        null
+    }
     val tertiaryTint = MaterialTheme.colorScheme.onSurfaceVariant
-    val tertiaryInlineContent = remember(installsPainter, tertiaryTint) {
-        if (installsPainter != null) {
-            mapOf(
-                INSTALLS_ICON_ID to InlineTextContent(
-                    Placeholder(
-                        TERTIARY_ICON_SIZE,
-                        TERTIARY_ICON_SIZE,
-                        PlaceholderVerticalAlign.Center
-                    )
-                ) {
-                    Image(
-                        painter = installsPainter,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(tertiaryTint)
-                    )
-                }
-            )
-        } else {
-            emptyMap()
+    val tertiaryInlineContent = remember(installsPainter, calendarPainter, tertiaryTint) {
+        buildMap {
+            if (installsPainter != null) {
+                put(
+                    INSTALLS_ICON_ID,
+                    InlineTextContent(
+                        Placeholder(
+                            TERTIARY_ICON_SIZE,
+                            TERTIARY_ICON_SIZE,
+                            PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        Image(
+                            painter = installsPainter,
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(tertiaryTint)
+                        )
+                    }
+                )
+            }
+            if (calendarPainter != null) {
+                put(
+                    CALENDAR_ICON_ID,
+                    InlineTextContent(
+                        Placeholder(
+                            TERTIARY_ICON_SIZE,
+                            TERTIARY_ICON_SIZE,
+                            PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        Image(
+                            painter = calendarPainter,
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(tertiaryTint)
+                        )
+                    }
+                )
+            }
         }
     }
     val installedIcon = when {
@@ -202,6 +237,8 @@ fun AppListItem(
 }
 
 private const val INSTALLS_ICON_ID = "installs"
+
+private const val CALENDAR_ICON_ID = "calendar"
 
 private val TERTIARY_ICON_SIZE = 14.sp
 

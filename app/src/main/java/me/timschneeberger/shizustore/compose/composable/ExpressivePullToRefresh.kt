@@ -6,6 +6,9 @@
 package me.timschneeberger.shizustore.compose.composable
 
 import android.os.SystemClock
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -23,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 
 private const val MIN_REFRESH_VISIBLE_MS = 500L
 
@@ -38,6 +42,7 @@ fun ExpressivePullToRefreshBox(
 ) {
     val state = rememberPullToRefreshState()
     val visible = rememberVisibleForAtLeast(isRefreshing, MIN_REFRESH_VISIBLE_MS)
+    val placeholderFadeSpec = motionEffectsSpec<Float>()
     Box(modifier) {
         PullToRefreshBox(
             isRefreshing = visible,
@@ -53,10 +58,15 @@ fun ExpressivePullToRefreshBox(
             }
         ) {
             content()
-            if (visible) {
+            AnimatedVisibility(
+                visible = visible,
+                modifier = Modifier.matchParentSize(),
+                enter = fadeIn(placeholderFadeSpec),
+                exit = fadeOut(placeholderFadeSpec)
+            ) {
                 Box(
                     modifier = Modifier
-                        .matchParentSize()
+                        .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     placeholder?.invoke(this)

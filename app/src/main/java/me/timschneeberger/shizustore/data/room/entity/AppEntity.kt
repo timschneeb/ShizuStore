@@ -76,6 +76,8 @@ data class AppEntity(
     val downloadTotal: Long? = null,
     /** Successful installs via this app, reported by clients and served by /v1/meta flag. */
     val installCount: Long = 0,
+    /** Weekly install window from /v1/trending; ranks the Trending sort, null until fetched. */
+    val trendScore: Long? = null,
     val url: String? = null,
     val sourceUrl: String? = null,
     val sourceKind: SourceKind? = null,
@@ -101,7 +103,15 @@ data class AppEntity(
     val usageMarkdown: String? = null,
     val usageAnalyzedAt: String? = null,
     /** Report format generation of the cached text; older rows refetch once. */
-    val usageReportVersion: Int? = null
+    val usageReportVersion: Int? = null,
+    /** Detail-only artifacts kept in Room so a warm reopen composes them on its first emission. */
+    @ColumnInfo(defaultValue = "[]")
+    val screenshots: List<String> = emptyList(),
+    val changelog: String? = null,
+    val changelogUrl: String? = null,
+    /** Raw markdown README the description screen fetches live; null for Play-only entries. */
+    val readmeUrl: String? = null,
+    val fullDescription: String? = null
 )
 
 /** Bump when the server changes the report layout so cached rows refetch once. */
@@ -138,6 +148,12 @@ fun AppEntity.mergeDetailFrom(existing: AppEntity?): AppEntity = if (existing ==
         usageShort = existing.usageShort,
         usageMarkdown = existing.usageMarkdown,
         usageAnalyzedAt = existing.usageAnalyzedAt,
-        usageReportVersion = existing.usageReportVersion
+        usageReportVersion = existing.usageReportVersion,
+        trendScore = existing.trendScore,
+        screenshots = existing.screenshots,
+        changelog = existing.changelog,
+        changelogUrl = existing.changelogUrl,
+        readmeUrl = existing.readmeUrl,
+        fullDescription = existing.fullDescription
     )
 }

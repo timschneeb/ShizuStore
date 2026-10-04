@@ -33,6 +33,16 @@ interface ShizuApi {
 
     suspend fun health(): ApiResult<HealthDto>
 
+    /** Ranked install windows; `sort` is `installs` or `growth`. */
+    suspend fun trending(
+        days: Int = 7,
+        limit: Int = 20,
+        sort: String = "installs"
+    ): ApiResult<TrendingDto>
+
+    /** 404 (unknown slug) surfaces as [ApiError.Http]; callers treat it as "no history yet". */
+    suspend fun appHistory(slug: String, days: Int = 30): ApiResult<AppHistoryDto>
+
     /** 404 (unknown slug) surfaces as [ApiError.Http]; callers treat every outcome as best-effort. */
     suspend fun reportInstall(
         slug: String,

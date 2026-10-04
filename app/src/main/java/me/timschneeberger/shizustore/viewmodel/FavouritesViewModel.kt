@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.repository.FavouriteRepository
+import me.timschneeberger.shizustore.data.room.entity.AppEntity
 
 @HiltViewModel
 class FavouritesViewModel @Inject constructor(
@@ -41,4 +42,7 @@ class FavouritesViewModel @Inject constructor(
     fun unfavourite(packageName: String) {
         viewModelScope.launch { favouriteRepository.toggle(packageName) }
     }
+
+    /** Full favourite list for the Obtainium JSON export, not just the paged window. */
+    suspend fun exportCandidates(): List<AppEntity> = favouriteRepository.favouriteApps()
 }

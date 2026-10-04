@@ -33,6 +33,7 @@ fun CatalogPreferencesScreen(
 ) {
     val showClosedSource by viewModel.showClosedSource.collectAsStateWithLifecycle()
     val showTrackerInfo by viewModel.showTrackerInfo.collectAsStateWithLifecycle()
+    val showStatistics by viewModel.showStatistics.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier,
@@ -75,6 +76,20 @@ fun CatalogPreferencesScreen(
                 },
                 onClick = { viewModel.setShowTrackerInfo(!showTrackerInfo) },
                 selection = ItemSelection.Switch(showTrackerInfo)
+            )
+
+            AuroraListItem(
+                headline = stringResource(R.string.settings_show_statistics_title),
+                supporting = stringResource(R.string.settings_show_statistics_subtitle),
+                supportingMaxLines = 3,
+                trailing = {
+                    Switch(
+                        checked = showStatistics,
+                        onCheckedChange = null
+                    )
+                },
+                onClick = { viewModel.setShowStatistics(!showStatistics) },
+                selection = ItemSelection.Switch(showStatistics)
             )
         }
     }

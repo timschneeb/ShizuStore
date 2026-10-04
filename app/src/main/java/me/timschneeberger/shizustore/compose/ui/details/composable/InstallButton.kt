@@ -27,6 +27,7 @@ import me.timschneeberger.shizustore.compose.composable.app.ProgressBar
 import me.timschneeberger.shizustore.compose.composable.app.barFor
 import me.timschneeberger.shizustore.compose.composable.app.statusCaption
 import me.timschneeberger.shizustore.compose.stringRes
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.data.api.Availability
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallDispatch
@@ -295,10 +296,13 @@ internal fun InstallActions(
     onAction: (InstallAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val actionsFadeSpec = motionEffectsSpec<Float>()
     AnimatedContent(
         targetState = state,
         contentKey = { it.primary.action to it.secondary?.action },
-        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        transitionSpec = {
+            fadeIn(actionsFadeSpec) togetherWith fadeOut(actionsFadeSpec)
+        },
         label = "InstallActions"
     ) { current ->
         Row(

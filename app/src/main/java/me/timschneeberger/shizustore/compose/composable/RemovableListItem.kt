@@ -15,8 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 
 private const val REMOVE_ANIM_DURATION_MS = 300L
 
@@ -28,10 +31,12 @@ fun RemovableListItem(
 ) {
     val scope = rememberCoroutineScope()
     var visible by remember { mutableStateOf(true) }
+    val shrinkSpec = motionSpatialSpec<IntSize>()
+    val exitFadeSpec = motionEffectsSpec<Float>()
     AnimatedVisibility(
         visible = visible,
         modifier = modifier,
-        exit = shrinkVertically() + fadeOut()
+        exit = shrinkVertically(shrinkSpec) + fadeOut(exitFadeSpec)
     ) {
         content {
             scope.launch {

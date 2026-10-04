@@ -10,10 +10,14 @@ package me.timschneeberger.shizustore.compose.theme
 import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.LocalRippleThemeConfiguration
 import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
+import androidx.compose.material3.RippleDefaults
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -33,6 +37,7 @@ fun ShizuTheme(content: @Composable () -> Unit) {
     val initialThemeStyle = remember(context) { ThemePreference.style(context) }
     val initialDynamicColor = remember(context) { ThemePreference.dynamicColors(context) }
     val initialBlackNight = remember(context) { ThemePreference.blackNight(context) }
+    val initialExpressiveMotion = remember(context) { ThemePreference.expressiveMotion(context) }
 
     val themeStyleFlow = remember(context) {
         Preferences.integerFlow(
@@ -51,10 +56,21 @@ fun ShizuTheme(content: @Composable () -> Unit) {
     val blackNightFlow = remember(context) {
         Preferences.booleanFlow(context, Preferences.PREFERENCE_BLACK_NIGHT)
     }
+    val expressiveMotionFlow = remember(context) {
+        Preferences.booleanFlow(context, Preferences.PREFERENCE_EXPRESSIVE_MOTION, true)
+    }
 
     val themeStyle by themeStyleFlow.collectAsStateWithLifecycle(initialThemeStyle)
     val dynamicColor by dynamicColorFlow.collectAsStateWithLifecycle(initialDynamicColor)
     val blackNight by blackNightFlow.collectAsStateWithLifecycle(initialBlackNight)
+    val expressiveMotion by expressiveMotionFlow.collectAsStateWithLifecycle(
+        initialExpressiveMotion
+    )
+
+    // Interrupted slides fall back to a hardcoded, non-expressive spring inside
+    // Compose; keep that fallback on the active motion scheme so quick tab and
+    // screen switches stay expressive too.
+    SideEffect { MotionFallbackPatch.install(expressiveMotion) }
 
     val useDynamicColor = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 
@@ -101,5 +117,21 @@ fun ShizuTheme(content: @Composable () -> Unit) {
         }
     }
 
-    MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
+    // Remote/keyboard users need a visible focus cue; the default focus state
+    // layer is too subtle at TV distance.
+    CompositionLocalProvider(
+        LocalRippleThemeConfiguration provides RippleDefaults.InsetFocusRingThemeConfiguration
+    ) {
+        // Custom animation reads the same scheme through compose/theme/Motion.kt, so
+        // turning expressive motion off calms the whole app, not just M3 components.
+        MaterialExpressiveTheme(
+            colorScheme = colorScheme,
+            motionScheme = if (expressiveMotion) {
+                MotionScheme.expressive()
+            } else {
+                MotionScheme.standard()
+            },
+            content = content
+        )
+    }
 }

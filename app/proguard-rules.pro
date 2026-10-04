@@ -12,3 +12,10 @@
 -keepclasseswithmembers class me.timschneeberger.shizustore.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+# MotionFallbackPatch swaps Compose's interrupted-slide fallback spring through
+# reflection; keep the class and field names for the lookup (release currently
+# also sets -dontobfuscate, this keeps the dependency explicit).
+-keep class androidx.compose.animation.EnterExitTransitionKt {
+    *** DefaultOffsetAnimationSpec;
+}

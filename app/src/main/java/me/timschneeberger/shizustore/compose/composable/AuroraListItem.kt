@@ -57,6 +57,7 @@ fun AuroraListItem(
     trailing: (@Composable () -> Unit)? = null,
     badges: (@Composable () -> Unit)? = null,
     headlineStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    headlineMaxLines: Int = 1,
     supportingMaxLines: Int = 1,
     tertiaryMaxLines: Int = 1,
     @DimenRes minHeight: Int? = null
@@ -87,7 +88,7 @@ fun AuroraListItem(
             Text(
                 text = headline,
                 style = headlineStyle,
-                maxLines = 1,
+                maxLines = headlineMaxLines,
                 overflow = TextOverflow.Ellipsis
             )
             if (hasSupporting) {

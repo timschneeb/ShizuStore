@@ -7,6 +7,7 @@ package me.timschneeberger.shizustore.data.sync
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.sync.Mutex
@@ -121,22 +122,32 @@ class CatalogSyncer @Inject constructor(
         val state = syncStateDao.get()
         val listing = listingParam()
         var purged = false
+        var stepCursor: String? = null
         val counts = if (state?.cursor.isNullOrBlank()) {
             when (val result = bootstrap(listing)) {
                 is StepResult.Failed -> return result.outcome
-                is StepResult.Ok -> result.counts
+                is StepResult.Ok -> {
+                    stepCursor = result.cursor
+                    result.counts
+                }
                 is StepResult.Purge -> error("bootstrap never requests a purge")
             }
         } else {
             when (val result = incremental(state.cursor, listing)) {
                 is StepResult.Failed -> return result.outcome
-                is StepResult.Ok -> result.counts
+                is StepResult.Ok -> {
+                    stepCursor = result.cursor
+                    result.counts
+                }
                 is StepResult.Purge -> {
                     purgeCatalogLocked(result.requestedAtMillis)
                     purged = true
                     when (val fresh = bootstrap(listing)) {
                         is StepResult.Failed -> return fresh.outcome
-                        is StepResult.Ok -> fresh.counts
+                        is StepResult.Ok -> {
+                            stepCursor = fresh.cursor
+                            fresh.counts
+                        }
                         is StepResult.Purge -> error("bootstrap never requests a purge")
                     }
                 }
@@ -152,9 +163,12 @@ class CatalogSyncer @Inject constructor(
             is ApiResult.Failure -> return result.error.toOutcome()
         }
 
+        // The step cursor already sits behind the server's snapshot; falling
+        // back to meta keeps older servers, which send no cursor with deltas,
+        // working.
         syncStateDao.upsert(
             SyncStateEntity(
-                cursor = meta.generatedAt,
+                cursor = stepCursor ?: meta.generatedAt,
                 categoriesEtag = categoriesEtag,
                 listCommit = meta.listCommit,
                 syncedAt = System.currentTimeMillis(),
@@ -167,6 +181,13 @@ class CatalogSyncer @Inject constructor(
 
     /** First run: page the whole catalog, then drop rows the server no longer has. */
     private suspend fun bootstrap(listing: String): StepResult {
+        // Capture the cursor before paging so rows committed while the pages
+        // are being fetched replay through the next delta instead of being
+        // skipped behind a fresh cursor.
+        val before = when (val result = api.meta()) {
+            is ApiResult.Success -> cursorFrom(result.value.generatedAt)
+            is ApiResult.Failure -> null
+        }
         val seen = mutableListOf<String>()
         var page = 1
         while (page <= MAX_BOOTSTRAP_PAGES) {
@@ -198,7 +219,7 @@ class CatalogSyncer @Inject constructor(
         val stale = appDao.allSlugs().filterNot { it in seen }
         if (stale.isNotEmpty()) appDao.deleteBySlugs(stale)
 
-        return StepResult.Ok(Counts(added = seen.size))
+        return StepResult.Ok(Counts(added = seen.size), cursor = before)
     }
 
     private suspend fun incremental(since: String, listing: String): StepResult {
@@ -227,7 +248,8 @@ class CatalogSyncer @Inject constructor(
                 added = changes.added.size,
                 updated = changes.updated.size,
                 removed = changes.removed.size
-            )
+            ),
+            cursor = cursorFrom(changes.generatedAt)
         )
     }
 
@@ -245,7 +267,7 @@ class CatalogSyncer @Inject constructor(
         }
 
     private sealed interface StepResult {
-        data class Ok(val counts: Counts) : StepResult
+        data class Ok(val counts: Counts, val cursor: String? = null) : StepResult
 
         data class Failed(val outcome: CatalogSyncOutcome) : StepResult
 
@@ -266,6 +288,16 @@ class CatalogSyncer @Inject constructor(
         message = message
     )
 
+    /**
+     * The server captures its cursor before reading, but a transaction that
+     * committed just before that instant can still be missing from the
+     * response. Step slightly back so the next delta replays the boundary.
+     */
+    private fun cursorFrom(iso: String?): String? {
+        val millis = CommonUtil.parseIsoUtcMillis(iso) ?: return null
+        return Instant.ofEpochMilli(millis - CURSOR_MARGIN_MILLIS).toString()
+    }
+
     private suspend fun lastPurgeApplied(): Long =
         Preferences.readLong(context, Preferences.PREFERENCE_LAST_CATALOG_PURGE_AT, 0L)
 
@@ -279,6 +311,7 @@ class CatalogSyncer @Inject constructor(
     private companion object {
         const val BOOTSTRAP_PAGE_SIZE = 200
         const val MAX_BOOTSTRAP_PAGES = 50
+        const val CURSOR_MARGIN_MILLIS = 1_000L
         const val SORT_NAME = "name"
         const val ORDER_ASC = "asc"
         const val LISTING_MAIN = "main"

@@ -20,10 +20,11 @@ import kotlinx.coroutines.flow.map
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
+import me.timschneeberger.shizustore.data.room.entity.AppEntity
 
 @HiltViewModel
 class InstalledViewModel @Inject constructor(
-    appRepository: AppRepository,
+    private val appRepository: AppRepository,
     mapper: CatalogUiMapper
 ) : ViewModel() {
 
@@ -31,4 +32,7 @@ class InstalledViewModel @Inject constructor(
         Pager(PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false)) {
             appRepository.pagedInstalled()
         }.flow.map { paging -> paging.map(mapper::toResolvedApp) }.cachedIn(viewModelScope)
+
+    /** Full installed list for the Obtainium JSON export, not just the paged window. */
+    suspend fun exportCandidates(): List<AppEntity> = appRepository.installedApps()
 }

@@ -6,7 +6,6 @@
 /.superpowers
 /build
 /captures
-/docs
 .externalNativeBuild
 .cxx
 local.properties

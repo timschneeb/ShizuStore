@@ -61,6 +61,9 @@ How the store discovers your releases and displays your app is documented in the
 Do you want to help translate ShizuStore? You can help at [Crowdin](https://crowdin.com/project/shizustore)! Thank you!
 
 
+<https://crowdin.com/project/shizustore>
+
+
 <a href="https://crowdin.com/project/shizustore">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://badges.crowdin.net/badge/light/crowdin-on-dark@2x.png" width="150px">
@@ -70,7 +73,8 @@ Do you want to help translate ShizuStore? You can help at [Crowdin](https://crow
 </a>
 
 
-<https://crowdin.com/project/shizustore>
+> [!NOTE]
+> If the language you want to translate into isn't listed on Crowdin yet, please open an issue here on GitHub and I will enable it for you.
 
 ## Credits
 

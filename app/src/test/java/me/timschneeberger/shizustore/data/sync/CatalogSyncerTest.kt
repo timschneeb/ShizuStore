@@ -66,8 +66,12 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(3, alpha.localeCount)
         assertEquals(listOf("arm64-v8a"), alpha.abis)
         assertEquals(mapOf("de" to "Alpha DE"), alpha.localizedLabels)
-        assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
+        assertEquals(BOOTSTRAP_CURSOR, db.syncStateDao().get()!!.cursor)
         assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
+
+        // The cursor is captured before the pages are read: meta first, apps second.
+        assertEquals("/v1/meta", server.takeRequest().path)
+        assertTrue(server.takeRequest().path!!.startsWith("/v1/apps"))
     }
 
     @Test
@@ -101,7 +105,8 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(listOf("arm64-v8a", "armeabi-v7a"), alpha.abis)
         assertEquals(mapOf("de" to "Alpha DE", "zh" to "Alpha 中文"), alpha.localizedLabels)
         assertEquals(0, db.appDownloadDao().count())
-        assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
+        // The delta's own cursor wins over the later /v1/meta timestamp.
+        assertEquals(CHANGES_CURSOR, db.syncStateDao().get()!!.cursor)
         assertEquals("etag-1", db.syncStateDao().get()!!.categoriesEtag)
     }
 
@@ -141,6 +146,8 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(9, alpha.installCount)
         assertEquals("Alpha", alpha.name)
         assertNull(db.appDao().get("ghost"))
+        // Older servers send no delta cursor, so meta's timestamp is the fallback.
+        assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
     }
 
     @Test
@@ -173,7 +180,7 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(2, db.appDao().count())
         assertNull(db.appDao().get("gone"))
         assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
-        assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
+        assertEquals(BOOTSTRAP_CURSOR, db.syncStateDao().get()!!.cursor)
     }
 
     @Test
@@ -207,9 +214,11 @@ class CatalogSyncerTest : ApiTestBase() {
         assertEquals(listOf("tools"), db.categoryDao().observeAll().first().map { it.slug })
         assertEquals(listOf("com.gone"), db.favouriteDao().observeAll().first())
         assertEquals(PURGE_AT_MILLIS, lastPurgeApplied())
-        assertEquals(GENERATED_AT, db.syncStateDao().get()!!.cursor)
+        assertEquals(BOOTSTRAP_CURSOR, db.syncStateDao().get()!!.cursor)
 
-        // The purge dropped the old ETag, so categories must be refetched in full.
+        // The purge dropped the old ETag, so categories must be refetched in
+        // full. Requests: changes, pre-bootstrap meta, apps, then categories.
+        server.takeRequest()
         server.takeRequest()
         server.takeRequest()
         val categoriesRequest = server.takeRequest()
@@ -329,6 +338,7 @@ class CatalogSyncerTest : ApiTestBase() {
 
         syncer.sync()
 
+        server.takeRequest()
         assertEquals(
             "/v1/apps?page=1&pageSize=200&sort=name&order=asc&listing=main",
             server.takeRequest().path
@@ -350,6 +360,7 @@ class CatalogSyncerTest : ApiTestBase() {
 
         syncer.sync()
 
+        server.takeRequest()
         assertEquals(
             "/v1/apps?page=1&pageSize=200&sort=name&order=asc&listing=main%2Cclosed_source",
             server.takeRequest().path
@@ -402,6 +413,12 @@ class CatalogSyncerTest : ApiTestBase() {
         const val OLD_CURSOR = "2026-01-01T00:00:00+00:00"
         const val GENERATED_AT = "2026-06-01T00:00:00+00:00"
 
+        // Cursors step one second back from the server timestamp so a commit on
+        // the boundary replays through the next delta.
+        const val BOOTSTRAP_CURSOR = "2026-05-31T23:59:59Z"
+        const val CHANGES_GENERATED_AT = "2026-05-30T12:00:00+00:00"
+        const val CHANGES_CURSOR = "2026-05-30T11:59:59Z"
+
         val BOOTSTRAP_PAGE = """
             {
               "items": [
@@ -449,7 +466,8 @@ class CatalogSyncerTest : ApiTestBase() {
               ],
               "removed": [
                 { "slug": "gone", "name": "Gone", "removedAt": "2026-05-20T00:00:00+00:00" }
-              ]
+              ],
+              "generatedAt": "$CHANGES_GENERATED_AT"
             }
         """.trimIndent()
 

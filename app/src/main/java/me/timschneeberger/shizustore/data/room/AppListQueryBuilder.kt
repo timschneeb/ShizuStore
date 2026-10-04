@@ -108,6 +108,8 @@ object AppListQueryBuilder {
                 "downloadTotal IS NULL, downloadTotal DESC, name COLLATE NOCASE ASC"
             }
             AppSort.SIZE_DESC -> "size IS NULL, size DESC, name COLLATE NOCASE ASC"
+            // NULLS land last like stars; scores are written by the /v1/trending refresh.
+            AppSort.TRENDING -> "trendScore IS NULL, trendScore DESC, name COLLATE NOCASE ASC"
         }
 
     internal fun escapeLikePattern(raw: String): String = raw

@@ -53,12 +53,14 @@ import me.timschneeberger.shizustore.compose.composable.Placeholder
 import me.timschneeberger.shizustore.compose.composable.SectionHeader
 import me.timschneeberger.shizustore.compose.composable.TopAppBar
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
 import me.timschneeberger.shizustore.compose.ui.details.composable.AppExclusionMenu
 import me.timschneeberger.shizustore.compose.ui.details.composable.BillingNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.ClosedSourceNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.CompatibilityNotice
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsCarousel
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsHeader
+import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsHistory
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsStats
 import me.timschneeberger.shizustore.compose.ui.details.composable.DetailsTags
 import me.timschneeberger.shizustore.compose.ui.details.composable.InstallAction
@@ -146,6 +148,8 @@ fun AppDetailsScreen(
         }
     }
 
+    val contentFadeSpec = motionEffectsSpec<Float>()
+
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -178,7 +182,9 @@ fun AppDetailsScreen(
                             is AppDetailsUiState.Loaded -> ContentPhase.Loaded
                         }
                     },
-                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    transitionSpec = {
+                        fadeIn(contentFadeSpec) togetherWith fadeOut(contentFadeSpec)
+                    },
                     label = "AppDetailsScreenContent"
                 ) { state ->
                     when (state) {
@@ -466,6 +472,14 @@ private fun DetailsContent(
                 sources = state.sources,
                 onSelect = { viewModel.installFrom(it.app) }
             )
+        }
+
+        item(key = "history") {
+            val showStatistics by viewModel.showStatistics.collectAsStateWithLifecycle()
+            if (showStatistics) {
+                val history by viewModel.history.collectAsStateWithLifecycle()
+                DetailsHistory(history = history)
+            }
         }
 
         item(key = "more-from-author") {

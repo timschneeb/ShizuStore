@@ -28,6 +28,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -44,6 +45,8 @@ import me.timschneeberger.shizustore.compose.composable.SectionHeader
 import me.timschneeberger.shizustore.compose.composable.app.AppUpdateItem
 import me.timschneeberger.shizustore.compose.composable.app.toRowState
 import me.timschneeberger.shizustore.compose.navigation.Destination
+import me.timschneeberger.shizustore.compose.theme.motionEffectsSpec
+import me.timschneeberger.shizustore.compose.theme.motionSpatialSpec
 import me.timschneeberger.shizustore.compose.ui.updates.composable.AppUpdateSheet
 import me.timschneeberger.shizustore.data.model.ResolvedApp
 import me.timschneeberger.shizustore.extensions.appInfo
@@ -115,6 +118,9 @@ private fun UpdatesBody(
         else -> ContentPhase.Loaded
     }
 
+    val fadeSpec = motionEffectsSpec<Float>()
+    val placementSpec = motionSpatialSpec<IntOffset>()
+
     Column(modifier = modifier.fillMaxSize()) {
         if (syncFailure != null) {
             OfflineBanner(onRetry = viewModel::retrySync)
@@ -133,7 +139,7 @@ private fun UpdatesBody(
         ) {
             AnimatedContent(
                 targetState = contentPhase,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
+                transitionSpec = { fadeIn(fadeSpec) togetherWith fadeOut(fadeSpec) },
                 label = "UpdatesScreenContent",
                 modifier = Modifier.fillMaxSize()
             ) { phase ->
@@ -187,6 +193,11 @@ private fun UpdatesBody(
                                 apps[index]?.let { app ->
                                     AppUpdateItem(
                                         app = app,
+                                        modifier = Modifier.animateItem(
+                                            fadeInSpec = fadeSpec,
+                                            placementSpec = placementSpec,
+                                            fadeOutSpec = fadeSpec
+                                        ),
                                         download = downloads[
                                             app.installedPackage
                                                 ?: app.packageName

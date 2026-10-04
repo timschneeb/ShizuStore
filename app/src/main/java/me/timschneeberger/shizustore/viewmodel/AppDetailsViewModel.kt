@@ -40,6 +40,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.timschneeberger.shizustore.compose.ui.details.composable.canHandleObtainium
 import me.timschneeberger.shizustore.compose.ui.details.composable.obtainiumRepoUrl
+import me.timschneeberger.shizustore.data.api.ApiResult
+import me.timschneeberger.shizustore.data.api.AppHistoryDto
+import me.timschneeberger.shizustore.data.api.Availability
+import me.timschneeberger.shizustore.data.api.ShizuApi
 import me.timschneeberger.shizustore.data.download.ApkSaver
 import me.timschneeberger.shizustore.data.helper.DownloadHelper
 import me.timschneeberger.shizustore.data.helper.InstallDispatcher
@@ -115,6 +119,7 @@ class AppDetailsViewModel @Inject constructor(
     private val ignoredUpdateRepository: IgnoredUpdateRepository,
     private val installedRepository: InstalledRepository,
     private val liveReadmeFetcher: LiveReadmeFetcher,
+    private val api: ShizuApi,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
     /** The navigation key: a real package name when known, otherwise the catalog slug. */
@@ -129,13 +134,18 @@ class AppDetailsViewModel @Inject constructor(
     private val _refreshing = MutableStateFlow(false)
     val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
 
-    /** Detail request in progress; the screen stays blank until it settles. */
+    /** Detail request in progress; only rows that cannot render yet stay blank. */
     private val _detailFetching = MutableStateFlow(false)
 
     /** Live README pulled from the forge raw URL; only valid for [liveReadmeSlug]. */
     private val liveReadme = MutableStateFlow<String?>(null)
     private val liveReadmeSlug = MutableStateFlow<String?>(null)
     private var liveReadmeJob: Job? = null
+
+    /** Per-day install/star history for the sparkline; best-effort, null until it lands. */
+    private val _history = MutableStateFlow<AppHistoryDto?>(null)
+    val history: StateFlow<AppHistoryDto?> = _history.asStateFlow()
+    private var historyJob: Job? = null
 
     /** Exposed so screens can keep their content hidden until the request settles. */
     val detailFetching: StateFlow<Boolean> = _detailFetching.asStateFlow()
@@ -179,6 +189,8 @@ class AppDetailsViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
     // Other apps by the same stable developer key; empty until a profile is known.
+    // Eager on purpose: the row sits at the bottom of the page, and a query that
+    // only starts once a fling reaches it grows the list and stops the scroll short.
     val moreFromAuthor: StateFlow<List<ResolvedApp>> = slug
         .filterNotNull()
         .distinctUntilChanged()
@@ -197,7 +209,7 @@ class AppDetailsViewModel @Inject constructor(
         }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            SharingStarted.Eagerly,
             emptyList()
         )
 
@@ -207,7 +219,7 @@ class AppDetailsViewModel @Inject constructor(
         .flatMapLatest { currentSlug -> observeCategorySlug(currentSlug) }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            SharingStarted.Eagerly,
             null
         )
 
@@ -242,7 +254,16 @@ class AppDetailsViewModel @Inject constructor(
         true
     ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
+    /** Catalog preference: when off, the details page hides the statistics charts. */
+    val showStatistics: StateFlow<Boolean> = Preferences.booleanFlow(
+        context,
+        Preferences.PREFERENCE_SHOW_STATISTICS,
+        true
+    ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
+
     // Other apps in the same category; empty until a profile is known.
+    // Eager for the same reason as the author row: it is the last item, so it
+    // must be measured before the user can fling down to it.
     val moreFromCategory: StateFlow<List<ResolvedApp>> = slug
         .filterNotNull()
         .distinctUntilChanged()
@@ -259,7 +280,7 @@ class AppDetailsViewModel @Inject constructor(
         }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS),
+            SharingStarted.Eagerly,
             emptyList()
         )
 
@@ -280,6 +301,8 @@ class AppDetailsViewModel @Inject constructor(
             // README must not leak into the new one.
             liveReadme.value = null
             liveReadmeSlug.value = null
+            // Same for the history series, which is fetched per slug below.
+            _history.value = null
             // The AI usage report lands on a detail fetch and can appear after
             // the README was cached; refetch once for analyzable apps whose
             // report is still missing. Apps without a forge repo never have
@@ -304,6 +327,33 @@ class AppDetailsViewModel @Inject constructor(
                 _detailFetching.value = false
             }
             refreshLiveReadme(resolvedSlug)
+            refreshHistory(resolvedSlug)
+        }
+    }
+
+    /**
+     * Pulls the per-day install/star/release series for the activity charts. Off
+     * the loading path on purpose: the page renders from Room while this
+     * enriches, and a newer load cancels the previous fetch so its data cannot
+     * win.
+     */
+    private fun refreshHistory(resolvedSlug: String) {
+        historyJob?.cancel()
+        historyJob = viewModelScope.launch {
+            // Nothing renders the series while the catalog setting hides it.
+            if (!Preferences.readBoolean(context, Preferences.PREFERENCE_SHOW_STATISTICS, true)) {
+                return@launch
+            }
+            when (val result = api.appHistory(resolvedSlug, HISTORY_DAYS)) {
+                is ApiResult.Success -> if (slug.value == resolvedSlug) {
+                    _history.value = result.value
+                }
+
+                is ApiResult.Failure ->
+                    if (slug.value == resolvedSlug) {
+                        Log.w(TAG, "History fetch failed for $resolvedSlug: ${result.error}")
+                    }
+            }
         }
     }
 
@@ -340,6 +390,7 @@ class AppDetailsViewModel @Inject constructor(
             try {
                 fetchDetail(resolvedSlug)
                 refreshLiveReadme(resolvedSlug)
+                refreshHistory(resolvedSlug)
             } finally {
                 _refreshing.value = false
             }
@@ -547,21 +598,32 @@ class AppDetailsViewModel @Inject constructor(
         ) { catalogPair, error, fetching, liveSlug, liveMarkdown ->
             val (detailed, installed) = catalogPair
             when {
-                // Blank the screen until the request settles so the install row
-                // does not pop in late; failures fall back to cached data.
-                fetching -> AppDetailsUiState.Loading
+                // A summary row lacks the fields the page acts on (url, storeUrl,
+                // permissions, download candidates) until this device has fetched
+                // the detail once, so blank the screen until that request settles;
+                // failures fall back to cached data. Rows fetched before render
+                // immediately while the background fetch only enriches the
+                // README, changelog and screenshot caches.
+                fetching &&
+                    (
+                        detailed == null ||
+                            detailed.app.detailsFetchedAt == null ||
+                            (
+                                detailed.app.availability == Availability.DIRECT_APK &&
+                                    detailed.candidates.isEmpty()
+                                )
+                        ) -> AppDetailsUiState.Loading
 
                 detailed != null -> {
                     val fingerprint = installed?.let { CertFingerprint.of(it.signer, it.signerMd5) }
+                    // Screenshots, changelog and README URL come straight from the
+                    // row, so a warm reopen renders them on the first emission and
+                    // the background fetch settling changes nothing visible; only
+                    // the live README overrides the stored snapshot.
+                    val details = mapper.toAppDetails(detailed)
                     val live = liveMarkdown?.takeIf { liveSlug == slug }
                     AppDetailsUiState.Loaded(
-                        details = mapper.toAppDetails(detailed).copy(
-                            fullDescription = live ?: detailedAppRepository.fullDescription(slug),
-                            readmeUrl = detailedAppRepository.readmeUrl(slug),
-                            changelog = detailedAppRepository.changelog(slug),
-                            changelogUrl = detailedAppRepository.changelogUrl(slug),
-                            screenshots = detailedAppRepository.screenshots(slug).orEmpty()
-                        ),
+                        details = live?.let { details.copy(fullDescription = it) } ?: details,
                         sources = mapper.toSources(detailed, fingerprint, installed?.packageName),
                         installedPackage = installed?.packageName
                     )
@@ -580,5 +642,8 @@ class AppDetailsViewModel @Inject constructor(
 
     private companion object {
         const val TAG = "AppDetailsViewModel"
+
+        /** One bounded window backs every chart mode; installs slice a 30-day tail. */
+        const val HISTORY_DAYS = 365
     }
 }

@@ -81,6 +81,26 @@ class OkHttpShizuApi @Inject constructor(
         json.decodeFromString(HealthDto.serializer(), body)
     }
 
+    override suspend fun trending(days: Int, limit: Int, sort: String): ApiResult<TrendingDto> =
+        decode(
+            execute(
+                "/v1/trending",
+                listOf(
+                    "days" to days.toString(),
+                    "limit" to limit.toString(),
+                    "sort" to sort
+                )
+            )
+        ) { body ->
+            json.decodeFromString(TrendingDto.serializer(), body)
+        }
+
+    override suspend fun appHistory(slug: String, days: Int): ApiResult<AppHistoryDto> = decode(
+        execute("/v1/apps/$slug/history", listOf("days" to days.toString()))
+    ) { body ->
+        json.decodeFromString(AppHistoryDto.serializer(), body)
+    }
+
     override suspend fun reportInstall(
         slug: String,
         versionCode: Long,

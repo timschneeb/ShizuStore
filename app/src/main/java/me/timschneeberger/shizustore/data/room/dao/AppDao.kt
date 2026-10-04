@@ -82,6 +82,20 @@ interface AppDao {
         counts.forEach { (slug, count) -> setInstallCount(slug, count) }
     }
 
+    @Query("UPDATE app SET trendScore = NULL")
+    suspend fun clearTrendScores()
+
+    @Query("UPDATE app SET trendScore = :score WHERE slug = :slug")
+    suspend fun setTrendScore(slug: String, score: Long)
+
+    /** Wholesale rewrite behind the Trending sort: clearing first drops apps that
+     * fell out of the window so a stale score cannot keep ranking them. */
+    @Transaction
+    suspend fun replaceTrendScores(scores: Map<String, Long>) {
+        clearTrendScores()
+        scores.forEach { (slug, score) -> setTrendScore(slug, score) }
+    }
+
     @Query(
         "UPDATE app SET installedVersionCode = :installedVersionCode," +
             " updateAvailable = :updateAvailable, updateCandidateId = :updateCandidateId," +
@@ -119,6 +133,12 @@ interface AppDao {
         "SELECT * FROM app WHERE installedVersionCode IS NOT NULL ORDER BY name COLLATE NOCASE ASC"
     )
     fun pagedInstalled(): PagingSource<Int, AppEntity>
+
+    /** Whole installed set for bulk actions such as the Obtainium export. */
+    @Query(
+        "SELECT * FROM app WHERE installedVersionCode IS NOT NULL ORDER BY name COLLATE NOCASE ASC"
+    )
+    suspend fun getInstalled(): List<AppEntity>
 
     @Query(
         "SELECT * FROM app ORDER BY listUpdatedAt IS NULL, listUpdatedAt DESC," +
@@ -175,6 +195,13 @@ interface AppDao {
             " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
     )
     fun pagedFavourites(): PagingSource<Int, AppEntity>
+
+    /** Whole favourite set for bulk actions such as the Obtainium export. */
+    @Query(
+        "SELECT a.* FROM app a JOIN favourite f ON f.packageName = a.packageName" +
+            " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
+    )
+    suspend fun getFavourites(): List<AppEntity>
 
     @Query(
         "SELECT a.* FROM app a JOIN ignored_update i ON i.packageName = a.packageName" +
