@@ -60,7 +60,7 @@
     <string name="details_changelog_subtitle">Novedades de la versión %1$s</string>
     <string name="details_changelog_empty">No hay registro de cambios disponible</string>
     <string name="details_stats_downloads">Descargas</string>
-    <string name="details_stats_downloads_tooltip">Number of downloads counted at %1$s.</string>
+    <string name="details_stats_downloads_tooltip">Número de descargas contabilizadas en %1$s.</string>
     <string name="details_stats_installs_tooltip">Número de instalaciones reportado por otros usuarios de ShizuStore.</string>
     <string name="details_stats_stars">Estrellas</string>
     <string name="details_stats_stars_tooltip">Número de estrellas en el repositorio de código fuente.</string>
@@ -96,66 +96,66 @@
         <item quantity="other">%1$d fuentes</item>
     </plurals>
     <string name="details_website">Sitio web</string>
-    <string name="donation_card_body">ShizuStore is free and open-source.\nDonations cover the server costs and keep the app and backend moving.</string>
-    <string name="donation_card_title">Support ShizuStore</string>
-    <string name="donation_dialog_message">Thank you for supporting the project! Every donation helps cover the server costs and gives me more time to keep developing the app, the backend and to keep the app list up-to-date. Tap on one of the links to support me.</string>
-    <string name="donation_dialog_title">Support ShizuStore</string>
-    <string name="download_cancel_all">Cancel all</string>
-    <string name="download_clear_all">Clear all</string>
-    <string name="download_clear_finished">Clear finished</string>
-    <string name="download_eta_calculating">Calculating…</string>
-    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>h <xliff:g id="minutes">%2$d</xliff:g>m <xliff:g id="seconds">%3$d</xliff:g>s left</string>
-    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s left</string>
-    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
-    <string name="download_export_done">APK exported</string>
-    <string name="download_export_failed">Could not export the APK</string>
-    <string name="download_saved">APK saved to Downloads</string>
-    <string name="download_save_failed">Could not save the APK</string>
-    <string name="download_status_awaiting_confirmation">Waiting for confirmation</string>
-    <string name="download_status_cancelled">Cancelled</string>
-    <string name="download_status_completed">Downloaded</string>
-    <string name="download_status_downloading">Downloading… <xliff:g id="percent">%1$d</xliff:g>%%</string>
-    <string name="download_status_downloading_plain">Downloading…</string>
-    <string name="download_status_failed">Failed</string>
-    <string name="download_status_installed">Installed</string>
-    <string name="download_status_installing">Installing… <xliff:g id="percent">%1$d</xliff:g>%%</string>
-    <string name="download_status_installing_plain">Installing…</string>
-    <string name="download_status_queued">Queued</string>
-    <string name="download_status_unavailable">Unavailable</string>
-    <string name="download_status_verifying">Verifying…</string>
-    <string name="downloads_empty">No downloads yet</string>
-    <string name="downloads_empty_detail">Apps you download appear here</string>
-    <string name="error_download_archive">Could not unpack the downloaded archive. Try again later.</string>
-    <string name="error_download_http">The repository refused the download. Try again later.</string>
-    <string name="error_download_insufficient_storage">Not enough space to download this app. Free some up and try again.</string>
-    <string name="error_download_network">Could not reach the repository to download this app. Check your connection.</string>
-    <string name="error_hash_mismatch">The downloaded file did not match what the repository signed. It was discarded.</string>
-    <string name="error_install_aborted">Installation was canceled.</string>
-    <string name="error_install_apk_missing">The downloaded file is no longer on disk. Download it again.</string>
-    <string name="error_install_blocked">Another app or a device policy blocked this install.</string>
-    <string name="error_install_conflict">This conflicts with the copy already installed. Uninstall that one first.</string>
-    <string name="error_install_incompatible">This app is not compatible with this device.</string>
-    <string name="error_install_interrupted">The install did not finish and the app is not installed. Try again.</string>
-    <string name="error_install_invalid">The package is invalid or damaged. Download it again.</string>
-    <string name="error_install_root_unavailable">No root access. Grant ShizuStore superuser rights, or choose another installer in Settings.</string>
-    <string name="error_install_session_failure">The install session failed. Try again.</string>
-    <string name="error_install_shizuku_unavailable">Shizuku is not running or has not given ShizuStore access. Open Shizuku, start it, then allow ShizuStore.</string>
-    <string name="error_install_signer_mismatch">This version is signed with a different key than the copy you have installed, so it cannot replace it.</string>
-    <string name="error_install_storage_full">Not enough space to install. Free some up and try again.</string>
-    <string name="favourites_empty">No favourites yet</string>
-    <string name="favourites_empty_detail">Tap the star on an app to keep it here</string>
-    <string name="favourites_unavailable">No favourites to show</string>
-    <string name="ignored_all">Ignoring all updates</string>
-    <string name="ignored_updates_empty">No ignored updates</string>
-    <string name="ignored_updates_empty_detail">Dismiss an update to list it here</string>
-    <string name="ignored_updates_unavailable">No ignored updates to show</string>
-    <string name="ignored_version" tools:ignore="PluralsCandidate">Ignoring v<xliff:g id="version_code">%1$d</xliff:g> and earlier</string>
-    <string name="install_refused">Cannot install this yet - <xliff:g id="reason">%1$s</xliff:g></string>
-    <string name="install_refused_no_download">Cannot install yet - this version has not been downloaded.</string>
-    <string name="installed_empty">No installed apps</string>
-    <string name="installer_native_desc">Opens Android\'s install screen for every app. Always asks for confirmation, and works when the session installer is blocked.</string>
-    <string name="installer_native_subtitle">Hands off to the system dialog</string>
-    <string name="installer_native_title">System installer</string>
+    <string name="donation_card_body">ShizuStore es gratuita y de código abierto.\nLas donaciones cubren los costes del servidor y mantienen la aplicación y el backend en marcha.</string>
+    <string name="donation_card_title">Apoyar a ShizuStore</string>
+    <string name="donation_dialog_message">¡Gracias por apoyar el proyecto! Cada donación ayuda a cubrir los costes del servidor y me da más tiempo para seguir desarrollando la aplicación, el backend y mantener actualizada la lista de aplicaciones. Toca en uno de los enlaces para apoyarme.</string>
+    <string name="donation_dialog_title">Apoya a ShizuStore</string>
+    <string name="download_cancel_all">Cancelar todo</string>
+    <string name="download_clear_all">Borrar todo</string>
+    <string name="download_clear_finished">Borrar finalizadas</string>
+    <string name="download_eta_calculating">Calculando…</string>
+    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>h <xliff:g id="minutes">%2$d</xliff:g>m <xliff:g id="seconds">%3$d</xliff:g>s restantes</string>
+    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s restantes</string>
+    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s restantes</string>
+    <string name="download_export_done">APK exportado</string>
+    <string name="download_export_failed">No se pudo exportar el APK</string>
+    <string name="download_saved">APK guardado en Descargas</string>
+    <string name="download_save_failed">No se pudo guardar el APK</string>
+    <string name="download_status_awaiting_confirmation">Esperando confirmación</string>
+    <string name="download_status_cancelled">Cancelada</string>
+    <string name="download_status_completed">Descargada</string>
+    <string name="download_status_downloading">Descargando… <xliff:g id="percent">%1$d</xliff:g>%%</string>
+    <string name="download_status_downloading_plain">Descargando…</string>
+    <string name="download_status_failed">Fallida</string>
+    <string name="download_status_installed">Instalada</string>
+    <string name="download_status_installing">Instalando… <xliff:g id="percent">%1$d</xliff:g>%%</string>
+    <string name="download_status_installing_plain">Instalando…</string>
+    <string name="download_status_queued">En cola</string>
+    <string name="download_status_unavailable">No disponible</string>
+    <string name="download_status_verifying">Verificando…</string>
+    <string name="downloads_empty">Aún no hay descargas</string>
+    <string name="downloads_empty_detail">Las aplicaciones que descargues aparecerán aquí</string>
+    <string name="error_download_archive">No se pudo descomprimir el archivo descargado. Inténtalo de nuevo más tarde.</string>
+    <string name="error_download_http">El repositorio rechazó la descarga. Inténtalo de nuevo más tarde.</string>
+    <string name="error_download_insufficient_storage">No hay suficiente espacio para descargar esta aplicación. Libera espacio e inténtalo de nuevo.</string>
+    <string name="error_download_network">No se pudo establecer conexión con el repositorio para descargar esta aplicación. Comprueba tu conexión.</string>
+    <string name="error_hash_mismatch">El archivo descargado no coincide con la firma del repositorio. Ha sido descartado.</string>
+    <string name="error_install_aborted">La instalación fue cancelada.</string>
+    <string name="error_install_apk_missing">El archivo descargado ya no está en el disco. Descárgalo de nuevo.</string>
+    <string name="error_install_blocked">Otra aplicación o una política del dispositivo bloquearon esta instalación.</string>
+    <string name="error_install_conflict">Hay un conflicto con la versión ya instalada. Desinstálala primero.</string>
+    <string name="error_install_incompatible">Esta aplicación no es compatible con este dispositivo.</string>
+    <string name="error_install_interrupted">La instalación no se completó y la aplicación no está instalada. Inténtalo de nuevo.</string>
+    <string name="error_install_invalid">El paquete no es válido o está dañado. Descárgalo de nuevo.</string>
+    <string name="error_install_root_unavailable">No hay acceso root. Concede permisos de superusuario a ShizuStore o elige otro instalador en Ajustes.</string>
+    <string name="error_install_session_failure">La sesión de instalación ha fallado. Inténtalo de nuevo.</string>
+    <string name="error_install_shizuku_unavailable">Shizuku no se está ejecutando o no le ha dado acceso a ShizuStore. Abre Shizuku, inícialo y luego autoriza a ShizuStore.</string>
+    <string name="error_install_signer_mismatch">Esta versión está firmada con una clave diferente a la de la copia que tienes instalada, por lo que no puede reemplazarla.</string>
+    <string name="error_install_storage_full">No hay suficiente espacio para instalar. Libera espacio e inténtalo de nuevo.</string>
+    <string name="favourites_empty">Aún no hay favoritos</string>
+    <string name="favourites_empty_detail">Toca la estrella en una aplicación para mantenerla aquí</string>
+    <string name="favourites_unavailable">No hay favoritos para mostrar</string>
+    <string name="ignored_all">Ignorando todas las actualizaciones</string>
+    <string name="ignored_updates_empty">No hay actualizaciones ignoradas</string>
+    <string name="ignored_updates_empty_detail">Descarta una actualización para que aparezca aquí</string>
+    <string name="ignored_updates_unavailable">No hay actualizaciones ignoradas para mostrar</string>
+    <string name="ignored_version" tools:ignore="PluralsCandidate">Ignorando v<xliff:g id="version_code">%1$d</xliff:g> y anteriores</string>
+    <string name="install_refused">No se puede instalar todavía - <xliff:g id="reason">%1$s</xliff:g></string>
+    <string name="install_refused_no_download">No se puede instalar todavía - esta versión no se ha descargado.</string>
+    <string name="installed_empty">No hay aplicaciones instaladas</string>
+    <string name="installer_native_desc">Abre la pantalla de instalación de Android para cada aplicación. Siempre pide confirmación y funciona cuando el instalador por sesiones está bloqueado.</string>
+    <string name="installer_native_subtitle">Cede el control al cuadro de diálogo del sistema</string>
+    <string name="installer_native_title">Instalador del sistema</string>
     <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
     <string name="installer_root_subtitle">Installs silently through a root shell</string>
     <string name="installer_root_title">Root installer</string>
