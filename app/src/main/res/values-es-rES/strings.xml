@@ -194,7 +194,7 @@
     <string name="notification_channel_alerts">Requiere atención</string>
     <string name="notification_channel_download">Descargas</string>
     <string name="notification_channel_install">Instalaciones</string>
-    <string name="notification_channel_update">Comprobaciones de actualizaciones</string>
+    <string name="notification_channel_update">Comprobación de actualizaciones</string>
     <string name="notification_confirm_install">Toca para instalar <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_confirm_install_text">Android necesita que confirmes esta instalación.</string>
     <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> descargada</string>
@@ -337,60 +337,60 @@
     <string name="settings_unattended_paused_checks_off">Pausado. Las comprobaciones en segundo plano están configuradas en \"Nunca\" más arriba, por lo que no se ejecutará ninguna instalación. Elige un intervalo para iniciarlas.</string>
     <string name="settings_unattended_paused_confirmation">Pausado. Tu instalador requiere que confirmes cada instalación, por lo que solo recibirás notificaciones cuando haya actualizaciones disponibles. El uso de Root o Shizuku, si tu dispositivo es compatible con alguno de ellos, elimina este paso.</string>
     <string name="settings_unattended_paused_root">Pausado. Sin acceso root: concede permisos de superusuario a ShizuStore o elige otro instalador en la sección \"Instalador de aplicaciones\"</string>
-    <string name="settings_unattended_paused_shizuku">Paused. This device cannot install through Shizuku right now. Check that Shizuku is installed, running and has allowed ShizuStore; if it already is, choose another installer under App installer.</string>
-    <string name="settings_unattended_section_title">Automatic installs</string>
-    <string name="settings_unattended_subtitle">Downloads and installs new versions in the background, without confirming each one.</string>
-    <string name="settings_unattended_title">Install updates automatically</string>
-    <string name="settings_update_interval_daily">Every day</string>
-    <string name="settings_update_interval_never">Never</string>
-    <string name="settings_update_interval_six_hours">Every 6 hours</string>
-    <string name="settings_update_interval_twelve_hours">Every 12 hours</string>
-    <string name="settings_update_interval_weekly">Every week</string>
-    <string name="settings_updates_subtitle">How often enabled repositories are checked for new versions.</string>
-    <string name="settings_updates_title">Update checks</string>
-    <string name="settings_wifi_only_subtitle">Background checks and automatic downloads wait for an unmetered network.</string>
-    <string name="settings_wifi_only_title">Check on Wi-Fi only</string>
-    <string name="time_just_now">just now</string>
+    <string name="settings_unattended_paused_shizuku">Pausado. Este dispositivo no puede realizar instalaciones a través de Shizuku en este momento. Comprueba que Shizuku esté instalado, en ejecución y que haya autorizado a ShizuStore. Si ya es así, elige otro instalador en la sección \"Instalador de aplicaciones\".</string>
+    <string name="settings_unattended_section_title">Instalaciones automáticas</string>
+    <string name="settings_unattended_subtitle">Descarga e instala nuevas versiones en segundo plano, sin necesidad de confirmar cada una.</string>
+    <string name="settings_unattended_title">Instalar actualizaciones automáticamente</string>
+    <string name="settings_update_interval_daily">Todos los días</string>
+    <string name="settings_update_interval_never">Nunca</string>
+    <string name="settings_update_interval_six_hours">Cada 6 horas</string>
+    <string name="settings_update_interval_twelve_hours">Cada 12 horas</string>
+    <string name="settings_update_interval_weekly">Cada semana</string>
+    <string name="settings_updates_subtitle">Frecuencia con la que se comprueba si hay nuevas versiones en los repositorios activados.</string>
+    <string name="settings_updates_title">Comprobación de actualizaciones</string>
+    <string name="settings_wifi_only_subtitle">Las comprobaciones en segundo plano y las descargas automáticas esperarán a una conexión sin límite de datos.</string>
+    <string name="settings_wifi_only_title">Comprobar solo por Wi-Fi</string>
+    <string name="time_just_now">Ahora mismo</string>
     <plurals name="time_minutes_ago">
-        <item quantity="one">%1$d minute ago</item>
-        <item quantity="other">%1$d minutes ago</item>
+        <item quantity="one">Hace %1$d minuto</item>
+        <item quantity="other">Hace %1$d minutos</item>
     </plurals>
     <plurals name="time_hours_ago">
-        <item quantity="one">%1$d hour ago</item>
-        <item quantity="other">%1$d hours ago</item>
+        <item quantity="one">Hace %1$d hora</item>
+        <item quantity="other">Hace %1$d horas</item>
     </plurals>
     <plurals name="time_days_ago">
-        <item quantity="one">%1$d day ago</item>
-        <item quantity="other">%1$d days ago</item>
+        <item quantity="one">Hace %1$d día</item>
+        <item quantity="other">Hace %1$d días</item>
     </plurals>
     <plurals name="time_weeks_ago">
-        <item quantity="one">%1$d week ago</item>
-        <item quantity="other">%1$d weeks ago</item>
+        <item quantity="one">Hace %1$d semana</item>
+        <item quantity="other">Hace %1$d semanas</item>
     </plurals>
     <plurals name="time_months_ago">
-        <item quantity="one">%1$d month ago</item>
-        <item quantity="other">%1$d months ago</item>
+        <item quantity="one">Hace %1$d mes</item>
+        <item quantity="other">Hace %1$d meses</item>
     </plurals>
     <plurals name="time_years_ago">
-        <item quantity="one">%1$d year ago</item>
-        <item quantity="other">%1$d years ago</item>
+        <item quantity="one">Hace %1$d año</item>
+        <item quantity="other">Hace %1$d años</item>
     </plurals>
-    <string name="title_about">About</string>
-    <string name="title_apps">Apps</string>
-    <string name="title_categories">Categories</string>
-    <string name="title_search">Search</string>
-    <string name="title_donate">Donate</string>
-    <string name="title_downloads">Downloads</string>
-    <string name="title_favourites">Favourites</string>
-    <string name="title_help_translate">Help us translate</string>
-    <string name="title_ignored_updates">Ignored updates</string>
-    <string name="title_my_apps">My apps</string>
-    <string name="title_settings">Settings</string>
-    <string name="title_updates">Updates</string>
-    <string name="updates_app_details">Details</string>
+    <string name="title_about">Acerca de</string>
+    <string name="title_apps">Aplicaciones</string>
+    <string name="title_categories">Categorías</string>
+    <string name="title_search">Buscar</string>
+    <string name="title_donate">Donar</string>
+    <string name="title_downloads">Descargas</string>
+    <string name="title_favourites">Favoritos</string>
+    <string name="title_help_translate">Ayúdanos a traducir</string>
+    <string name="title_ignored_updates">Actualizaciones ignoradas</string>
+    <string name="title_my_apps">Mis aplicaciones</string>
+    <string name="title_settings">Ajustes</string>
+    <string name="title_updates">Actualizaciones</string>
+    <string name="updates_app_details">Detalles</string>
     <plurals name="updates_available_count">
-        <item quantity="one">%1$d update available</item>
-        <item quantity="other">%1$d updates available</item>
+        <item quantity="one">%1$d actualización disponible</item>
+        <item quantity="other">%1$d actualizaciones disponibles</item>
     </plurals>
-    <string name="updates_empty">Everything is up to date</string>
+    <string name="updates_empty">Todo está actualizado</string>
 </resources>
