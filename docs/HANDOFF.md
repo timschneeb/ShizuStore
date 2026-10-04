@@ -126,10 +126,10 @@ knowing before touching a subsystem:
      body), so finger movement recomposes only that node; the gesture picks
      an axis at the touch slop, and a vertical drag releases the pointer to
      the page scroll while horizontal moves consume so the list never
-     twitches under a scrub. The stars mode appears
-    only once its series has at least two daily levels to form a bucket,
-    installs always offers a mode, and the
-    section renders nothing when no series has signal. The icon travels in
+     twitches under a scrub. Both modes wait for enough signal to draw (two
+    recorded install days, two star levels) and the section renders nothing
+    otherwise; the Settings -> Catalog "Show statistics" switch (default on)
+    hides the section and skips the history fetch. The icon travels in
    the segmented button's label slot because M3 sizes that slot as the whole
    control, so an empty label would clip the icons. Trackers, Dhizuku
   and localized labels come from server analysis fields; the list has no

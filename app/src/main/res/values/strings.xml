@@ -356,6 +356,8 @@
     <string name="settings_show_closed_source_title">Show closed-source apps</string>
     <string name="settings_show_tracker_info_subtitle">Shows trackers detected in an app\'s APK (Exodus Privacy code signatures) on its details page.</string>
     <string name="settings_show_tracker_info_title">Show tracker info</string>
+    <string name="settings_show_statistics_subtitle">Shows the install and star statistics charts on an app\'s details page.</string>
+    <string name="settings_show_statistics_title">Show statistics</string>
     <string name="settings_theme_dark">Dark</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_system">System default</string>

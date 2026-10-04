@@ -475,8 +475,11 @@ private fun DetailsContent(
         }
 
         item(key = "history") {
-            val history by viewModel.history.collectAsStateWithLifecycle()
-            DetailsHistory(history = history)
+            val showStatistics by viewModel.showStatistics.collectAsStateWithLifecycle()
+            if (showStatistics) {
+                val history by viewModel.history.collectAsStateWithLifecycle()
+                DetailsHistory(history = history)
+            }
         }
 
         item(key = "more-from-author") {

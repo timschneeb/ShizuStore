@@ -252,6 +252,13 @@ class AppDetailsViewModel @Inject constructor(
         true
     ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
 
+    /** Catalog preference: when off, the details page hides the statistics charts. */
+    val showStatistics: StateFlow<Boolean> = Preferences.booleanFlow(
+        context,
+        Preferences.PREFERENCE_SHOW_STATISTICS,
+        true
+    ).stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), true)
+
     // Other apps in the same category; empty until a profile is known.
     val moreFromCategory: StateFlow<List<ResolvedApp>> = slug
         .filterNotNull()
@@ -329,6 +336,10 @@ class AppDetailsViewModel @Inject constructor(
     private fun refreshHistory(resolvedSlug: String) {
         historyJob?.cancel()
         historyJob = viewModelScope.launch {
+            // Nothing renders the series while the catalog setting hides it.
+            if (!Preferences.readBoolean(context, Preferences.PREFERENCE_SHOW_STATISTICS, true)) {
+                return@launch
+            }
             when (val result = api.appHistory(resolvedSlug, HISTORY_DAYS)) {
                 is ApiResult.Success -> if (slug.value == resolvedSlug) {
                     _history.value = result.value
