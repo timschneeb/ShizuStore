@@ -252,14 +252,14 @@
     <string name="filter_free">Gratis</string>
     <string name="filter_iap">Compras integradas</string>
     <string name="filter_iap_or_paid">Compras integradas o de pago</string>
-    <string name="filter_iap_short">IAP (Compras integradas)</string>
+    <string name="filter_iap_short">IAP</string>
     <string name="filter_iap_or_paid_short">IAP o de pago</string>
     <string name="filter_title_category">Filtrar por categoría</string>
     <string name="filter_title_price">Filtrar por precio</string>
     <string name="filter_title_sort">Ordenar por</string>
     <string name="category_dhizuku">Compatible con Dhizuku</string>
     <string name="app_badge_paid">De pago</string>
-    <string name="app_badge_iap">IAP (Compras integradas)</string>
+    <string name="app_badge_iap">IAP</string>
     <string name="app_badge_ads">Anuncios</string>
     <string name="app_indicator_installed">Instalada</string>
     <string name="app_indicator_update">Actualización disponible</string>

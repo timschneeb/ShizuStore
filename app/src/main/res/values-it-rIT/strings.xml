@@ -55,7 +55,7 @@
     <string name="apps_recommended">Consigliate</string>
     <string name="apps_recently_added">Aggiunte di recente</string>
     <string name="apps_recently_updated">Aggiornate di recente</string>
-    <string name="apps_most_starred">I più votati su GitHub</string>
+    <string name="apps_most_starred">Le più votate su GitHub</string>
     <string name="apps_popular">Popolari su ShizuStore</string>
     <string name="details_changelog">Changelog</string>
     <string name="details_changelog_subtitle">Novità della versione %1$s</string>
@@ -241,7 +241,7 @@
     <string name="search_history">Ricerche recenti</string>
     <string name="search_sort_name">Nome</string>
     <string name="search_sort_stars">Più votate</string>
-    <string name="search_sort_stars_full">I più votati su GitHub/GitLab</string>
+    <string name="search_sort_stars_full">Le più votate su GitHub/GitLab</string>
     <string name="search_sort_popularity">Popolarità</string>
     <string name="search_sort_popularity_short">Download totali</string>
     <string name="search_sort_trending">Nuove installazioni negli ultimi 14 giorni su ShizuStore (In tendenza)</string>
