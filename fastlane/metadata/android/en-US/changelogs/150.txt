@@ -1,0 +1,7 @@
+- New "Trending" sort mode: see which apps gained the most installs in the last 14 days on ShizuStore
+- Added statistics charts for all apps (Installs per day, stars per week)
+- Obtainium batch export: Export favorite list and installed apps as an Obtainium JSON file
+- Material 3 expressive animations, with a toggle in Settings
+- Android TV support with dpad navigation
+- Screenshots can now be pinch-zoomed
+- Improved performance and updated translations

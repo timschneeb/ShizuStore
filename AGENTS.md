@@ -32,7 +32,7 @@ After a client change, install the fresh debug build to the phone over adb:
 
 ```bash
 adb connect 192.168.178.58:5555
-adb -s 192.168.178.58:5555 install -r app/build/outputs/apk/debug/ShizuStore-1.4.1-debug.apk
+adb -s 192.168.178.58:5555 install -r app/build/outputs/apk/debug/ShizuStore-1.5.0-debug.apk
 ```
 
 Adjust the device address if the phone reports a different one.
@@ -47,7 +47,7 @@ Performance benchmarks are device-gated and not part of the inner loop:
 The first regenerates `app/src/release/generated/baselineProfiles/` (keep it in
 source); the second runs the frame-timing suite: startup, tab switch, details
 open and vertical flings through the home and catalog lists. The connected task
-installs `app/build/outputs/apk/benchmarkRelease/ShizuStore-1.4.1-benchmarkRelease.apk`
+installs `app/build/outputs/apk/benchmarkRelease/ShizuStore-1.5.0-benchmarkRelease.apk`
 itself and uninstalls the app when it finishes (the APK is `-unsigned` only on
 machines without `signing.properties`). Grant `POST_NOTIFICATIONS` and wake the
 screen first; a dozing screen yields no frame stats.
@@ -56,7 +56,7 @@ Judge animation and scroll work on a release-like install, never the debug APK:
 debug is unminified and JIT-only, so it stutters in ways the shipped build does
 not, and baseline profiles cannot help a debuggable app. For animation QA run
 `./gradlew assembleNonMinifiedRelease` and install
-`app/build/outputs/apk/nonMinifiedRelease/ShizuStore-1.4.1-nonMinifiedRelease.apk`
+`app/build/outputs/apk/nonMinifiedRelease/ShizuStore-1.5.0-nonMinifiedRelease.apk`
 (AOSP testkey).
 
 Compose compiler skipping and stability reports are opt-in because writing them
