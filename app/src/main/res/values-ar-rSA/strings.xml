@@ -35,7 +35,7 @@
     <string name="action_open_link">عرض موقع الويب</string>
     <string name="action_retry">أعد المحاولة</string>
     <string name="action_save">حفظ</string>
-    <string name="action_export_obtainium">Export as Obtainium JSON</string>
+    <string name="action_export_obtainium">تصدير كـ Obtainium JSON</string>
     <string name="action_scroll_down">تمرير للأسفل</string>
     <string name="action_search">بحث</string>
     <string name="action_share">مشاركة</string>
@@ -67,16 +67,16 @@
     <string name="details_stats_stars_tooltip">Number of stars on the source code repository.</string>
     <string name="details_stats_size">Size</string>
     <string name="details_stats_size_tooltip">Download size of the APK file.</string>
-    <string name="details_history_title">Statistics</string>
-    <string name="details_history_installs">Installs</string>
-    <string name="details_history_installs_axis">Downloads per day</string>
+    <string name="details_history_title">الإحصائيات</string>
+    <string name="details_history_installs">تثبيت</string>
+    <string name="details_history_installs_axis">التنزيلات في اليوم</string>
     <string name="details_history_stars_axis">Stars per week</string>
-    <string name="details_history_downloads_last_week">%1$s new downloads in the last week</string>
-    <string name="details_history_stars_last_week">%1$s new stars in the last week</string>
-    <string name="details_history_total_stars">Total stars: %1$s</string>
-    <string name="details_history_total_downloads">Total downloads: %1$s</string>
-    <string name="details_history_chart_desc">Daily %1$s for the last %2$d days</string>
-    <string name="details_history_weekly_desc">%1$s per week for the last %2$d weeks</string>
+    <string name="details_history_downloads_last_week"></string>
+    <string name="details_history_stars_last_week">%1$s نجوم جديدة في الأسبوع الماضي</string>
+    <string name="details_history_total_stars">إجمالي النجوم: %1$s</string>
+    <string name="details_history_total_downloads">مجموع التنزيلات: %1$s</string>
+    <string name="details_history_chart_desc">يومياً %1$s لآخر %2$d أيام</string>
+    <string name="details_history_weekly_desc">%1$s في الأسبوع لأسبوع آخر %2$d</string>
     <string name="details_more_about">More about this app</string>
     <string name="details_more_from_author">More apps from this developer</string>
     <string name="details_more_from_category">More from this category</string>
@@ -97,10 +97,10 @@
     <string name="details_permissions_none">No permissions requested</string>
     <string name="details_source_code">Source code</string>
     <string name="details_obtainium">Add to Obtainium</string>
-    <string name="obtainium_export_empty">No apps with a trackable source to export</string>
-    <string name="obtainium_export_failed">Could not save the export</string>
-    <string name="obtainium_import_title">Obtainium export saved</string>
-    <string name="obtainium_import_message">Open Obtainium or a compatible fork, go to Settings and use Import/Export to import %1$s from the location you picked.</string>
+    <string name="obtainium_export_empty">لا توجد تطبيقات ذات مصدر يمكن تعقبه للتصدير</string>
+    <string name="obtainium_export_failed">تعذر حفظ التصدير</string>
+    <string name="obtainium_import_title">تم حفظ تصدير التحصين</string>
+    <string name="obtainium_import_message">افتح الحصول على أو شوكة متوافقة، اذهب إلى الإعدادات واستخدم الاستيراد/التصدير لاستيراد %1$s من الموقع الذي اخترته.</string>
     <string name="details_store">Store</string>
     <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
     <string name="details_closed_source_notice">This app is closed source. Its code is not public, so the community cannot easily verify what it does.</string>
@@ -130,7 +130,7 @@
     <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>h <xliff:g id="minutes">%2$d</xliff:g>m <xliff:g id="seconds">%3$d</xliff:g>s left</string>
     <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s left</string>
     <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
-    <string name="download_export_done">APK exported</string>
+    <string name="download_export_done">تم تصدير APK</string>
     <string name="download_export_failed">Could not export the APK</string>
     <string name="download_saved">APK saved to Downloads</string>
     <string name="download_save_failed">Could not save the APK</string>
@@ -144,19 +144,19 @@
     <string name="download_status_installing">تثبيت… <xliff:g id="percent">%1$d</xliff:g>%%</string>
     <string name="download_status_installing_plain">جار التثبيت…</string>
     <string name="download_status_queued">في قائمة الإنتظار</string>
-    <string name="download_status_unavailable">Unavailable</string>
-    <string name="download_status_verifying">Verifying…</string>
+    <string name="download_status_unavailable">لم يفتح بعد</string>
+    <string name="download_status_verifying">يتحقق…</string>
     <string name="downloads_empty">لا توجد تنزيلات بعد</string>
     <string name="downloads_empty_detail">التطبيقات التي تقوم بتنزيلها تظهر هنا</string>
     <string name="error_download_archive">تعذر فك حزمة الأرشيف الذي تم تنزيله. حاول مرة أخرى لاحقاً.</string>
-    <string name="error_download_http">The repository refused the download. Try again later.</string>
-    <string name="error_download_insufficient_storage">Not enough space to download this app. Free some up and try again.</string>
-    <string name="error_download_network">Could not reach the repository to download this app. Check your connection.</string>
-    <string name="error_hash_mismatch">The downloaded file did not match what the repository signed. It was discarded.</string>
-    <string name="error_install_aborted">Installation was canceled.</string>
-    <string name="error_install_apk_missing">The downloaded file is no longer on disk. Download it again.</string>
-    <string name="error_install_blocked">Another app or a device policy blocked this install.</string>
-    <string name="error_install_conflict">This conflicts with the copy already installed. Uninstall that one first.</string>
+    <string name="error_download_http">رفض المستودع التنزيل. حاول مرة أخرى لاحقاً.</string>
+    <string name="error_download_insufficient_storage">لا توجد مساحة كافية لتنزيل هذا التطبيق. قم بتفريغ بعض ثم حاول مرة أخرى.</string>
+    <string name="error_download_network">تعذر الوصول إلى المستودع لتحميل هذا التطبيق. تحقق من اتصالك.</string>
+    <string name="error_hash_mismatch">الملف الذي تم تنزيله لا يتطابق مع ما وقع عليه المستودع. تم تجاهله.</string>
+    <string name="error_install_aborted">تم إلغاء التثبيت.</string>
+    <string name="error_install_apk_missing">الملف الذي تم تنزيله لم يعد على القرص. قم بتنزيله مرة أخرى.</string>
+    <string name="error_install_blocked">قام تطبيق آخر أو سياسة جهاز بحظر هذا التثبيت.</string>
+    <string name="error_install_conflict">هذا يتعارض مع النسخة المثبتة بالفعل. قم بإلغاء تثبيت هذه النسخة أولاً.</string>
     <string name="error_install_incompatible">This app is not compatible with this device.</string>
     <string name="error_install_interrupted">The install did not finish and the app is not installed. Try again.</string>
     <string name="error_install_invalid">The package is invalid or damaged. Download it again.</string>
