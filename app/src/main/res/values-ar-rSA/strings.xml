@@ -131,11 +131,11 @@
     <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s left</string>
     <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
     <string name="download_export_done">تم تصدير APK</string>
-    <string name="download_export_failed">Could not export the APK</string>
-    <string name="download_saved">APK saved to Downloads</string>
-    <string name="download_save_failed">Could not save the APK</string>
-    <string name="download_status_awaiting_confirmation">Waiting for confirmation</string>
-    <string name="download_status_cancelled">Cancelled</string>
+    <string name="download_export_failed">تعذر تصدير ملف APK</string>
+    <string name="download_saved">تم حفظ ملف APK في مجلد التنزيلات</string>
+    <string name="download_save_failed">تعذر حفظ ملف APK</string>
+    <string name="download_status_awaiting_confirmation">بانتظار التأكيد</string>
+    <string name="download_status_cancelled">ألغي</string>
     <string name="download_status_completed">تم التنزيل</string>
     <string name="download_status_downloading">جارٍ تنزيل… <xliff:g id="percent">%1$d</xliff:g>%%</string>
     <string name="download_status_downloading_plain">يتم التنزيل…</string>
@@ -157,7 +157,7 @@
     <string name="error_install_apk_missing">الملف الذي تم تنزيله لم يعد على القرص. قم بتنزيله مرة أخرى.</string>
     <string name="error_install_blocked">قام تطبيق آخر أو سياسة جهاز بحظر هذا التثبيت.</string>
     <string name="error_install_conflict">هذا يتعارض مع النسخة المثبتة بالفعل. قم بإلغاء تثبيت هذه النسخة أولاً.</string>
-    <string name="error_install_incompatible">This app is not compatible with this device.</string>
+    <string name="error_install_incompatible">هذا التطبيق غير متوافق مع هذا الجهاز.</string>
     <string name="error_install_interrupted">The install did not finish and the app is not installed. Try again.</string>
     <string name="error_install_invalid">The package is invalid or damaged. Download it again.</string>
     <string name="error_install_root_unavailable">No root access. Grant ShizuStore superuser rights, or choose another installer in Settings.</string>
