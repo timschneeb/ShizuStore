@@ -158,58 +158,58 @@
     <string name="error_install_blocked">قام تطبيق آخر أو سياسة جهاز بحظر هذا التثبيت.</string>
     <string name="error_install_conflict">هذا يتعارض مع النسخة المثبتة بالفعل. قم بإلغاء تثبيت هذه النسخة أولاً.</string>
     <string name="error_install_incompatible">هذا التطبيق غير متوافق مع هذا الجهاز.</string>
-    <string name="error_install_interrupted">The install did not finish and the app is not installed. Try again.</string>
-    <string name="error_install_invalid">The package is invalid or damaged. Download it again.</string>
-    <string name="error_install_root_unavailable">No root access. Grant ShizuStore superuser rights, or choose another installer in Settings.</string>
-    <string name="error_install_session_failure">The install session failed. Try again.</string>
-    <string name="error_install_shizuku_unavailable">Shizuku is not running or has not given ShizuStore access. Open Shizuku, start it, then allow ShizuStore.</string>
-    <string name="error_install_signer_mismatch">This version is signed with a different key than the copy you have installed, so it cannot replace it.</string>
-    <string name="error_install_storage_full">Not enough space to install. Free some up and try again.</string>
-    <string name="favourites_empty">No favourites yet</string>
-    <string name="favourites_empty_detail">Tap the star on an app to keep it here</string>
-    <string name="favourites_unavailable">No favourites to show</string>
-    <string name="ignored_all">Ignoring all updates</string>
-    <string name="ignored_updates_empty">No ignored updates</string>
-    <string name="ignored_updates_empty_detail">Dismiss an update to list it here</string>
-    <string name="ignored_updates_unavailable">No ignored updates to show</string>
-    <string name="ignored_version" tools:ignore="PluralsCandidate">Ignoring v<xliff:g id="version_code">%1$d</xliff:g> and earlier</string>
-    <string name="install_refused">Cannot install this yet - <xliff:g id="reason">%1$s</xliff:g></string>
-    <string name="install_refused_no_download">Cannot install yet - this version has not been downloaded.</string>
-    <string name="installed_empty">No installed apps</string>
-    <string name="installer_native_desc">Opens Android\'s install screen for every app. Always asks for confirmation, and works when the session installer is blocked.</string>
-    <string name="installer_native_subtitle">Hands off to the system dialog</string>
-    <string name="installer_native_title">System installer</string>
-    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
-    <string name="installer_root_subtitle">Installs silently through a root shell</string>
-    <string name="installer_root_title">Root installer</string>
-    <string name="installer_session_desc">Uses Android\'s own package installer service. Needs no setup; Android may still ask you to confirm each install.</string>
-    <string name="installer_session_subtitle">Default, works without root</string>
-    <string name="installer_session_title">Session installer</string>
-    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to ShizuStore.</string>
-    <string name="installer_shizuku_subtitle">Installs silently through Shizuku or Sui</string>
-    <string name="installer_shizuku_title">Shizuku installer</string>
-    <string name="shizuku_card_title">Set up Shizuku</string>
-    <string name="shizuku_card_install_body">Shizuku is not installed. Install it so ShizuStore can install apps in the background without root.</string>
-    <string name="shizuku_card_grant_body">Shizuku is installed. Allow ShizuStore to install apps through it.</string>
-    <string name="shizuku_card_start_body">Shizuku is installed but not running. Start Shizuku, then allow ShizuStore access.</string>
-    <string name="shizuku_card_install_action">Get Shizuku</string>
-    <string name="shizuku_card_grant_action">Allow access</string>
-    <string name="shizuku_card_start_action">Start Shizuku</string>
-    <string name="shizuku_card_dismiss">Dismiss</string>
-    <string name="item_optional">Optional</string>
-    <string name="item_required">Required</string>
-    <string name="loading">Loading in progress</string>
-    <string name="notification_channel_alerts">Needs attention</string>
-    <string name="notification_channel_download">Downloads</string>
-    <string name="notification_channel_install">Installs</string>
-    <string name="notification_channel_update">Update checks</string>
-    <string name="notification_confirm_install">Tap to install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_confirm_install_text">Android needs you to confirm this install.</string>
+    <string name="error_install_interrupted">لم تكتمل عملية التثبيت والتطبيق غير مثبت. حاول مرة أخرى.</string>
+    <string name="error_install_invalid">الحُزْمَة غير صالحة أو تالفة. قم بتحميلها مرة أخرى</string>
+    <string name="error_install_root_unavailable">لا يمكن الوصول إلى الجذر. منح حقوق المستخدم المتميز ShizuStore ، أو اختر مثبت آخر في الإعدادات.</string>
+    <string name="error_install_session_failure">فشل التثبيت. حاول مرة أخرى.</string>
+    <string name="error_install_shizuku_unavailable">لم يتم تشغيل Shizuku أو لم يتم منحه حق الوصول ShizuStore . افتح Shizuku ، ثم قم بتشغيله ، ثم اسمح بشيزو ستور.</string>
+    <string name="error_install_signer_mismatch">تم توقيع هذا الإصدار بمفتاح مختلف عن النسخة التي قمت بتثبيتها، لذلك لا يمكن استبدالها.</string>
+    <string name="error_install_storage_full">لا توجد مساحة كافية لتنزيل هذا التطبيق. الفعل من (تفريغ) بعض ثم حاول مرة أخرى.</string>
+    <string name="favourites_empty">لا تفضيلات حتى الآن</string>
+    <string name="favourites_empty_detail">اضغط على النجمة في التطبيق للاحتفاظ به هنا</string>
+    <string name="favourites_unavailable">لا توجد مفضلات لعرضها</string>
+    <string name="ignored_all">تجاهل جميع التحديثات</string>
+    <string name="ignored_updates_empty">لا تحديثات تم تجاهلها</string>
+    <string name="ignored_updates_empty_detail">قم برفض التحديث لإدراجه هنا</string>
+    <string name="ignored_updates_unavailable">لا تحديثات مُهملة لعرضها</string>
+    <string name="ignored_version" tools:ignore="PluralsCandidate">تجاهل الإصدار <xliff:g id="version_code">%1$d</xliff:g> والإصدارات السابقة</string>
+    <string name="install_refused">لا يمكن تثبيت هذا بعد - <xliff:g id="reason">%1$s</xliff:g></string>
+    <string name="install_refused_no_download">لا يمكن التثبيت حتى الآن - لم يتم تحميل هذا الإصدار.</string>
+    <string name="installed_empty">لا توجد تطبيقات مثبتة</string>
+    <string name="installer_native_desc">يفتح شاشة تثبيت أندرويد لكل تطبيق. دائمًا يطلب تأكيدًا، ويعمل عندما يتم حظر مثبت الجلسة.</string>
+    <string name="installer_native_subtitle">لا تتدخل في نافذة حوار النظام</string>
+    <string name="installer_native_title">مثبت النظام</string>
+    <string name="installer_root_desc">يشغّل أمر تثبيت النظام بصلاحيات الجذر (root)، دون مربع حوار تأكيد. يتطلب جهازًا مُجذّرًا (rooted) وصلاحية المستخدم الخارق (superuser) لتطبيق ShizuStore.</string>
+    <string name="installer_root_subtitle">يثبّت بصمت عبر صدفة أوامر الجذر (root shell)</string>
+    <string name="installer_root_title">مُثبِّت الجذر</string>
+    <string name="installer_session_desc">يستخدم خدمة مثبّت الحزم الخاصة بنظام أندرويد. لا يحتاج إلى أي إعداد؛ قد يطلب منك أندرويد مع ذلك تأكيد كل عملية تثبيت.</string>
+    <string name="installer_session_subtitle">افتراضي، يعمل بدون روت</string>
+    <string name="installer_session_title">مثبت الجلسة</string>
+    <string name="installer_shizuku_desc">يستخدم واجهات برمجة تطبيقات النظام (system APIs) عبر خدمة ADB الخاصة بـ Shizuku أو خدمة الجذر (root). يتطلب تشغيل Shizuku أو Sui، مع منح الإذن لتطبيق ShizuStore.</string>
+    <string name="installer_shizuku_subtitle">يتم التثبيت بصمت عبر Shizuku أو Sui.</string>
+    <string name="installer_shizuku_title">مثبّت شيزوكو</string>
+    <string name="shizuku_card_title">أعد إعداد شيزوكو</string>
+    <string name="shizuku_card_install_body">Shizuku غير مثبّت. ثبّته حتى يتمكن ShizuStore من تثبيت التطبيقات في الخلفية دون root.</string>
+    <string name="shizuku_card_grant_body">Shizuku مثبّت. اسمح لـ ShizuStore بتثبيت التطبيقات من خلاله.</string>
+    <string name="shizuku_card_start_body">Shizuku مثبّت لكنه لا يعمل. شغّل Shizuku، ثم اسمح لـ ShizuStore بالوصول.</string>
+    <string name="shizuku_card_install_action">احصل على Shizuku</string>
+    <string name="shizuku_card_grant_action">السماح بالوصول</string>
+    <string name="shizuku_card_start_action">تشغيل Shizuku</string>
+    <string name="shizuku_card_dismiss">تجاهل</string>
+    <string name="item_optional">اختياري</string>
+    <string name="item_required">مطلوب</string>
+    <string name="loading">جاري التحميل...</string>
+    <string name="notification_channel_alerts">يحتاج إلى انتباه</string>
+    <string name="notification_channel_download">التحميلات</string>
+    <string name="notification_channel_install">تثبيت</string>
+    <string name="notification_channel_update">التحقق من التحديث</string>
+    <string name="notification_confirm_install">انقر لتثبيت <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_confirm_install_text">أندرويد يحتاج إليك لتأكيد هذا التثبيت.</string>
     <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_group_activity">Activity</string>
+    <string name="notification_group_activity">نشاط</string>
     <string name="notification_group_alerts">Needs attention</string>
-    <string name="notification_download_failed">Could not download <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_downloading">Downloading <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_download_failed">تعذر تحميل <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_downloading">جارٍ تنزيل <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
     <string name="notification_install_failed">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_installing">Installing <xliff:g id="app_name">%1$s</xliff:g></string>
@@ -257,15 +257,15 @@
         <item quantity="many"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
         <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
     </plurals>
-    <string name="notification_updates_available_text">Open ShizuStore to review and install them.</string>
-    <string name="permission_doze">Ignore battery optimisation</string>
-    <string name="permission_doze_desc">Keeps downloads running and update checks on time when ShizuStore is in the background.</string>
-    <string name="permission_install">Install unknown apps</string>
-    <string name="permission_install_desc">Required before ShizuStore can install anything. Android still confirms each install unless you use root or Shizuku.</string>
-    <string name="permission_notifications">Notifications</string>
-    <string name="permission_notifications_desc">Shows repository sync, download and install progress, and alerts you when updates are ready.</string>
-    <string name="search_hint">Search apps</string>
-    <string name="search_no_results">No apps match that search</string>
+    <string name="notification_updates_available_text">افتح ShizuStore للمراجعة والتثبيت.</string>
+    <string name="permission_doze">تجاهل تحسين البطارية</string>
+    <string name="permission_doze_desc">يبقي التنزيلات قيد التشغيل والتحديث في الوقت الذي يكون فيه ShizuStore في الخلفية.</string>
+    <string name="permission_install">تثبيت التطبيقات غير المعروفة</string>
+    <string name="permission_install_desc">مطلوب قبل أن يتمكن ShizuStore من تثبيت أي شيء. لا يزال Android يؤكد كل تثبيت إلا إذا كنت تستخدم الروت أو Shizuku.</string>
+    <string name="permission_notifications">الإشعارَات</string>
+    <string name="permission_notifications_desc">يظهر تقدم مزامنة المستودع، والتنزيل، والتثبيت، وينبهك عندما تكون التحديثات جاهزة.</string>
+    <string name="search_hint">البحث عن التطبيقات</string>
+    <string name="search_no_results">لا توجد تطبيقات تطابق هذا البحث</string>
     <string name="search_history">Recent searches</string>
     <string name="search_sort_name">Name</string>
     <string name="search_sort_stars">Most starred</string>
@@ -279,7 +279,7 @@
     <string name="filter_price">Price</string>
     <string name="filter_free">Free</string>
     <string name="filter_iap">In-app purchases</string>
-    <string name="filter_iap_or_paid">In-app purchases or Paid</string>
+    <string name="filter_iap_or_paid">عمليات الشراء أو الدفع داخل التطبيق</string>
     <string name="filter_iap_short">IAP</string>
     <string name="filter_iap_or_paid_short">IAP or Paid</string>
     <string name="filter_title_category">Filter by category</string>
