@@ -205,7 +205,7 @@
     <string name="notification_channel_update">Update checks</string>
     <string name="notification_confirm_install">Tap to install <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_confirm_install_text">Android needs you to confirm this install.</string>
-    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> downloaded</string>
+    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_group_activity">Activity</string>
     <string name="notification_group_alerts">Needs attention</string>
     <string name="notification_download_failed">Could not download <xliff:g id="app_name">%1$s</xliff:g></string>
