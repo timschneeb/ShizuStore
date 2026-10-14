@@ -17,8 +17,8 @@
     <string name="action_close">Zamknij</string>
     <string name="action_collapse">Przewiń</string>
     <string name="action_expand">Rozwiń</string>
-    <string name="action_next">Next</string>
-    <string name="action_previous">Previous</string>
+    <string name="action_next">Dalej »</string>
+    <string name="action_previous">Poprzednie</string>
     <string name="action_export">Eksportuj APK</string>
     <string name="action_save_apk">Zapisz APK</string>
     <string name="action_favourite">Dodaj do ulubionych</string>
@@ -36,6 +36,7 @@
     <string name="action_open_link">Zobacz stronę internetową</string>
     <string name="action_retry">Spróbuj ponownie</string>
     <string name="action_save">Zapisz</string>
+    <string name="action_export_obtainium">Eksportuj jako Obtainium JSON</string>
     <string name="action_scroll_down">Przewiń w dół</string>
     <string name="action_search">Wyszukaj</string>
     <string name="action_share">Udostępnij</string>
@@ -56,7 +57,7 @@
     <string name="apps_recently_added">Ostatnio dodane</string>
     <string name="apps_recently_updated">Ostatnio zaktualizowane</string>
     <string name="apps_most_starred">Najczęściej oznaczone gwiazdką na GitHub</string>
-    <string name="apps_popular">Popular on ShizuStore</string>
+    <string name="apps_popular">Popularne w ShizuStore</string>
     <string name="details_changelog">Lista zmian</string>
     <string name="details_changelog_subtitle">Co nowego w wersji %1$s</string>
     <string name="details_changelog_empty">Brak dziennika zmian</string>
@@ -67,6 +68,16 @@
     <string name="details_stats_stars_tooltip">Liczba gwiazdek w repozytorium kodu źródłowego.</string>
     <string name="details_stats_size">Rozmiar</string>
     <string name="details_stats_size_tooltip">Rozmiar pliku APK.</string>
+    <string name="details_history_title">Statystyki</string>
+    <string name="details_history_installs">Instalacje</string>
+    <string name="details_history_installs_axis">Pobrania dziennie</string>
+    <string name="details_history_stars_axis">Gwiazdki tygodniowo</string>
+    <string name="details_history_downloads_last_week">%1$s nowych pobrań w ostatnim tygodniu</string>
+    <string name="details_history_stars_last_week">%1$s nowych gwiazdek w ostatnim tygodniu</string>
+    <string name="details_history_total_stars">Wszystkich gwiazdek: %1$s</string>
+    <string name="details_history_total_downloads">Wszystkie pobrania: %1$s</string>
+    <string name="details_history_chart_desc">Daily %1$s for the last %2$d days</string>
+    <string name="details_history_weekly_desc">%1$s per week for the last %2$d weeks</string>
     <string name="details_more_about">Więcej o tej aplikacji</string>
     <string name="details_more_from_author">Więcej aplikacji tego dewelopera</string>
     <string name="details_more_from_category">Więcej z tej kategorii</string>
@@ -85,6 +96,10 @@
     <string name="details_permissions_none">Nie zażądano żadnych uprawnień</string>
     <string name="details_source_code">Kod źródłowy</string>
     <string name="details_obtainium">Dodaj do Obtainium</string>
+    <string name="obtainium_export_empty">Brak aplikacji ze śledzonym źródłem do eksportu</string>
+    <string name="obtainium_export_failed">Nie udało się zapisać eksportowania</string>
+    <string name="obtainium_import_title">Eksport Obtainium zapisany</string>
+    <string name="obtainium_import_message">Otwórz Obtainium lub kompatybilny fork, przejdź do Ustawień i użyj Import/Export aby zaimportować %1$s z wybranej lokalizacji.</string>
     <string name="details_store">Sklep</string>
     <string name="details_play_store_notice">Ta aplikacja jest dostępna tylko w Google Play. Dotknij, aby otworzyć listę.</string>
     <string name="details_closed_source_notice">Ta aplikacja ma zamknięty kod źródłowy. Jej kod nie jest publicznie dostępny, więc społeczność nie może łatwo zweryfikować, co aplikacja robi.</string>
@@ -242,7 +257,11 @@
     <string name="search_history">Ostatnie wyszukiwania</string>
     <string name="search_sort_name">Nazwa</string>
     <string name="search_sort_stars">Najwięcej gwiazdek</string>
+    <string name="search_sort_stars_full">Najczęściej oznaczone gwiazdką na GitHub/GitLab</string>
     <string name="search_sort_popularity">Popularność</string>
+    <string name="search_sort_popularity_short">Wszystkich pobrań</string>
+    <string name="search_sort_trending">Nowe instalacje w ciągu ostatnich 14 dni w ShizuStore (Popularne)</string>
+    <string name="search_sort_trending_short">Popularne</string>
     <string name="search_sort_size">Od największych</string>
     <string name="filter_all">Wszystkie</string>
     <string name="filter_price">Cena</string>
@@ -279,6 +298,9 @@
     <string name="settings_catalog_title">Katalog</string>
     <string name="settings_dynamic_color_subtitle">Rysuje paletę z Twojej tapety. Android 12 i nowszy.</string>
     <string name="settings_dynamic_color_title">Dynamiczny kolor</string>
+    <string name="settings_expressive_motion_subtitle">
+Animacje typu „Elastic Material 3”. Wyłącz aby uzyskać standardowe</string>
+    <string name="settings_expressive_motion_title">Animacje ekspresywne</string>
     <string name="settings_group_updates_summary">Sprawdzanie harmonogramu, limitów sieci i automatycznych instalacji</string>
     <string name="settings_group_updates_title">Aktualizacje</string>
     <string name="settings_install_reporting_subtitle">Wysyła do serwera informację o anonimowej liczbie instalacji w momencie zainstalowania aplikacji. Dane te zasilają ranking popularności.</string>
@@ -291,6 +313,7 @@
     <string name="settings_installer_custom_source_title">Użyj niestandardowego źródła instalatora</string>
     <string name="settings_installer_summary">Który instalator stosuje pobrane pakiety</string>
     <string name="settings_installer_title">Instalator aplikacji</string>
+    <string name="settings_motion_title">Ruch</string>
     <string name="settings_network_summary">HTTP lub SOCKS proxy i prywatność</string>
     <string name="settings_network_title">Sieć</string>
     <string name="settings_permissions_summary">Instalacja, powiadomienia i uprawnienia baterii</string>
@@ -302,6 +325,9 @@
     <string name="settings_proxy_title">Serwer proxy</string>
     <string name="settings_server_active">Aktywny serwer</string>
     <string name="settings_server_custom">Niestandardowy serwer</string>
+    <string name="settings_server_info">Informacje o serwerze</string>
+    <string name="settings_server_info_commit">awesome-shizuku commit %1$s</string>
+    <string name="settings_server_info_counts">%1$d aplikacji, %2$d kategorie</string>
     <string name="settings_server_invalid">Wprowadź poprawny adres http lub https</string>
     <string name="settings_server_maintenance">Utrzymanie</string>
     <string name="settings_server_not_configured">Nie skonfigurowano</string>
@@ -319,6 +345,8 @@
     <string name="settings_show_closed_source_title">Pokaż aplikacje o zamkniętym kodzie źródłowym</string>
     <string name="settings_show_tracker_info_subtitle">Pokazuje trackery wykryte w APK aplikacji (sygnatury Exodus Privacy ) na jej stronie szczegółowej.</string>
     <string name="settings_show_tracker_info_title">Pokaż informacje o trackerze</string>
+    <string name="settings_show_statistics_subtitle">Pokazuje mapy statystyk instalacji i gwiazdki na stronie szczegółów aplikacji.</string>
+    <string name="settings_show_statistics_title">Pokaż statystyki</string>
     <string name="settings_theme_dark">Ciemny</string>
     <string name="settings_theme_light">Jasny</string>
     <string name="settings_theme_system">Domyślny systemowy</string>
@@ -385,7 +413,7 @@ Sprawdzaj tylko przez Wi-Fi</string>
     <string name="title_donate">Wesprzyj</string>
     <string name="title_downloads">Pobrane</string>
     <string name="title_favourites">Ulubione</string>
-    <string name="title_help_translate">Help us translate</string>
+    <string name="title_help_translate">Pomóż w tłumaczeniu</string>
     <string name="title_ignored_updates">Ignorowane aktualizacje</string>
     <string name="title_my_apps">Moje aplikacje</string>
     <string name="title_settings">Ustawienia</string>
