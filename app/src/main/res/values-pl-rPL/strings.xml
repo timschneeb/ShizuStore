@@ -76,8 +76,8 @@
     <string name="details_history_stars_last_week">%1$s nowych gwiazdek w ostatnim tygodniu</string>
     <string name="details_history_total_stars">Wszystkich gwiazdek: %1$s</string>
     <string name="details_history_total_downloads">Wszystkie pobrania: %1$s</string>
-    <string name="details_history_chart_desc">Daily %1$s for the last %2$d days</string>
-    <string name="details_history_weekly_desc">%1$s per week for the last %2$d weeks</string>
+    <string name="details_history_chart_desc">Codziennie %1$s z ostatnich %2$d dni</string>
+    <string name="details_history_weekly_desc">%1$s tygodniowo przez ostatnie %2$d tygodni</string>
     <string name="details_more_about">Więcej o tej aplikacji</string>
     <string name="details_more_from_author">Więcej aplikacji tego dewelopera</string>
     <string name="details_more_from_category">Więcej z tej kategorii</string>
