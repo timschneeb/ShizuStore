@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="about_licence_title">Español</string>
-    <string name="about_licence_value"></string>
+    <string name="about_licence_title">Licencia</string>
+    <string name="about_licence_value">GNU General Public License v3.0 o posterior</string>
     <string name="about_version">Versión <xliff:g id="version_name">%1$s</xliff:g> (<xliff:g id="version_code">%2$d</xliff:g>)</string>
     <string name="about_developer_title">Desarrollador</string>
     <string name="about_github_title">Código fuente</string>
