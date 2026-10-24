@@ -27,37 +27,37 @@
     <string name="action_ignore_version"><xliff:g id="version_name">%1$s</xliff:g> sürümünü yoksay</string>
     <string name="action_install">Yükle</string>
     <string name="action_installing">Yükleniyor</string>
-    <string name="action_more">More</string>
-    <string name="action_open">Open</string>
-    <string name="action_open_external">Open externally</string>
-    <string name="action_open_in_browser">Open in browser</string>
-    <string name="action_open_play">View on Play</string>
-    <string name="action_open_link">View website</string>
-    <string name="action_retry">Retry</string>
-    <string name="action_save">Save</string>
-    <string name="action_export_obtainium">Export as Obtainium JSON</string>
-    <string name="action_scroll_down">Scroll down</string>
-    <string name="action_search">Search</string>
-    <string name="action_share">Share</string>
-    <string name="action_stop_ignoring_all">Stop ignoring all updates</string>
-    <string name="action_stop_ignoring_version">Stop ignoring this version</string>
-    <string name="action_unfavourite">Remove from favourites</string>
-    <string name="action_uninstall">Uninstall</string>
-    <string name="action_update">Update</string>
-    <string name="action_update_all">Update all</string>
+    <string name="action_more">Daha fazla</string>
+    <string name="action_open">Aç</string>
+    <string name="action_open_external">Harici olarak aç</string>
+    <string name="action_open_in_browser">Tarayıcıda aç</string>
+    <string name="action_open_play">Play Store\'da görüntüle</string>
+    <string name="action_open_link">Web sitesini görüntüle</string>
+    <string name="action_retry">Yeniden dene</string>
+    <string name="action_save">Kaydet</string>
+    <string name="action_export_obtainium">Obtainium JSON olarak dışa aktar</string>
+    <string name="action_scroll_down">Aşağı kaydır</string>
+    <string name="action_search">Ara</string>
+    <string name="action_share">Paylaş</string>
+    <string name="action_stop_ignoring_all">Tüm güncellemeleri yok saymayı bırak</string>
+    <string name="action_stop_ignoring_version">Bu sürümü yok saymayı bırak </string>
+    <string name="action_unfavourite">Favorilerden kaldır</string>
+    <string name="action_uninstall">Kaldır</string>
+    <string name="action_update">Güncelle</string>
+    <string name="action_update_all">Tümünü güncelle</string>
     <!-- Double spaces are \u0020 escapes: aapt collapses literal
         repeated whitespace in string resources into one. -->
-    <string name="apps_empty">No apps yet</string>
-    <string name="apps_empty_detail">The catalog syncs automatically</string>
-    <string name="apps_empty_syncing">Syncing catalog…</string>
-    <string name="apps_sync_failed">Couldn\'t connect to the server. Browsing the local cache. Check your connection and retry.</string>
+    <string name="apps_empty">Henüz uygulama yok</string>
+    <string name="apps_empty_detail">Katalog otomatik olarak eşitlenir</string>
+    <string name="apps_empty_syncing">Katalog eşitleniyor...</string>
+    <string name="apps_sync_failed">Sunucuya bağlanılamadı. Yerel önbellekteki içeriklere göz atılıyor. İnternet bağlantınızı kontrol edip yeniden deneyin.</string>
     <string name="apps_random_picks">Random picks</string>
-    <string name="apps_recommended">Recommended</string>
-    <string name="apps_recently_added">Recently added</string>
-    <string name="apps_recently_updated">Recently updated</string>
-    <string name="apps_most_starred">Most starred on GitHub</string>
-    <string name="apps_popular">Popular on ShizuStore</string>
-    <string name="details_changelog">Changelog</string>
+    <string name="apps_recommended">Önerilenler</string>
+    <string name="apps_recently_added">Son eklenenler</string>
+    <string name="apps_recently_updated">Son güncellenenler</string>
+    <string name="apps_most_starred">GitHub\'da en çok yıldız alanlar</string>
+    <string name="apps_popular">ShizuStore\'da popüler</string>
+    <string name="details_changelog">Değişiklik günlüğü</string>
     <string name="details_changelog_subtitle">What\'s new for version %1$s</string>
     <string name="details_changelog_empty">No changelog available</string>
     <string name="details_stats_downloads">Downloads</string>
@@ -113,33 +113,33 @@
     <string name="details_website">Website</string>
     <string name="donation_card_body">ShizuStore is free and open-source.\nDonations cover the server costs and keep the app and backend moving.</string>
     <string name="donation_card_title">Support ShizuStore</string>
-    <string name="donation_dialog_message">Thank you for supporting the project! Every donation helps cover the server costs and gives me more time to keep developing the app, the backend and to keep the app list up-to-date. Tap on one of the links to support me.</string>
-    <string name="donation_dialog_title">Support ShizuStore</string>
-    <string name="download_cancel_all">Cancel all</string>
-    <string name="download_clear_all">Clear all</string>
-    <string name="download_clear_finished">Clear finished</string>
-    <string name="download_eta_calculating">Calculating…</string>
-    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>h <xliff:g id="minutes">%2$d</xliff:g>m <xliff:g id="seconds">%3$d</xliff:g>s left</string>
-    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s left</string>
-    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
-    <string name="download_export_done">APK exported</string>
-    <string name="download_export_failed">Could not export the APK</string>
-    <string name="download_saved">APK saved to Downloads</string>
-    <string name="download_save_failed">Could not save the APK</string>
-    <string name="download_status_awaiting_confirmation">Waiting for confirmation</string>
-    <string name="download_status_cancelled">Cancelled</string>
-    <string name="download_status_completed">Downloaded</string>
-    <string name="download_status_downloading">Downloading… <xliff:g id="percent">%1$d</xliff:g>%%</string>
-    <string name="download_status_downloading_plain">Downloading…</string>
-    <string name="download_status_failed">Failed</string>
-    <string name="download_status_installed">Installed</string>
-    <string name="download_status_installing">Installing… <xliff:g id="percent">%1$d</xliff:g>%%</string>
-    <string name="download_status_installing_plain">Installing…</string>
-    <string name="download_status_queued">Queued</string>
-    <string name="download_status_unavailable">Unavailable</string>
-    <string name="download_status_verifying">Verifying…</string>
-    <string name="downloads_empty">No downloads yet</string>
-    <string name="downloads_empty_detail">Apps you download appear here</string>
+    <string name="donation_dialog_message">Projeyi desteklediğiniz için teşekkür ederim! Her bağış, sunucu masraflarını karşılamaya yardımcı oluyor ve bununla birlikte uygulamayı ve arka uç sistemini geliştirmeye, uygulama listesini güncel tutmaya daha fazla zaman ayırmamı sağlıyor. Bana destek olmak için bağlantılardan birine dokunun.</string>
+    <string name="donation_dialog_title">ShizuStore\'u destekleyin</string>
+    <string name="download_cancel_all">Tümünü iptal et</string>
+    <string name="download_clear_all">Tümünü temizle</string>
+    <string name="download_clear_finished">Tamamlananları temizle</string>
+    <string name="download_eta_calculating">Hesaplanıyor…</string>
+    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g> sa<xliff:g id="minutes">%2$d</xliff:g> dk<xliff:g id="seconds">%3$d</xliff:g> sn kaldı</string>
+    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g> dk <xliff:g id="seconds">%2$d</xliff:g> sn kaldı</string>
+    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g> sn kaldı</string>
+    <string name="download_export_done">APK dışa aktarıldı</string>
+    <string name="download_export_failed">APK dışa aktarılamadı</string>
+    <string name="download_saved">APK indirilenlere kaydedildi</string>
+    <string name="download_save_failed">APK kaydedilemedi</string>
+    <string name="download_status_awaiting_confirmation">Onay bekleniyor</string>
+    <string name="download_status_cancelled">İptal edildi</string>
+    <string name="download_status_completed">İndirildi</string>
+    <string name="download_status_downloading">İndiriliyor… <xliff:g id="percent">%1$d</xliff:g>%%</string>
+    <string name="download_status_downloading_plain">İndiriliyor…</string>
+    <string name="download_status_failed">İndirilemedi</string>
+    <string name="download_status_installed">Yüklendi</string>
+    <string name="download_status_installing">Yükleniyor… <xliff:g id="percent">%1$d</xliff:g>%%</string>
+    <string name="download_status_installing_plain">Yükleniyor…</string>
+    <string name="download_status_queued">Sırada</string>
+    <string name="download_status_unavailable">Kullanılamıyor</string>
+    <string name="download_status_verifying">Doğrulanıyor…</string>
+    <string name="downloads_empty">Henüz indirme yok</string>
+    <string name="downloads_empty_detail">İndirdiğiniz uygulamalar burada görünür</string>
     <string name="error_download_archive">Could not unpack the downloaded archive. Try again later.</string>
     <string name="error_download_http">The repository refused the download. Try again later.</string>
     <string name="error_download_insufficient_storage">Not enough space to download this app. Free some up and try again.</string>
