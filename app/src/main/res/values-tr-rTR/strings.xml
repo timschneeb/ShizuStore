@@ -78,7 +78,7 @@
     <string name="details_history_total_downloads">Toplam indirme: %1$s</string>
     <string name="details_history_chart_desc">Daily %1$s for the last %2$d days</string>
     <string name="details_history_weekly_desc">%1$s per week for the last %2$d weeks</string>
-    <string name="details_more_about">More about this app</string>
+    <string name="details_more_about">Bu uygulama hakkında daha fazla bilgi</string>
     <string name="details_more_from_author">More apps from this developer</string>
     <string name="details_more_from_category">More from this category</string>
     <string name="details_not_found">App no longer available</string>
