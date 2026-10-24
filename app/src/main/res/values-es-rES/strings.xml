@@ -242,7 +242,7 @@
     <string name="search_sort_name">Nombre</string>
     <string name="search_sort_stars">Con más estrellas</string>
     <string name="search_sort_stars_full">Con más estrellas en GitHub/GitLab</string>
-    <string name="search_sort_popularity">Popularity</string>
+    <string name="search_sort_popularity">Descargas totales en ShizuStore</string>
     <string name="search_sort_popularity_short">Descargas totales</string>
     <string name="search_sort_trending">Nuevas instalaciones en los últimos 14 días en ShizuStore (Tendencias)</string>
     <string name="search_sort_trending_short">Tendencias</string>
@@ -349,8 +349,8 @@
     <string name="settings_updates_subtitle">Frecuencia con la que se comprueba si hay nuevas versiones en los repositorios activados.</string>
     <string name="settings_updates_title">Comprobación de actualizaciones</string>
     <string name="settings_wifi_only_subtitle">Las comprobaciones en segundo plano y las descargas automáticas esperarán a una conexión sin límite de datos.</string>
-    <string name="settings_wifi_only_title">Comprobar solo por Wi-Fi</string>
-    <string name="time_just_now">Ahora mismo</string>
+    <string name="settings_wifi_only_title">Comprobar solo por Wifi</string>
+    <string name="time_just_now">ahora mismo</string>
     <plurals name="time_minutes_ago">
         <item quantity="one">Hace %1$d minuto</item>
         <item quantity="other">Hace %1$d minutos</item>
