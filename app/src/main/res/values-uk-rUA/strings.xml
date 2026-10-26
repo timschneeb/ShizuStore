@@ -84,48 +84,52 @@
     <string name="details_load_failed">Не вдалося зв\'язатися із сервером. Перевірте з\'єднання та спробуйте ще раз.</string>
     <string name="details_permissions">Дозволи</string>
     <plurals name="details_permissions_count">
-        <item quantity="one">%1$d permission requested</item>
-        <item quantity="few">%1$d permissions requested</item>
-        <item quantity="many">%1$d permissions requested</item>
-        <item quantity="other">%1$d permissions requested</item>
+        <item quantity="one">%1$d Дозвіл запитано</item>
+        <item quantity="few">%1$d Кілька дозволів запитано</item>
+        <item quantity="many">%1$d Багато дозволів запитано</item>
+        <item quantity="other">%1$d Інші дозволи запитано</item>
     </plurals>
-    <string name="details_permissions_custom">Custom permissions</string>
-    <string name="details_permissions_dangerous">Dangerous permissions</string>
-    <string name="details_permissions_known">Other permissions</string>
-    <string name="details_permissions_none">No permissions requested</string>
-    <string name="details_source_code">Source code</string>
-    <string name="details_obtainium">Add to Obtainium</string>
-    <string name="obtainium_export_empty">No apps with a trackable source to export</string>
-    <string name="obtainium_export_failed">Could not save the export</string>
-    <string name="obtainium_import_title">Obtainium export saved</string>
-    <string name="obtainium_import_message">Open Obtainium or a compatible fork, go to Settings and use Import/Export to import %1$s from the location you picked.</string>
-    <string name="details_store">Store</string>
-    <string name="details_play_store_notice">This app is only available on Google Play. Tap to open the listing.</string>
-    <string name="details_closed_source_notice">This app is closed source. Its code is not public, so the community cannot easily verify what it does.</string>
-    <string name="details_incompatible_notice">This app needs Android %1$s or newer. This device runs Android %2$s.</string>
-    <string name="details_version_incompatible">Incompatible</string>
-    <string name="details_version_installed">Installed</string>
-    <string name="details_version_repo_other_signer"><xliff:g id="repository">%1$s</xliff:g> · Different signing key</string>
-    <string name="details_version_selected">Selected</string>
-    <string name="details_sources">Sources</string>
+    <string name="details_permissions_custom">Користувацькі дозволи</string>
+    <string name="details_permissions_dangerous">Небезпечні дозволи</string>
+    <string name="details_permissions_known">Інші дозволи</string>
+    <string name="details_permissions_none">Немає запрошених дозволів</string>
+    <string name="details_source_code">Відкритий код</string>
+    <string name="details_obtainium">Додати до Obtainium</string>
+    <string name="obtainium_export_empty">Немає програм з відстежуваним джерелом для експорту</string>
+    <string name="obtainium_export_failed">Не вдалося зберегти експорт</string>
+    <string name="obtainium_import_title">Експорт Obtainium збережено</string>
+    <string name="obtainium_import_message">Відкрийте Obtainium або сумісний fork, перейдіть до Налаштувань та скористайтеся Імпортом/Експортом, щоб імпортувати %1$s з вибраного вами місця розташування.</string>
+    <string name="details_store">Магазин</string>
+    <string name="details_play_store_notice">Цей додаток доступний лише в Google Play.
+Натисніть, щоб відкрити список.</string>
+    <string name="details_closed_source_notice">Цей додаток має закритий вихідний код. Його код не є публічним, тому спільнота не може легко перевірити його функції.</string>
+    <string name="details_incompatible_notice">Для цього додатка потрібна версія Android %1$s або новіша. Цей пристрій працює під керуванням Android %2$s.</string>
+    <string name="details_version_incompatible">Несумісний</string>
+    <string name="details_version_installed">Встановлено</string>
+    <string name="details_version_repo_other_signer"><xliff:g id="repository">%1$s</xliff:g>Інший ключ підпису</string>
+    <string name="details_version_selected">Обрано</string>
+    <string name="details_sources">Джерела</string>
     <plurals name="details_sources_count">
-        <item quantity="one">%1$d source</item>
-        <item quantity="few">%1$d sources</item>
-        <item quantity="many">%1$d sources</item>
-        <item quantity="other">%1$d sources</item>
+        <item quantity="one">Джерело%1$d</item>
+        <item quantity="few">%1$d Джерел</item>
+        <item quantity="many">%1$d Багатьох джерел</item>
+        <item quantity="other">%1$d Інших джерел</item>
     </plurals>
-    <string name="details_website">Website</string>
-    <string name="donation_card_body">ShizuStore is free and open-source.\nDonations cover the server costs and keep the app and backend moving.</string>
-    <string name="donation_card_title">Support ShizuStore</string>
-    <string name="donation_dialog_message">Thank you for supporting the project! Every donation helps cover the server costs and gives me more time to keep developing the app, the backend and to keep the app list up-to-date. Tap on one of the links to support me.</string>
-    <string name="donation_dialog_title">Support ShizuStore</string>
-    <string name="download_cancel_all">Cancel all</string>
-    <string name="download_clear_all">Clear all</string>
-    <string name="download_clear_finished">Clear finished</string>
-    <string name="download_eta_calculating">Calculating…</string>
-    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>h <xliff:g id="minutes">%2$d</xliff:g>m <xliff:g id="seconds">%3$d</xliff:g>s left</string>
-    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s left</string>
-    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
+    <string name="details_website">Вебсайт</string>
+    <string name="donation_card_body">ShizuStore безплатний та з відкритим вихідним кодом.
+\nПожертви покривають витрати на сервер та підтримують роботу програми та серверної частини.</string>
+    <string name="donation_card_title">Підтримайте ShizuStore</string>
+    <string name="donation_dialog_message">Дякуємо за підтримку проєкту!
+
+Кожна пожертва допомагає покрити витрати на сервер і дає мені більше часу для розробки програми, серверної частини та оновлення списку програм. Натисніть на одне з посилань, щоб підтримати мене.</string>
+    <string name="donation_dialog_title">Підтримайте ShizuStore</string>
+    <string name="download_cancel_all">Скасувати все</string>
+    <string name="download_clear_all">Очистити все</string>
+    <string name="download_clear_finished">Очищення завершено</string>
+    <string name="download_eta_calculating">Обчислення…</string>
+    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>Годин<xliff:g id="minutes">%2$d</xliff:g>Хвилин<xliff:g id="seconds">%3$d</xliff:g>Секунд залишилось</string>
+    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>Хвилин<xliff:g id="seconds">%2$d</xliff:g>Секунд залишилось</string>
+    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>Секунд залишилось</string>
     <string name="download_export_done">APK exported</string>
     <string name="download_export_failed">Не вдалося експортувати APK</string>
     <string name="download_saved">APK збережено у Downloads</string>
