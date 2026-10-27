@@ -130,7 +130,7 @@
     <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>Годин<xliff:g id="minutes">%2$d</xliff:g>Хвилин<xliff:g id="seconds">%3$d</xliff:g>Секунд залишилось</string>
     <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>Хвилин<xliff:g id="seconds">%2$d</xliff:g>Секунд залишилось</string>
     <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>Секунд залишилось</string>
-    <string name="download_export_done">APK exported</string>
+    <string name="download_export_done">APK експортовано</string>
     <string name="download_export_failed">Не вдалося експортувати APK</string>
     <string name="download_saved">APK збережено у Downloads</string>
     <string name="download_save_failed">Не вдалося зберегти APK</string>
@@ -179,13 +179,14 @@
     <string name="installer_native_desc">Відкриває екран встановлення Android для кожної програми. Завжди запитує підтвердження та працює, коли інсталятор сеансу заблоковано.</string>
     <string name="installer_native_subtitle">Hands off to the system dialog</string>
     <string name="installer_native_title">System installer</string>
-    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
-    <string name="installer_root_subtitle">Installs silently through a root shell</string>
-    <string name="installer_root_title">Root installer</string>
-    <string name="installer_session_desc">Uses Android\'s own package installer service. Needs no setup; Android may still ask you to confirm each install.</string>
-    <string name="installer_session_subtitle">Default, works without root</string>
+    <string name="installer_root_desc">Виконує команду встановлення платформи від імені root, без діалогового вікна підтвердження. Потрібен root-доступ пристрою та доступ суперкористувача для
+ShizuStore.</string>
+    <string name="installer_root_subtitle">Тихе встановлення через кореневу оболонку</string>
+    <string name="installer_root_title">Root-інсталятор</string>
+    <string name="installer_session_desc">Використовує власну службу встановлення пакетів Android. Не потребує налаштування; Android все одно може просити вас підтвердити кожне встановлення.</string>
+    <string name="installer_session_subtitle">За замовчуванням, працює без root</string>
     <string name="installer_session_title">Session installer</string>
-    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to ShizuStore.</string>
+    <string name="installer_shizuku_desc">Використовує системні API через ADB Shizuku або root-службу. Потрібно запустити Shizuku або Sui з дозволом, наданим ShizuStore.</string>
     <string name="installer_shizuku_subtitle">Installs silently through Shizuku or Sui</string>
     <string name="installer_shizuku_title">Shizuku installer</string>
     <string name="shizuku_card_title">Set up Shizuku</string>
