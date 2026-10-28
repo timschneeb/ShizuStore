@@ -107,26 +107,26 @@
     <string name="details_version_selected">Selecionado</string>
     <string name="details_sources">Fontes</string>
     <plurals name="details_sources_count">
-        <item quantity="one">%1$d source</item>
-        <item quantity="other">%1$d sources</item>
+        <item quantity="one">%1$d fonte</item>
+        <item quantity="other">%1$d fontes</item>
     </plurals>
-    <string name="details_website">Website</string>
-    <string name="donation_card_body">ShizuStore is free and open-source.\nDonations cover the server costs and keep the app and backend moving.</string>
-    <string name="donation_card_title">Support ShizuStore</string>
-    <string name="donation_dialog_message">Thank you for supporting the project! Every donation helps cover the server costs and gives me more time to keep developing the app, the backend and to keep the app list up-to-date. Tap on one of the links to support me.</string>
-    <string name="donation_dialog_title">Support ShizuStore</string>
-    <string name="download_cancel_all">Cancel all</string>
-    <string name="download_clear_all">Clear all</string>
-    <string name="download_clear_finished">Clear finished</string>
-    <string name="download_eta_calculating">Calculating…</string>
-    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>h <xliff:g id="minutes">%2$d</xliff:g>m <xliff:g id="seconds">%3$d</xliff:g>s left</string>
-    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s left</string>
-    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s left</string>
-    <string name="download_export_done">APK exported</string>
-    <string name="download_export_failed">Could not export the APK</string>
-    <string name="download_saved">APK saved to Downloads</string>
-    <string name="download_save_failed">Could not save the APK</string>
-    <string name="download_status_awaiting_confirmation">Waiting for confirmation</string>
+    <string name="details_website">Site</string>
+    <string name="donation_card_body">ShizuStore é gratuito e de código aberto.\nDoações cobrem os custos do servidor e mantêm o aplicativo e o backend em funcionamento.</string>
+    <string name="donation_card_title">Suporte ShizuStore</string>
+    <string name="donation_dialog_message">Obrigado por apoiar o projeto! Cada doação ajuda a cobrir os custos do servidor e me dá mais tempo para continuar desenvolvendo o aplicativo, o backend e para manter a lista de aplicativos atualizada. Toque em um dos links para me apoiar.</string>
+    <string name="donation_dialog_title">Suporte ShizuStore</string>
+    <string name="download_cancel_all">Cancelar tudo</string>
+    <string name="download_clear_all">Limpar tudo</string>
+    <string name="download_clear_finished">Limpeza concluída</string>
+    <string name="download_eta_calculating">Calculando…</string>
+    <string name="download_eta_hrs"><xliff:g id="hours">%1$d</xliff:g>h <xliff:g id="minutes">%2$d</xliff:g>m <xliff:g id="seconds">%3$d</xliff:g>restantes</string>
+    <string name="download_eta_min"><xliff:g id="minutes">%1$d</xliff:g>m <xliff:g id="seconds">%2$d</xliff:g>s restante</string>
+    <string name="download_eta_sec"><xliff:g id="seconds">%1$d</xliff:g>s restando</string>
+    <string name="download_export_done">APK exportado</string>
+    <string name="download_export_failed">Não foi possível exportar o APK</string>
+    <string name="download_saved">APK salvo em Baixados</string>
+    <string name="download_save_failed">Não foi possível salvar o APK</string>
+    <string name="download_status_awaiting_confirmation">Aguardando confirmação</string>
     <string name="download_status_cancelled">Cancelado</string>
     <string name="download_status_completed">Transferido</string>
     <string name="download_status_downloading">Baixando… <xliff:g id="percent">%1$d</xliff:g>%%</string>
@@ -150,35 +150,35 @@
     <string name="error_install_blocked">Outro aplicativo ou uma política do dispositivo bloqueou esta instalação.</string>
     <string name="error_install_conflict">Isso está em conflito com um aplicativo já instalado. Desinstale-o primeiro.</string>
     <string name="error_install_incompatible">Este aplicativo não é compatível com este dispositivo.</string>
-    <string name="error_install_interrupted">The install did not finish and the app is not installed. Try again.</string>
-    <string name="error_install_invalid">The package is invalid or damaged. Download it again.</string>
-    <string name="error_install_root_unavailable">No root access. Grant ShizuStore superuser rights, or choose another installer in Settings.</string>
-    <string name="error_install_session_failure">The install session failed. Try again.</string>
-    <string name="error_install_shizuku_unavailable">Shizuku is not running or has not given ShizuStore access. Open Shizuku, start it, then allow ShizuStore.</string>
-    <string name="error_install_signer_mismatch">This version is signed with a different key than the copy you have installed, so it cannot replace it.</string>
-    <string name="error_install_storage_full">Not enough space to install. Free some up and try again.</string>
-    <string name="favourites_empty">No favourites yet</string>
-    <string name="favourites_empty_detail">Tap the star on an app to keep it here</string>
-    <string name="favourites_unavailable">No favourites to show</string>
-    <string name="ignored_all">Ignoring all updates</string>
-    <string name="ignored_updates_empty">No ignored updates</string>
-    <string name="ignored_updates_empty_detail">Dismiss an update to list it here</string>
-    <string name="ignored_updates_unavailable">No ignored updates to show</string>
-    <string name="ignored_version" tools:ignore="PluralsCandidate">Ignoring v<xliff:g id="version_code">%1$d</xliff:g> and earlier</string>
-    <string name="install_refused">Cannot install this yet - <xliff:g id="reason">%1$s</xliff:g></string>
-    <string name="install_refused_no_download">Cannot install yet - this version has not been downloaded.</string>
-    <string name="installed_empty">No installed apps</string>
-    <string name="installer_native_desc">Opens Android\'s install screen for every app. Always asks for confirmation, and works when the session installer is blocked.</string>
-    <string name="installer_native_subtitle">Hands off to the system dialog</string>
-    <string name="installer_native_title">System installer</string>
-    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
-    <string name="installer_root_subtitle">Installs silently through a root shell</string>
-    <string name="installer_root_title">Root installer</string>
-    <string name="installer_session_desc">Uses Android\'s own package installer service. Needs no setup; Android may still ask you to confirm each install.</string>
-    <string name="installer_session_subtitle">Default, works without root</string>
-    <string name="installer_session_title">Session installer</string>
-    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to ShizuStore.</string>
-    <string name="installer_shizuku_subtitle">Installs silently through Shizuku or Sui</string>
+    <string name="error_install_interrupted">A instalação não foi concluída e o aplicativo não foi instalado. Tente novamente.</string>
+    <string name="error_install_invalid">O pacote é inválido ou danificado. Baixe novamente.</string>
+    <string name="error_install_root_unavailable">Sem acesso root. Conceda direitos de superusuário da ShizuStore, ou escolha outro instalador em Configurações.</string>
+    <string name="error_install_session_failure">A sessão de instalação falhou. Tente novamente.</string>
+    <string name="error_install_shizuku_unavailable">O Shizuku não está em execução ou não concedeu acesso ao ShizuStore. Abra o Shizuku, inicie-o e, em seguida, permita o acesso do ShizuStore.</string>
+    <string name="error_install_signer_mismatch">Esta versão é assinada com uma chave diferente da cópia que você instalou, então não pode substituí-la.</string>
+    <string name="error_install_storage_full">Não há espaço suficiente para baixar este aplicativo. Libere um pouco de espaço e tente novamente.</string>
+    <string name="favourites_empty">Nenhum favorito</string>
+    <string name="favourites_empty_detail">Toque na estrela em um aplicativo para mantê-lo aqui</string>
+    <string name="favourites_unavailable">Nenhum favorito para mostrar</string>
+    <string name="ignored_all">Ignorando todas as atualizações</string>
+    <string name="ignored_updates_empty">Nenhuma atualização ignorada</string>
+    <string name="ignored_updates_empty_detail">Dispensar uma atualização para listá-la aqui</string>
+    <string name="ignored_updates_unavailable">Nenhuma atualização ignorada para mostrar</string>
+    <string name="ignored_version" tools:ignore="PluralsCandidate">Ignorando v<xliff:g id="version_code">%1$d</xliff:g> e antes</string>
+    <string name="install_refused">Não foi possível instalar ainda - <xliff:g id="reason">%1$s</xliff:g></string>
+    <string name="install_refused_no_download">Não é possível instalar ainda — esta versão não foi baixada.</string>
+    <string name="installed_empty">Nenhum aplicativo instalado</string>
+    <string name="installer_native_desc">Abre a tela de instalação do Android para cada aplicativo. Sempre solicita confirmação e funciona mesmo quando o instalador de sessão está bloqueado.</string>
+    <string name="installer_native_subtitle">Deixar de lado o diálogo do sistema</string>
+    <string name="installer_native_title">Instalador do sistema</string>
+    <string name="installer_root_desc">Executa o comando de instalação da plataforma como root, sem caixa de diálogo de confirmação. Requer um dispositivo com root e acesso de superusuário para o ShizuStore.</string>
+    <string name="installer_root_subtitle">Instala silenciosamente através de um shell de root</string>
+    <string name="installer_root_title">Instalador root</string>
+    <string name="installer_session_desc">Utiliza o serviço de instalação de pacote nativo do Android. Não requer nenhuma configuração; o Android ainda poderá solicitar a confirmação de cada instalação.</string>
+    <string name="installer_session_subtitle">Padrão, funciona sem root</string>
+    <string name="installer_session_title">Instalador da sessão</string>
+    <string name="installer_shizuku_desc">Utiliza APIs do sistema através do ADB do Shizuku ou do serviço root. Requer que o Shizuku ou o Sui estejam em execução, com permissão concedida ao ShizuStore.</string>
+    <string name="installer_shizuku_subtitle">Instala-se silenciosamente através de Shizuku ou Sui</string>
     <string name="installer_shizuku_title">Instalador Shizuku</string>
     <string name="shizuku_card_title">Configurar Shizuku</string>
     <string name="shizuku_card_install_body">Shizuku não está instalado. Instale-o para que ShizuStore possa instalar aplicativos em segundo plano sem root.</string>
@@ -345,31 +345,31 @@
     <string name="settings_update_interval_never">Nunca</string>
     <string name="settings_update_interval_six_hours">A cada 6 horas</string>
     <string name="settings_update_interval_twelve_hours">A cada 12 horas</string>
-    <string name="settings_update_interval_weekly">Every week</string>
-    <string name="settings_updates_subtitle">How often enabled repositories are checked for new versions.</string>
-    <string name="settings_updates_title">Update checks</string>
-    <string name="settings_wifi_only_subtitle">Background checks and automatic downloads wait for an unmetered network.</string>
-    <string name="settings_wifi_only_title">Check on Wi-Fi only</string>
-    <string name="time_just_now">just now</string>
+    <string name="settings_update_interval_weekly">Toda semana</string>
+    <string name="settings_updates_subtitle">Com que frequência os repositórios ativados são verificados em busca de novas versões.</string>
+    <string name="settings_updates_title">Verificar atualizações</string>
+    <string name="settings_wifi_only_subtitle">As verificações de antecedentes e os baixados automáticos dependem de uma rede sem limite de dados.</string>
+    <string name="settings_wifi_only_title">Verificar somente por Wi-Fi</string>
+    <string name="time_just_now">neste momento</string>
     <plurals name="time_minutes_ago">
-        <item quantity="one">%1$d minute ago</item>
-        <item quantity="other">%1$d minutes ago</item>
+        <item quantity="one">%1$d há um minuto</item>
+        <item quantity="other">%1$d minutos atrás</item>
     </plurals>
     <plurals name="time_hours_ago">
-        <item quantity="one">%1$d hour ago</item>
-        <item quantity="other">%1$d hours ago</item>
+        <item quantity="one">%1$d uma hora atrás</item>
+        <item quantity="other">%1$d horas atrás</item>
     </plurals>
     <plurals name="time_days_ago">
-        <item quantity="one">%1$d day ago</item>
-        <item quantity="other">%1$d days ago</item>
+        <item quantity="one">%1$d dia atrás</item>
+        <item quantity="other">%1$d dia atrás</item>
     </plurals>
     <plurals name="time_weeks_ago">
-        <item quantity="one">%1$d week ago</item>
-        <item quantity="other">%1$d weeks ago</item>
+        <item quantity="one">%1$d semana passada</item>
+        <item quantity="other">%1$d semana atrás</item>
     </plurals>
     <plurals name="time_months_ago">
-        <item quantity="one">%1$d month ago</item>
-        <item quantity="other">%1$d months ago</item>
+        <item quantity="one">%1$d há um minuto</item>
+        <item quantity="other">%1$d meses atrás</item>
     </plurals>
     <plurals name="time_years_ago">
         <item quantity="one">%1$d year ago</item>
