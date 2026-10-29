@@ -216,7 +216,7 @@
     <string name="notification_install_refused">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
     <plurals name="notification_failed_summary">
-        <item quantity="zero"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
+        <item quantity="zero"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
         <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
         <item quantity="two"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
         <item quantity="few"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
@@ -224,7 +224,7 @@
         <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
     </plurals>
     <plurals name="notification_installed_summary">
-        <item quantity="zero"><xliff:g id="count">%1$d</xliff:g> app installed</item>
+        <item quantity="zero"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
         <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app installed</item>
         <item quantity="two"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
         <item quantity="few"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
@@ -232,7 +232,7 @@
         <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
     </plurals>
     <plurals name="notification_download_summary">
-        <item quantity="zero">Downloading <xliff:g id="count">%1$d</xliff:g> app</item>
+        <item quantity="zero">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
         <item quantity="one">Downloading <xliff:g id="count">%1$d</xliff:g> app</item>
         <item quantity="two">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
         <item quantity="few">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
@@ -240,7 +240,7 @@
         <item quantity="other">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
     </plurals>
     <plurals name="notification_updates_available">
-        <item quantity="zero">%1$d update available</item>
+        <item quantity="zero">%1$d updates available</item>
         <item quantity="one">%1$d update available</item>
         <item quantity="two">%1$d updates available</item>
         <item quantity="few">%1$d updates available</item>
