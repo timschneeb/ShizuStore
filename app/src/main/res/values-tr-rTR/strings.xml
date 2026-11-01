@@ -166,50 +166,51 @@
     <string name="favourites_unavailable">Gösterilecek favori uygulama yok</string>
     <string name="ignored_all">Tüm güncellemeler yok sayılıyor</string>
     <string name="ignored_updates_empty">Yok sayılan güncelleme yok</string>
-    <string name="ignored_updates_empty_detail">Dismiss an update to list it here</string>
-    <string name="ignored_updates_unavailable">No ignored updates to show</string>
-    <string name="ignored_version" tools:ignore="PluralsCandidate">Ignoring v<xliff:g id="version_code">%1$d</xliff:g> and earlier</string>
-    <string name="install_refused">Cannot install this yet - <xliff:g id="reason">%1$s</xliff:g></string>
-    <string name="install_refused_no_download">Cannot install yet - this version has not been downloaded.</string>
-    <string name="installed_empty">No installed apps</string>
-    <string name="installer_native_desc">Opens Android\'s install screen for every app. Always asks for confirmation, and works when the session installer is blocked.</string>
-    <string name="installer_native_subtitle">Hands off to the system dialog</string>
-    <string name="installer_native_title">System installer</string>
-    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
-    <string name="installer_root_subtitle">Installs silently through a root shell</string>
-    <string name="installer_root_title">Root installer</string>
-    <string name="installer_session_desc">Uses Android\'s own package installer service. Needs no setup; Android may still ask you to confirm each install.</string>
-    <string name="installer_session_subtitle">Default, works without root</string>
-    <string name="installer_session_title">Session installer</string>
-    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to ShizuStore.</string>
-    <string name="installer_shizuku_subtitle">Installs silently through Shizuku or Sui</string>
-    <string name="installer_shizuku_title">Shizuku installer</string>
-    <string name="shizuku_card_title">Set up Shizuku</string>
-    <string name="shizuku_card_install_body">Shizuku is not installed. Install it so ShizuStore can install apps in the background without root.</string>
-    <string name="shizuku_card_grant_body">Shizuku is installed. Allow ShizuStore to install apps through it.</string>
-    <string name="shizuku_card_start_body">Shizuku is installed but not running. Start Shizuku, then allow ShizuStore access.</string>
-    <string name="shizuku_card_install_action">Get Shizuku</string>
-    <string name="shizuku_card_grant_action">Allow access</string>
-    <string name="shizuku_card_start_action">Start Shizuku</string>
-    <string name="shizuku_card_dismiss">Dismiss</string>
-    <string name="item_optional">Optional</string>
-    <string name="item_required">Required</string>
-    <string name="loading">Loading in progress</string>
-    <string name="notification_channel_alerts">Needs attention</string>
-    <string name="notification_channel_download">Downloads</string>
-    <string name="notification_channel_install">Installs</string>
-    <string name="notification_channel_update">Update checks</string>
-    <string name="notification_confirm_install">Tap to install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_confirm_install_text">Android needs you to confirm this install.</string>
-    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> downloaded</string>
-    <string name="notification_group_activity">Activity</string>
-    <string name="notification_group_alerts">Needs attention</string>
-    <string name="notification_download_failed">Could not download <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_downloading">Downloading <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
-    <string name="notification_install_failed">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_installing">Installing <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="ignored_updates_empty_detail">Herhangi bir güncellemeyi buraya eklemek için yok sayın</string>
+    <string name="ignored_updates_unavailable">Gösterilecek yok sayılan güncelleme yok</string>
+    <string name="ignored_version" tools:ignore="PluralsCandidate">v<xliff:g id="version_code">%1$d</xliff:g> ve önceki sürümler yok sayılıyor</string>
+    <string name="install_refused">Yükleme işlemi henüz tamamlanamıyor - <xliff:g id="reason">%1$s</xliff:g></string>
+    <string name="install_refused_no_download">Henüz yüklenemiyor - bu sürüm indirilmedi.</string>
+    <string name="installed_empty">Yüklü uygulama yok</string>
+    <string name="installer_native_desc">Her uygulama için Android\'in yükleme ekranını açar. Her zaman onay ister ve oturum yükleyicisi engellendiğinde de çalışır.</string>
+    <string name="installer_native_subtitle">Sistem iletişim kutusuna yönlendirir</string>
+    <string name="installer_native_title">Sistem yükleyicisi</string>
+    <string name="installer_root_desc">Yükleyicinin yükleme komutunu root yetkisiyle, herhangi bir onay iletişim kutusu göstermeden çalıştırır. ShizuStore\'un kullanılabilmesi için cihazın root erişimine ve süper kullanıcı yetkisine sahip olması gerekir.</string>
+    <string name="installer_root_subtitle">Root kabuğu üzerinden sessizce yükler</string>
+    <string name="installer_root_title">Root yükleyicisi</string>
+    <string name="installer_session_desc">Android\'in kendi paket yükleyici hizmetini kullanır. Herhangi bir kurulum gerektirmez; ancak Android yine de her yükleme için onay isteyebilir.</string>
+    <string name="installer_session_subtitle">Varsayılan, root gerektirmeden çalışır
+</string>
+    <string name="installer_session_title">Oturum yükleyicisi</string>
+    <string name="installer_shizuku_desc">Shizuku’nun ADB veya root hizmeti üzerinden sistem API’lerini kullanır. Shizuku veya Sui’nin çalışıyor olması ve ShizuStore’a izin verilmiş olması gerekir.</string>
+    <string name="installer_shizuku_subtitle">Shizuku veya Sui aracılığıyla sessiz modda kurulur</string>
+    <string name="installer_shizuku_title">Shizuku yükleyicisi</string>
+    <string name="shizuku_card_title">Shizuku\'yu kurun</string>
+    <string name="shizuku_card_install_body">Shizuku yüklü değil. ShizuStore’un root erişimi olmadan arka planda uygulamaları yükleyebilmesi için Shizuku\'yu yükleyin.</string>
+    <string name="shizuku_card_grant_body">Shizuku yüklendi. ShizuStore’un Shizuku aracılığıyla uygulamaları yüklemesine izin verin.</string>
+    <string name="shizuku_card_start_body">Shizuku yüklü ama çalışmıyor. Shizuku’yu başlatın, ardından ShizuStore’a izin verin.</string>
+    <string name="shizuku_card_install_action">Shizuku\'yu edinin</string>
+    <string name="shizuku_card_grant_action">Erişime izin ver</string>
+    <string name="shizuku_card_start_action">Shizuku\'yu başlat</string>
+    <string name="shizuku_card_dismiss">Kapat</string>
+    <string name="item_optional">Opsiyonel</string>
+    <string name="item_required">Zorunlu</string>
+    <string name="loading">Yükleniyor</string>
+    <string name="notification_channel_alerts">Dikkat gerekiyor</string>
+    <string name="notification_channel_download">İndirilenler</string>
+    <string name="notification_channel_install">Yüklemeler</string>
+    <string name="notification_channel_update">Güncelleme kontrolleri</string>
+    <string name="notification_confirm_install"><xliff:g id="app_name">%1$s</xliff:g> yüklemek için dokunun</string>
+    <string name="notification_confirm_install_text">Android, bu yüklemeyi onaylamanızı istiyor.</string>
+    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> indirildi</string>
+    <string name="notification_group_activity">Son etkinlikler</string>
+    <string name="notification_group_alerts">Dikkat gerekiyor</string>
+    <string name="notification_download_failed"><xliff:g id="app_name">%1$s</xliff:g> indirilemedi</string>
+    <string name="notification_downloading"><xliff:g id="app_name">%1$s</xliff:g> indiriliyor</string>
+    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> yüklendi</string>
+    <string name="notification_install_failed"><xliff:g id="app_name">%1$s</xliff:g> yüklenemedi</string>
+    <string name="notification_installing"><xliff:g id="app_name">%1$s</xliff:g> yükleniyor</string>
+    <string name="notification_install_refused"><xliff:g id="app_name">%1$s</xliff:g> yüklenemedi</string>
     <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
     <plurals name="notification_failed_summary">
         <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
