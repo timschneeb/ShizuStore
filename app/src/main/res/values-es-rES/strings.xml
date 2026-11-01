@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="about_licence_title">Licencia</string>
-    <string name="about_licence_value">Licencia Pública General de GNU versión 3.0 o posterior</string>
+    <string name="about_licence_value">GNU General Public License v3.0 o posterior</string>
     <string name="about_version">Versión <xliff:g id="version_name">%1$s</xliff:g> (<xliff:g id="version_code">%2$d</xliff:g>)</string>
     <string name="about_developer_title">Desarrollador</string>
     <string name="about_github_title">Código fuente</string>
@@ -242,7 +242,7 @@
     <string name="search_sort_name">Nombre</string>
     <string name="search_sort_stars">Con más estrellas</string>
     <string name="search_sort_stars_full">Con más estrellas en GitHub/GitLab</string>
-    <string name="search_sort_popularity">Popularity</string>
+    <string name="search_sort_popularity">Descargas totales en ShizuStore</string>
     <string name="search_sort_popularity_short">Descargas totales</string>
     <string name="search_sort_trending">Nuevas instalaciones en los últimos 14 días en ShizuStore (Tendencias)</string>
     <string name="search_sort_trending_short">Tendencias</string>
@@ -349,8 +349,8 @@
     <string name="settings_updates_subtitle">Frecuencia con la que se comprueba si hay nuevas versiones en los repositorios activados.</string>
     <string name="settings_updates_title">Comprobación de actualizaciones</string>
     <string name="settings_wifi_only_subtitle">Las comprobaciones en segundo plano y las descargas automáticas esperarán a una conexión sin límite de datos.</string>
-    <string name="settings_wifi_only_title">Comprobar solo por Wi-Fi</string>
-    <string name="time_just_now">Ahora mismo</string>
+    <string name="settings_wifi_only_title">Comprobar solo por Wifi</string>
+    <string name="time_just_now">ahora mismo</string>
     <plurals name="time_minutes_ago">
         <item quantity="one">Hace %1$d minuto</item>
         <item quantity="other">Hace %1$d minutos</item>

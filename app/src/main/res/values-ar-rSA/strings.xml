@@ -207,7 +207,7 @@
     <string name="notification_confirm_install_text">أندرويد يحتاج إليك لتأكيد هذا التثبيت.</string>
     <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_group_activity">نشاط</string>
-    <string name="notification_group_alerts">Needs attention</string>
+    <string name="notification_group_alerts">يحتاج إلى انتباه</string>
     <string name="notification_download_failed">تعذر تحميل <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_downloading">جارٍ تنزيل <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
