@@ -211,27 +211,27 @@
     <string name="notification_install_failed"><xliff:g id="app_name">%1$s</xliff:g> yüklenemedi</string>
     <string name="notification_installing"><xliff:g id="app_name">%1$s</xliff:g> yükleniyor</string>
     <string name="notification_install_refused"><xliff:g id="app_name">%1$s</xliff:g> yüklenemedi</string>
-    <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
+    <string name="notification_install_refused_text">Devam eden başka bir yükleme işlemi var. İşlem bittiğinde tekrar deneyin.</string>
     <plurals name="notification_failed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> uygulamanın ilgilenilmesi gerekiyor</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> uygulamanın ilgilenilmesi gerekiyor </item>
     </plurals>
     <plurals name="notification_installed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app installed</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> uygulama yüklü</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> uygulama yüklü</item>
     </plurals>
     <plurals name="notification_download_summary">
-        <item quantity="one">Downloading <xliff:g id="count">%1$d</xliff:g> app</item>
-        <item quantity="other">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> uygulama indiriliyor</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> uygulama indiriliyor</item>
     </plurals>
     <plurals name="notification_updates_available">
-        <item quantity="one">%1$d update available</item>
-        <item quantity="other">%1$d updates available</item>
+        <item quantity="one">%1$d güncelleme mevcut</item>
+        <item quantity="other">%1$d güncelleme mevcut</item>
     </plurals>
-    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
-    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> and <xliff:g id="third">%3$s</xliff:g></string>
+    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> ve <xliff:g id="second">%2$s</xliff:g></string>
+    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> ve <xliff:g id="third">%3$s</xliff:g></string>
     <plurals name="notification_updates_available_desc_more">
-        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
+        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> ve <xliff:g id="count">%4$d</xliff:g> tane daha</item>
         <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
     </plurals>
     <string name="notification_updates_available_text">Open ShizuStore to review and install them.</string>
