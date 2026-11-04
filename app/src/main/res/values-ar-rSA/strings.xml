@@ -19,7 +19,7 @@
     <string name="action_next"></string>
     <string name="action_previous"></string>
     <string name="action_export">تصدير APK</string>
-    <string name="action_save_apk">Save APK</string>
+    <string name="action_save_apk">حفظ Save APK</string>
     <string name="action_favourite">إضافة إلى المفضلة</string>
     <string name="action_grant">منح</string>
     <string name="action_granted">ممنوح</string>
@@ -48,7 +48,7 @@
     <!-- Double spaces are \u0020 escapes: aapt collapses literal
         repeated whitespace in string resources into one. -->
     <string name="apps_empty">لا توجد تطبيقات بعد</string>
-    <string name="apps_empty_detail">The catalog syncs automatically</string>
+    <string name="apps_empty_detail">تتم المزامنة تلقائيا</string>
     <string name="apps_empty_syncing">جارٍ مزامنة الكتالوج…</string>
     <string name="apps_sync_failed">تعذر الاتصال بالخادم. تصفح ذاكرة التخزين المؤقت المحلية. تحقق من الاتصال وإعادة المحاولة.</string>
     <string name="apps_random_picks">إختيارات عشوائية</string>
