@@ -51,7 +51,7 @@
     <string name="apps_empty_detail">Katalog otomatik olarak eşitlenir</string>
     <string name="apps_empty_syncing">Katalog eşitleniyor...</string>
     <string name="apps_sync_failed">Sunucuya bağlanılamadı. Yerel önbellekteki içeriklere göz atılıyor. İnternet bağlantınızı kontrol edip yeniden deneyin.</string>
-    <string name="apps_random_picks">Random picks</string>
+    <string name="apps_random_picks">Rastgele seçimler</string>
     <string name="apps_recommended">Önerilenler</string>
     <string name="apps_recently_added">Son eklenenler</string>
     <string name="apps_recently_updated">Son güncellenenler</string>
@@ -70,8 +70,8 @@
     <string name="details_stats_size_tooltip">APK dosyasının indirme boyutu.</string>
     <string name="details_history_title">İstatistikler</string>
     <string name="details_history_installs">Yüklemeler</string>
-    <string name="details_history_installs_axis">Downloads per day</string>
-    <string name="details_history_stars_axis">Stars per week</string>
+    <string name="details_history_installs_axis">Günlük indirilme sayısı</string>
+    <string name="details_history_stars_axis">Haftalık yıldız sayısı</string>
     <string name="details_history_downloads_last_week">Son bir haftada %1$s yeni indirme</string>
     <string name="details_history_stars_last_week">Son bir haftada %1$s yeni yıldız</string>
     <string name="details_history_total_stars">Toplam yıldız: %1$s</string>
@@ -146,142 +146,144 @@
     <string name="downloads_empty_detail">İndirdiğiniz uygulamalar burada görünür</string>
     <string name="error_download_archive">İndirilen arşiv açılamadı. Lütfen daha sonra tekrar deneyin.</string>
     <string name="error_download_http">Depo, indirme isteğini reddetti. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="error_download_insufficient_storage">Not enough space to download this app. Free some up and try again.</string>
-    <string name="error_download_network">Could not reach the repository to download this app. Check your connection.</string>
-    <string name="error_hash_mismatch">The downloaded file did not match what the repository signed. It was discarded.</string>
-    <string name="error_install_aborted">Installation was canceled.</string>
-    <string name="error_install_apk_missing">The downloaded file is no longer on disk. Download it again.</string>
-    <string name="error_install_blocked">Another app or a device policy blocked this install.</string>
-    <string name="error_install_conflict">This conflicts with the copy already installed. Uninstall that one first.</string>
-    <string name="error_install_incompatible">This app is not compatible with this device.</string>
-    <string name="error_install_interrupted">The install did not finish and the app is not installed. Try again.</string>
-    <string name="error_install_invalid">The package is invalid or damaged. Download it again.</string>
-    <string name="error_install_root_unavailable">No root access. Grant ShizuStore superuser rights, or choose another installer in Settings.</string>
-    <string name="error_install_session_failure">The install session failed. Try again.</string>
-    <string name="error_install_shizuku_unavailable">Shizuku is not running or has not given ShizuStore access. Open Shizuku, start it, then allow ShizuStore.</string>
-    <string name="error_install_signer_mismatch">This version is signed with a different key than the copy you have installed, so it cannot replace it.</string>
-    <string name="error_install_storage_full">Not enough space to install. Free some up and try again.</string>
-    <string name="favourites_empty">No favourites yet</string>
-    <string name="favourites_empty_detail">Tap the star on an app to keep it here</string>
-    <string name="favourites_unavailable">No favourites to show</string>
-    <string name="ignored_all">Ignoring all updates</string>
-    <string name="ignored_updates_empty">No ignored updates</string>
-    <string name="ignored_updates_empty_detail">Dismiss an update to list it here</string>
-    <string name="ignored_updates_unavailable">No ignored updates to show</string>
-    <string name="ignored_version" tools:ignore="PluralsCandidate">Ignoring v<xliff:g id="version_code">%1$d</xliff:g> and earlier</string>
-    <string name="install_refused">Cannot install this yet - <xliff:g id="reason">%1$s</xliff:g></string>
-    <string name="install_refused_no_download">Cannot install yet - this version has not been downloaded.</string>
-    <string name="installed_empty">No installed apps</string>
-    <string name="installer_native_desc">Opens Android\'s install screen for every app. Always asks for confirmation, and works when the session installer is blocked.</string>
-    <string name="installer_native_subtitle">Hands off to the system dialog</string>
-    <string name="installer_native_title">System installer</string>
-    <string name="installer_root_desc">Runs the platform install command as root, with no confirmation dialog. Needs a rooted device and superuser access for ShizuStore.</string>
-    <string name="installer_root_subtitle">Installs silently through a root shell</string>
-    <string name="installer_root_title">Root installer</string>
-    <string name="installer_session_desc">Uses Android\'s own package installer service. Needs no setup; Android may still ask you to confirm each install.</string>
-    <string name="installer_session_subtitle">Default, works without root</string>
-    <string name="installer_session_title">Session installer</string>
-    <string name="installer_shizuku_desc">Uses system APIs over Shizuku\'s ADB or root service. Needs Shizuku or Sui running, with permission granted to ShizuStore.</string>
-    <string name="installer_shizuku_subtitle">Installs silently through Shizuku or Sui</string>
-    <string name="installer_shizuku_title">Shizuku installer</string>
-    <string name="shizuku_card_title">Set up Shizuku</string>
-    <string name="shizuku_card_install_body">Shizuku is not installed. Install it so ShizuStore can install apps in the background without root.</string>
-    <string name="shizuku_card_grant_body">Shizuku is installed. Allow ShizuStore to install apps through it.</string>
-    <string name="shizuku_card_start_body">Shizuku is installed but not running. Start Shizuku, then allow ShizuStore access.</string>
-    <string name="shizuku_card_install_action">Get Shizuku</string>
-    <string name="shizuku_card_grant_action">Allow access</string>
-    <string name="shizuku_card_start_action">Start Shizuku</string>
-    <string name="shizuku_card_dismiss">Dismiss</string>
-    <string name="item_optional">Optional</string>
-    <string name="item_required">Required</string>
-    <string name="loading">Loading in progress</string>
-    <string name="notification_channel_alerts">Needs attention</string>
-    <string name="notification_channel_download">Downloads</string>
-    <string name="notification_channel_install">Installs</string>
-    <string name="notification_channel_update">Update checks</string>
-    <string name="notification_confirm_install">Tap to install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_confirm_install_text">Android needs you to confirm this install.</string>
-    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> downloaded</string>
-    <string name="notification_group_activity">Activity</string>
-    <string name="notification_group_alerts">Needs attention</string>
-    <string name="notification_download_failed">Could not download <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_downloading">Downloading <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
-    <string name="notification_install_failed">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_installing">Installing <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
+    <string name="error_download_insufficient_storage">Uygulamayı indirmek için yeterli depolama alanı yok. Biraz yer açıp tekrar deneyin.</string>
+    <string name="error_download_network">Depoya bağlanılamadığı için uygulama indirilemedi. İnternet bağlantınızı kontrol edin.</string>
+    <string name="error_hash_mismatch">İndirilen dosyanın özeti, deponun imzaladığı değerle eşleşmedi. Güvenlik nedeniyle dosya silindi.</string>
+    <string name="error_install_aborted">Yükleme iptal edildi.</string>
+    <string name="error_install_apk_missing">İndirilen dosya artık cihazda mevcut değil. Lütfen yeniden indirin.</string>
+    <string name="error_install_blocked">Başka bir uygulama veya cihaz politikası bu yüklemeyi engelledi.</string>
+    <string name="error_install_conflict">Bu uygulama, cihazda yüklü olan uygulamayla çakışıyor. Önce yüklü olan uygulamayı kaldırın.</string>
+    <string name="error_install_incompatible">Bu uygulama cihazınızla uyumlu değil.</string>
+    <string name="error_install_interrupted">Yükleme tamamlanamadı ve uygulama cihazınıza yüklenmedi. Lütfen tekrar deneyin.</string>
+    <string name="error_install_invalid">Paket geçersiz veya hasarlı. Lütfen yeniden indirin.</string>
+    <string name="error_install_root_unavailable">Root erişimi yok. ShizuStore\'a süper kullanıcı yetkisi verin veya Ayarlar bölümünden başka bir yükleyici seçin.</string>
+    <string name="error_install_session_failure">Yükleme oturumu başarısız oldu. Lütfen tekrar deneyin.</string>
+    <string name="error_install_shizuku_unavailable">Shizuku çalışmıyor veya ShizuStore\'a erişim izni verilmedi. Shizuku\'yu açıp başlatın ve ShizuStore\'a erişim izni verin.</string>
+    <string name="error_install_signer_mismatch">Bu sürüm farklı bir imzalama anahtarıyla imzalanmış. Bu yüzden cihazınızda yüklü olan uygulamanın üzerine yüklenemez.</string>
+    <string name="error_install_storage_full">Yükleme için yeterli depolama alanı yok. Yer açıp tekrar deneyin.</string>
+    <string name="favourites_empty">Henüz favori uygulamanız yok</string>
+    <string name="favourites_empty_detail">Herhangi bir uygulamayı buraya eklemek için yıldız simgesine dokunun</string>
+    <string name="favourites_unavailable">Gösterilecek favori uygulama yok</string>
+    <string name="ignored_all">Tüm güncellemeler yok sayılıyor</string>
+    <string name="ignored_updates_empty">Yok sayılan güncelleme yok</string>
+    <string name="ignored_updates_empty_detail">Herhangi bir güncellemeyi buraya eklemek için yok sayın</string>
+    <string name="ignored_updates_unavailable">Gösterilecek yok sayılan güncelleme yok</string>
+    <string name="ignored_version" tools:ignore="PluralsCandidate">v<xliff:g id="version_code">%1$d</xliff:g> ve önceki sürümler yok sayılıyor</string>
+    <string name="install_refused">Yükleme işlemi henüz tamamlanamıyor - <xliff:g id="reason">%1$s</xliff:g></string>
+    <string name="install_refused_no_download">Henüz yüklenemiyor - bu sürüm indirilmedi.</string>
+    <string name="installed_empty">Yüklü uygulama yok</string>
+    <string name="installer_native_desc">Her uygulama için Android\'in yükleme ekranını açar. Her zaman onay ister ve oturum yükleyicisi engellendiğinde de çalışır.</string>
+    <string name="installer_native_subtitle">Sistem iletişim kutusuna yönlendirir</string>
+    <string name="installer_native_title">Sistem yükleyicisi</string>
+    <string name="installer_root_desc">Yükleyicinin yükleme komutunu root yetkisiyle, herhangi bir onay iletişim kutusu göstermeden çalıştırır. ShizuStore\'un kullanılabilmesi için cihazın root erişimine ve süper kullanıcı yetkisine sahip olması gerekir.</string>
+    <string name="installer_root_subtitle">Root kabuğu üzerinden sessizce yükler</string>
+    <string name="installer_root_title">Root yükleyicisi</string>
+    <string name="installer_session_desc">Android\'in kendi paket yükleyici hizmetini kullanır. Herhangi bir kurulum gerektirmez; ancak Android yine de her yükleme için onay isteyebilir.</string>
+    <string name="installer_session_subtitle">Varsayılan, root gerektirmeden çalışır
+</string>
+    <string name="installer_session_title">Oturum yükleyicisi</string>
+    <string name="installer_shizuku_desc">Shizuku’nun ADB veya root hizmeti üzerinden sistem API’lerini kullanır. Shizuku veya Sui’nin çalışıyor olması ve ShizuStore’a izin verilmiş olması gerekir.</string>
+    <string name="installer_shizuku_subtitle">Shizuku veya Sui aracılığıyla sessiz modda kurulur</string>
+    <string name="installer_shizuku_title">Shizuku yükleyicisi</string>
+    <string name="shizuku_card_title">Shizuku\'yu kurun</string>
+    <string name="shizuku_card_install_body">Shizuku yüklü değil. ShizuStore’un root erişimi olmadan arka planda uygulamaları yükleyebilmesi için Shizuku\'yu yükleyin.</string>
+    <string name="shizuku_card_grant_body">Shizuku yüklendi. ShizuStore’un Shizuku aracılığıyla uygulamaları yüklemesine izin verin.</string>
+    <string name="shizuku_card_start_body">Shizuku yüklü ama çalışmıyor. Shizuku’yu başlatın, ardından ShizuStore’a izin verin.</string>
+    <string name="shizuku_card_install_action">Shizuku\'yu edinin</string>
+    <string name="shizuku_card_grant_action">Erişime izin ver</string>
+    <string name="shizuku_card_start_action">Shizuku\'yu başlat</string>
+    <string name="shizuku_card_dismiss">Kapat</string>
+    <string name="item_optional">Opsiyonel</string>
+    <string name="item_required">Zorunlu</string>
+    <string name="loading">Yükleniyor</string>
+    <string name="notification_channel_alerts">Dikkat gerekiyor</string>
+    <string name="notification_channel_download">İndirilenler</string>
+    <string name="notification_channel_install">Yüklemeler</string>
+    <string name="notification_channel_update">Güncelleme kontrolleri</string>
+    <string name="notification_confirm_install"><xliff:g id="app_name">%1$s</xliff:g> yüklemek için dokunun</string>
+    <string name="notification_confirm_install_text">Android, bu yüklemeyi onaylamanızı istiyor.</string>
+    <string name="notification_download_complete"><xliff:g id="app_name">%1$s</xliff:g> indirildi</string>
+    <string name="notification_group_activity">Son etkinlikler</string>
+    <string name="notification_group_alerts">Dikkat gerekiyor</string>
+    <string name="notification_download_failed"><xliff:g id="app_name">%1$s</xliff:g> indirilemedi</string>
+    <string name="notification_downloading"><xliff:g id="app_name">%1$s</xliff:g> indiriliyor</string>
+    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> yüklendi</string>
+    <string name="notification_install_failed"><xliff:g id="app_name">%1$s</xliff:g> yüklenemedi</string>
+    <string name="notification_installing"><xliff:g id="app_name">%1$s</xliff:g> yükleniyor</string>
+    <string name="notification_install_refused"><xliff:g id="app_name">%1$s</xliff:g> yüklenemedi</string>
+    <string name="notification_install_refused_text">Devam eden başka bir yükleme işlemi var. İşlem bittiğinde tekrar deneyin.</string>
     <plurals name="notification_failed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> uygulamanın ilgilenilmesi gerekiyor</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> uygulamanın ilgilenilmesi gerekiyor </item>
     </plurals>
     <plurals name="notification_installed_summary">
-        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app installed</item>
-        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> apps installed</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> uygulama yüklü</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> uygulama yüklü</item>
     </plurals>
     <plurals name="notification_download_summary">
-        <item quantity="one">Downloading <xliff:g id="count">%1$d</xliff:g> app</item>
-        <item quantity="other">Downloading <xliff:g id="count">%1$d</xliff:g> apps</item>
+        <item quantity="one"><xliff:g id="count">%1$d</xliff:g> uygulama indiriliyor</item>
+        <item quantity="other"><xliff:g id="count">%1$d</xliff:g> uygulama indiriliyor</item>
     </plurals>
     <plurals name="notification_updates_available">
-        <item quantity="one">%1$d update available</item>
-        <item quantity="other">%1$d updates available</item>
+        <item quantity="one">%1$d güncelleme mevcut</item>
+        <item quantity="other">%1$d güncelleme mevcut</item>
     </plurals>
-    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> and <xliff:g id="second">%2$s</xliff:g></string>
-    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> and <xliff:g id="third">%3$s</xliff:g></string>
+    <string name="notification_updates_available_desc_2"><xliff:g id="first">%1$s</xliff:g> ve <xliff:g id="second">%2$s</xliff:g></string>
+    <string name="notification_updates_available_desc_3"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g> ve <xliff:g id="third">%3$s</xliff:g></string>
     <plurals name="notification_updates_available_desc_more">
-        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
-        <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> and <xliff:g id="count">%4$d</xliff:g> more</item>
+        <item quantity="one"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> ve <xliff:g id="count">%4$d</xliff:g> tane daha</item>
+        <item quantity="other"><xliff:g id="first">%1$s</xliff:g>, <xliff:g id="second">%2$s</xliff:g>, <xliff:g id="third">%3$s</xliff:g> ve <xliff:g id="count">%4$d</xliff:g> tane daha</item>
     </plurals>
-    <string name="notification_updates_available_text">Open ShizuStore to review and install them.</string>
-    <string name="permission_doze">Ignore battery optimisation</string>
-    <string name="permission_doze_desc">Keeps downloads running and update checks on time when ShizuStore is in the background.</string>
-    <string name="permission_install">Install unknown apps</string>
-    <string name="permission_install_desc">Required before ShizuStore can install anything. Android still confirms each install unless you use root or Shizuku.</string>
-    <string name="permission_notifications">Notifications</string>
-    <string name="permission_notifications_desc">Shows repository sync, download and install progress, and alerts you when updates are ready.</string>
-    <string name="search_hint">Search apps</string>
-    <string name="search_no_results">No apps match that search</string>
-    <string name="search_history">Recent searches</string>
-    <string name="search_sort_name">Name</string>
-    <string name="search_sort_stars">Most starred</string>
-    <string name="search_sort_stars_full">Most starred on GitHub/GitLab</string>
+    <string name="notification_updates_available_text">İncelemek ve yüklemek için ShizuStore\'u açın.</string>
+    <string name="permission_doze">Pil optimizasyonunu yok say</string>
+    <string name="permission_doze_desc">ShizuStore arka plandayken indirmelerin devam etmesini ve güncelleme kontrollerinin zamanında yapılmasını sağlar.</string>
+    <string name="permission_install">Bilinmeyen uygulamaları yükle</string>
+    <string name="permission_install_desc">ShizuStore\'un herhangi bir uygulama yükleyebilmesi için bu izin gereklidir. Root veya Shizuku kullanmadığınız sürece Android her yükleme için onay istemeye devam eder.</string>
+    <string name="permission_notifications">Bildirimler</string>
+    <string name="permission_notifications_desc">Depo eşitleme, indirme ve yükleme ilerlemesini gösterir ve yeni güncellemeler olduğunda sizi bilgilendirir.</string>
+    <string name="search_hint">Uygulamalarda ara</string>
+    <string name="search_no_results">Aramanızla eşleşen uygulama yok</string>
+    <string name="search_history">Son aramalar</string>
+    <string name="search_sort_name">İsim</string>
+    <string name="search_sort_stars">En çok yıldız</string>
+    <string name="search_sort_stars_full">GitHub/GitLab\'da en çok yıldız alan</string>
     <string name="search_sort_popularity">Popularity</string>
-    <string name="search_sort_popularity_short">Total downloads</string>
-    <string name="search_sort_trending">New installations in the last 14 days on ShizuStore (Trending)</string>
-    <string name="search_sort_trending_short">Trending</string>
-    <string name="search_sort_size">Largest first</string>
-    <string name="filter_all">All</string>
-    <string name="filter_price">Price</string>
-    <string name="filter_free">Free</string>
-    <string name="filter_iap">In-app purchases</string>
-    <string name="filter_iap_or_paid">In-app purchases or Paid</string>
+    <string name="search_sort_popularity_short">Toplam indirmeler</string>
+    <string name="search_sort_trending">ShizuStore\'da son 14 günde en çok yüklenenler (Öne çıkanlar)</string>
+    <string name="search_sort_trending_short">Öne çıkanlar</string>
+    <string name="search_sort_size">Önce en büyük</string>
+    <string name="filter_all">Tümü</string>
+    <string name="filter_price">Ücret</string>
+    <string name="filter_free">Ücretsiz</string>
+    <string name="filter_iap">Uygulama içi satın alım</string>
+    <string name="filter_iap_or_paid">Uygulama içi satın alım veya Ücretli</string>
     <string name="filter_iap_short">IAP</string>
-    <string name="filter_iap_or_paid_short">IAP or Paid</string>
-    <string name="filter_title_category">Filter by category</string>
-    <string name="filter_title_price">Filter by price</string>
-    <string name="filter_title_sort">Sort by</string>
-    <string name="category_dhizuku">Dhizuku-compatible</string>
-    <string name="app_badge_paid">Paid</string>
+    <string name="filter_iap_or_paid_short">IAP veya Ücretli</string>
+    <string name="filter_title_category">Kategorilere göre filtrele</string>
+    <string name="filter_title_price">Fiyata göre filtre</string>
+    <string name="filter_title_sort">Şuna göre sırala</string>
+    <string name="category_dhizuku">Dhizuku uyumlu</string>
+    <string name="app_badge_paid">Ücretli</string>
     <string name="app_badge_iap">IAP</string>
-    <string name="app_badge_ads">Ads</string>
-    <string name="app_indicator_installed">Installed</string>
-    <string name="app_indicator_update">Update available</string>
-    <string name="details_billing_paid">This is a paid app.</string>
-    <string name="details_billing_iap">This app offers in-app purchases.</string>
-    <string name="details_billing_paid_iap">This is a paid app with in-app purchases.</string>
-    <string name="details_ads">This app contains ads.</string>
+    <string name="app_badge_ads">Reklamlar</string>
+    <string name="app_indicator_installed">Yüklü</string>
+    <string name="app_indicator_update">Güncelleme mevcut</string>
+    <string name="details_billing_paid">Bu ücretli bir uygulama.</string>
+    <string name="details_billing_iap">Bu uygulama, uygulama içi satın alım içeriyor.</string>
+    <string name="details_billing_paid_iap">Bu, uygulama içi satın alımda sunan ücretli bir uygulama.
+</string>
+    <string name="details_ads">Bu uygulama reklam içeriyor.</string>
     <string name="details_dhizuku">Dhizuku</string>
-    <string name="details_trackers_title">Detected trackers (%1$d)</string>
-    <string name="details_trackers_note">Matched by Exodus Privacy code signatures. Not a complete list.</string>
-    <string name="details_shizuku_title">How Shizuku is used</string>
-    <string name="details_shizuku_empty">No usage report is available for this app.</string>
-    <string name="details_shizuku_ai_note">This is an AI-assisted analysis of Shizuku-related usages in the app\'s public source code. It is best effort, so it may not catch every single usage.</string>
-    <string name="details_shizuku_summary_title">Summary</string>
-    <string name="settings_appearance_summary">Light or dark theme, and wallpaper colours</string>
-    <string name="settings_appearance_title">Appearance</string>
-    <string name="settings_black_night_subtitle">Use the pure black theme if night mode is enabled</string>
-    <string name="settings_black_night_title">Black night theme</string>
+    <string name="details_trackers_title">%1$d izleyici algılandı</string>
+    <string name="details_trackers_note">Exodus Privacy\'nin kod imzalarına göre tespit edilmiştir. Eksiksiz bir liste değildir.</string>
+    <string name="details_shizuku_title">Shizuku kullanım şekli</string>
+    <string name="details_shizuku_empty">Bu uygulama için kullanılabilir bir kullanım raporu yok.</string>
+    <string name="details_shizuku_ai_note">Bu analiz, yapay zekâ yardımıyla uygulamanın herkese açık kaynak kodunda Shizuku kullanımına ilişkin örnekleri tespit etmek amacıyla hazırlanmıştır. Fakat tüm kullanım örneklerini tespit edemeyebilir</string>
+    <string name="details_shizuku_summary_title">Özet</string>
+    <string name="settings_appearance_summary">Açık veya koyu tema ve duvar kâğıdı renkleri</string>
+    <string name="settings_appearance_title">Görünüm</string>
+    <string name="settings_black_night_subtitle">Gece modu etkinse tamamen siyah temayı kullan</string>
+    <string name="settings_black_night_title">Siyah gece teması</string>
     <string name="settings_catalog_summary">Listings and app analysis</string>
     <string name="settings_catalog_title">Catalog</string>
     <string name="settings_dynamic_color_subtitle">Draws the palette from your wallpaper. Android 12 and later.</string>
