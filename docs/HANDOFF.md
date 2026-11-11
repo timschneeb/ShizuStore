@@ -36,7 +36,7 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   in progress (the API reports a null commit for the newest running run), and
   the whole row stays hidden until the probe succeeds.
 - `rootProject.name = "ShizuAppStore"`. DB file `shizu.db`; DataStore store
-  `shizu_preferences`. Versions: `versionName 1.5.0`, `versionCode 150`.
+  `shizu_preferences`. Versions: `versionName 1.5.1`, `versionCode 151`.
 - Navigation 3 with a bottom nav of Apps / Search / Updates, Material 3 with
   dynamic colour, Paging 3, Hilt, WorkManager, Room, Coil.
 - Self-update: the published store entry (`SHIZU_STORE_PACKAGE`,

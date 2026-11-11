@@ -1,0 +1,1 @@
+- Updated translations: large updates for Finnish, Turkish, Arabic, Portuguese (Brasil), Russian and Ukrainian, plus the new 1.5.0 strings in many more languages
