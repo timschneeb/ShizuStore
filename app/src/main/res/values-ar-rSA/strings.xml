@@ -19,7 +19,7 @@
     <string name="action_next"></string>
     <string name="action_previous"></string>
     <string name="action_export">تصدير APK</string>
-    <string name="action_save_apk">حفظ Save APK</string>
+    <string name="action_save_apk">Save APK</string>
     <string name="action_favourite">إضافة إلى المفضلة</string>
     <string name="action_grant">منح</string>
     <string name="action_granted">ممنوح</string>
