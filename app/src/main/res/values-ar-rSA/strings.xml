@@ -19,7 +19,7 @@
     <string name="action_next"></string>
     <string name="action_previous"></string>
     <string name="action_export">تصدير APK</string>
-    <string name="action_save_apk">Save APK</string>
+    <string name="action_save_apk">حفظ APK</string>
     <string name="action_favourite">إضافة إلى المفضلة</string>
     <string name="action_grant">منح</string>
     <string name="action_granted">ممنوح</string>
@@ -377,7 +377,7 @@
     <string name="settings_updates_subtitle">How often enabled repositories are checked for new versions.</string>
     <string name="settings_updates_title">Update checks</string>
     <string name="settings_wifi_only_subtitle">Background checks and automatic downloads wait for an unmetered network.</string>
-    <string name="settings_wifi_only_title">Check on Wi-Fi only</string>
+    <string name="settings_wifi_only_title">تحقق على Wi-Fi فقط</string>
     <string name="time_just_now">الآن فقط</string>
     <plurals name="time_minutes_ago">
         <item quantity="zero">%1$d minutes ago</item>
