@@ -50,10 +50,11 @@ signature display are kept. F-Droid index sync and multi-repo management are gon
   intent, warm links go through `ShizuNavDisplay(deepLinkTarget = ...)`.
   `DeepLinks.parseAppId` is the only parser; the custom scheme also accepts
   `?package={pkg}`, which wins over the path slug. `AppDetailsViewModel.load`
-  resolves its argument as package or slug and keys favourites on the row's
-  package. The fingerprint published in the storefront's `assetlinks.json` is
-  the release cert only, so debug builds test via the custom scheme. The
-  details share action copies the storefront app page link.
+  treats its argument as a slug first and falls back to a package lookup only
+  for legacy links and restored navigation state. Favourites are keyed by slug,
+  never by the package name. The fingerprint published in the storefront's
+  `assetlinks.json` is the release cert only, so debug builds test via the
+  custom scheme. The details share action copies the storefront app page link.
 - Android TV: `MainActivity` also carries `LEANBACK_LAUNCHER`, and the
   application ships `@drawable/tv_banner` (320x180 xhdpi, from
   `artwork/androidtv/`); `android.software.leanback` and
@@ -158,7 +159,21 @@ knowing before touching a subsystem:
   a newer candidate appears and the stale row is pruned.
 - Install reporting: the Settings -> Network switch gates install reports before
   the once-guard, so callbacks and `InstallReconciler` share one chokepoint; the
-  body is `{"versionCode", "installType"}` and an empty body stays valid.
+  body is `{"versionCode", "installType"}` and an empty body stays valid. A
+  download row carries the slug of the listing it came from, so reports attach
+  to that listing even when another fork shares its package. Legacy rows fall
+  back to signature-aware package resolution.
+- Duplicate packages: catalog identity is the slug; `packageName` is not unique
+  and two listings may share one. Detail, permissions, README, changelog and
+  Shizuku-usage navigation all key on the slug, and list rows open `app.slug`.
+  Installed state additionally checks the signing certificate, so a same-package
+  fork signed with another key is not shown as installed and gets no update.
+  Android still allows only one installed copy per package: same-key builds
+  replace each other, a different-key build fails until the other app is
+  uninstalled. Ignored updates remain package-scoped, because a package can
+  only have one install. A completed download row is reused only for the
+  listing that staged it; legacy rows require the same APK URL and hash, so one
+  fork cannot install another's cached file.
 - Obtainium export: the Favourites and My apps top bars carry a tooltipped
   action that builds an Obtainium schema-v2 document and writes it through the
   storage access framework's create-document dialog, since Obtainium cannot
@@ -176,7 +191,9 @@ knowing before touching a subsystem:
   without restart.
 - Catalog: candidates are keyed per ABI and per flavor `packageName`; primary
   selection prefers a compatible signer and ABI, and update-state resolution
-  falls back from the canonical package to the installed flavor. The "Show
+  matches the installed signing key, then falls back from the canonical package
+  to the installed flavor. A package collision recomputes every listing that
+  ships the package, so each row keeps an independent update state. The "Show
   closed-source apps" switch makes sync ask for `listing=main,closed_source`;
   turning it off drops cached `CLOSED_SOURCE` rows and re-bootstraps. Details
   show a forge source link normally but a `ClosedSourceNotice` for such rows.
@@ -290,13 +307,14 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
 ## Gotchas
 
 - The Room database is `ShizuStoreDatabase` (schema `ShizuStoreDatabase`), now at
-  version 12. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
+  version 13. Migrations `MIGRATION_1_2` through `MIGRATION_5_6` only add columns
   with defaults; `MIGRATION_6_7` swaps the marker classification for the AI usage
   report fields, `MIGRATION_7_8` adds `usageReportVersion`, `MIGRATION_8_9` drops
   the removed `blacklist` table, `MIGRATION_9_10` adds `app.updateIgnored`,
   `MIGRATION_10_11` persists the changelog, screenshots and README fields on the
-  `app` row, and `MIGRATION_11_12` adds the nullable `app.trendScore` behind the
-  Trending sort. A
+  `app` row, `MIGRATION_11_12` adds the nullable `app.trendScore` behind the
+  Trending sort, and `MIGRATION_12_13` rebuilds `favourite` around `slug` and
+  adds the nullable `download.appSlug` provenance column. A
   fresh install creates the full schema in one step and cached catalogs upgrade
   in place. Old `AuroraDatabase` migrations are gone; export schemas to
   `app/schemas/` as usual.
@@ -313,9 +331,12 @@ serializes calls with a 650ms minimum spacing and doubles a 429 backoff from 5s 
   one `database.useWriterConnection { it.immediateTransaction { ... } }` so
   observers never see the cleared intermediate state. `withTransaction` needs a
   `SupportSQLiteOpenHelper`, which the bundled SQLite driver database lacks.
-- The detail screen reads a nav key back to a slug through
-  `AppRepository.getByPackage`, and `CatalogUiMapper` sets the presentation key to
-  `packageName ?: slug`, so `link_only` apps (null `packageName`) still navigate.
+- The detail screen resolves its nav key through
+  `AppRepository.findByKey`: the slug is exact, and a package name is only a
+  legacy fallback that prefers the listing whose signing key matches the
+  installed app. `CatalogUiMapper` still sets the per-source presentation key to
+  `candidate.packageName ?: app.packageName ?: slug`, so flavor actions target
+  the installed package while navigation and favourites stay on the slug.
 - `SyncHelper.refresh()` marks a user refresh (`SyncStatusStore.manualRefreshing`,
   exposed as `SyncHelper.refreshing`); `sync()` is the silent background path.
   Screens drive the pull box and Updates header from `refreshing`, so the launch

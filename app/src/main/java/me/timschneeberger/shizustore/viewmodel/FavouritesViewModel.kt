@@ -39,8 +39,8 @@ class FavouritesViewModel @Inject constructor(
         .map { it.isNotEmpty() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
-    fun unfavourite(packageName: String) {
-        viewModelScope.launch { favouriteRepository.toggle(packageName) }
+    fun unfavourite(slug: String) {
+        viewModelScope.launch { favouriteRepository.toggle(slug) }
     }
 
     /** Full favourite list for the Obtainium JSON export, not just the paged window. */

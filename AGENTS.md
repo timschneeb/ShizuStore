@@ -102,6 +102,10 @@ module with the Macrobenchmark suite and the baseline profile generator.
   space-joined `sigSha256`/`sigMd5` sets in `downloads[]`. Offer only the
   matching candidate and never move a user between signing keys. Match a
   candidate by membership in the set, not whole-string equality.
+- Identity: the slug identifies a catalog listing and is the only navigation and
+  favourite key. Package names are not unique because forks may share one; use
+  package plus signing certificate to decide which listing is installed, and
+  keep package only for install, open, uninstall and package-scoped state.
 - Icons are immutable `{base}/icons/{iconHash}.png`; `iconAdaptive` selects
   rounded-square vs squircle framing; null `iconHash` uses the placeholder.
 - Display behavior for app developers is documented in

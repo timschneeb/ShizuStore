@@ -8,12 +8,14 @@ package me.timschneeberger.shizustore.data.repository
 import android.os.Build
 import me.timschneeberger.shizustore.data.api.Listing
 import me.timschneeberger.shizustore.data.model.AppCandidate
+import me.timschneeberger.shizustore.data.model.CertFingerprint
 import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -190,6 +192,31 @@ class CatalogUiMapperTest {
                 it.app.packageName == "app.mihon.foss"
             }.app.installedVersionCode
         )
+    }
+
+    @Test
+    fun installedSamePackageWithDifferentSignerIsNotMarked() {
+        val app = app().copy(installedVersionCode = 24)
+        val sources = mapper.toSources(
+            DetailedApp(
+                app,
+                listOf(
+                    candidate(
+                        download(
+                            id = 1,
+                            packageName = "app.mihon",
+                            primary = true,
+                            url = "base"
+                        )
+                    )
+                )
+            ),
+            CertFingerprint.of("bbbbbbbb", null),
+            installedPackage = "app.mihon"
+        )
+
+        assertFalse(sources.single().installedPackageMatch)
+        assertNull(sources.single().app.installedVersionCode)
     }
 
     @Test

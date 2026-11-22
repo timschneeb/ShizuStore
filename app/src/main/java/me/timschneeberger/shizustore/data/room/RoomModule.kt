@@ -51,7 +51,8 @@ object RoomModule {
                 MIGRATION_8_9,
                 MIGRATION_9_10,
                 MIGRATION_10_11,
-                MIGRATION_11_12
+                MIGRATION_11_12,
+                MIGRATION_12_13
             )
             .build()
 
@@ -226,6 +227,44 @@ object RoomModule {
     internal val MIGRATION_11_12 = object : Migration(11, 12) {
         override fun migrate(connection: SQLiteConnection) {
             execSql(connection, "ALTER TABLE app ADD COLUMN trendScore INTEGER")
+        }
+    }
+
+    /**
+     * Catalog identity is the slug, not the package name: forks may share a package.
+     * Rebuild favourites around slugs and record which listing a download came from.
+     * Existing package-keyed favourites map to their canonical or flavor listing.
+     */
+    internal val MIGRATION_12_13 = object : Migration(12, 13) {
+        override fun migrate(connection: SQLiteConnection) {
+            execSql(connection, "ALTER TABLE download ADD COLUMN appSlug TEXT")
+            execSql(
+                connection,
+                "CREATE TABLE IF NOT EXISTS favourite_new" +
+                    " (slug TEXT NOT NULL, PRIMARY KEY(slug))"
+            )
+            execSql(
+                connection,
+                """
+                INSERT OR IGNORE INTO favourite_new(slug)
+                SELECT slug FROM (
+                    SELECT COALESCE(
+                        (SELECT a.slug FROM app a
+                            WHERE a.packageName = f.packageName
+                            ORDER BY a.slug LIMIT 1),
+                        (SELECT a.slug FROM app a
+                            WHERE a.slug IN (
+                                SELECT d.appSlug FROM app_download d
+                                    WHERE d.packageName = f.packageName
+                            )
+                            ORDER BY a.slug LIMIT 1)
+                    ) AS slug
+                    FROM favourite f
+                ) WHERE slug IS NOT NULL
+                """.trimIndent()
+            )
+            execSql(connection, "DROP TABLE favourite")
+            execSql(connection, "ALTER TABLE favourite_new RENAME TO favourite")
         }
     }
 

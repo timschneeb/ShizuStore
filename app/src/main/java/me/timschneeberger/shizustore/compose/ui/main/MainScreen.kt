@@ -247,10 +247,18 @@ fun MainScreen(
                 // through the search page when jumping between apps and updates.
                 transitionSpec = {
                     if (targetState.ordinal > initialState.ordinal) {
-                        (slideInHorizontally(tabSlideSpec) { it } + fadeIn(tabFadeSpec)) togetherWith
+                        (
+                            slideInHorizontally(tabSlideSpec) {
+                                it
+                            } + fadeIn(tabFadeSpec)
+                            ) togetherWith
                             (slideOutHorizontally(tabSlideSpec) { -it } + fadeOut(tabFadeSpec))
                     } else {
-                        (slideInHorizontally(tabSlideSpec) { -it } + fadeIn(tabFadeSpec)) togetherWith
+                        (
+                            slideInHorizontally(tabSlideSpec) {
+                                -it
+                            } + fadeIn(tabFadeSpec)
+                            ) togetherWith
                             (slideOutHorizontally(tabSlideSpec) { it } + fadeOut(tabFadeSpec))
                     }
                 },

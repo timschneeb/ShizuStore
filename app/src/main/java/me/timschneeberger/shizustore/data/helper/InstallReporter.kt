@@ -14,7 +14,7 @@ import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.api.ApiResult
 import me.timschneeberger.shizustore.data.api.InstallType
 import me.timschneeberger.shizustore.data.api.ShizuApi
-import me.timschneeberger.shizustore.data.room.dao.AppDao
+import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.util.Preferences
 
 /**
@@ -25,12 +25,12 @@ import me.timschneeberger.shizustore.util.Preferences
 @Singleton
 class InstallReporter @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val appDao: AppDao,
+    private val appRepository: AppRepository,
     private val api: ShizuApi
 ) {
     private val reported: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
-    suspend fun reportInstalled(packageName: String, versionCode: Long) {
+    suspend fun reportInstalled(packageName: String, versionCode: Long, appSlug: String? = null) {
         val enabled = runCatching {
             Preferences.readBoolean(context, Preferences.PREFERENCE_INSTALL_REPORTING, true)
         }.getOrDefault(true)
@@ -42,7 +42,12 @@ class InstallReporter @Inject constructor(
         val key = "$packageName@$versionCode"
         if (!reported.add(key)) return
 
-        val slug = runCatching { appDao.getByPackage(packageName)?.slug }.getOrNull()
+        // The download row names the listing the user installed from. Legacy rows
+        // fall back to signature-aware package resolution.
+        val slug = runCatching {
+            appSlug?.takeIf { it.isNotBlank() }?.let { appRepository.get(it) }?.slug
+                ?: appRepository.resolveByPackage(packageName)?.slug
+        }.getOrNull()
         if (slug.isNullOrBlank()) {
             Log.i(TAG, "Not reporting install of $packageName: no catalog entry")
             return

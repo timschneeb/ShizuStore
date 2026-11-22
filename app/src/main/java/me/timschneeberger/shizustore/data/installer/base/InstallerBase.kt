@@ -67,7 +67,8 @@ abstract class InstallerBase(
                     NotificationUtil.installingNotification(
                         context,
                         packageName,
-                        download.displayName
+                        download.displayName,
+                        download.appSlug
                     )
                 )
             }
@@ -119,12 +120,17 @@ abstract class InstallerBase(
             val displayName = row?.displayName ?: packageName
             downloadDao.updateStatusAndError(packageName, DownloadStatus.INSTALLED, null)
 
-            row?.let { installReporter.reportInstalled(packageName, it.versionCode) }
+            row?.let { installReporter.reportInstalled(packageName, it.versionCode, it.appSlug) }
 
             NotificationUtil.notifyApp(
                 context,
                 packageName,
-                NotificationUtil.installedNotification(context, packageName, displayName)
+                NotificationUtil.installedNotification(
+                    context,
+                    packageName,
+                    displayName,
+                    row?.appSlug
+                )
             )
 
             isolate(TAG, "reclaim $packageName's installed apk") { reclaimApk(packageName) }
@@ -152,7 +158,8 @@ abstract class InstallerBase(
     fun postError(packageName: String, error: InstallError) {
         Log.e(TAG, "Install failed for $packageName: $error")
         scope.launch {
-            val status = runCatching { downloadDao.getDownload(packageName)?.status }.getOrNull()
+            val row = downloadDao.getDownload(packageName)
+            val status = runCatching { row?.status }.getOrNull()
             if (status == DownloadStatus.CANCELLED) {
                 Log.i(TAG, "$packageName is CANCELLED; not relabelling it FAILED ($error)")
                 return@launch
@@ -164,7 +171,7 @@ abstract class InstallerBase(
                 DownloadFailure.of(error)
             )
 
-            val displayName = downloadDao.getDownload(packageName)?.displayName ?: packageName
+            val displayName = row?.displayName ?: packageName
             NotificationUtil.notifyApp(
                 context,
                 packageName,
@@ -172,7 +179,8 @@ abstract class InstallerBase(
                     context = context,
                     packageName = packageName,
                     displayName = displayName,
-                    reason = context.getString(error.stringRes())
+                    reason = context.getString(error.stringRes()),
+                    appSlug = row?.appSlug
                 )
             )
         }

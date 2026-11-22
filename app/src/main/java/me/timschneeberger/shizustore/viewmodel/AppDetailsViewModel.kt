@@ -53,6 +53,7 @@ import me.timschneeberger.shizustore.data.model.CertFingerprint
 import me.timschneeberger.shizustore.data.model.DownloadStatus
 import me.timschneeberger.shizustore.data.model.InstallDispatch
 import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.model.matchInstalled
 import me.timschneeberger.shizustore.data.model.preferredForThisDevice
 import me.timschneeberger.shizustore.data.repository.AppRepository
 import me.timschneeberger.shizustore.data.repository.CatalogUiMapper
@@ -122,9 +123,11 @@ class AppDetailsViewModel @Inject constructor(
     private val api: ShizuApi,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
-    /** The navigation key: a real package name when known, otherwise the catalog slug. */
-    private val identity = MutableStateFlow<String?>(null)
+    /** Catalog identity: the slug, never the shared package name. */
     private val slug = MutableStateFlow<String?>(null)
+
+    /** Install identity for package-scoped state such as ignored updates. */
+    private val appPackage = MutableStateFlow<String?>(null)
 
     /** Last detail-fetch failure, surfaced instead of silently showing stale data. */
     private val _detailError = MutableStateFlow<CatalogSyncFailure?>(null)
@@ -176,13 +179,13 @@ class AppDetailsViewModel @Inject constructor(
         .flatMapLatest { slug -> observeDownload(slug) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
 
-    val isFavourite: StateFlow<Boolean> = identity
+    val isFavourite: StateFlow<Boolean> = slug
         .filterNotNull()
         .distinctUntilChanged()
         .flatMapLatest { favouriteRepository.isFavourite(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), false)
 
-    val ignoredUpdate: StateFlow<IgnoredUpdateEntity?> = identity
+    val ignoredUpdate: StateFlow<IgnoredUpdateEntity?> = appPackage
         .filterNotNull()
         .distinctUntilChanged()
         .flatMapLatest { ignoredUpdateRepository.observeIgnore(it) }
@@ -288,13 +291,13 @@ class AppDetailsViewModel @Inject constructor(
         .map { it?.app?.categorySlug }
         .distinctUntilChanged()
 
-    fun load(packageName: String) {
+    fun load(key: String) {
         viewModelScope.launch {
-            // A deep link can carry the catalog slug; resolve it to the row's
-            // package first so favourites key off the app, not the argument.
-            val stored = appRepository.getByPackage(packageName) ?: appRepository.get(packageName)
-            identity.value = stored?.packageName ?: packageName
-            val resolvedSlug = stored?.slug ?: packageName
+            // Slugs are identity; package names only cover legacy links and
+            // restored navigation state.
+            val stored = appRepository.findByKey(key)
+            appPackage.value = stored?.packageName ?: key
+            val resolvedSlug = stored?.slug ?: key
             _detailFetching.value = true
             slug.value = resolvedSlug
             // A view model can be reused for another app; the previous live
@@ -402,9 +405,11 @@ class AppDetailsViewModel @Inject constructor(
         try {
             when (val result = detailedAppRepository.fetchAndPersist(resolvedSlug)) {
                 is DetailedAppResult.Success -> {
-                    // The row can appear from a concurrent catalog sync while the
-                    // fetch is in flight; adopt its package for favourites.
-                    result.app.packageName?.takeIf { it.isNotBlank() }?.let { identity.value = it }
+                    // A concurrent sync can supply the canonical package after the
+                    // row rendered; ignored updates are keyed by it.
+                    result.app.packageName?.takeIf { it.isNotBlank() }?.let {
+                        appPackage.value = it
+                    }
                     _detailError.value = null
                 }
                 DetailedAppResult.NotFound -> _detailError.value = null
@@ -419,25 +424,23 @@ class AppDetailsViewModel @Inject constructor(
     }
 
     fun toggleFavourite() {
-        val identity = identity.value ?: return
-        viewModelScope.launch { favouriteRepository.toggle(identity) }
+        val current = slug.value ?: return
+        viewModelScope.launch { favouriteRepository.toggle(current) }
     }
 
     fun ignoreAllUpdates() {
-        val identity = identity.value ?: return
-        viewModelScope.launch { ignoredUpdateRepository.ignoreAll(identity) }
+        val packageName = appPackage.value ?: return
+        viewModelScope.launch { ignoredUpdateRepository.ignoreAll(packageName) }
     }
 
     fun ignoreThisVersion() {
-        val app = resolvedApp() ?: return
-        viewModelScope.launch {
-            ignoredUpdateRepository.ignoreVersion(app.packageName)
-        }
+        val current = slug.value ?: return
+        viewModelScope.launch { ignoredUpdateRepository.ignoreVersion(current) }
     }
 
     fun stopIgnoringUpdates() {
-        val identity = identity.value ?: return
-        viewModelScope.launch { ignoredUpdateRepository.stopIgnoring(identity) }
+        val packageName = appPackage.value ?: return
+        viewModelScope.launch { ignoredUpdateRepository.stopIgnoring(packageName) }
     }
 
     fun install() {
@@ -449,25 +452,26 @@ class AppDetailsViewModel @Inject constructor(
         val app = source.app
 
         viewModelScope.launch {
+            val entity = appRepository.get(app.slug) ?: return@launch
+            val candidate = app.candidateId?.let { appRepository.candidate(it) } ?: return@launch
             val stored = downloadHelper.getDownload(app.packageName)
 
             if (stored != null &&
-                stored.versionCode == app.versionCode &&
+                stored.versionCode == candidate.versionCode &&
+                stored.belongsTo(entity.slug, candidate) &&
                 installDispatcher.canInstallFromDisk(stored)
             ) {
                 dispatch(stored)
                 return@launch
             }
 
-            val entity = appRepository.get(app.slug) ?: return@launch
-            val candidate = app.candidateId?.let { appRepository.candidate(it) } ?: return@launch
             downloadHelper.enqueueAndInstall(entity, candidate)
         }
     }
 
     fun cancel() {
-        val identity = identity.value ?: return
-        viewModelScope.launch { downloadHelper.cancel(identity) }
+        val packageName = appPackage.value ?: return
+        viewModelScope.launch { downloadHelper.cancel(packageName) }
     }
 
     fun installFrom(source: ResolvedApp) {
@@ -488,17 +492,18 @@ class AppDetailsViewModel @Inject constructor(
         val app = source.app
 
         viewModelScope.launch {
+            val entity = appRepository.get(app.slug) ?: return@launch
+            val candidate = app.candidateId?.let { appRepository.candidate(it) } ?: return@launch
             val stored = downloadHelper.getDownload(app.packageName)
             if (stored != null &&
-                stored.versionCode == app.versionCode &&
+                stored.versionCode == candidate.versionCode &&
+                stored.belongsTo(entity.slug, candidate) &&
                 downloadHelper.hasApk(stored)
             ) {
                 emitSaved(stored)
                 return@launch
             }
 
-            val entity = appRepository.get(app.slug) ?: return@launch
-            val candidate = app.candidateId?.let { appRepository.candidate(it) } ?: return@launch
             downloadHelper.enqueue(entity, candidate)
 
             val settled = downloadHelper.downloads
@@ -560,9 +565,9 @@ class AppDetailsViewModel @Inject constructor(
         appRepository.observeDetail(slug),
         downloadHelper.downloads
     ) { detailed, rows ->
-        val identity = identity.value.orEmpty()
+        val identity = appPackage.value.orEmpty()
         val packages = buildSet {
-            add(identity)
+            if (identity.isNotBlank()) add(identity)
             detailed?.app?.packageName?.let { add(it) }
             detailed?.candidates?.forEach { candidate -> candidate.packageName?.let { add(it) } }
         }
@@ -574,17 +579,14 @@ class AppDetailsViewModel @Inject constructor(
             appRepository.observeDetail(slug),
             installedRepository.observeAll()
         ) { detailed, installedAll ->
-            // The entry is keyed by its canonical package, but the user may have
-            // installed a flavor, so match any package the entry ships.
+            // Two listings may share a package; signing keys decide which one is
+            // actually installed.
             val installed = detailed?.let { detail ->
-                val packages = buildSet {
-                    detail.app.packageName?.let { add(it) }
-                    detail.candidates.forEach { candidate ->
-                        candidate.packageName?.let { add(it) }
-                    }
-                }
-                installedAll.firstOrNull { it.packageName == detail.app.packageName }
-                    ?: installedAll.firstOrNull { it.packageName in packages }
+                matchInstalled(
+                    detail.app.packageName,
+                    detail.candidates,
+                    installedAll.associateBy { it.packageName }
+                )
             }
             detailed to installed
         }

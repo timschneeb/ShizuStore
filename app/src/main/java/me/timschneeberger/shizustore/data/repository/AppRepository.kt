@@ -16,6 +16,7 @@ import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.AppListArgs
 import me.timschneeberger.shizustore.data.model.DetailedApp
 import me.timschneeberger.shizustore.data.model.ResolvedApp
+import me.timschneeberger.shizustore.data.model.matchInstalled
 import me.timschneeberger.shizustore.data.room.AppListQueryBuilder
 import me.timschneeberger.shizustore.data.room.WindowAwarePagingSource
 import me.timschneeberger.shizustore.data.room.dao.AppDao
@@ -100,8 +101,33 @@ class AppRepository @Inject constructor(
 
     suspend fun get(slug: String): AppEntity? = appDao.get(slug)
 
-    suspend fun getByPackage(packageName: String): AppEntity? =
-        appDao.getByPackage(packageName) ?: appDao.getByDownloadPackage(packageName)
+    /** Resolves a navigation key: slugs are exact, package names cover legacy links. */
+    suspend fun findByKey(key: String): AppEntity? = appDao.get(key) ?: resolveByPackage(key)
+
+    /**
+     * Package names are not unique. Prefer the listing whose signing key matches the
+     * installed app, then fall back to the deterministic catalog order.
+     */
+    suspend fun resolveByPackage(packageName: String): AppEntity? {
+        val apps = appDao.getAllByPackage(packageName)
+        if (apps.size <= 1) return apps.firstOrNull()
+
+        val candidatesByApp = apps.associateWith { app ->
+            appDownloadDao.forApp(app.slug).map { AppCandidate.from(it, app.packageName) }
+        }
+        val packages = buildSet {
+            apps.forEach { app -> app.packageName?.let(::add) }
+            candidatesByApp.values.flatten().forEach { candidate ->
+                candidate.packageName?.let(::add)
+            }
+        }
+        val installedByPackage = installedDao.getByPackages(packages.toList())
+            .associateBy { it.packageName }
+        return apps.firstOrNull { app ->
+            matchInstalled(app.packageName, candidatesByApp[app].orEmpty(), installedByPackage) !=
+                null
+        } ?: apps.first()
+    }
 
     /**
      * The package the entry is actually installed under: the canonical package or,
@@ -110,15 +136,15 @@ class AppRepository @Inject constructor(
      */
     suspend fun installedPackageFor(slug: String): String? {
         val app = appDao.get(slug) ?: return null
+        val candidates = appDownloadDao.forApp(slug).map { AppCandidate.from(it, app.packageName) }
         val packages = buildSet {
-            app.packageName?.let { add(it) }
-            appDownloadDao.forApp(slug).forEach { download ->
-                download.packageName?.let { add(it) }
-            }
+            app.packageName?.let(::add)
+            candidates.forEach { candidate -> candidate.packageName?.let(::add) }
         }
         if (packages.isEmpty()) return null
-        val installed = installedDao.getPackages(packages.toList()).toHashSet()
-        return packages.firstOrNull { it in installed }
+        val installedByPackage = installedDao.getByPackages(packages.toList())
+            .associateBy { it.packageName }
+        return matchInstalled(app.packageName, candidates, installedByPackage)?.packageName
     }
 
     /** Updatable rows with a real package name, the only ones an install can target. */

@@ -98,7 +98,7 @@ import me.timschneeberger.shizustore.viewmodel.SaveApkEvent
 
 @Composable
 fun AppDetailsScreen(
-    packageName: String,
+    slug: String,
     modifier: Modifier = Modifier,
     viewModel: AppDetailsViewModel = hiltViewModel(),
     onNavigateTo: (Destination) -> Unit = {}
@@ -110,7 +110,7 @@ fun AppDetailsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(packageName) { viewModel.load(packageName) }
+    LaunchedEffect(slug) { viewModel.load(slug) }
 
     LaunchedEffect(viewModel) {
         viewModel.refusals.collect {
@@ -155,7 +155,7 @@ fun AppDetailsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             DetailsTopBar(
-                packageName = packageName,
+                slug = slug,
                 uiState = uiState,
                 viewModel = viewModel,
                 onNavigateTo = onNavigateTo
@@ -204,7 +204,7 @@ fun AppDetailsScreen(
 
                         is AppDetailsUiState.Loaded -> DetailsContent(
                             state = state,
-                            packageName = packageName,
+                            slug = slug,
                             viewModel = viewModel,
                             onNavigateTo = onNavigateTo
                         )
@@ -221,7 +221,7 @@ fun AppDetailsScreen(
  */
 @Composable
 private fun DetailsTopBar(
-    packageName: String,
+    slug: String,
     uiState: AppDetailsUiState,
     viewModel: AppDetailsViewModel,
     onNavigateTo: (Destination) -> Unit
@@ -235,7 +235,7 @@ private fun DetailsTopBar(
     val loadedState = uiState as? AppDetailsUiState.Loaded
     // Installed-app actions must target the flavor the user installed, not the
     // catalog's canonical package.
-    val actionablePackage = loadedState?.actionablePackage ?: packageName
+    val actionablePackage = loadedState?.actionablePackage ?: slug
     // Keyed on the installed flag instead of the download status: the launch
     // intent only changes when installation settles, not on progress ticks.
     val canAddToHome =
@@ -249,8 +249,8 @@ private fun DetailsTopBar(
                 onClick = {
                     val details = (uiState as? AppDetailsUiState.Loaded)?.details
                     context.shareApp(
-                        details?.name ?: packageName,
-                        packageName,
+                        details?.name ?: slug,
+                        details?.packageName ?: slug,
                         url = details?.slug?.let(DeepLinks::appPage)
                     )
                 }
@@ -324,7 +324,7 @@ private fun DetailsTopBar(
 @Composable
 private fun DetailsContent(
     state: AppDetailsUiState.Loaded,
-    packageName: String,
+    slug: String,
     viewModel: AppDetailsViewModel,
     onNavigateTo: (Destination) -> Unit
 ) {
@@ -412,14 +412,14 @@ private fun DetailsContent(
                 title = stringResource(R.string.details_more_about),
                 subtitle = state.details.description.takeIf { it.isNotBlank() },
                 icon = R.drawable.ic_info_outlined,
-                onClick = { onNavigateTo(Destination.MoreAbout(packageName)) }
+                onClick = { onNavigateTo(Destination.MoreAbout(slug)) }
             )
         }
 
         item(key = "shizuku-usage") {
             ShizukuUsageRow(
                 details = state.details,
-                onClick = { onNavigateTo(Destination.ShizukuUsage(packageName)) }
+                onClick = { onNavigateTo(Destination.ShizukuUsage(slug)) }
             )
         }
 
@@ -433,7 +433,7 @@ private fun DetailsContent(
                             stringResource(R.string.details_changelog_subtitle, it)
                         },
                     icon = R.drawable.ic_updates,
-                    onClick = { onNavigateTo(Destination.Changelog(packageName)) }
+                    onClick = { onNavigateTo(Destination.Changelog(slug)) }
                 )
             }
         }
@@ -462,7 +462,7 @@ private fun DetailsContent(
                         )
                     },
                     icon = R.drawable.ic_shield,
-                    onClick = { onNavigateTo(Destination.Permissions(packageName)) }
+                    onClick = { onNavigateTo(Destination.Permissions(slug)) }
                 )
             }
         }
@@ -487,7 +487,7 @@ private fun DetailsContent(
             DetailsCarousel(
                 title = stringResource(R.string.details_more_from_author),
                 apps = moreFromAuthor,
-                onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
+                onAppClick = { onNavigateTo(Destination.AppDetails(it.slug)) }
             )
         }
 
@@ -503,7 +503,7 @@ private fun DetailsContent(
                 }?.let { slug ->
                     { onNavigateTo(Destination.AppList(categorySlug = slug)) }
                 },
-                onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
+                onAppClick = { onNavigateTo(Destination.AppDetails(it.slug)) }
             )
         }
     }

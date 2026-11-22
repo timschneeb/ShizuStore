@@ -11,11 +11,11 @@ package me.timschneeberger.shizustore.compose.navigation
 import me.timschneeberger.shizustore.data.model.AppSort
 
 sealed class Destination {
-    data class AppDetails(val packageName: String) : Destination()
-    data class Permissions(val packageName: String) : Destination()
-    data class MoreAbout(val packageName: String) : Destination()
-    data class Changelog(val packageName: String) : Destination()
-    data class ShizukuUsage(val packageName: String) : Destination()
+    data class AppDetails(val slug: String) : Destination()
+    data class Permissions(val slug: String) : Destination()
+    data class MoreAbout(val slug: String) : Destination()
+    data class Changelog(val slug: String) : Destination()
+    data class ShizukuUsage(val slug: String) : Destination()
     data object Downloads : Destination()
     data object Settings : Destination()
 

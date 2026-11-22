@@ -7,8 +7,8 @@ package me.timschneeberger.shizustore.compose.theme
 
 import android.util.Log
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.ui.unit.IntOffset
 
 /**
@@ -52,7 +52,9 @@ internal object MotionFallbackPatch {
         if (failure != null && !warned) {
             warned = true
             // Not mocked in JVM unit tests, so even the warning stays best effort.
-            runCatching { Log.w(TAG, "Compose interrupted-slide fallback patch unavailable", failure) }
+            runCatching {
+                Log.w(TAG, "Compose interrupted-slide fallback patch unavailable", failure)
+            }
         }
     }
 }

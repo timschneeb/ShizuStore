@@ -58,7 +58,8 @@ open class InstallReconciler @Inject constructor(
                 DownloadStatus.INSTALLED,
                 null,
                 download.status,
-                download.versionCode
+                download.versionCode,
+                download.appSlug
             )
         } else {
             Log.i(
@@ -105,7 +106,8 @@ open class InstallReconciler @Inject constructor(
                     DownloadFailure.INSTALL_INTERRUPTED
                 },
                 expected = download.status,
-                versionCode = download.versionCode
+                versionCode = download.versionCode,
+                appSlug = download.appSlug
             )
         }
     }
@@ -146,7 +148,8 @@ open class InstallReconciler @Inject constructor(
         status: DownloadStatus,
         error: DownloadFailure?,
         expected: DownloadStatus,
-        versionCode: Long
+        versionCode: Long,
+        appSlug: String?
     ) {
         val updated = downloadDao.updateStatusAndErrorIf(
             packageName = packageName,
@@ -163,7 +166,7 @@ open class InstallReconciler @Inject constructor(
         // Native installs bypass the installer callbacks, so report success here too;
         // the reporter's once-guard dedupes this against onInstallationSuccess.
         if (status == DownloadStatus.INSTALLED) {
-            installReporter.reportInstalled(packageName, versionCode)
+            installReporter.reportInstalled(packageName, versionCode, appSlug)
         }
 
         NotificationUtil.clearAppNotification(context, packageName)

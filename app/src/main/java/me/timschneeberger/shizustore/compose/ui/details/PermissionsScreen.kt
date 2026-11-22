@@ -41,7 +41,7 @@ import me.timschneeberger.shizustore.viewmodel.AppDetailsViewModel
 
 @Composable
 fun PermissionsScreen(
-    packageName: String,
+    slug: String,
     modifier: Modifier = Modifier,
     viewModel: AppDetailsViewModel = hiltViewModel(),
     onNavigateTo: (Destination) -> Unit = {}
@@ -49,7 +49,7 @@ fun PermissionsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    LaunchedEffect(packageName) { viewModel.load(packageName) }
+    LaunchedEffect(slug) { viewModel.load(slug) }
 
     val declared = (uiState as? AppDetailsUiState.Loaded)?.details?.permissions
 

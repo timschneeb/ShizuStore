@@ -136,7 +136,9 @@ fun DownloadsScreen(
         DownloadActionsSheet(
             download = target,
             canInstall = viewModel.canInstall(target),
-            onShowDetails = { onNavigateTo(Destination.AppDetails(target.packageName)) },
+            onShowDetails = {
+                onNavigateTo(Destination.AppDetails(target.appSlug ?: target.packageName))
+            },
             onCancel = { viewModel.cancel(target.packageName) },
             onInstall = { viewModel.install(target.packageName) },
             onExport = {

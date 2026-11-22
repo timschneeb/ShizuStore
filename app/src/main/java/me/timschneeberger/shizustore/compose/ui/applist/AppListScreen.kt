@@ -305,7 +305,7 @@ fun AppListScreen(
                         syncFailure = syncFailure,
                         onRetry = viewModel::retrySync,
                         onAppClick = { app ->
-                            onNavigateTo(Destination.AppDetails(app.packageName))
+                            onNavigateTo(Destination.AppDetails(app.slug))
                         }
                     )
                 }

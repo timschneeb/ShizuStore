@@ -11,6 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import me.timschneeberger.shizustore.data.model.AppCandidate
 import me.timschneeberger.shizustore.data.model.CertFingerprint
+import me.timschneeberger.shizustore.data.model.matchInstalled
 import me.timschneeberger.shizustore.data.room.ShizuStoreDatabase
 import me.timschneeberger.shizustore.data.room.dao.AppDao
 import me.timschneeberger.shizustore.data.room.dao.AppDownloadDao
@@ -23,6 +24,7 @@ import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 /**
  * Only a candidate whose signing set contains the installed fingerprint is offered, so a user is
  * never moved between signing keys; with no candidates it falls back to a summary version compare.
+ * Package names are not unique, so every listing sharing a package gets its own state.
  */
 @Singleton
 class UpdateStateRepository @Inject constructor(
@@ -42,52 +44,55 @@ class UpdateStateRepository @Inject constructor(
             val installedByPackage = installedDao.getAll().associateBy { it.packageName }
             val ignoredByPackage = ignoredUpdateDao.getAll().associateBy { it.packageName }
             appDao.getAll().forEach { app ->
-                val installed = resolveInstalled(app, installedByPackage)
-                applyState(app.slug, installed, ignoredByPackage)
+                val candidates = candidatesFor(app)
+                val installed = resolveInstalled(app, candidates, installedByPackage)
+                applyState(app, installed, ignoredByPackage, candidates)
             }
         }
     }
 
+    /** Recomputes every listing whose canonical or download package matches. */
     suspend fun recompute(packageName: String) = database.useWriterConnection { transactor ->
         transactor.immediateTransaction {
-            val app = appDao.getByPackage(packageName)
-                ?: appDao.getByDownloadPackage(packageName)
-                ?: return@immediateTransaction
+            val apps = appDao.getAllByPackage(packageName).ifEmpty {
+                listOfNotNull(appDao.get(packageName))
+            }
+            if (apps.isEmpty()) return@immediateTransaction
             val installedByPackage = installedDao.getAll().associateBy { it.packageName }
             val ignoredByPackage = ignoredUpdateDao.getAll().associateBy { it.packageName }
-            applyState(app.slug, resolveInstalled(app, installedByPackage), ignoredByPackage)
+            apps.forEach { app ->
+                val candidates = candidatesFor(app)
+                val installed = resolveInstalled(app, candidates, installedByPackage)
+                applyState(app, installed, ignoredByPackage, candidates)
+            }
         }
     }
 
     /** The version an update would offer for the installed app, or null when none is offered. */
-    suspend fun offeredVersionCode(packageName: String): Long? =
+    suspend fun offeredVersionCode(slug: String): Long? =
         database.useWriterConnection { transactor ->
             transactor.immediateTransaction {
-                val app = appDao.getByPackage(packageName)
-                    ?: appDao.getByDownloadPackage(packageName)
-                    ?: return@immediateTransaction null
+                val app = appDao.get(slug) ?: return@immediateTransaction null
                 val installedByPackage = installedDao.getAll().associateBy { it.packageName }
-                val installed = resolveInstalled(app, installedByPackage)
+                val candidates = candidatesFor(app)
+                val installed = resolveInstalled(app, candidates, installedByPackage)
                     ?: return@immediateTransaction null
-                val candidates = appDownloadDao.forApp(app.slug)
-                    .map { AppCandidate.from(it, app.packageName) }
                 resolveOfferedVersion(app, selectMatch(installed, candidates), candidates)
             }
         }
 
+    private suspend fun candidatesFor(app: AppEntity): List<AppCandidate> =
+        appDownloadDao.forApp(app.slug).map { AppCandidate.from(it, app.packageName) }
+
     /**
      * A flavor installs under its own package, so the entry counts as installed when any of its
-     * candidate packages is; the canonical package is only the fast path.
+     * candidate packages is. Signing keys break ties when forks reuse a package.
      */
-    private suspend fun resolveInstalled(
+    private fun resolveInstalled(
         app: AppEntity,
+        candidates: List<AppCandidate>,
         installedByPackage: Map<String, InstalledEntity>
-    ): InstalledEntity? {
-        app.packageName?.let { installedByPackage[it] }?.let { return it }
-        return appDownloadDao.forApp(app.slug)
-            .mapNotNull { it.packageName }
-            .firstNotNullOfOrNull { installedByPackage[it] }
-    }
+    ): InstalledEntity? = matchInstalled(app.packageName, candidates, installedByPackage)
 
     /**
      * Flavor builds usually share a signing key, so the package is what ties the
@@ -119,13 +124,14 @@ class UpdateStateRepository @Inject constructor(
     }
 
     private suspend fun applyState(
-        slug: String,
+        app: AppEntity,
         installed: InstalledEntity?,
-        ignoredByPackage: Map<String, IgnoredUpdateEntity>
+        ignoredByPackage: Map<String, IgnoredUpdateEntity>,
+        candidates: List<AppCandidate>
     ) {
         if (installed == null) {
             appDao.setUpdateState(
-                slug,
+                app.slug,
                 null,
                 updateAvailable = false,
                 updateCandidateId = null,
@@ -134,8 +140,6 @@ class UpdateStateRepository @Inject constructor(
             return
         }
 
-        val app = appDao.get(slug) ?: return
-        val candidates = appDownloadDao.forApp(slug).map { AppCandidate.from(it, app.packageName) }
         val match = selectMatch(installed, candidates)
 
         val available: Boolean
@@ -168,6 +172,6 @@ class UpdateStateRepository @Inject constructor(
         ) {
             ignoredUpdateDao.delete(ignore.packageName)
         }
-        appDao.setUpdateState(slug, installed.versionCode, available, candidateId, ignored)
+        appDao.setUpdateState(app.slug, installed.versionCode, available, candidateId, ignored)
     }
 }

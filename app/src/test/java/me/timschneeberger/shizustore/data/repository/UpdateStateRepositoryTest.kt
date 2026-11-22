@@ -284,6 +284,39 @@ class UpdateStateRepositoryTest : RobolectricTestBase() {
     }
 
     @Test
+    fun canonicalInstallStillResolvesWhenOnlyFlavorCandidatesAreListed() = runTest {
+        db.appDao().upsert(
+            AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(
+                download(
+                    slug = "app",
+                    packageName = "com.app.play",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = true,
+                    url = "play"
+                )
+            )
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.app",
+                versionCode = 4,
+                versionName = "0.9",
+                signer = "aaaaaaaa"
+            )
+        )
+
+        repository.recompute("com.app")
+
+        val app = db.appDao().get("app")!!
+        assertEquals(4L, app.installedVersionCode)
+        assertTrue(app.updateAvailable)
+    }
+
+    @Test
     fun ignoredAllSuppressesUpdateWhileKeepingTheCandidate() = runTest {
         db.appDao().upsert(
             AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
@@ -377,6 +410,95 @@ class UpdateStateRepositoryTest : RobolectricTestBase() {
     }
 
     @Test
+    fun duplicatePackageListingsResolveInstalledBySigner() = runTest {
+        db.appDao().upsert(
+            AppEntity(
+                slug = "fork-a",
+                name = "Fork A",
+                packageName = "com.shared",
+                versionCode = 8
+            )
+        )
+        db.appDao().upsert(
+            AppEntity(
+                slug = "fork-b",
+                name = "Fork B",
+                packageName = "com.shared",
+                versionCode = 20
+            )
+        )
+        db.appDownloadDao().upsertAll(
+            listOf(
+                download(
+                    slug = "fork-a",
+                    packageName = "com.shared",
+                    sigSha256 = "aaaaaaaa",
+                    versionCode = 8,
+                    primary = true,
+                    url = "a"
+                ),
+                download(
+                    slug = "fork-b",
+                    packageName = "com.shared",
+                    sigSha256 = "bbbbbbbb",
+                    versionCode = 20,
+                    primary = true,
+                    url = "b"
+                )
+            )
+        )
+        db.installedDao().upsert(
+            InstalledEntity(
+                packageName = "com.shared",
+                versionCode = 10,
+                versionName = "1.0",
+                signer = "bbbbbbbb"
+            )
+        )
+
+        repository.recompute("com.shared")
+
+        val forkA = db.appDao().get("fork-a")!!
+        val forkB = db.appDao().get("fork-b")!!
+        assertEquals(null, forkA.installedVersionCode)
+        assertFalse(forkA.updateAvailable)
+        assertEquals(10L, forkB.installedVersionCode)
+        assertTrue(forkB.updateAvailable)
+        assertEquals(20L, repository.offeredVersionCode("fork-b"))
+        assertEquals(null, repository.offeredVersionCode("fork-a"))
+    }
+
+    @Test
+    fun recomputeClearsStaleStateForEveryDuplicateListing() = runTest {
+        db.appDao().upsert(
+            AppEntity(
+                slug = "fork-a",
+                name = "Fork A",
+                packageName = "com.shared",
+                installedVersionCode = 3,
+                updateAvailable = true
+            )
+        )
+        db.appDao().upsert(
+            AppEntity(
+                slug = "fork-b",
+                name = "Fork B",
+                packageName = "com.shared",
+                installedVersionCode = 3,
+                updateAvailable = true
+            )
+        )
+
+        repository.recompute("com.shared")
+
+        listOf("fork-a", "fork-b").forEach { slug ->
+            val app = db.appDao().get(slug)!!
+            assertEquals(null, app.installedVersionCode)
+            assertFalse(app.updateAvailable)
+        }
+    }
+
+    @Test
     fun offeredVersionPrefersTheMatchingCandidate() = runTest {
         db.appDao().upsert(
             AppEntity(slug = "app", name = "App", packageName = "com.app", versionCode = 8)
@@ -408,7 +530,7 @@ class UpdateStateRepositoryTest : RobolectricTestBase() {
             )
         )
 
-        assertEquals(8L, repository.offeredVersionCode("com.app"))
+        assertEquals(8L, repository.offeredVersionCode("app"))
     }
 
     private fun download(

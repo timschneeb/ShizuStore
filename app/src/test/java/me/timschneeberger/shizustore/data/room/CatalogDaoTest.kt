@@ -21,6 +21,7 @@ import me.timschneeberger.shizustore.data.room.entity.AppDownloadEntity
 import me.timschneeberger.shizustore.data.room.entity.AppEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryEntity
 import me.timschneeberger.shizustore.data.room.entity.CategoryPath
+import me.timschneeberger.shizustore.data.room.entity.FavouriteEntity
 import me.timschneeberger.shizustore.data.room.entity.InstalledEntity
 import me.timschneeberger.shizustore.data.room.entity.TrackerTag
 import org.junit.Assert.assertEquals
@@ -45,6 +46,19 @@ class CatalogDaoTest : RobolectricTestBase() {
         availability = availability,
         categorySlug = "tools"
     )
+
+    @Test
+    fun favouritesAreScopedToTheListingNotItsPackage() = runTest {
+        val appDao = db.appDao()
+        appDao.upsert(app("fork-a", "Fork A"))
+        appDao.upsert(
+            app("fork-b", "Fork B").copy(packageName = "pkg.fork-a")
+        )
+        db.favouriteDao().insert(FavouriteEntity("fork-a"))
+
+        assertEquals(listOf("fork-a"), db.favouriteDao().observeAll().first())
+        assertEquals(listOf("fork-a"), appDao.getFavourites().map { it.slug })
+    }
 
     @Test
     fun summaryUpsertPreservesDetailColumns() = runTest {

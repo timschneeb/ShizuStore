@@ -25,7 +25,7 @@ class InstallReporterTest : ApiTestBase() {
     fun setUp() {
         reporter = InstallReporter(
             context = RuntimeEnvironment.getApplication(),
-            appDao = db.appDao(),
+            appRepository = appRepository(),
             api = api()
         )
         runBlocking {
@@ -57,6 +57,31 @@ class InstallReporterTest : ApiTestBase() {
         // Robolectric has no such package, so the type falls back to unknown.
         assertEquals("""{"versionCode":42,"installType":"unknown"}""", request.body.readUtf8())
         assertEquals(1, server.requestCount)
+    }
+
+    @Test
+    fun preferredListingSlugAttributesTheInstall() = runTest {
+        db.appDao().upsert(
+            AppEntity(
+                slug = "fork-a",
+                name = "Fork A",
+                description = "a",
+                packageName = "com.example.micup"
+            )
+        )
+        db.appDao().upsert(
+            AppEntity(
+                slug = "fork-b",
+                name = "Fork B",
+                description = "b",
+                packageName = "com.example.micup"
+            )
+        )
+        server.enqueue(MockResponse().setBody("""{"slug":"fork-b","installCount":1}"""))
+
+        reporter.reportInstalled("com.example.micup", 42L, appSlug = "fork-b")
+
+        assertEquals("/v1/apps/fork-b/installs", server.takeRequest().path)
     }
 
     @Test

@@ -34,6 +34,9 @@ data class AppCandidate(
     val signerKeyAlgorithm: String? = null,
     val isPrimary: Boolean
 ) {
+    val hasSigningFingerprint: Boolean
+        get() = !sigSha256.isNullOrBlank() || !sigMd5.isNullOrBlank()
+
     /** Only a candidate whose signing set contains the installed fingerprint is installable. */
     fun matchesInstalled(installed: CertFingerprint?): Boolean {
         if (installed == null) return false

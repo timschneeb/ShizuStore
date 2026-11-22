@@ -11,6 +11,7 @@ package me.timschneeberger.shizustore.compose.navigation
 import android.os.Parcelable
 import androidx.navigation3.runtime.NavKey
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.timschneeberger.shizustore.data.model.AppSort
 
@@ -22,19 +23,19 @@ sealed class Screen : NavKey, Parcelable {
     data class Main(val initialTab: Int = 0) : Screen()
 
     @Serializable
-    data class AppDetails(val packageName: String) : Screen()
+    data class AppDetails(@SerialName("packageName") val slug: String) : Screen()
 
     @Serializable
-    data class Permissions(val packageName: String) : Screen()
+    data class Permissions(@SerialName("packageName") val slug: String) : Screen()
 
     @Serializable
-    data class MoreAbout(val packageName: String) : Screen()
+    data class MoreAbout(@SerialName("packageName") val slug: String) : Screen()
 
     @Serializable
-    data class Changelog(val packageName: String) : Screen()
+    data class Changelog(@SerialName("packageName") val slug: String) : Screen()
 
     @Serializable
-    data class ShizukuUsage(val packageName: String) : Screen()
+    data class ShizukuUsage(@SerialName("packageName") val slug: String) : Screen()
 
     @Serializable
     data object Downloads : Screen()

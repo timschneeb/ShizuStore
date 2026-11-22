@@ -22,7 +22,7 @@ class IgnoredUpdateRepositoryTest : RobolectricTestBase() {
     fun ignoreVersionStoresTheOfferedVersionAndSuppresses() = runTest {
         seedInstalledApp()
 
-        ignoredUpdateRepository().ignoreVersion("com.app")
+        ignoredUpdateRepository().ignoreVersion("app")
 
         val row = db.ignoredUpdateDao().getAll().single()
         assertEquals("com.app", row.packageName)

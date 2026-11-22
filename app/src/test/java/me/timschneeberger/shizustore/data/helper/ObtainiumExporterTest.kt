@@ -40,7 +40,10 @@ class ObtainiumExporterTest {
 
         val app = root.getValue("apps").jsonArray.single().jsonObject
         assertEquals("dev.imranr.obtainium", app.getValue("id").jsonPrimitive.content)
-        assertEquals("https://github.com/ImranR98/Obtainium", app.getValue("url").jsonPrimitive.content)
+        assertEquals(
+            "https://github.com/ImranR98/Obtainium",
+            app.getValue("url").jsonPrimitive.content
+        )
         assertEquals("ImranR98", app.getValue("author").jsonPrimitive.content)
         assertEquals("Obtainium", app.getValue("name").jsonPrimitive.content)
         assertEquals("1.1.30", app.getValue("latestVersion").jsonPrimitive.content)

@@ -108,9 +108,9 @@ private fun FavouritesContent(
                 RemovableAppItem(
                     app = app,
                     onClick = {
-                        onNavigateTo(Destination.AppDetails(app.packageName))
+                        onNavigateTo(Destination.AppDetails(app.slug))
                     },
-                    onRemove = { viewModel.unfavourite(app.packageName) },
+                    onRemove = { viewModel.unfavourite(app.slug) },
                     icon = painterResource(R.drawable.ic_favorite_checked),
                     contentDescription = stringResource(R.string.action_unfavourite),
                     modifier = Modifier.animateItem(

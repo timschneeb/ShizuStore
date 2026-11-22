@@ -118,7 +118,7 @@ fun AppsScreen(
                             onGroupClick = { group ->
                                 group.moreDestination()?.let(onNavigateTo)
                             },
-                            onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
+                            onAppClick = { onNavigateTo(Destination.AppDetails(it.slug)) }
                         )
                     }
                 }

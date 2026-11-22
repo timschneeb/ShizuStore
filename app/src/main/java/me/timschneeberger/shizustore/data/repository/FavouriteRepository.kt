@@ -24,10 +24,9 @@ class FavouriteRepository @Inject constructor(
 
     fun observeFavourites(): Flow<List<String>> = favouriteDao.observeAll()
 
-    fun isFavourite(packageName: String): Flow<Boolean> =
-        favouriteDao.observeIsFavourite(packageName)
+    fun isFavourite(slug: String): Flow<Boolean> = favouriteDao.observeIsFavourite(slug)
 
-    suspend fun toggle(packageName: String) = favouriteDao.toggle(packageName)
+    suspend fun toggle(slug: String) = favouriteDao.toggle(slug)
 
     fun pagedFavourites(): PagingSource<Int, ResolvedApp> =
         MappedPagingSource(appDao.pagedFavourites()) { mapper.toResolvedApp(it) }

@@ -36,14 +36,14 @@ import me.timschneeberger.shizustore.viewmodel.AppDetailsViewModel
 
 @Composable
 fun MoreAboutScreen(
-    packageName: String,
+    slug: String,
     modifier: Modifier = Modifier,
     viewModel: AppDetailsViewModel = hiltViewModel(),
     onNavigateTo: (Destination) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(packageName) { viewModel.load(packageName) }
+    LaunchedEffect(slug) { viewModel.load(slug) }
 
     val context = LocalContext.current
     val browserUrl = (uiState as? AppDetailsUiState.Loaded)?.details?.browserUrl

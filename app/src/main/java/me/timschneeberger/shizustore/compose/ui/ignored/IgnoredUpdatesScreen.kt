@@ -71,7 +71,7 @@ fun IgnoredUpdatesScreen(
             RemovableAppItem(
                 app = row.app,
                 onClick = {
-                    onNavigateTo(Destination.AppDetails(row.app.packageName))
+                    onNavigateTo(Destination.AppDetails(row.app.slug))
                 },
                 onRemove = { viewModel.stopIgnoring(row.app.packageName) },
                 icon = painterResource(R.drawable.ic_updates),

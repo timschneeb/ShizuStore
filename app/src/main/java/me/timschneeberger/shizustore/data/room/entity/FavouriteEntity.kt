@@ -10,5 +10,5 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "favourite")
 data class FavouriteEntity(
-    @PrimaryKey val packageName: String
+    @PrimaryKey val slug: String
 )

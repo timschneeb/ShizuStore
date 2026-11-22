@@ -16,27 +16,27 @@ import me.timschneeberger.shizustore.data.room.entity.FavouriteEntity
 @Dao
 interface FavouriteDao {
 
-    @Query("SELECT packageName FROM favourite ORDER BY packageName ASC")
+    @Query("SELECT slug FROM favourite ORDER BY slug ASC")
     fun observeAll(): Flow<List<String>>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favourite WHERE packageName = :packageName)")
-    fun observeIsFavourite(packageName: String): Flow<Boolean>
+    @Query("SELECT EXISTS(SELECT 1 FROM favourite WHERE slug = :slug)")
+    fun observeIsFavourite(slug: String): Flow<Boolean>
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favourite WHERE packageName = :packageName)")
-    suspend fun isFavourite(packageName: String): Boolean
+    @Query("SELECT EXISTS(SELECT 1 FROM favourite WHERE slug = :slug)")
+    suspend fun isFavourite(slug: String): Boolean
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(favourite: FavouriteEntity)
 
-    @Query("DELETE FROM favourite WHERE packageName = :packageName")
-    suspend fun delete(packageName: String)
+    @Query("DELETE FROM favourite WHERE slug = :slug")
+    suspend fun delete(slug: String)
 
     @Transaction
-    suspend fun toggle(packageName: String) {
-        if (isFavourite(packageName)) {
-            delete(packageName)
+    suspend fun toggle(slug: String) {
+        if (isFavourite(slug)) {
+            delete(slug)
         } else {
-            insert(FavouriteEntity(packageName))
+            insert(FavouriteEntity(slug))
         }
     }
 }

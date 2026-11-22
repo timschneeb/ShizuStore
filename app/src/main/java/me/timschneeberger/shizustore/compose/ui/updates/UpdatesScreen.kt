@@ -80,7 +80,7 @@ fun UpdatesScreen(
         sheetApp?.let { app ->
             AppUpdateSheet(
                 app = app,
-                onAppDetails = { onNavigateTo(Destination.AppDetails(app.packageName)) },
+                onAppDetails = { onNavigateTo(Destination.AppDetails(app.slug)) },
                 onIgnoreAllUpdates = { viewModel.ignoreAllUpdates(app) },
                 onIgnoreThisVersion = { viewModel.ignoreThisVersion(app) },
                 onUninstall = { context.uninstallPackage(app.installedPackage ?: app.packageName) },

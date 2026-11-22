@@ -23,15 +23,16 @@ interface AppDao {
     @Query("SELECT * FROM app WHERE slug = :slug")
     suspend fun get(slug: String): AppEntity?
 
-    @Query("SELECT * FROM app WHERE packageName = :packageName LIMIT 1")
-    suspend fun getByPackage(packageName: String): AppEntity?
-
-    /** A flavor package lives on app_download, not on the app's canonical packageName. */
+    /**
+     * Package names are not unique: forks may reuse them. Canonical matches come
+     * first, then flavor matches, with slug as a stable tie-breaker.
+     */
     @Query(
-        "SELECT * FROM app WHERE slug IN" +
-            " (SELECT appSlug FROM app_download WHERE packageName = :packageName) LIMIT 1"
+        "SELECT * FROM app WHERE packageName = :packageName OR slug IN" +
+            " (SELECT appSlug FROM app_download WHERE packageName = :packageName)" +
+            " ORDER BY CASE WHEN packageName = :packageName THEN 0 ELSE 1 END, slug ASC"
     )
-    suspend fun getByDownloadPackage(packageName: String): AppEntity?
+    suspend fun getAllByPackage(packageName: String): List<AppEntity>
 
     @Query("SELECT * FROM app WHERE slug = :slug")
     fun observe(slug: String): Flow<AppEntity?>
@@ -191,15 +192,15 @@ interface AppDao {
     fun observeAll(): Flow<List<AppEntity>>
 
     @Query(
-        "SELECT a.* FROM app a JOIN favourite f ON f.packageName = a.packageName" +
-            " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
+        "SELECT a.* FROM app a JOIN favourite f ON f.slug = a.slug" +
+            " ORDER BY a.name COLLATE NOCASE ASC"
     )
     fun pagedFavourites(): PagingSource<Int, AppEntity>
 
     /** Whole favourite set for bulk actions such as the Obtainium export. */
     @Query(
-        "SELECT a.* FROM app a JOIN favourite f ON f.packageName = a.packageName" +
-            " WHERE a.packageName IS NOT NULL ORDER BY a.name COLLATE NOCASE ASC"
+        "SELECT a.* FROM app a JOIN favourite f ON f.slug = a.slug" +
+            " ORDER BY a.name COLLATE NOCASE ASC"
     )
     suspend fun getFavourites(): List<AppEntity>
 

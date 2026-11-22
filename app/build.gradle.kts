@@ -273,6 +273,7 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.okhttp.mockwebserver)
+    testImplementation(libs.androidx.sqlite.framework)
 
     baselineProfile(project(":baselineprofile"))
 }

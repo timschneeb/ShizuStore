@@ -94,7 +94,7 @@ private fun InstalledContent(
                 AppListItem(
                     app = app,
                     onClick = {
-                        onNavigateTo(Destination.AppDetails(app.packageName))
+                        onNavigateTo(Destination.AppDetails(app.slug))
                     },
                     modifier = Modifier.animateItem(
                         fadeInSpec = itemFadeSpec,

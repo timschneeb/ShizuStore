@@ -187,7 +187,7 @@ object NotificationUtil {
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
-            .setContentIntent(appDetailsIntent(context, download.packageName))
+            .setContentIntent(appDetailsIntent(context, download.appSlug ?: download.packageName))
             .build()
 
     fun failedNotification(context: Context, download: Download): Notification =
@@ -201,7 +201,7 @@ object NotificationUtil {
             .setGroup(GROUP_FAILED)
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
             .setAutoCancel(true)
-            .setContentIntent(appDetailsIntent(context, download.packageName))
+            .setContentIntent(appDetailsIntent(context, download.appSlug ?: download.packageName))
             .addAction(retryAction(context, download.packageName))
             .build()
 
@@ -209,7 +209,8 @@ object NotificationUtil {
     fun installingNotification(
         context: Context,
         packageName: String,
-        displayName: String
+        displayName: String,
+        appSlug: String? = null
     ): Notification = NotificationCompat.Builder(context, CHANNEL_INSTALL)
         .setSmallIcon(android.R.drawable.stat_sys_download)
         .setContentTitle(
@@ -220,13 +221,14 @@ object NotificationUtil {
         .setProgress(100, 0, true)
         .setOngoing(true)
         .setOnlyAlertOnce(true)
-        .setContentIntent(appDetailsIntent(context, packageName))
+        .setContentIntent(appDetailsIntent(context, appSlug ?: packageName))
         .build()
 
     fun installedNotification(
         context: Context,
         packageName: String,
-        displayName: String
+        displayName: String,
+        appSlug: String? = null
     ): Notification = NotificationCompat.Builder(context, CHANNEL_INSTALL)
         .setSmallIcon(R.drawable.ic_installed)
         .setLargeIcon(appIcon(context, packageName))
@@ -239,14 +241,15 @@ object NotificationUtil {
         .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
         .setAutoCancel(true)
         .setTimeoutAfter(INSTALLED_TIMEOUT_MS)
-        .setContentIntent(appDetailsIntent(context, packageName))
+        .setContentIntent(appDetailsIntent(context, appSlug ?: packageName))
         .build()
 
     fun installFailedNotification(
         context: Context,
         packageName: String,
         displayName: String,
-        reason: String?
+        reason: String?,
+        appSlug: String? = null
     ): Notification = NotificationCompat.Builder(context, CHANNEL_ALERTS)
         .setSmallIcon(R.drawable.ic_cancel)
         .setContentTitle(
@@ -258,7 +261,7 @@ object NotificationUtil {
         .setGroup(GROUP_FAILED)
         .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_SUMMARY)
         .setAutoCancel(true)
-        .setContentIntent(appDetailsIntent(context, packageName))
+        .setContentIntent(appDetailsIntent(context, appSlug ?: packageName))
         .addAction(retryAction(context, packageName))
         .build()
 
@@ -509,15 +512,15 @@ object NotificationUtil {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
-    private fun appDetailsIntent(context: Context, packageName: String): PendingIntent =
+    private fun appDetailsIntent(context: Context, appKey: String): PendingIntent =
         PendingIntent.getActivity(
             context,
-            notificationId(packageName),
+            notificationId(appKey),
             Intent(context, MainActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 .putExtra(
                     MainActivity.EXTRA_SCREEN,
-                    Screen.AppDetails(packageName) as Parcelable
+                    Screen.AppDetails(appKey) as Parcelable
                 ),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

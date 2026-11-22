@@ -89,7 +89,7 @@ fun ShizuNavDisplay(
         val target = pendingTarget ?: return@LaunchedEffect
         onDeepLinkConsumed()
         val current = backStack.lastOrNull()
-        if (current !is Screen.AppDetails || current.packageName != target) {
+        if (current !is Screen.AppDetails || current.slug != target) {
             backStack.add(Screen.AppDetails(target))
         }
     }
@@ -97,13 +97,13 @@ fun ShizuNavDisplay(
     fun navigate(destination: Destination) {
         when (destination) {
             is Destination.Back -> if (backStack.size > 1) backStack.removeLastOrNull()
-            is Destination.AppDetails -> backStack.add(Screen.AppDetails(destination.packageName))
+            is Destination.AppDetails -> backStack.add(Screen.AppDetails(destination.slug))
             is Destination.Permissions ->
-                backStack.add(Screen.Permissions(destination.packageName))
-            is Destination.MoreAbout -> backStack.add(Screen.MoreAbout(destination.packageName))
-            is Destination.Changelog -> backStack.add(Screen.Changelog(destination.packageName))
+                backStack.add(Screen.Permissions(destination.slug))
+            is Destination.MoreAbout -> backStack.add(Screen.MoreAbout(destination.slug))
+            is Destination.Changelog -> backStack.add(Screen.Changelog(destination.slug))
             is Destination.ShizukuUsage ->
-                backStack.add(Screen.ShizukuUsage(destination.packageName))
+                backStack.add(Screen.ShizukuUsage(destination.slug))
             is Destination.Downloads -> backStack.add(Screen.Downloads)
             is Destination.Settings -> backStack.add(Screen.Settings)
             is Destination.AppearancePreferences ->
@@ -156,19 +156,19 @@ fun ShizuNavDisplay(
                 MainScreen(initialTab = key.initialTab, onNavigateTo = ::navigate)
             }
             entry<Screen.AppDetails> { key ->
-                AppDetailsScreen(packageName = key.packageName, onNavigateTo = ::navigate)
+                AppDetailsScreen(slug = key.slug, onNavigateTo = ::navigate)
             }
             entry<Screen.Permissions> { key ->
-                PermissionsScreen(packageName = key.packageName, onNavigateTo = ::navigate)
+                PermissionsScreen(slug = key.slug, onNavigateTo = ::navigate)
             }
             entry<Screen.MoreAbout> { key ->
-                MoreAboutScreen(packageName = key.packageName, onNavigateTo = ::navigate)
+                MoreAboutScreen(slug = key.slug, onNavigateTo = ::navigate)
             }
             entry<Screen.Changelog> { key ->
-                ChangelogScreen(packageName = key.packageName, onNavigateTo = ::navigate)
+                ChangelogScreen(slug = key.slug, onNavigateTo = ::navigate)
             }
             entry<Screen.ShizukuUsage> { key ->
-                ShizukuUsageScreen(packageName = key.packageName, onNavigateTo = ::navigate)
+                ShizukuUsageScreen(slug = key.slug, onNavigateTo = ::navigate)
             }
             entry<Screen.Downloads> {
                 DownloadsScreen(onNavigateTo = ::navigate)

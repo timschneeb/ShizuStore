@@ -58,6 +58,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+androidx-sqlite-framework = { module = "androidx.sqlite:sqlite-framework", version.ref = "sqlite" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestJunit" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 androidx-ui = { module = "androidx.compose.ui:ui" }

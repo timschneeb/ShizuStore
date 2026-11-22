@@ -35,7 +35,8 @@ data class Download(
     val sigMd5: String? = null,
     val iconHash: String? = null,
     val downloadedAt: Long = 0L,
-    val error: DownloadFailure? = null
+    val error: DownloadFailure? = null,
+    val appSlug: String? = null
 ) {
     val isFinished get() = status in DownloadStatus.finished
     val isRunning get() = status in DownloadStatus.running
@@ -43,6 +44,19 @@ data class Download(
     val isActive get() = isRunning || status == DownloadStatus.VERIFYING
 
     val isInstalling get() = status in DownloadStatus.installing
+
+    /**
+     * A completed row may be reused only for the listing that staged it. Rows
+     * from before provenance was recorded fall back to the exact APK identity.
+     */
+    fun belongsTo(slug: String, candidate: AppCandidate): Boolean = appSlug?.let { it == slug } ?: (
+        apkUrl == candidate.apkUrl &&
+            (
+                candidate.sha256.isNullOrBlank() ||
+                    hash.isBlank() ||
+                    hash.equals(candidate.sha256, ignoreCase = true)
+                )
+        )
 
     companion object {
         const val HASH_SHA256 = "sha256"
@@ -69,7 +83,8 @@ data class Download(
                 sigMd5 = candidate.sigMd5,
                 archiveEntry = candidate.archiveEntry,
                 mirrors = emptyList(),
-                downloadedAt = Date().time
+                downloadedAt = Date().time,
+                appSlug = app.slug
             )
         }
 

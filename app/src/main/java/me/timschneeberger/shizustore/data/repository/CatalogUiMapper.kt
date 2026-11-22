@@ -167,12 +167,20 @@ class CatalogUiMapper @Inject constructor() {
                 // Flavors usually share a signing key, so only the package ties the
                 // installed app to its own source; the fingerprint alone cannot.
                 val sourcePackage = candidate.packageName ?: app.packageName
-                val installedPackageMatch =
-                    installedPackage != null && sourcePackage == installedPackage
+                val signerMatches = candidate.matchesInstalled(installed)
+                // A signed candidate must not mark a same-package fork with another key
+                // as installed; unknown keys on either side keep the package fallback.
+                val installedPackageMatch = installedPackage != null &&
+                    sourcePackage == installedPackage &&
+                    (
+                        !candidate.hasSigningFingerprint ||
+                            installed?.isKnown != true ||
+                            signerMatches
+                        )
                 AppSource(
                     app = candidateToResolvedApp(app, candidate, installed, installedPackageMatch),
                     nativeCode = candidate.abiTokens,
-                    signerMatch = candidate.matchesInstalled(installed),
+                    signerMatch = signerMatches,
                     installedPackageMatch = installedPackageMatch
                 )
             }
