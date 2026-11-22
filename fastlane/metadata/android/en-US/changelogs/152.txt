@@ -1,0 +1,5 @@
+- Fixed app pages opening the wrong app when two catalog entries share a package name
+- Favourites, installed state and update checks now stay with the correct listing
+- Installed state now checks the signing certificate, so a differently signed fork is not treated as installed
+- Existing package links still open the matching app
+- Updated Czech and Portuguese (Brasil) translations
