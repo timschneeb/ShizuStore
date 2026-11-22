@@ -14,7 +14,7 @@
     <string name="action_cancel_all">Cancelar tudo</string>
     <string name="action_clear">Limpar</string>
     <string name="action_close">Fechar</string>
-    <string name="action_collapse">Recolher</string>
+    <string name="action_collapse">Colapso</string>
     <string name="action_expand">Expandir</string>
     <string name="action_next">Próximo</string>
     <string name="action_previous">Voltar</string>
@@ -128,7 +128,7 @@
     <string name="download_save_failed">Não foi possível salvar o APK</string>
     <string name="download_status_awaiting_confirmation">Aguardando confirmação</string>
     <string name="download_status_cancelled">Cancelado</string>
-    <string name="download_status_completed">Transferido</string>
+    <string name="download_status_completed">Baixados</string>
     <string name="download_status_downloading">Baixando… <xliff:g id="percent">%1$d</xliff:g>%%</string>
     <string name="download_status_downloading_plain">Baixando…</string>
     <string name="download_status_failed">Falhou</string>
@@ -138,13 +138,13 @@
     <string name="download_status_queued">Na fila</string>
     <string name="download_status_unavailable">Indisponível</string>
     <string name="download_status_verifying">Verificando...</string>
-    <string name="downloads_empty">Sem downloads ainda</string>
-    <string name="downloads_empty_detail">Os aplicativos que você baixa aparecem aqui</string>
+    <string name="downloads_empty">Nada baixado</string>
+    <string name="downloads_empty_detail">Os aplicativos que você baixar aparecem aqui</string>
     <string name="error_download_archive">Não foi possível descompactar o arquivo baixado. Tente novamente mais tarde.</string>
-    <string name="error_download_http">O repositório recusou o download. Tente novamente mais tarde.</string>
+    <string name="error_download_http">O repositório recusou baixar. Tente novamente mais tarde.</string>
     <string name="error_download_insufficient_storage">Não há espaço suficiente para baixar este aplicativo. Libere um pouco de espaço e tente novamente.</string>
     <string name="error_download_network">Não foi possível acessar o repositório usado para baixar esse aplicativo. Verifique sua conexão.</string>
-    <string name="error_hash_mismatch">O arquivo baixado não corresponde ao que o repositório assinou. Ele foi descartado.</string>
+    <string name="error_hash_mismatch">O arquivo baixado não corresponde ao repositório assinado. Ele foi descartado.</string>
     <string name="error_install_aborted">A instalação foi cancelada.</string>
     <string name="error_install_apk_missing">O arquivo baixado não está mais no armazenamento. Baixe novamente.</string>
     <string name="error_install_blocked">Outro aplicativo ou uma política do dispositivo bloqueou esta instalação.</string>
@@ -242,7 +242,7 @@
     <string name="search_sort_name">Nome</string>
     <string name="search_sort_stars">Com mais estrelas</string>
     <string name="search_sort_stars_full">Mais estrelas no GitHub/GitLab</string>
-    <string name="search_sort_popularity">Popularity</string>
+    <string name="search_sort_popularity">Quantidade de baixados no ShizuStore</string>
     <string name="search_sort_popularity_short">Total de baixados</string>
     <string name="search_sort_trending">Novas instalações nos últimos 14 dias em ShizuStore (tendência)</string>
     <string name="search_sort_trending_short">Mais populares</string>
