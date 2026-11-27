@@ -19,7 +19,7 @@
     <string name="action_next"></string>
     <string name="action_previous"></string>
     <string name="action_export">تصدير APK</string>
-    <string name="action_save_apk">Save APK</string>
+    <string name="action_save_apk">حفظ APK</string>
     <string name="action_favourite">إضافة إلى المفضلة</string>
     <string name="action_grant">منح</string>
     <string name="action_granted">ممنوح</string>
@@ -210,11 +210,11 @@
     <string name="notification_group_alerts">يحتاج إلى انتباه</string>
     <string name="notification_download_failed">تعذر تحميل <xliff:g id="app_name">%1$s</xliff:g></string>
     <string name="notification_downloading">جارٍ تنزيل <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_complete"><xliff:g id="app_name">%1$s</xliff:g> installed</string>
-    <string name="notification_install_failed">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_installing">Installing <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused">Could not install <xliff:g id="app_name">%1$s</xliff:g></string>
-    <string name="notification_install_refused_text">Another install is still in progress. Try again once it finishes.</string>
+    <string name="notification_install_complete">تم التثبيت <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_failed">تعذر التثبيت <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_installing">جارٍ التثبيت <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused">تعذر التثبيت <xliff:g id="app_name">%1$s</xliff:g></string>
+    <string name="notification_install_refused_text">لا يزال التثبيت جارياً. حاول مرة أخرى بعد اكتماله.</string>
     <plurals name="notification_failed_summary">
         <item quantity="zero"><xliff:g id="count">%1$d</xliff:g> apps need attention</item>
         <item quantity="one"><xliff:g id="count">%1$d</xliff:g> app needs attention</item>
@@ -276,7 +276,7 @@
     <string name="search_sort_trending_short">Trending</string>
     <string name="search_sort_size">Largest first</string>
     <string name="filter_all">الكل</string>
-    <string name="filter_price">Price</string>
+    <string name="filter_price">سعر</string>
     <string name="filter_free">مجاني</string>
     <string name="filter_iap">شراء داخل التطبيق</string>
     <string name="filter_iap_or_paid">عمليات الشراء أو الدفع داخل التطبيق</string>
@@ -288,7 +288,7 @@
     <string name="category_dhizuku">Dhizuku-compatible</string>
     <string name="app_badge_paid">Paid</string>
     <string name="app_badge_iap">IAP</string>
-    <string name="app_badge_ads">Ads</string>
+    <string name="app_badge_ads">إعلان</string>
     <string name="app_indicator_installed">مثبت</string>
     <string name="app_indicator_update">التحديث متاح</string>
     <string name="details_billing_paid">هذا تطبيق مدفوع.</string>
@@ -377,7 +377,7 @@
     <string name="settings_updates_subtitle">How often enabled repositories are checked for new versions.</string>
     <string name="settings_updates_title">Update checks</string>
     <string name="settings_wifi_only_subtitle">Background checks and automatic downloads wait for an unmetered network.</string>
-    <string name="settings_wifi_only_title">Check on Wi-Fi only</string>
+    <string name="settings_wifi_only_title">تحقق على Wi-Fi فقط</string>
     <string name="time_just_now">الآن فقط</string>
     <plurals name="time_minutes_ago">
         <item quantity="zero">%1$d minutes ago</item>
